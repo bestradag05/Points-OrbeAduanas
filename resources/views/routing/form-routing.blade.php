@@ -11,188 +11,304 @@
 
       <div class="row">
 
-        <div class="col-6">
-    
-            <x-adminlte-select2 name="origin" label="Origen" igroup-size="md" data-placeholder="Seleccione una opcion...">
-                <option />
-                @foreach ($stateCountrys as $stateCountry)
-                    <option>{{ $stateCountry->country->name . ' - ' . $stateCountry->name }}</option>
-                @endforeach
-            </x-adminlte-select2>
-    
-        </div>
-        <div class="col-6">
-    
-            <x-adminlte-select2 name="destination" label="Destino" igroup-size="md"
-                data-placeholder="Seleccione una opcion...">
-                <option />
-                @foreach ($stateCountrys as $stateCountry)
-                    <option>{{ $stateCountry->country->name . ' - ' . $stateCountry->name }}</option>
-                @endforeach
-            </x-adminlte-select2>
-    
-        </div>
-    
-    
-        <div class="col-6">
-    
-            <div class="form-group">
-                <label for="freight_value">Valor del Flete</label>
-    
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text text-bold">
-                            $
-                        </span>
-                    </div>
-                    <input type="text" class="form-control CurrencyInput" name="freight_value" data-type="currency"
-                        placeholder="Ingrese valor del flete">
-    
-                    @error('freight_value')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-    
-            </div>
-    
-        </div>
-        <div class="col-6">
-    
-            <div class="form-group">
-                <label for="load_value">Valor del la carga</label>
-    
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text text-bold">
-                            $
-                        </span>
-                    </div>
-                    <input type="text" class="form-control CurrencyInput" name="load_value" data-type="currency"
-                        placeholder="Ingrese valor de la carga">
-    
-                    @error('freight_value')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-    
-            </div>
-        </div>
-    
-        <div class="col-6">
-    
-            <div class="form-group">
-                <label for="insurance_value">Valor del seguro</label>
-    
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text text-bold">
-                            $
-                        </span>
-                    </div>
-                    <input type="text" class="form-control CurrencyInput" name="insurance_value" data-type="currency"
-                        placeholder="Ingrese valor de la carga">
-    
-                    @error('freight_value')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
-                </div>
-    
-            </div>
-        </div>
-    
-    
-        <div class="col-6">
-            <x-adminlte-select2 name="id_customer" label="Clientes" igroup-size="md"
-                data-placeholder="Seleccione una opcion...">
-                <option />
-                @foreach ($customers as $customer)
-                    <option>{{ $customer->name_businessname }}</option>
-                @endforeach
-            </x-adminlte-select2>
-        </div>
-    
-        <div class="col-6">
-            <x-adminlte-select2 name="id_shipper" label="Provedor del Cliente" igroup-size="md"
-                data-placeholder="Seleccione una opcion...">
-                <option />
-                @foreach ($shippers as $shipper)
-                    <option>{{ $shipper->name_businessname }}</option>
-                @endforeach
-            </x-adminlte-select2>
-        </div>
-    
-        <div class="col-6">
-            <x-adminlte-select2 name="id_type_shipment" label="Tipo de embarque" igroup-size="md"
-                data-placeholder="Seleccione una opcion...">
-                <option />
-                @foreach ($type_shipments as $type_shipment)
-                    <option value="{{ $type_shipment->id }}">
-                        {{ $type_shipment->code . ' - ( ' . $type_shipment->description . ' )' }}</option>
-                @endforeach
-            </x-adminlte-select2>
-        </div>
-    
-        <div class="col-6">
-            <x-adminlte-select2 name="id_modality" label="Modalidad" igroup-size="md"
-                data-placeholder="Seleccione una opcion...">
-                <option />
-                @foreach ($modalitys as $modality)
-                    <option value="{{ $modality->id }}">{{ $modality->name }}</option>
-                @endforeach
-            </x-adminlte-select2>
-        </div>
-    
-        <div class="col-6">
-            <x-adminlte-select2 name="id_regime" label="Regimen" igroup-size="md"
-                data-placeholder="Seleccione una opcion...">
-                <option />
-                @foreach ($regimes as $regime)
-                    <option value="{{ $regime->id }}">{{ $regime->code . ' - ( ' . $regime->description . ' )' }}
-                    </option>
-                @endforeach
-            </x-adminlte-select2>
-        </div>
-    
-        <div class="col-6">
-            <x-adminlte-select2 name="id_incoterms" label="Incoterms" igroup-size="md"
-                data-placeholder="Seleccione una opcion...">
-                <option />
-                @foreach ($incoterms as $incoter)
-                    <option value="{{ $incoter->id }}">{{ $incoter->code }}</option>
-                @endforeach
-            </x-adminlte-select2>
-        </div>
-    
-        <div class="col-12">
-            <label for="wr_loading" class="bg-indigo w-100 px-2 py-1"> WR Loading </label>
-            <div class="form-group row justify-content-center">
-                <label for="inputEmail3" class="col-sm-2 col-form-label">WR Loading:</label>
-                <div class="col-sm-6">
-                    <input type="email" class="form-control" id="wr_loading" placeholder="Ingrese su WR...">
-                </div>
-            </div>
-        </div>
-    
-    
-    </div>
+          <div class="col-6">
 
-      <button class="btn btn-primary" onclick="stepper.next()">Next</button>
+              <x-adminlte-select2 name="origin" label="Origen" igroup-size="md"
+                  data-placeholder="Seleccione una opcion...">
+                  <option />
+                  @foreach ($stateCountrys as $stateCountry)
+                      <option
+                          {{ (isset($routing->origin) && $routing->origin == $stateCountry->country->name . ' - ' . $stateCountry->name) || old('origin') == $stateCountry->country->name . ' - ' . $stateCountry->name ? 'selected' : '' }}>
+                          {{ $stateCountry->country->name . ' - ' . $stateCountry->name }}
+                      </option>
+                  @endforeach
+              </x-adminlte-select2>
+
+          </div>
+          <div class="col-6">
+
+              <x-adminlte-select2 name="destination" label="Destino" igroup-size="md"
+                  data-placeholder="Seleccione una opcion...">
+                  <option />
+                  @foreach ($stateCountrys as $stateCountry)
+                      <option
+                      {{ (isset($routing->destination) && $routing->destination == $stateCountry->country->name . ' - ' . $stateCountry->name) || old('destination') == $stateCountry->country->name . ' - ' . $stateCountry->name ? 'selected' : '' }}
+                      >
+                      {{ $stateCountry->country->name . ' - ' . $stateCountry->name }}
+                    </option>
+                  @endforeach
+              </x-adminlte-select2>
+
+          </div>
+
+
+
+          <div class="col-6">
+
+              <div class="form-group">
+                  <label for="load_value">Valor del la carga</label>
+
+                  <div class="input-group">
+                      <div class="input-group-prepend">
+                          <span class="input-group-text text-bold @error('load_value') is-invalid @enderror">
+                              $
+                          </span>
+                      </div>
+                      <input type="text"
+                          class="form-control CurrencyInput @error('load_value') is-invalid @enderror "
+                          name="load_value" data-type="currency" placeholder="Ingrese valor de la carga"
+                          value="{{ isset($routing->load_value) ? $routing->load_value : old('load_value') }}">
+                  </div>
+                  @error('load_value')
+                      <span class="invalid-feedback d-block" role="alert">
+                          <strong>{{ $message }}</strong>
+                      </span>
+                  @enderror
+
+              </div>
+          </div>
+
+
+          <div class="col-6">
+              <x-adminlte-select2 name="id_customer" label="Clientes" igroup-size="md"
+                  data-placeholder="Seleccione una opcion...">
+                  <option />
+                  @foreach ($customers as $customer)
+                      <option
+                      value="{{$customer->id}}"
+                      {{ (isset($routing->id_customer) && $routing->id_customer == $customer->id) || old('id_customer') == $customer->id ? 'selected' : '' }}
+                      >
+                        {{ $customer->name_businessname }}
+                    </option>
+                  @endforeach
+              </x-adminlte-select2>
+          </div>
+
+          <div class="col-6">
+              <x-adminlte-select2 name="id_shipper" label="Provedor del Cliente" igroup-size="md"
+                  data-placeholder="Seleccione una opcion...">
+                  <option />
+                  @foreach ($shippers as $shipper)
+                      <option
+                      value="{{ $shipper->id }}"
+                      {{ (isset($routing->id_shipper) && $routing->id_shipper == $shipper->id) || old('id_shipper') == $shipper->id ? 'selected' : '' }}
+                      >
+                        {{ $shipper->name_businessname }}
+                    </option>
+                  @endforeach
+              </x-adminlte-select2>
+          </div>
+
+          <div class="col-6">
+              <x-adminlte-select2 name="id_type_shipment" label="Tipo de embarque" igroup-size="md"
+                  data-placeholder="Seleccione una opcion...">
+                  <option />
+                  @foreach ($type_shipments as $type_shipment)
+                      <option 
+                      value="{{ $type_shipment->id }}"
+                      {{ (isset($routing->id_type_shipment) && $routing->id_type_shipment == $type_shipment->id) || old('id_type_shipment') == $type_shipment->id ? 'selected' : '' }}
+                      >
+                          {{ $type_shipment->code . ' - ( ' . $type_shipment->description . ' )' }}</option>
+                  @endforeach
+              </x-adminlte-select2>
+          </div>
+
+          {{-- <div class="col-6">
+              <x-adminlte-select2 name="id_modality" label="Modalidad" igroup-size="md"
+                  data-placeholder="Seleccione una opcion...">
+                  <option />
+                  @foreach ($modalitys as $modality)
+                      <option value="{{ $modality->id }}">{{ $modality->name }}</option>
+                  @endforeach
+              </x-adminlte-select2>
+          </div> --}}
+
+          <div class="col-6">
+              <x-adminlte-select2 name="id_regime" label="Regimen" igroup-size="md"
+                  data-placeholder="Seleccione una opcion...">
+                  <option />
+                  @foreach ($regimes as $regime)
+                      <option 
+                      value="{{ $regime->id }}"
+                      {{ (isset($routing->id_regime) && $routing->id_regime == $regime->id) || old('id_regime') == $regime->id ? 'selected' : '' }}
+                      >
+                      {{ $regime->code . ' - ( ' . $regime->description . ' )' }}
+                      </option>
+                  @endforeach
+              </x-adminlte-select2>
+          </div>
+
+          <div class="col-6">
+              <x-adminlte-select2 name="id_incoterms" label="Incoterms" igroup-size="md"
+                  data-placeholder="Seleccione una opcion...">
+                  <option />
+                  @foreach ($incoterms as $incoter)
+                      <option 
+                      value="{{ $incoter->id }}"
+                      {{ (isset($routing->id_incoterms) && $routing->id_incoterms == $incoter->id) || old('id_incoterms') == $incoter->id ? 'selected' : '' }}
+                      >{{ $incoter->code }}</option>
+                  @endforeach
+              </x-adminlte-select2>
+          </div>
+
+          <div class="col-12 mb-5">
+              <label for="wr_loading" class="bg-indigo w-100 px-2 py-1"> WR Loading </label>
+              <div class="form-group row justify-content-center">
+                  <label for="inputEmail3" class="col-sm-2 col-form-label">WR Loading:</label>
+                  <div class="col-sm-6">
+                      <input type="text" class="form-control" id="wr_loading" name="wr_loading"
+                          placeholder="Ingrese su WR...">
+                  </div>
+              </div>
+          </div>
+
+      </div>
+
+      <button class="btn btn-primary" onclick="stepper.next()">Siguiente</button>
   </div>
   <div id="test-l-2" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepper1trigger2">
-      <div class="form-group">
-          <label for="exampleInputPassword1">Password</label>
-          <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+
+
+      <div class="form-group row">
+          <label for="commodity" class="col-sm-2 col-form-label">Producto</label>
+          <div class="col-sm-10">
+              <input type="text" class="form-control @error('commodity') is-invalid @enderror" id="commodity" name="commodity"
+                  placeholder="Ingrese el producto.." value="{{ isset($routing) ? $routing->commodity : '' }}">
+                  @error('commodity')
+                  <span class="invalid-feedback d-block" role="alert">
+                      <strong>{{ $message }}</strong>
+                  </span>
+              @enderror
+          </div>
       </div>
-      <button class="btn btn-primary" onclick="stepper.previous()">Previous</button>
-      <button class="btn btn-primary" onclick="stepper.next()">Next</button>
-  </div>
-  <div id="test-l-3" role="tabpanel" class="bs-stepper-pane text-center" aria-labelledby="stepper1trigger3">
-      <button class="btn btn-primary mt-5" onclick="stepper.previous()">Previous</button>
-      <button type="submit" class="btn btn-primary mt-5" onclick="submitForm()">Submit</button>
-  </div>
+
+      <div class="form-group row">
+          <label for="nro_package" class="col-sm-2 col-form-label">N° Paquetes</label>
+          <div class="col-sm-10">
+              <input type="number" min="0" step="1" class="form-control" id="nro_package"
+                  name="nro_package" placeholder="Ingrese el nro de paquetes.." oninput="validarInputNumber(this)"
+                  value="{{ isset($routing) ? $routing->nro_package : '' }}">
+              @error('nro_package')
+                  <div class="text-danger">{{ $message }}</div>
+              @enderror
+          </div>
+      </div>
+
+      <div class="row">
+          <label for="total_gross_weight" class="w-100">Total peso bruto</label>
+          <hr class="w-100">
+
+          <div class="col-4">
+              <div class="form-group row">
+                  <label for="pounds" class="col-sm-4 col-form-label">Libras: </label>
+                  <div class="col-sm-8">
+                      <input type="text" class="form-control CurrencyInput" id="pounds" name="pounds"
+                          data-type="currency" placeholder="Ingrese el nro de paquetes.."
+                          value="{{ isset($routing) ? $routing->pounds : '' }}">
+                      @error('pounds')
+                          <div class="text-danger">{{ $message }}</div>
+                      @enderror
+                  </div>
+              </div>
+          </div>
+
+          <div class="col-4">
+              <div class="form-group row">
+                  <label for="kilograms" class="col-sm-4 col-form-label">Kilogramos: </label>
+                  <div class="col-sm-8">
+                      <input type="text" class="form-control CurrencyInput" id="kilograms" name="kilograms"
+                          data-type="currency" placeholder="Ingrese el nro de paquetes.."
+                          value="{{ isset($routing) ? $routing->kilograms : '' }}">
+                      @error('kilograms')
+                          <div class="text-danger">{{ $message }}</div>
+                      @enderror
+                  </div>
+              </div>
+          </div>
+
+          <div class="col-4">
+              <div class="form-group row">
+                  <label for="meassurement" class="col-sm-4 col-form-label">Medicion: </label>
+                  <div class="col-sm-8">
+                      <input type="text" class="form-control CurrencyInput" id="meassurement" name="meassurement"
+                          data-type="currency" placeholder="Ingrese el nro de paquetes.."
+                          value="{{ isset($routing) ? $routing->meassurement : '' }}">
+                      @error('meassurement')
+                          <div class="text-danger">{{ $message }}</div>
+                      @enderror
+                  </div>
+              </div>
+          </div>
+      </div>
+      <hr class="w-100">
+      <div class="form-group row">
+          <label for="hs_code" class="col-sm-2 col-form-label">H.S. Code</label>
+          <div class="col-sm-10">
+              <input type="number" min="0" step="1" class="form-control" id="hs_code"
+                  name="hs_code" placeholder="Ingrese el nro de paquetes.." oninput="validarInputNumber(this)"
+                  value="{{ isset($routing) ? $routing->hs_code : '' }}">
+              @error('hs_code')
+                  <div class="text-danger">{{ $message }}</div>
+              @enderror
+          </div>
+      </div>
+
+      <div class="form-group row">
+          <label for="observation" class="col-sm-2 col-form-label">Observacion</label>
+          <div class="col-sm-10">
+              <textarea name="observation" id="observation" class="form-control" cols="30" rows="5">
+
+          </textarea>
+              @error('observation')
+                  <div class="text-danger">{{ $message }}</div>
+              @enderror
+          </div>
+      </div>
 
 
-{{--     <div class="container text-center mt-5">
+
+      <button class="btn btn-secondary mt-5" onclick="stepper.previous()">Anterior</button>
+      <button type="submit" class="btn btn-indigo mt-5" onclick="submitForm()">Guardar</button>
+  </div>
+  {{--   <div id="test-l-3" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepper1trigger3">
+
+      <div class="row">
+
+          <div class="col-6">
+
+              <div class="form-group">
+                  <label for="freight_value">Valor del Flete</label>
+
+                  <div class="input-group">
+                      <div class="input-group-prepend">
+                          <span class="input-group-text text-bold">
+                              $
+                          </span>
+                      </div>
+                      <input type="text" class="form-control CurrencyInput" name="freight_value"
+                          data-type="currency" placeholder="Ingrese valor del flete">
+
+                      @error('freight_value')
+                          <div class="text-danger">{{ $message }}</div>
+                      @enderror
+                  </div>
+
+              </div>
+
+          </div>
+
+
+
+
+      </div>
+
+
+
+      
+  </div> --}}
+
+
+  {{--     <div class="container text-center mt-5">
         <input class="btn btn-primary" type="submit" value="{{ $formMode === 'edit' ? 'Actualizar' : 'Guardar' }}">
     </div>
  --}}

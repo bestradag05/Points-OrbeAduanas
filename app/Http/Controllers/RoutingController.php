@@ -74,7 +74,11 @@ class RoutingController extends Controller
     {
         //
 
-        dd($request->all());
+        
+        $this->validateForm($request, null );
+            
+
+        
     }
 
     /**
@@ -126,5 +130,28 @@ class RoutingController extends Controller
         }
 
         return $codigo;
+    }
+
+    public function validateForm($request, $id){
+        $request->validate([
+            'nro_operation' => 'required|string|unique:routing,nro_operation,' . $id,
+            'origin' => 'required|string',
+            'destination' => 'required|string',
+            'load_value' => 'required',
+            'id_customer' => 'required',
+            'id_shipper' => 'required',
+            'id_type_shipment' => 'required',
+            'id_regime' => 'required',
+            'id_incoterms' => 'required',
+            'wr_loading' => 'nullable',
+            'commodity' => 'required',
+            'nro_package' => 'nullable',
+            'pounds' => 'nullable',
+            'kilograms' => 'nullable',
+            'meassurement' => 'nullable',
+            'hs_code' => 'nullable',
+            'observation' => 'nullable'
+        ]);
+    
     }
 }

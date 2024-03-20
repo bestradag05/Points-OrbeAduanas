@@ -131,15 +131,15 @@
 
         function submitForm() {
             var form = document.getElementById('formRouting');
+
+            
             if (form.checkValidity()) {
                 // Aquí puedes enviar el formulario si la validación pasa
-                alert('Formulario enviado exitosamente');
+                form.submit();
             } else {
-                // Si hay campos inválidos, muestra los mensajes de error
-                form.classList.add('was-validated');
+
 
                 var invalidInputs = form.querySelectorAll(":invalid");
-                console.log(invalidInputs.length);
                 if (invalidInputs.length > 0) {
                     // Encuentra el contenedor del paso que contiene el campo de entrada inválido
                     var stepContainer = invalidInputs[0].closest('.content');
@@ -153,6 +153,13 @@
                     // Enfoca el primer campo de entrada inválido
                     invalidInputs[0].focus();
                 }
+            }
+        }
+
+
+        function validarInputNumber(input) {
+            if (input.value < 0) {
+                input.value = '';
             }
         }
     </script>

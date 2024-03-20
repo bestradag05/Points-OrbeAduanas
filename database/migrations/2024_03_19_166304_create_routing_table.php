@@ -27,6 +27,14 @@ return new class extends Migration
             $table->unsignedBigInteger('id_country');
             $table->unsignedBigInteger('id_incoterms');
             $table->unsignedBigInteger('id_shipper');
+            $table->string('commodity');
+            $table->string('nro_package')->nullable();
+            $table->decimal('pounds', 8, 2)->nullable();
+            $table->decimal('kilograms', 8, 2)->nullable();
+            $table->decimal('meassurement', 8, 2)->nullable();
+            $table->string('hs_code')->nullable();
+            $table->string('observation')->nullable();
+            $table->string('concepts')->nullable();
             $table->timestamps();
 
 
