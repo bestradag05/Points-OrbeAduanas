@@ -11,6 +11,7 @@ use App\Models\Personal;
 use App\Models\Regime;
 use App\Models\Routing;
 use App\Models\Shipper;
+use App\Models\TypeService;
 use App\Models\TypeShipment;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -35,6 +36,16 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('admin')
         ]);
 
+        Personal::create([
+            'name' => 'admin',
+            'last_name' => 'administrador',
+            'cellphone' => '966523654',
+            'email' => 'admin@orbeaduanas.com',
+            'dni' => '75214554',
+            'img_url' => 'user_default.png',
+            'id_user' => 1
+        ]);
+        
         Permission::create(['name' => 'users.create', 'alias' => 'Crear usuarios', 'guard_name' => 'web']);
         Permission::create(['name' => 'users.update', 'alias' => 'Actualizar usuarios', 'guard_name' => 'web']);
         Permission::create(['name' => 'users.delete', 'alias' => 'Eliminar usuarios', 'guard_name' => 'web']);
@@ -124,6 +135,15 @@ class DatabaseSeeder extends Seeder
         Modality::create(['name' => 'ANTICIPADO']);
         Modality::create([ 'name' => 'DIFERIDO']);
 
+        /* Type_Service */
+
+        TypeService::create(['name'=> 'Aduanas']);
+        TypeService::create(['name'=> 'Flete']);
+        TypeService::create(['name'=> 'Seguro']);
+        TypeService::create(['name'=> 'Transporte']);
+        TypeService::create(['name'=> 'Adicionales']);
+
+
 
         $this->call(CountrySeeder::class);
         $this->call(StatesCountrySeeder::class);
@@ -135,6 +155,6 @@ class DatabaseSeeder extends Seeder
           Personal::create(['name' => 'Anderson', 'last_name' => 'moron', 'cellphone' => '977234697', 'email' => 'liquidador@orbeaduanas.com', 'dni' => '73184116', 'immigration_card' => '', 'passport' => '', 'img_url' => '73184116.png', 'id_user' => 2]);
           Customer::create(['ruc' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'id_user' => 2]);
           Shipper::create(['type_id' => 'RUC', 'number_id' => '20554630740', 'name_businessname' => 'HENAN XINGSHENGDA', 'addres' => 'North section of renmin road, changge city', 'contact_name' => 'Asten Zho' , 'contact_number' => '944653246', 'contact_email' => 'asten@hnidel.com']);
-          Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU', 'destination' => 'CHINA', 'freight_value' => '2500', 'load_value' => '2700', 'insurance_value' => '25', 'id_personal' => 1, 'id_customer' => 1, 'id_type_shipment' => 1, 'id_modality' => 1, 'id_regime' => 1, 'id_country' => 144, 'id_incoterms' => 1, 'id_shipper' => 1 ]);
+          Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU - CALLAO', 'destination' => 'CHINA - SHANGAI', 'freight_value' => '2500', 'load_value' => '2700', 'insurance_value' => '25', 'id_personal' => 1, 'id_customer' => 1, 'id_type_shipment' => 1, 'id_modality' => 1, 'id_regime' => 1, 'id_incoterms' => 1, 'id_shipper' => 1, 'commodity' => 'CILINDRO']);
     }
 }

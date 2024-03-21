@@ -11,4 +11,41 @@ class Routing extends Model
 
 
     protected $table = 'routing';
+
+    protected $fillable = ['nro_operation', 'origin', 'destination', 'freight_value', 'load_value', 'insurance_value', 'id_personal', 'id_customer',
+                           'id_type_shipment', 'id_modality', 'id_regime', 'id_incoterms', 'id_shipper', 'commodity', 'nro_package', 'pounds', 'kilograms', 
+                            'meassurement', 'hs_code', 'observation', 'concepts'];
+
+    protected $casts = [
+    'load_value' => 'decimal:2',
+    ];
+
+
+    
+    public function type_shipment()
+    {
+        return $this->belongsTo(TypeShipment::class, 'id_type_shipment', 'id');
+    }
+
+    public function personal()
+    {
+        return $this->belongsTo(Personal::class, 'id_personal', 'id');
+    }
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'id_customer', 'id');
+    }
+
+    public function regime()
+    {
+        return $this->belongsTo(Regime::class, 'id_regime', 'id');
+    }
+
+    public function shipper()
+    {
+        return $this->belongsTo(Shipper::class, 'id_shipper', 'id');
+    }
+
+
 }

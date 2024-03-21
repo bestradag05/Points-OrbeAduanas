@@ -64,4 +64,5 @@ Route::middleware('auth')->group(function () {
     Route::resource('modality', ModalityController::class);
     Route::resource('custom', CustomController::class);
     Route::resource('routing', RoutingController::class);
+    Route::get('routing/{id_routing}/detail', [RoutingController::class, 'getTemplateDetailRouting']);
 });

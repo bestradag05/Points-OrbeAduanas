@@ -32,10 +32,9 @@
                   <option />
                   @foreach ($stateCountrys as $stateCountry)
                       <option
-                      {{ (isset($routing->destination) && $routing->destination == $stateCountry->country->name . ' - ' . $stateCountry->name) || old('destination') == $stateCountry->country->name . ' - ' . $stateCountry->name ? 'selected' : '' }}
-                      >
-                      {{ $stateCountry->country->name . ' - ' . $stateCountry->name }}
-                    </option>
+                          {{ (isset($routing->destination) && $routing->destination == $stateCountry->country->name . ' - ' . $stateCountry->name) || old('destination') == $stateCountry->country->name . ' - ' . $stateCountry->name ? 'selected' : '' }}>
+                          {{ $stateCountry->country->name . ' - ' . $stateCountry->name }}
+                      </option>
                   @endforeach
               </x-adminlte-select2>
 
@@ -74,12 +73,10 @@
                   data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($customers as $customer)
-                      <option
-                      value="{{$customer->id}}"
-                      {{ (isset($routing->id_customer) && $routing->id_customer == $customer->id) || old('id_customer') == $customer->id ? 'selected' : '' }}
-                      >
-                        {{ $customer->name_businessname }}
-                    </option>
+                      <option value="{{ $customer->id }}"
+                          {{ (isset($routing->id_customer) && $routing->id_customer == $customer->id) || old('id_customer') == $customer->id ? 'selected' : '' }}>
+                          {{ $customer->name_businessname }}
+                      </option>
                   @endforeach
               </x-adminlte-select2>
           </div>
@@ -89,12 +86,10 @@
                   data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($shippers as $shipper)
-                      <option
-                      value="{{ $shipper->id }}"
-                      {{ (isset($routing->id_shipper) && $routing->id_shipper == $shipper->id) || old('id_shipper') == $shipper->id ? 'selected' : '' }}
-                      >
-                        {{ $shipper->name_businessname }}
-                    </option>
+                      <option value="{{ $shipper->id }}"
+                          {{ (isset($routing->id_shipper) && $routing->id_shipper == $shipper->id) || old('id_shipper') == $shipper->id ? 'selected' : '' }}>
+                          {{ $shipper->name_businessname }}
+                      </option>
                   @endforeach
               </x-adminlte-select2>
           </div>
@@ -104,10 +99,8 @@
                   data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($type_shipments as $type_shipment)
-                      <option 
-                      value="{{ $type_shipment->id }}"
-                      {{ (isset($routing->id_type_shipment) && $routing->id_type_shipment == $type_shipment->id) || old('id_type_shipment') == $type_shipment->id ? 'selected' : '' }}
-                      >
+                      <option value="{{ $type_shipment->id }}"
+                          {{ (isset($routing->id_type_shipment) && $routing->id_type_shipment == $type_shipment->id) || old('id_type_shipment') == $type_shipment->id ? 'selected' : '' }}>
                           {{ $type_shipment->code . ' - ( ' . $type_shipment->description . ' )' }}</option>
                   @endforeach
               </x-adminlte-select2>
@@ -128,11 +121,9 @@
                   data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($regimes as $regime)
-                      <option 
-                      value="{{ $regime->id }}"
-                      {{ (isset($routing->id_regime) && $routing->id_regime == $regime->id) || old('id_regime') == $regime->id ? 'selected' : '' }}
-                      >
-                      {{ $regime->code . ' - ( ' . $regime->description . ' )' }}
+                      <option value="{{ $regime->id }}"
+                          {{ (isset($routing->id_regime) && $routing->id_regime == $regime->id) || old('id_regime') == $regime->id ? 'selected' : '' }}>
+                          {{ $regime->code . ' - ( ' . $regime->description . ' )' }}
                       </option>
                   @endforeach
               </x-adminlte-select2>
@@ -143,10 +134,9 @@
                   data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($incoterms as $incoter)
-                      <option 
-                      value="{{ $incoter->id }}"
-                      {{ (isset($routing->id_incoterms) && $routing->id_incoterms == $incoter->id) || old('id_incoterms') == $incoter->id ? 'selected' : '' }}
-                      >{{ $incoter->code }}</option>
+                      <option value="{{ $incoter->id }}"
+                          {{ (isset($routing->id_incoterms) && $routing->id_incoterms == $incoter->id) || old('id_incoterms') == $incoter->id ? 'selected' : '' }}>
+                          {{ $incoter->code }}</option>
                   @endforeach
               </x-adminlte-select2>
           </div>
@@ -172,9 +162,10 @@
       <div class="form-group row">
           <label for="commodity" class="col-sm-2 col-form-label">Producto</label>
           <div class="col-sm-10">
-              <input type="text" class="form-control @error('commodity') is-invalid @enderror" id="commodity" name="commodity"
-                  placeholder="Ingrese el producto.." value="{{ isset($routing) ? $routing->commodity : '' }}">
-                  @error('commodity')
+              <input type="text" class="form-control @error('commodity') is-invalid @enderror" id="commodity"
+                  name="commodity" placeholder="Ingrese el producto.."
+                  value="{{ isset($routing->commodity) ? $routing->commodity : old('commodity') }}">
+              @error('commodity')
                   <span class="invalid-feedback d-block" role="alert">
                       <strong>{{ $message }}</strong>
                   </span>
@@ -216,11 +207,13 @@
               <div class="form-group row">
                   <label for="kilograms" class="col-sm-4 col-form-label">Kilogramos: </label>
                   <div class="col-sm-8">
-                      <input type="text" class="form-control CurrencyInput" id="kilograms" name="kilograms"
+                      <input type="text" class="form-control CurrencyInput @error('kilograms') is-invalid @enderror" id="kilograms" name="kilograms"
                           data-type="currency" placeholder="Ingrese el nro de paquetes.."
-                          value="{{ isset($routing) ? $routing->kilograms : '' }}">
+                          value="{{ isset($routing->kilograms) ? $routing->kilograms : old('kilograms') }}">
                       @error('kilograms')
-                          <div class="text-danger">{{ $message }}</div>
+                          <span class="invalid-feedback d-block" role="alert">
+                              <strong>{{ $message }}</strong>
+                          </span>
                       @enderror
                   </div>
               </div>
@@ -230,11 +223,13 @@
               <div class="form-group row">
                   <label for="meassurement" class="col-sm-4 col-form-label">Medicion: </label>
                   <div class="col-sm-8">
-                      <input type="text" class="form-control CurrencyInput" id="meassurement" name="meassurement"
+                      <input type="text" class="form-control CurrencyInput @error('meassurement') is-invalid @enderror" id="meassurement" name="meassurement"
                           data-type="currency" placeholder="Ingrese el nro de paquetes.."
-                          value="{{ isset($routing) ? $routing->meassurement : '' }}">
+                          value="{{ isset($routing->meassurement) ? $routing->meassurement : old('meassurement') }}">
                       @error('meassurement')
-                          <div class="text-danger">{{ $message }}</div>
+                          <span class="invalid-feedback d-block" role="alert">
+                              <strong>{{ $message }}</strong>
+                          </span>
                       @enderror
                   </div>
               </div>

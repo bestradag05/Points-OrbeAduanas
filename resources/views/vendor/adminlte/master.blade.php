@@ -113,58 +113,6 @@
     @stack('scripts')
 
     <script src="{{ asset('js/formatInputCurren.js') }}"></script>
-    <script>
-        var stepper1Node = document.querySelector('#stepper');
-        var stepper = new Stepper(document.querySelector('#stepper'));
-
-
-
-
-        stepper1Node.addEventListener('show.bs-stepper', function(event) {
-
-
-        })
-        stepper1Node.addEventListener('shown.bs-stepper', function(event) {
-
-        })
-
-
-        function submitForm() {
-            var form = document.getElementById('formRouting');
-
-            
-            if (form.checkValidity()) {
-                // Aquí puedes enviar el formulario si la validación pasa
-                form.submit();
-            } else {
-
-
-                var invalidInputs = form.querySelectorAll(":invalid");
-                if (invalidInputs.length > 0) {
-                    // Encuentra el contenedor del paso que contiene el campo de entrada inválido
-                    var stepContainer = invalidInputs[0].closest('.content');
-
-                    // Encuentra el índice del paso correspondiente
-                    var stepIndex = Array.from(stepContainer.parentElement.children).indexOf(stepContainer);
-
-                    // Cambia el stepper al paso correspondiente
-                    stepper.to(stepIndex);
-
-                    // Enfoca el primer campo de entrada inválido
-                    invalidInputs[0].focus();
-                }
-            }
-        }
-
-
-        function validarInputNumber(input) {
-            if (input.value < 0) {
-                input.value = '';
-            }
-        }
-    </script>
-
-
 
 
 </body>

@@ -10,8 +10,10 @@ use App\Models\Regime;
 use App\Models\Routing;
 use App\Models\Shipper;
 use App\Models\StateCountry;
+use App\Models\TypeService;
 use App\Models\TypeShipment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RoutingController extends Controller
 {
@@ -23,12 +25,15 @@ class RoutingController extends Controller
         // Listamos los routing
 
         $routings = Routing::all();
+        $routings->load('type_shipment', 'personal');
 
         $heads = [
             '#',
             'N° de operacion',
             'Origen',
             'Destino',
+            'Tipo de embarque',
+            'Asesor Comercial',
             'Acciones'
         ];
 
@@ -72,13 +77,44 @@ class RoutingController extends Controller
      */
     public function store(Request $request)
     {
-        //
-
+        // Creamos un routing
         
         $this->validateForm($request, null );
+        
+        Routing::create([
+            'nro_operation' => $request->nro_operation,
+            'origin' => $request->origin,
+            'destination' => $request->destination,
+            'load_value' => $this->parseDouble($request->load_value),
+            'id_customer' => $request->id_customer,
+            'id_shipper' => $request->id_shipper,
+            'id_type_shipment' => $request->id_type_shipment,
+            'id_regime' => $request->id_regime,
+            'id_incoterms' => $request->id_incoterms,
+            'wr_loading' => $request->wr_loading,
+            'commodity' => $request->commodity,
+            'nro_package' => $request->nro_package,
+            'pounds' => $request->pounds,
+            'kilograms' => $this->parseDouble($request->kilograms),
+            'meassurement' => $this->parseDouble($request->meassurement),
+            'hs_code' => $request->hs_code,
+            'nro_operation' => $request->nro_operation,
+            'observation' => $request->observation,
+            'id_personal' => auth()->user()->personal->id,
             
 
-        
+        ]);
+
+    
+        return redirect('routing');
+            
+    }
+
+    public function parseDouble($num){
+
+        $valorDecimal = (float)str_replace(',', '', $num);
+
+        return $valorDecimal;
     }
 
     /**
@@ -132,6 +168,17 @@ class RoutingController extends Controller
         return $codigo;
     }
 
+
+    public function getTemplateDetailRouting($id){
+
+        $routing = Routing::find($id);
+        $routing->load('customer', 'type_shipment', 'regime', 'shipper');
+        $type_services = TypeService::all();
+
+        
+        return view('routing/detail-routing', compact('routing', 'type_services'));
+    }
+
     public function validateForm($request, $id){
         $request->validate([
             'nro_operation' => 'required|string|unique:routing,nro_operation,' . $id,
@@ -147,8 +194,8 @@ class RoutingController extends Controller
             'commodity' => 'required',
             'nro_package' => 'nullable',
             'pounds' => 'nullable',
-            'kilograms' => 'nullable',
-            'meassurement' => 'nullable',
+            'kilograms' => 'required',
+            'meassurement' => 'required',
             'hs_code' => 'nullable',
             'observation' => 'nullable'
         ]);

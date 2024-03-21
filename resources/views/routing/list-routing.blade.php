@@ -14,8 +14,15 @@
         @foreach ($routings as $routing)
             <tr>
                 <td>{{ $loop->iteration }}</td>
-                <td>{{ $routing->code }}</td>
-                <td>{{ $routing->description }}</td>
+                <td>
+                    <a href="{{ url('/routing/'. $routing->id . '/detail') }}">
+                        {{ $routing->nro_operation }}
+                    </a>
+                </td>
+                <td class="text-uppercase">{{ $routing->origin }}</td>
+                <td class="text-uppercase">{{ $routing->destination }}</td>
+                <td>{{ $routing->type_shipment->description }}</td>
+                <td>{{ $routing->personal->name }}</td>
         
                 <td>
                      <a href="{{ url('/routing/'. $routing->id . '/edit') }}"> <i class="fa-solid fa-pen-to-square"></i> </a>
