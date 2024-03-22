@@ -66,7 +66,7 @@
             </h5>
 
             <x-adminlte-select2 name="type_service" igroup-size="md" data-placeholder="Seleccione una opcion..."
-                onchange="openModalForm()">
+                onchange="openModalForm(this)">
                 <option />
                 @foreach ($type_services as $type_service)
                     <option> {{ $type_service->name }} </option>
@@ -83,90 +83,8 @@
             </table>
 
 
-            {{-- Minimal --}}
-            <x-adminlte-modal id="modalFlete" title="Minimal" size='lg'>
+            @include('routing/modals/modalsServices')
 
-                <div class="form-group">
-                    <label for="freight_value">Valor del Flete</label>
-
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text text-bold">
-                                $
-                            </span>
-                        </div>
-                        <input type="text" class="form-control CurrencyInput" name="freight_value" data-type="currency"
-                            placeholder="Ingrese valor del flete">
-
-                        @error('freight_value')
-                            <div class="text-danger">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                </div>
-                {{-- 
-                <div class="row">
-                    <div class="col-6">
-                        <x-adminlte-select2 name="type_insurance" label="Tipo de seguro" igroup-size="md"
-                            data-placeholder="Seleccione una opcion...">
-                            <option />
-                            <option>Seguro A</option>
-                            <option>Seguro B</option>
-                        </x-adminlte-select2>
-                    </div>
-                    <div class="col-6">
-                        <div class="form-group">
-                            <label for="load_value">Valor del seguro</label>
-
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text text-bold @error('value_insurance') is-invalid @enderror">
-                                        $
-                                    </span>
-                                </div>
-                                <input type="text"
-                                    class="form-control CurrencyInput @error('value_insurance') is-invalid @enderror "
-                                    name="value_insurance" data-type="currency" placeholder="Ingrese valor de la carga"
-                                    value="{{ isset($routing->value_insurance) ? $routing->value_insurance : old('value_insurance') }}">
-                            </div>
-                            @error('value_insurance')
-                                <span class="invalid-feedback d-block" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-
-                        </div>
-                    </div>
-                </div> --}}
-
-
-                <div class="row">
-                    <div class="col-4">
-
-                        <div class="form-group">
-                            <label for="nro_operation">Concepto</label>
-                            <input type="text" class="form-control" id="nro_operation" name="nro_operation"
-                                placeholder="Ingrese el numero de operacion">
-                        </div>
-
-                    </div>
-                    <div class="col-4">
-                        <div class="form-group">
-                            <label for="nro_operation">Valor del Concepto</label>
-                            <input type="text" class="form-control" id="nro_operation" name="nro_operation"
-                                placeholder="Ingrese el numero de operacion">
-                        </div>
-
-                    </div>
-                    <div class="col-4 d-flex align-items-center pt-3">
-                        <button class="btn btn-indigo">
-                            Agregar
-                        </button>
-
-                    </div>
-                </div>
-
-            </x-adminlte-modal>
 
 
         </div>
@@ -182,8 +100,160 @@
 
 @push('scripts')
     <script>
-        function openModalForm() {
-            $('#modalFlete').modal('show');
+        const conceptsArray = {};
+        let TotalConcepts = 0;
+        let total = 0;
+        let flete = 0;
+        let seguro = 0;
+
+        $('#modalFlete').on('hidden.bs.modal', function(e) {
+ 
+        });
+
+        function openModalForm(element) {
+            
+            $(`#modal${element.value}`).modal('show');
+            
+        }
+
+
+        function updateFleteTotal(element) {
+            console.log("ejecutando cambio flete");
+            if (element.value === "") {
+                flete = 0;
+            } else {
+                flete = parseFloat(element.value);
+            }
+
+            calcTotal(TotalConcepts, flete, seguro);
+        }
+
+
+        function updateInsuranceTotal(element) {
+            if (element.value === "") {
+                seguro = 0;
+            } else {
+                seguro = parseFloat(element.value);
+            }
+
+            calcTotal(TotalConcepts, flete, seguro);
+        }
+
+        function enableInsurance(checkbox) {
+
+            const contenedorInsurance = $('#contentInsurance');
+
+            if (checkbox.checked) {
+                contenedorInsurance.addClass('d-flex').removeClass('d-none');
+            } else {
+                contenedorInsurance.addClass('d-none').removeClass('d-flex');
+                contenedorInsurance.find("input").val('');
+            }
+        }
+
+
+        $('.formConcepts').submit(function(e) {
+            e.preventDefault();
+
+            const inputs = $(this).find('input');
+
+            // Busca todos los campos de entrada dentro del formulario
+            inputs.each(function(index, input) {
+                // Verifica si el campo de entrada está vacío
+                if ($(this).val() === '') {
+                    // Si está vacío, agrega la clase 'is-invalid'
+                    $(this).addClass('is-invalid');
+
+                } else {
+                    // Si no está vacío, remueve la clase 'is-invalid' (en caso de que esté presente)
+                    $(this).removeClass('is-invalid');
+
+                }
+            });
+
+
+            // Verifica si hay algún campo con la clase 'is-invalid'
+            var camposInvalidos = $(this).find('.is-invalid').length;
+
+            if (camposInvalidos === 0) {
+                // Si no hay campos inválidos, envía el formulario
+
+                conceptsArray[inputs[0].value] = inputs[1].value;
+
+                /*  let freight = $('#freight_value').val();
+                 let freight = $('#freight_value').val(); */
+
+                updateTable(conceptsArray, e.target.id);
+
+                inputs[0].value = '';
+                inputs[1].value = '';
+
+
+
+            }
+        })
+
+
+        function updateTable(conceptsArray, form) {
+
+            let tbodyRouting = $(`#${form}`).find('tbody')[0];
+
+            tbodyRouting.innerHTML = '';
+            TotalConcepts = 0;
+
+
+            var contador = 0;
+
+            for (var clave in conceptsArray) {
+                if (conceptsArray.hasOwnProperty(clave)) {
+                    contador++; // Incrementar el contador en cada iteración
+
+                    // Crear una nueva fila
+                    var fila = tbodyRouting.insertRow();
+
+                    // Insertar el número de iteración en la primera celda de la fila
+                    var celdaNumero = fila.insertCell(0);
+                    celdaNumero.textContent = contador;
+
+                    // Insertar la clave en la segunda celda de la fila
+                    var celdaClave = fila.insertCell(1);
+                    celdaClave.textContent = clave;
+
+                    // Insertar el valor en la tercera celda de la fila
+                    var celdaValor = fila.insertCell(2);
+                    celdaValor.textContent = conceptsArray[clave];
+
+
+                    // Insertar un botón para eliminar la fila en la cuarta celda de la fila
+                    var celdaEliminar = fila.insertCell(3);
+                    var botonEliminar = document.createElement('a');
+                    botonEliminar.href = '#';
+                    botonEliminar.innerHTML = '<i class="fa-solid fa-ban text-danger"></i>';
+                    botonEliminar.addEventListener('click', function() {
+                        // Eliminar la fila correspondiente al hacer clic en el botón
+                        var fila = this.parentNode.parentNode;
+                        var indice = fila.rowIndex -
+                            1; // Restar 1 porque el índice de las filas en tbody comienza en 0
+                        delete conceptsArray[Object.keys(conceptsArray)[indice]];
+                        updateTable(conceptsArray);
+                    });
+                    celdaEliminar.appendChild(botonEliminar);
+
+                    TotalConcepts += parseFloat(conceptsArray[clave]);
+
+                }
+            }
+
+            calcTotal(TotalConcepts, flete, seguro);
+
+        }
+
+
+        function calcTotal(TotalConcepts, flete, seguro) {
+            total = TotalConcepts + flete + seguro;
+
+            $('#total').val(total.toFixed(2));
+
         }
     </script>
 @endpush
