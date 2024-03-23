@@ -100,32 +100,41 @@
 
 @push('scripts')
     <script>
-        const conceptsArray = {};
+        let conceptsArray = {};
         let TotalConcepts = 0;
         let total = 0;
         let flete = 0;
         let seguro = 0;
 
-        $('#modalFlete').on('hidden.bs.modal', function(e) {
- 
+        $('.modal').on('hidden.bs.modal', function(e) {
+            conceptsArray = {};
+            TotalConcepts = 0;
+            total = 0;
+            flete = 0;
+            seguro = 0;
+
+            updateTable(conceptsArray, e.target.id);
+
         });
 
         function openModalForm(element) {
-            
+
             $(`#modal${element.value}`).modal('show');
-            
+
         }
 
 
         function updateFleteTotal(element) {
-            console.log("ejecutando cambio flete");
+            
             if (element.value === "") {
                 flete = 0;
             } else {
                 flete = parseFloat(element.value);
             }
 
-            calcTotal(TotalConcepts, flete, seguro);
+            let content = getModal(element.id);
+
+            calcTotal(TotalConcepts, flete, seguro, content.id);
         }
 
 
@@ -136,12 +145,15 @@
                 seguro = parseFloat(element.value);
             }
 
-            calcTotal(TotalConcepts, flete, seguro);
+            let content = getModal(element.id);
+
+            calcTotal(TotalConcepts, flete, seguro, content.id);
         }
 
         function enableInsurance(checkbox) {
 
-            const contenedorInsurance = $('#contentInsurance');
+            console.log(checkbox.id);
+            const contenedorInsurance = $(`#content_${checkbox.id}`);
 
             if (checkbox.checked) {
                 contenedorInsurance.addClass('d-flex').removeClass('d-none');
@@ -180,23 +192,19 @@
 
                 conceptsArray[inputs[0].value] = inputs[1].value;
 
-                /*  let freight = $('#freight_value').val();
-                 let freight = $('#freight_value').val(); */
+                let content = getModal(e.target.id);
 
-                updateTable(conceptsArray, e.target.id);
+                updateTable(conceptsArray, content.id);
 
                 inputs[0].value = '';
                 inputs[1].value = '';
-
-
-
             }
-        })
+        });
 
 
-        function updateTable(conceptsArray, form) {
+        function updateTable(conceptsArray, idContent) {
 
-            let tbodyRouting = $(`#${form}`).find('tbody')[0];
+            let tbodyRouting = $(`#${idContent}`).find('tbody')[0];
 
             tbodyRouting.innerHTML = '';
             TotalConcepts = 0;
@@ -230,12 +238,13 @@
                     botonEliminar.href = '#';
                     botonEliminar.innerHTML = '<i class="fa-solid fa-ban text-danger"></i>';
                     botonEliminar.addEventListener('click', function() {
+
                         // Eliminar la fila correspondiente al hacer clic en el botón
                         var fila = this.parentNode.parentNode;
                         var indice = fila.rowIndex -
                             1; // Restar 1 porque el índice de las filas en tbody comienza en 0
                         delete conceptsArray[Object.keys(conceptsArray)[indice]];
-                        updateTable(conceptsArray);
+                        updateTable(conceptsArray, idContent);
                     });
                     celdaEliminar.appendChild(botonEliminar);
 
@@ -244,16 +253,30 @@
                 }
             }
 
-            calcTotal(TotalConcepts, flete, seguro);
+            calcTotal(TotalConcepts, flete, seguro, idContent);
 
         }
 
 
-        function calcTotal(TotalConcepts, flete, seguro) {
+        function calcTotal(TotalConcepts, flete, seguro, idContent) {
+
             total = TotalConcepts + flete + seguro;
 
-            $('#total').val(total.toFixed(2));
+           
 
+            //Buscamos dentro del contenedor el campo total
+
+            let inputTotal = $(`#${idContent}`).find('#total');
+
+            console.log($(`#${ idContent}`));
+
+            inputTotal.val(total.toFixed(2));
+
+        }
+
+
+        function getModal(idElement) {
+            return $(`#${idElement}`).closest('.modal')[0];
         }
     </script>
 @endpush

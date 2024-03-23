@@ -1,8 +1,8 @@
             {{-- Aduanas --}}
-            <x-adminlte-modal id="modalAduanas" title="Aduana" size='lg' scrollable>
+            <x-adminlte-modal id="modalAduanas" class="modal" title="Aduana" size='lg' scrollable>
 
                 <div class="form-group">
-                    <label for="freight_value">Valor de aduanas</label>
+                    <label for="custom_value">Valor de aduanas</label>
 
                     <div class="input-group">
                         <div class="input-group-prepend">
@@ -10,11 +10,11 @@
                                 $
                             </span>
                         </div>
-                        <input type="text" class="form-control CurrencyInput" id="freight_value" name="freight_value"
+                        <input type="text" class="form-control CurrencyInput" id="custom_value" name="custom_value"
                             onchange="updateFleteTotal(this)" data-type="currency"
                             placeholder="Ingrese valor del flete">
 
-                        @error('freight_value')
+                        @error('custom_value')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
@@ -29,7 +29,7 @@
                     </div>
                 </div>
 
-                <div class="row d-none" id="contentInsurance">
+                <div class="row d-none" id="content_seguroAduanasSwitch1">
                     <div class="col-6">
                         <x-adminlte-select2 name="type_insurance" label="Tipo de seguro" igroup-size="md"
                             data-placeholder="Seleccione una opcion...">
@@ -51,7 +51,7 @@
                                 </div>
                                 <input type="text"
                                     class="form-control CurrencyInput @error('value_insurance') is-invalid @enderror "
-                                    name="value_insurance" data-type="currency" placeholder="Ingrese valor de la carga"
+                                    name="value_insurance" id="value_insurance" data-type="currency" placeholder="Ingrese valor de la carga"
                                     onchange="updateInsuranceTotal(this)">
                             </div>
                             @error('value_insurance')
@@ -106,24 +106,27 @@
                                 <th>x</th>
                             </tr>
                         </thead>
-                        <tbody id="tbodyRouting">
+                        <tbody id="tbodyAduanas">
 
 
                         </tbody>
                     </table>
 
-                </form>
+                    <div class="row w-100 justify-content-end">
 
-                <div class="row w-100 justify-content-end">
-
-                    <div class="col-4 row">
-                        <label for="total" class="col-sm-4 col-form-label">Total:</label>
-                        <div class="col-sm-8">
-                            <input type="text" class="form-control" id="total" @readonly(true)>
+                        <div class="col-4 row">
+                            <label for="total" class="col-sm-4 col-form-label">Total:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="total" value="0.00"
+                                    @readonly(true)>
+                            </div>
                         </div>
+
                     </div>
 
-                </div>
+
+                </form>
+
 
                 <x-slot name="footerSlot">
                     <x-adminlte-button class=" btn-indigo" label="Guardar" />
@@ -132,11 +135,8 @@
 
             </x-adminlte-modal>
 
-
-
-
             {{-- Flete --}}
-            <x-adminlte-modal id="modalFlete" title="Flete" size='lg' scrollable>
+            <x-adminlte-modal id="modalFlete" class="modal" title="Flete" size='lg' scrollable>
 
                 <div class="form-group">
                     <label for="freight_value">Valor del Flete</label>
@@ -147,8 +147,8 @@
                                 $
                             </span>
                         </div>
-                        <input type="text" class="form-control CurrencyInput" id="freight_value" name="freight_value"
-                            onchange="updateFleteTotal(this)" data-type="currency"
+                        <input type="text" class="form-control CurrencyInput" id="freight_value"
+                            name="freight_value" onchange="updateFleteTotal(this)" data-type="currency"
                             placeholder="Ingrese valor del flete">
 
                         @error('freight_value')
@@ -166,7 +166,7 @@
                     </div>
                 </div>
 
-                <div class="row d-none" id="contentInsurance">
+                <div class="row d-none" id="content_seguroFleteSwitch1">
                     <div class="col-6">
                         <x-adminlte-select2 name="type_insurance" label="Tipo de seguro" igroup-size="md"
                             data-placeholder="Seleccione una opcion...">
@@ -188,7 +188,7 @@
                                 </div>
                                 <input type="text"
                                     class="form-control CurrencyInput @error('value_insurance') is-invalid @enderror "
-                                    name="value_insurance" data-type="currency"
+                                    name="value_insurance" id="value_insurance" data-type="currency"
                                     placeholder="Ingrese valor de la carga" onchange="updateInsuranceTotal(this)">
                             </div>
                             @error('value_insurance')
@@ -243,24 +243,28 @@
                                 <th>x</th>
                             </tr>
                         </thead>
-                        <tbody id="tbodyRouting">
+                        <tbody id="tbodyFlete">
 
 
                         </tbody>
                     </table>
 
-                </form>
 
-                <div class="row w-100 justify-content-end">
+                    <div class="row w-100 justify-content-end">
 
-                    <div class="col-4 row">
-                        <label for="total" class="col-sm-4 col-form-label">Total:</label>
-                        <div class="col-sm-8">
-                            <input type="text" class="form-control" id="total" @readonly(true)>
+                        <div class="col-4 row">
+                            <label for="total" class="col-sm-4 col-form-label">Total:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="total" value="0.00"
+                                    @readonly(true)>
+                            </div>
                         </div>
+
                     </div>
 
-                </div>
+                </form>
+
+
 
                 <x-slot name="footerSlot">
                     <x-adminlte-button class=" btn-indigo" label="Guardar" />
@@ -269,13 +273,11 @@
 
             </x-adminlte-modal>
 
-
-
             {{-- Seguro --}}
-            <x-adminlte-modal id="modalSeguro" title="Seguro" size='lg' scrollable>
+            <x-adminlte-modal id="modalSeguro" class="modal" title="Seguro" size='lg' scrollable>
 
                 <div class="form-group">
-                    <label for="freight_value">Valor del Flete</label>
+                    <label for="insurance_value">Valor del Seguro</label>
 
                     <div class="input-group">
                         <div class="input-group-prepend">
@@ -283,11 +285,11 @@
                                 $
                             </span>
                         </div>
-                        <input type="text" class="form-control CurrencyInput" id="freight_value"
-                            name="freight_value" onchange="updateFleteTotal(this)" data-type="currency"
+                        <input type="text" class="form-control CurrencyInput" id="insurance_value"
+                            name="insurance_value" onchange="updateFleteTotal(this)" data-type="currency"
                             placeholder="Ingrese valor del flete">
 
-                        @error('freight_value')
+                        @error('insurance_value')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
@@ -302,7 +304,7 @@
                     </div>
                 </div>
 
-                <div class="row d-none" id="contentInsurance">
+                <div class="row d-none" id="content_seguroSwitch1">
                     <div class="col-6">
                         <x-adminlte-select2 name="type_insurance" label="Tipo de seguro" igroup-size="md"
                             data-placeholder="Seleccione una opcion...">
@@ -379,24 +381,24 @@
                                 <th>x</th>
                             </tr>
                         </thead>
-                        <tbody id="tbodyRouting">
+                        <tbody id="tbodySeguro">
 
 
                         </tbody>
                     </table>
 
-                </form>
+                    <div class="row w-100 justify-content-end">
 
-                <div class="row w-100 justify-content-end">
-
-                    <div class="col-4 row">
-                        <label for="total" class="col-sm-4 col-form-label">Total:</label>
-                        <div class="col-sm-8">
-                            <input type="text" class="form-control" id="total" @readonly(true)>
+                        <div class="col-4 row">
+                            <label for="total" class="col-sm-4 col-form-label">Total:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="total" value="0.00" @readonly(true)>
+                            </div>
                         </div>
+
                     </div>
 
-                </div>
+                </form>
 
                 <x-slot name="footerSlot">
                     <x-adminlte-button class=" btn-indigo" label="Guardar" />
@@ -406,10 +408,10 @@
             </x-adminlte-modal>
 
             {{-- Transporte --}}
-            <x-adminlte-modal id="modalTransporte" title="Transporte" size='lg' scrollable>
+            <x-adminlte-modal id="modalTransporte" class="modal" title="Transporte" size='lg' scrollable>
 
                 <div class="form-group">
-                    <label for="freight_value">Valor del Flete</label>
+                    <label for="transport_value">Valor del Transporte</label>
 
                     <div class="input-group">
                         <div class="input-group-prepend">
@@ -417,11 +419,11 @@
                                 $
                             </span>
                         </div>
-                        <input type="text" class="form-control CurrencyInput" id="freight_value"
-                            name="freight_value" onchange="updateFleteTotal(this)" data-type="currency"
+                        <input type="text" class="form-control CurrencyInput" id="transport_value"
+                            name="transport_value" onchange="updateFleteTotal(this)" data-type="currency"
                             placeholder="Ingrese valor del flete">
 
-                        @error('freight_value')
+                        @error('transport_value')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
@@ -436,7 +438,7 @@
                     </div>
                 </div>
 
-                <div class="row d-none" id="contentInsurance">
+                <div class="row d-none" id="content_seguroTransporteSwitch1">
                     <div class="col-6">
                         <x-adminlte-select2 name="type_insurance" label="Tipo de seguro" igroup-size="md"
                             data-placeholder="Seleccione una opcion...">
@@ -513,24 +515,24 @@
                                 <th>x</th>
                             </tr>
                         </thead>
-                        <tbody id="tbodyRouting">
+                        <tbody id="tbodyTransporte">
 
 
                         </tbody>
                     </table>
 
-                </form>
+                    <div class="row w-100 justify-content-end">
 
-                <div class="row w-100 justify-content-end">
-
-                    <div class="col-4 row">
-                        <label for="total" class="col-sm-4 col-form-label">Total:</label>
-                        <div class="col-sm-8">
-                            <input type="text" class="form-control" id="total" @readonly(true)>
+                        <div class="col-4 row">
+                            <label for="total" class="col-sm-4 col-form-label">Total:</label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control" id="total" value="0.00" @readonly(true)>
+                            </div>
                         </div>
+
                     </div>
 
-                </div>
+                </form>
 
                 <x-slot name="footerSlot">
                     <x-adminlte-button class=" btn-indigo" label="Guardar" />
