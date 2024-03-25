@@ -137,7 +137,7 @@
 
             {{-- Flete --}}
             <x-adminlte-modal id="modalFlete" class="modal" title="Flete" size='lg' scrollable>
-                <form action="">
+                <form>
 
                     <div class="form-group">
                         <label for="freight_value">Valor del Flete</label>
@@ -269,7 +269,7 @@
 
 
                     <x-slot name="footerSlot">
-                        <x-adminlte-button class=" btn-indigo" label="Guardar" />
+                        <button class="btn btn-indigo" type="submit"> Guardar </button>
                         <x-adminlte-button theme="secondary" label="cerrar" data-dismiss="modal" />
                     </x-slot>
 

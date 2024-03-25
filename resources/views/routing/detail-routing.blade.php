@@ -196,8 +196,6 @@
             // Verifica si hay algún campo con la clase 'is-invalid'
             var camposInvalidos = divConcepts.find('.is-invalid').length;
 
-            console.log(camposInvalidos);
-
             if (camposInvalidos === 0) {
                 // Si no hay campos inválidos, envía el formulario
 
