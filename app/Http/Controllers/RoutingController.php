@@ -68,7 +68,8 @@ class RoutingController extends Controller
             'modalitys',
             'regimes',
             'incoterms',
-            'shippers'
+            'shippers',
+            'type_services'
         ));
     }
 

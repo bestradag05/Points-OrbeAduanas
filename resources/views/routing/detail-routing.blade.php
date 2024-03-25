@@ -69,7 +69,7 @@
                 onchange="openModalForm(this)">
                 <option />
                 @foreach ($type_services as $type_service)
-                    <option> {{ $type_service->name }} </option>
+                    <option value="{{ $type_service->id }}"> {{ $type_service->name }} </option>
                 @endforeach
             </x-adminlte-select2>
 
@@ -115,17 +115,38 @@
 
             updateTable(conceptsArray, e.target.id);
 
+            $(`#${e.target.id}`).find('form')[0].reset();
+            $('.contentInsurance').addClass('d-none').removeClass('d-flex');
+
         });
 
-        function openModalForm(element) {
+        function enableInsurance(checkbox) {
 
-            $(`#modal${element.value}`).modal('show');
+            const contenedorInsurance = $(`#content_${checkbox.id}`);
+
+            if (checkbox.checked) {
+                contenedorInsurance.addClass('d-flex').removeClass('d-none');
+            } else {
+                contenedorInsurance.addClass('d-none').removeClass('d-flex');
+                contenedorInsurance.find("input").val('');
+                contenedorInsurance.find('select').val('');
+            }
+        }
+
+
+        function openModalForm(element) {
+            let selected = element.options[element.selectedIndex].text;
+            $(`#modal${selected}`).modal('show');
+            console.log(element.value);
+            element.value = '';
 
         }
 
 
         function updateFleteTotal(element) {
-            
+
+            console.log(element);
+
             if (element.value === "") {
                 flete = 0;
             } else {
@@ -150,24 +171,12 @@
             calcTotal(TotalConcepts, flete, seguro, content.id);
         }
 
-        function enableInsurance(checkbox) {
 
-            console.log(checkbox.id);
-            const contenedorInsurance = $(`#content_${checkbox.id}`);
+        function addConcept(buton) {
 
-            if (checkbox.checked) {
-                contenedorInsurance.addClass('d-flex').removeClass('d-none');
-            } else {
-                contenedorInsurance.addClass('d-none').removeClass('d-flex');
-                contenedorInsurance.find("input").val('');
-            }
-        }
+            let divConcepts = $(`#${buton.id}`).closest('.formConcepts');
 
-
-        $('.formConcepts').submit(function(e) {
-            e.preventDefault();
-
-            const inputs = $(this).find('input');
+            const inputs = divConcepts.find('input');
 
             // Busca todos los campos de entrada dentro del formulario
             inputs.each(function(index, input) {
@@ -185,21 +194,23 @@
 
 
             // Verifica si hay algún campo con la clase 'is-invalid'
-            var camposInvalidos = $(this).find('.is-invalid').length;
+            var camposInvalidos = divConcepts.find('.is-invalid').length;
+
+            console.log(camposInvalidos);
 
             if (camposInvalidos === 0) {
                 // Si no hay campos inválidos, envía el formulario
 
                 conceptsArray[inputs[0].value] = inputs[1].value;
 
-                let content = getModal(e.target.id);
+                let content = getModal(divConcepts[0].id);
 
                 updateTable(conceptsArray, content.id);
 
                 inputs[0].value = '';
                 inputs[1].value = '';
             }
-        });
+        };
 
 
         function updateTable(conceptsArray, idContent) {
@@ -262,13 +273,11 @@
 
             total = TotalConcepts + flete + seguro;
 
-           
+
 
             //Buscamos dentro del contenedor el campo total
 
             let inputTotal = $(`#${idContent}`).find('#total');
-
-            console.log($(`#${ idContent}`));
 
             inputTotal.val(total.toFixed(2));
 
