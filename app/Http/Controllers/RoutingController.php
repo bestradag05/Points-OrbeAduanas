@@ -38,7 +38,6 @@ class RoutingController extends Controller
         ];
 
         return view('routing/list-routing', compact('routings', 'heads'));
-        
     }
 
     /**
@@ -54,17 +53,17 @@ class RoutingController extends Controller
         $type_shipments = TypeShipment::all();
         $modalitys = Modality::all();
         $regimes = Regime::all();
-        $customers= Customer::all();
+        $customers = Customer::all();
         $incoterms = Incoterms::all();
         $shippers = Shipper::all();
 
 
 
         return view('routing/register-routing', compact(
-            'nro_operation', 
-            'stateCountrys', 
-            'customers', 
-            'type_shipments', 
+            'nro_operation',
+            'stateCountrys',
+            'customers',
+            'type_shipments',
             'modalitys',
             'regimes',
             'incoterms',
@@ -79,9 +78,9 @@ class RoutingController extends Controller
     public function store(Request $request)
     {
         // Creamos un routing
-        
-        $this->validateForm($request, null );
-        
+
+        $this->validateForm($request, null);
+
         Routing::create([
             'nro_operation' => $request->nro_operation,
             'origin' => $request->origin,
@@ -102,16 +101,16 @@ class RoutingController extends Controller
             'nro_operation' => $request->nro_operation,
             'observation' => $request->observation,
             'id_personal' => auth()->user()->personal->id,
-            
+
 
         ]);
 
-    
+
         return redirect('routing');
-            
     }
 
-    public function parseDouble($num){
+    public function parseDouble($num)
+    {
 
         $valorDecimal = (float)str_replace(',', '', $num);
 
@@ -151,7 +150,8 @@ class RoutingController extends Controller
     }
 
 
-    public function getNroOperation(){
+    public function getNroOperation()
+    {
         $lastCode = Routing::latest()->value('nro_operation');
         $year = date('y');
         $prefix = 'ORBE-';
@@ -170,17 +170,56 @@ class RoutingController extends Controller
     }
 
 
-    public function getTemplateDetailRouting($id){
+    public function getTemplateDetailRouting($id)
+    {
 
         $routing = Routing::find($id);
         $routing->load('customer', 'type_shipment', 'regime', 'shipper');
         $type_services = TypeService::all();
 
-        
+
         return view('routing/detail-routing', compact('routing', 'type_services'));
     }
 
-    public function validateForm($request, $id){
+
+    public function storeRoutingService(Request $request)
+    {
+
+
+        switch ((Integer) $request->typeService) {
+            case 1:
+                # Aduana...
+
+                TypeService::create([
+                    
+                ]);
+
+                dd($request->all());
+                break;
+
+            case 2:
+                # Flete...
+                $request->all();
+                break;
+
+            case 3:
+                # Seguro...
+                break;
+
+            case 4:
+                # Transporte...
+                break;
+
+            default:
+                # code...
+                break;
+        }
+
+        dd($request->all());
+    }
+
+    public function validateForm($request, $id)
+    {
         $request->validate([
             'nro_operation' => 'required|string|unique:routing,nro_operation,' . $id,
             'origin' => 'required|string',
@@ -200,6 +239,5 @@ class RoutingController extends Controller
             'hs_code' => 'nullable',
             'observation' => 'nullable'
         ]);
-    
     }
 }

@@ -105,6 +105,9 @@
         let total = 0;
         let flete = 0;
         let seguro = 0;
+        let containerResult = '';
+        let container = '';
+        let typeService = '';
 
         $('.modal').on('hidden.bs.modal', function(e) {
             conceptsArray = {};
@@ -126,26 +129,33 @@
 
             if (checkbox.checked) {
                 contenedorInsurance.addClass('d-flex').removeClass('d-none');
+                contenedorInsurance.find("input").removeClass('d-none');
+                contenedorInsurance.find('select').removeClass('d-none');
             } else {
                 contenedorInsurance.addClass('d-none').removeClass('d-flex');
-                contenedorInsurance.find("input").val('');
-                contenedorInsurance.find('select').val('');
+                contenedorInsurance.find("input").val('').addClass('d-none').removeClass('is-invalid');
+                contenedorInsurance.find('select').val('').addClass('d-none').removeClass('is-invalid');
+                seguro = 0;
+
+                calcTotal(TotalConcepts, flete, seguro, container.id);
+
             }
         }
 
 
         function openModalForm(element) {
             let selected = element.options[element.selectedIndex].text;
-            $(`#modal${selected}`).modal('show');
-            console.log(element.value);
+            containerResult = $(`#modal${selected}`).modal('show');
+            container = containerResult[0];
+            typeService = element.value;
+            $(`#${container.id}`).find('#typeService').val(typeService);
             element.value = '';
+
 
         }
 
 
         function updateFleteTotal(element) {
-
-            console.log(element);
 
             if (element.value === "") {
                 flete = 0;
@@ -153,9 +163,7 @@
                 flete = parseFloat(element.value);
             }
 
-            let content = getModal(element.id);
-
-            calcTotal(TotalConcepts, flete, seguro, content.id);
+            calcTotal(TotalConcepts, flete, seguro, container.id);
         }
 
 
@@ -166,16 +174,13 @@
                 seguro = parseFloat(element.value);
             }
 
-            let content = getModal(element.id);
-
-            calcTotal(TotalConcepts, flete, seguro, content.id);
+            calcTotal(TotalConcepts, flete, seguro, container.id);
         }
 
 
         function addConcept(buton) {
 
-            let divConcepts = $(`#${buton.id}`).closest('.formConcepts');
-
+            let divConcepts = containerResult.find('.formConcepts');
             const inputs = divConcepts.find('input');
 
             // Busca todos los campos de entrada dentro del formulario
@@ -201,15 +206,12 @@
 
                 conceptsArray[inputs[0].value] = inputs[1].value;
 
-                let content = getModal(divConcepts[0].id);
-
-                updateTable(conceptsArray, content.id);
+                updateTable(conceptsArray, container.id);
 
                 inputs[0].value = '';
                 inputs[1].value = '';
             }
         };
-
 
         function updateTable(conceptsArray, idContent) {
 
@@ -262,16 +264,13 @@
                 }
             }
 
-            calcTotal(TotalConcepts, flete, seguro, idContent);
+            calcTotal(TotalConcepts, flete, seguro, container.id);
 
         }
-
 
         function calcTotal(TotalConcepts, flete, seguro, idContent) {
 
             total = TotalConcepts + flete + seguro;
-
-
 
             //Buscamos dentro del contenedor el campo total
 
@@ -282,8 +281,38 @@
         }
 
 
-        function getModal(idElement) {
-            return $(`#${idElement}`).closest('.modal')[0];
-        }
+        function submitForm() {
+
+            let form = $(`#${container.id}`).find('form');
+            const inputs = form.find('input, select').not('.formConcepts  input');
+
+            inputs.each(function(index, input) {
+
+                if (!$(this).hasClass('d-none')) {
+
+                    // Verifica si el campo de entrada está vacío
+                    if ($(this).val() === '') {
+                        // Si está vacío, agrega la clase 'is-invalid'
+                        $(this).addClass('is-invalid');
+
+                    } else {
+                        // Si no está vacío, remueve la clase 'is-invalid' (en caso de que esté presente)
+                        $(this).removeClass('is-invalid');
+
+                    }
+                }
+
+            });
+
+            var camposInvalidos = form.find('.is-invalid').length;
+
+            if (camposInvalidos === 0) {
+
+                let conceptops = JSON.stringify(conceptsArray);
+
+                form.append(`<input type="hidden" name="conceptos" value='${conceptops}' />`);
+                form[0].submit();
+            }
+        };
     </script>
 @endpush
