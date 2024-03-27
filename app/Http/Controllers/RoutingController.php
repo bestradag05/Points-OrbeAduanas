@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Country;
+use App\Models\Custom;
 use App\Models\Customer;
 use App\Models\Incoterms;
 use App\Models\Modality;
@@ -177,24 +178,30 @@ class RoutingController extends Controller
         $routing->load('customer', 'type_shipment', 'regime', 'shipper');
         $type_services = TypeService::all();
 
+        $routing_services = $routing->typeService()->get();
 
-        return view('routing/detail-routing', compact('routing', 'type_services'));
+        return view('routing/detail-routing', compact('routing', 'type_services', 'routing_services'));
     }
 
 
     public function storeRoutingService(Request $request)
     {
-
-
         switch ((Integer) $request->typeService) {
             case 1:
                 # Aduana...
 
-                TypeService::create([
-                    
+                $routing = Routing::where('nro_operation', $request->nro_operation)->first();
+                $type_services = TypeService::find($request->typeService);
+                //Agregamos el registro a la tabla pivot
+                $routing->typeService()->attach($type_services);
+
+                Custom::create([
+                    'state' => 'Pendiente',
+                    'nro_operation' => $routing->nro_operation
                 ]);
 
-                dd($request->all());
+                return redirect('/routing/'. $routing->id . '/detail');
+
                 break;
 
             case 2:
@@ -215,7 +222,6 @@ class RoutingController extends Controller
                 break;
         }
 
-        dd($request->all());
     }
 
     public function validateForm($request, $id)

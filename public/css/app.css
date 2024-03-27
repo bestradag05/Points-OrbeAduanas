@@ -8,3 +8,11 @@
     color: white;
 }
 
+.select2-selection{
+    height: 41px!important;
+}
+
+#select2-type_service-container{
+    height: 100%!important;
+}
+

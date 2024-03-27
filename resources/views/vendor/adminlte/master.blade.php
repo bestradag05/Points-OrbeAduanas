@@ -110,6 +110,8 @@
     @yield('adminlte_js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bs-stepper/dist/js/bs-stepper.min.js"></script>
+
+   
     @stack('scripts')
 
     <script src="{{ asset('js/formatInputCurren.js') }}"></script>

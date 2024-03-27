@@ -65,19 +65,45 @@
                 Servicios
             </h5>
 
-            <x-adminlte-select2 name="type_service" igroup-size="md" data-placeholder="Seleccione una opcion..."
-                onchange="openModalForm(this)">
+            {{--             <x-adminlte-select2 name="type_service" id="type_service" igroup-size="md"
+                data-placeholder="Seleccione una opcion..." onchange="openModalForm(this)">
                 <option />
                 @foreach ($type_services as $type_service)
-                    <option value="{{ $type_service->id }}"> {{ $type_service->name }} </option>
+                    @foreach ($routing_services as $routing_service)
+                        <option value="{{ $type_service->id }}">
+                            {{ $type_service->name }}
+                        </option>
+                    @endforeach
                 @endforeach
-            </x-adminlte-select2>
+            </x-adminlte-select2> --}}
+
+
+            <select name="type_service" id="type_service" class="form-control" onchange="openModalForm(this)">
+                <option></option>
+                @foreach ($type_services as $type_service)
+                    @foreach ($routing_services as $routing_service)
+                        <option value="{{ $type_service->id }}" {{ $type_service->id == $routing_service->id ? 'disabled' : ''}}>
+                            {{ $type_service->name }}
+                        </option>
+                    @endforeach
+                @endforeach
+            </select>
 
 
             <hr>
             <p class="text-indigo text-bold">Lista de Servicios: </p>
             <table class="table">
                 <tbody>
+
+                    @foreach ($routing_services as $routing_service)
+                        <tr>
+                            <td>
+                                <a class="btn btn-indigo">
+                                    {{ $routing_service->name }}
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
 
                 </tbody>
             </table>
@@ -96,10 +122,19 @@
 
     </table>
 
+
+
+
 @stop
 
 @push('scripts')
     <script>
+        $('#type_service').select2({
+            width: 'resolve',
+            placeholder: "Seleccione una opcion...",
+            allowClear: true
+        });
+
         let conceptsArray = {};
         let TotalConcepts = 0;
         let total = 0;

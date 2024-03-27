@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('nro_orde')->nullable();
             $table->string('nro_dam')->nullable();
             $table->date('date_register')->nullable();
-            $table->decimal('cif_value', 8, 2);
-            $table->string('channel');
-            $table->string('nro_bl');
-            $table->date('regularization_date');
+            $table->decimal('cif_value', 8, 2)->nullable();
+            $table->string('channel')->nullable();
+            $table->string('nro_bl')->nullable();
+            $table->date('regularization_date')->nullable();
             $table->string('state');
             $table->string('nro_operation');
             $table->timestamps();

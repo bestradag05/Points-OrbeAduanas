@@ -12,4 +12,9 @@ class TypeService extends Model
     protected $table = 'type_service';
 
     protected $fillable = ['name'];
+
+    public function routing()
+    {
+        return $this->belongsToMany(Routing::class);
+    }
 }

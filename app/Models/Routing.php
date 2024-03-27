@@ -47,5 +47,11 @@ class Routing extends Model
         return $this->belongsTo(Shipper::class, 'id_shipper', 'id');
     }
 
+    public function typeService()
+    {
+        return $this->belongsToMany(TypeService::class, 'routing_typeservice', 'id_routing', 'id_type_service');
+    }
+
+
 
 }
