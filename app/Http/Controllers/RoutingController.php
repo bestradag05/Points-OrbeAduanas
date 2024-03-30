@@ -180,6 +180,8 @@ class RoutingController extends Controller
 
         $routing_services = $routing->typeService()->get();
 
+        /* dd($routing_services); */
+
         return view('routing/detail-routing', compact('routing', 'type_services', 'routing_services'));
     }
 
@@ -206,7 +208,7 @@ class RoutingController extends Controller
 
             case 2:
                 # Flete...
-                $request->all();
+                dd($request->all());
                 break;
 
             case 3:

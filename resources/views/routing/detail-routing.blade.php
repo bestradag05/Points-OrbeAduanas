@@ -81,11 +81,18 @@
             <select name="type_service" id="type_service" class="form-control" onchange="openModalForm(this)">
                 <option></option>
                 @foreach ($type_services as $type_service)
-                    @foreach ($routing_services as $routing_service)
-                        <option value="{{ $type_service->id }}" {{ $type_service->id == $routing_service->id ? 'disabled' : ''}}>
-                            {{ $type_service->name }}
-                        </option>
-                    @endforeach
+                    @if ($routing->typeService->count() == 0)
+                            <option value="{{ $type_service->id }}">
+                                {{ $type_service->name }}
+                            </option>
+                    @else
+                        @foreach ($routing_services as $routing_service)
+                            <option value="{{ $type_service->id }}"
+                                {{ $type_service->id == $routing_service->id ? 'disabled' : '' }}>
+                                {{ $type_service->name }}
+                            </option>
+                        @endforeach
+                    @endif
                 @endforeach
             </select>
 
