@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Concepts;
 use App\Models\Customer;
 use App\Models\Incoterms;
 use App\Models\Modality;
@@ -156,5 +157,18 @@ class DatabaseSeeder extends Seeder
           Customer::create(['ruc' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'id_user' => 2]);
           Shipper::create(['type_id' => 'RUC', 'number_id' => '20554630740', 'name_businessname' => 'HENAN XINGSHENGDA', 'addres' => 'North section of renmin road, changge city', 'contact_name' => 'Asten Zho' , 'contact_number' => '944653246', 'contact_email' => 'asten@hnidel.com']);
           Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU - CALLAO', 'destination' => 'CHINA - SHANGAI', 'freight_value' => '2500', 'load_value' => '2700', 'insurance_value' => '25', 'id_personal' => 1, 'id_customer' => 1, 'id_type_shipment' => 1, 'id_modality' => 1, 'id_regime' => 1, 'id_incoterms' => 1, 'id_shipper' => 1, 'commodity' => 'CILINDRO']);
+    
+    
+          Concepts::create(['name'=> 'COMISION DE ADUANA', 'id_type_shipment'=> 8, 'id_type_service'=> 1]);
+          Concepts::create(['name'=>'GASTOS OPERATIVOS', 'id_type_shipment'=>8, 'id_type_service'=> 1]);
+          Concepts::create(['name'=>'GASTOS ADMINISTRATIVOS', 'id_type_shipment'=>21, 'id_type_service' => 1]);
+          Concepts::create(['name'=>'HAWB', 'id_type_shipment'=>8, 'id_type_service' => 1]);
+          Concepts::create(['name'=>'INLAND GROUND', 'id_type_shipment'=>8, 'id_type_service' => 1]);
+          Concepts::create(['name'=>'DELIVERY AIRPO', 'id_type_shipment'=>21, 'id_type_service' => 2]);
+          Concepts::create(['name'=>'AIR FREIGHT', 'id_type_shipment'=>21, 'id_type_service' => 2]);
+          Concepts::create(['name'=>'F.S.C', 'id_type_shipment'=>8, 'id_type_service' => 2]);
+          Concepts::create(['name'=>'OCEAN FREIGHT', 'id_type_shipment'=>8, 'id_type_service' => 2]);
+
+    
     }
 }

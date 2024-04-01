@@ -202,7 +202,7 @@
             if (element.value === "") {
                 flete = 0;
             } else {
-                flete = parseFloat(element.value);
+                flete = parseFloat(formatValue(element.value));
             }
 
             calcTotal(TotalConcepts, flete, seguro, container.id);
@@ -246,7 +246,7 @@
             if (camposInvalidos === 0) {
                 // Si no hay campos inválidos, envía el formulario
 
-                conceptsArray[inputs[0].value] = inputs[1].value;
+                conceptsArray[inputs[0].value] = formatValue(inputs[1].value);
 
                 updateTable(conceptsArray, container.id);
 
@@ -322,6 +322,9 @@
 
         }
 
+        function formatValue(value) {
+            return value.replace(/,/g, '');
+        }
 
         function submitForm() {
 

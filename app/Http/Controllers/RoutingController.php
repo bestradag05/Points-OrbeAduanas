@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Concepts;
 use App\Models\Country;
 use App\Models\Custom;
 use App\Models\Customer;
@@ -177,12 +178,13 @@ class RoutingController extends Controller
         $routing = Routing::find($id);
         $routing->load('customer', 'type_shipment', 'regime', 'shipper');
         $type_services = TypeService::all();
+        $concepts = Concepts::all();
 
         $routing_services = $routing->typeService()->get();
 
         /* dd($routing_services); */
 
-        return view('routing/detail-routing', compact('routing', 'type_services', 'routing_services'));
+        return view('routing/detail-routing', compact('routing', 'type_services', 'routing_services', 'concepts'));
     }
 
 
@@ -208,7 +210,15 @@ class RoutingController extends Controller
 
             case 2:
                 # Flete...
+
                 dd($request->all());
+                $routing = Routing::where('nro_operation', $request->nro_operation)->first();
+                $type_services = TypeService::find($request->typeService);
+                //Agregamos el registro a la tabla pivot
+                $routing->typeService()->attach($type_services);
+
+
+                
                 break;
 
             case 3:

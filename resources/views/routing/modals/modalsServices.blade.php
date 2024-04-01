@@ -6,51 +6,22 @@
                     <input type="hidden" name="nro_operation" value="{{ $routing->nro_operation }}">
                     <input type="hidden" name="typeService" id="typeService">
 
-                    <div class="form-group">
-                        <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input" id="seguroAduanasSwitch1"
-                                onchange="enableInsurance(this)">
-                            <label class="custom-control-label" for="seguroAduanasSwitch1">Agregar Seguro</label>
-                        </div>
-                    </div>
-
-                    <div class="row d-none" id="content_seguroAduanasSwitch1">
-                        <div class="col-6">
-                            <x-adminlte-select2 name="type_insurance" label="Tipo de seguro" class="d-none" igroup-size="md"
-                                data-placeholder="Seleccione una opcion...">
-                                <option />
-                                <option>Seguro A</option>
-                                <option>Seguro B</option>
-                            </x-adminlte-select2>
-                        </div>
-                        <div class="col-6">
-                            <div class="form-group">
-                                <label for="load_value">Valor del seguro</label>
-
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text text-bold">
-                                            $
-                                        </span>
-                                    </div>
-                                    <input type="text" class="form-control CurrencyInput d-none"
-                                        name="value_insurance_custom" id="value_insurance_custom" data-type="currency"
-                                        placeholder="Ingrese valor de la carga" onchange="updateInsuranceTotal(this)">
-                                </div>
-
-
-                            </div>
-                        </div>
-                    </div>
-
-
                     <div id="formConceptsAduanas" class="formConcepts row">
                         <div class="col-4">
 
                             <div class="form-group">
                                 <label for="concept">Concepto</label>
-                                <input type="text" class="form-control" id="concept" name="concept"
-                                    placeholder="Ingrese el concept">
+                                {{-- <input type="text" class="form-control" id="concept" name="concept"
+                                    placeholder="Ingrese el concept"> --}}
+
+                                <x-adminlte-select2 name="concept" id="concept" data-placeholder="Seleccione un concepto...">
+                                    <option />
+                                    @foreach($concepts as $concept)
+                                    <option value="{{$concept->id}}">{{$concept->name}}</option>
+                                    @endforeach
+                                </x-adminlte-select2>
+
+
                             </div>
 
                         </div>
@@ -107,7 +78,8 @@
                     </div>
 
                     <x-slot name="footerSlot">
-                        <x-adminlte-button class="btn btn-indigo" id="btnSubmit" type="submit" onclick="submitForm(this)" label="Guardar" />
+                        <x-adminlte-button class="btn btn-indigo" id="btnSubmit" type="submit"
+                            onclick="submitForm(this)" label="Guardar" />
                         <x-adminlte-button theme="secondary" label="Cerrar" data-dismiss="modal" />
                     </x-slot>
 
@@ -122,46 +94,50 @@
                     <input type="hidden" name="nro_operation" value="{{ $routing->nro_operation }}">
                     <input type="hidden" name="typeService" id="typeService">
 
-                    <div class="form-group">
-                        <label for="freight_value">Valor del Flete</label>
+                    <div class="row">
 
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text text-bold">
-                                    $
-                                </span>
-                            </div>
-                            <input type="text" class="form-control CurrencyInput" id="freight_value"
-                                name="freight_value" onchange="updateFleteTotal(this)" data-type="currency"
-                                placeholder="Ingrese valor del flete">
-
-                            @error('freight_value')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                    </div>
-
-                    <div class="form-group">
-                        <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input" id="seguroFleteSwitch1"
-                                onchange="enableInsurance(this)">
-                            <label class="custom-control-label" for="seguroFleteSwitch1">Agregar Seguro</label>
-                        </div>
-                    </div>
-
-                    <div class="row d-none contentInsurance" id="content_seguroFleteSwitch1">
-                        <div class="col-6">
-                            <x-adminlte-select2 name="typeInsurance" label="Tipo de seguro" class="d-none"
-                                igroup-size="md" data-placeholder="Seleccione una opcion...">
-                                <option />
-                                <option>Seguro A</option>
-                                <option>Seguro B</option>
-                            </x-adminlte-select2>
-                        </div>
                         <div class="col-6">
                             <div class="form-group">
-                                <label for="load_value">Valor del seguro</label>
+
+                                @if ($routing->type_shipment->code == 235)
+                                    <label for="air_freight">Air Freight</label>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text text-bold">
+                                                $
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control CurrencyInput" id="air_freight"
+                                            name="air_freight" onchange="updateFleteTotal(this)" data-type="currency"
+                                            placeholder="Ingrese valor del flete">
+                                    </div>
+                                @elseif($routing->type_shipment->code == 118)
+                                    <label for="ocean_freight">Ocean Freight</label>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text text-bold">
+                                                $
+                                            </span>
+                                        </div>
+                                        <input type="text" class="form-control CurrencyInput" id="freight_value"
+                                            name="freight_value" onchange="updateFleteTotal(this)"
+                                            data-type="currency" placeholder="Ingrese valor del flete">
+
+                                        @error('freight_value')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                @endif
+                            </div>
+
+                        </div>
+
+                        <div class="col-6">
+
+                            <div class="form-group">
+                                <label for="utility">Utilidad Orbe</label>
 
                                 <div class="input-group">
                                     <div class="input-group-prepend">
@@ -169,15 +145,16 @@
                                             $
                                         </span>
                                     </div>
-                                    <input type="text" class="form-control CurrencyInput d-none "
-                                        name="value_insurance_freight" id="value_insurance_freight"
-                                        data-type="currency" placeholder="Ingrese valor de la carga"
-                                        onchange="updateInsuranceTotal(this)">
+                                    <input type="text" class="form-control CurrencyInput" id="utility"
+                                        name="utility" data-type="currency"
+                                        placeholder="Ingrese valor de la utilidad">
+
                                 </div>
 
                             </div>
                         </div>
                     </div>
+
 
 
                     <div id="formConceptsFlete" class="formConcepts row">
@@ -244,7 +221,8 @@
                     </div>
 
                     <x-slot name="footerSlot">
-                        <x-adminlte-button class="btn btn-indigo" id="btnSubmit" type="submit" onclick="submitForm(this)" label="Guardar" />
+                        <x-adminlte-button class="btn btn-indigo" id="btnSubmit" type="submit"
+                            onclick="submitForm(this)" label="Guardar" />
                         <x-adminlte-button theme="secondary" label="Cerrar" data-dismiss="modal" />
                     </x-slot>
 
