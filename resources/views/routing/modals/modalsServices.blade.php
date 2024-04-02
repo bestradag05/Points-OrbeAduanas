@@ -14,14 +14,15 @@
                                 {{-- <input type="text" class="form-control" id="concept" name="concept"
                                     placeholder="Ingrese el concept"> --}}
 
-                                <x-adminlte-select2 name="concept" id="concept" data-placeholder="Seleccione un concepto...">
+                                <x-adminlte-select2 name="concept" id="concept"
+                                    data-placeholder="Seleccione un concepto...">
                                     <option />
-                                    @foreach($concepts as $concept)
-                                    <option value="{{$concept->id}}">{{$concept->name}}</option>
+                                    @foreach ($concepts as $concept)
+                                        @if ($concept->typeService->name == 'Aduanas' && $routing->type_shipment->id == $concept->id_type_shipment)
+                                            <option value="{{ $concept->id }}">{{ $concept->name }}</option>
+                                        @endif
                                     @endforeach
                                 </x-adminlte-select2>
-
-
                             </div>
 
                         </div>
@@ -122,8 +123,8 @@
                                             </span>
                                         </div>
                                         <input type="text" class="form-control CurrencyInput" id="freight_value"
-                                            name="freight_value" onchange="updateFleteTotal(this)"
-                                            data-type="currency" placeholder="Ingrese valor del flete">
+                                            name="freight_value" onchange="updateFleteTotal(this)" data-type="currency"
+                                            placeholder="Ingrese valor del flete">
 
                                         @error('freight_value')
                                             <div class="text-danger">{{ $message }}</div>

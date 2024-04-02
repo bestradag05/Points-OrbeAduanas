@@ -178,8 +178,7 @@ class RoutingController extends Controller
         $routing = Routing::find($id);
         $routing->load('customer', 'type_shipment', 'regime', 'shipper');
         $type_services = TypeService::all();
-        $concepts = Concepts::all();
-
+        $concepts = Concepts::all()->load('typeService');
         $routing_services = $routing->typeService()->get();
 
         /* dd($routing_services); */
@@ -193,6 +192,8 @@ class RoutingController extends Controller
         switch ((Integer) $request->typeService) {
             case 1:
                 # Aduana...
+
+                dd($request->all());
 
                 $routing = Routing::where('nro_operation', $request->nro_operation)->first();
                 $type_services = TypeService::find($request->typeService);

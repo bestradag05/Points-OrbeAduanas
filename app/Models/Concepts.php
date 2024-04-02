@@ -12,4 +12,9 @@ class Concepts extends Model
     protected $table = 'concepts';
 
     protected $fillable = ['name', 'id_type_shipment'];
+
+    public function typeService()
+    {
+        return $this->belongsTo(TypeService::class, 'id_type_service', 'id');
+    }
 }

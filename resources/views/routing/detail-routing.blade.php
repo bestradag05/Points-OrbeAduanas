@@ -223,7 +223,7 @@
         function addConcept(buton) {
 
             let divConcepts = containerResult.find('.formConcepts');
-            const inputs = divConcepts.find('input');
+            const inputs = divConcepts.find('input, select');
 
             // Busca todos los campos de entrada dentro del formulario
             inputs.each(function(index, input) {
@@ -231,24 +231,28 @@
                 if ($(this).val() === '') {
                     // Si está vacío, agrega la clase 'is-invalid'
                     $(this).addClass('is-invalid');
-
                 } else {
                     // Si no está vacío, remueve la clase 'is-invalid' (en caso de que esté presente)
                     $(this).removeClass('is-invalid');
 
                 }
             });
-
-
             // Verifica si hay algún campo con la clase 'is-invalid'
             var camposInvalidos = divConcepts.find('.is-invalid').length;
 
             if (camposInvalidos === 0) {
                 // Si no hay campos inválidos, envía el formulario
 
-                conceptsArray[inputs[0].value] = formatValue(inputs[1].value);
+                conceptsArray[inputs[0].value] =
+                {
+                    'id' : inputs[0].value,
+                    'name': inputs[0].options[inputs[0].selectedIndex].text,
+                    'value':  formatValue(inputs[1].value)
+                } 
 
                 updateTable(conceptsArray, container.id);
+
+                console.log( inputs[0].value(null).trigger('change'));
 
                 inputs[0].value = '';
                 inputs[1].value = '';
@@ -266,9 +270,11 @@
             var contador = 0;
 
             for (var clave in conceptsArray) {
+
+                var item = conceptsArray[clave];
+
                 if (conceptsArray.hasOwnProperty(clave)) {
                     contador++; // Incrementar el contador en cada iteración
-
                     // Crear una nueva fila
                     var fila = tbodyRouting.insertRow();
 
@@ -278,11 +284,11 @@
 
                     // Insertar la clave en la segunda celda de la fila
                     var celdaClave = fila.insertCell(1);
-                    celdaClave.textContent = clave;
+                    celdaClave.textContent = item.name;
 
                     // Insertar el valor en la tercera celda de la fila
                     var celdaValor = fila.insertCell(2);
-                    celdaValor.textContent = conceptsArray[clave];
+                    celdaValor.textContent = item.value;
 
 
                     // Insertar un botón para eliminar la fila en la cuarta celda de la fila
@@ -301,8 +307,7 @@
                     });
                     celdaEliminar.appendChild(botonEliminar);
 
-                    TotalConcepts += parseFloat(conceptsArray[clave]);
-
+                    TotalConcepts += parseFloat(item.value);
                 }
             }
 

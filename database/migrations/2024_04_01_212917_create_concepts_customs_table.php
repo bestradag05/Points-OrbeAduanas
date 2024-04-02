@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('id_concepts');
             $table->unsignedBigInteger('id_customs');
+            $table->decimal('value_concept', 8 , 2);
             $table->timestamps();
 
             $table->foreign('id_concepts')->references('id')->on('concepts');
