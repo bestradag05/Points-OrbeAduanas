@@ -10,11 +10,8 @@
                         <div class="col-4">
 
                             <div class="form-group">
-                                <label for="concept">Concepto</label>
-                                {{-- <input type="text" class="form-control" id="concept" name="concept"
-                                    placeholder="Ingrese el concept"> --}}
 
-                                <x-adminlte-select2 name="concept" id="concept"
+                                <x-adminlte-select2 name="concept" id="concept" label="Conceptos"
                                     data-placeholder="Seleccione un concepto...">
                                     <option />
                                     @foreach ($concepts as $concept)
@@ -97,7 +94,7 @@
 
                     <div class="row">
 
-                        <div class="col-6">
+                        {{-- <div class="col-6">
                             <div class="form-group">
 
                                 @if ($routing->type_shipment->code == 235)
@@ -133,9 +130,9 @@
                                 @endif
                             </div>
 
-                        </div>
+                        </div> --}}
 
-                        <div class="col-6">
+                        <div class="col-12">
 
                             <div class="form-group">
                                 <label for="utility">Utilidad Orbe</label>
@@ -147,8 +144,7 @@
                                         </span>
                                     </div>
                                     <input type="text" class="form-control CurrencyInput" id="utility"
-                                        name="utility" data-type="currency"
-                                        placeholder="Ingrese valor de la utilidad">
+                                        name="utility" data-type="currency" placeholder="Ingrese valor de la utilidad">
 
                                 </div>
 
@@ -161,11 +157,15 @@
                     <div id="formConceptsFlete" class="formConcepts row">
                         <div class="col-4">
 
-                            <div class="form-group">
-                                <label for="concept">Concepto</label>
-                                <input type="text" class="form-control" id="concept" name="concept"
-                                    placeholder="Ingrese el concept">
-                            </div>
+                            <x-adminlte-select2 name="concept" id="concept" label="Conceptos"
+                                data-placeholder="Seleccione un concepto...">
+                                <option />
+                                @foreach ($concepts as $concept)
+                                    @if ($concept->typeService->name == 'Flete' && $routing->type_shipment->id == $concept->id_type_shipment)
+                                        <option value="{{ $concept->id }}">{{ $concept->name }}</option>
+                                    @endif
+                                @endforeach
+                            </x-adminlte-select2>
 
                         </div>
                         <div class="col-4">

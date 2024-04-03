@@ -189,23 +189,29 @@ class RoutingController extends Controller
 
     public function storeRoutingService(Request $request)
     {
-        switch ((Integer) $request->typeService) {
+        switch ((int) $request->typeService) {
             case 1:
                 # Aduana...
-
-                dd($request->all());
-
+                // Relacionamos nuestro routing con los tipos de servicios
                 $routing = Routing::where('nro_operation', $request->nro_operation)->first();
                 $type_services = TypeService::find($request->typeService);
                 //Agregamos el registro a la tabla pivot
                 $routing->typeService()->attach($type_services);
 
-                Custom::create([
+
+                // Creamos nuestro registro de aduanas para los puntos
+                $custom = Custom::create([
                     'state' => 'Pendiente',
                     'nro_operation' => $routing->nro_operation
                 ]);
 
-                return redirect('/routing/'. $routing->id . '/detail');
+                //Relacionamos los conceptos que tendra esta aduana
+
+                foreach (json_decode($request->conceptos) as $concepto) {
+                    $custom->concepts()->attach($concepto->id, ['value_concept' => $concepto->value]);
+                }
+
+                return redirect('/routing/' . $routing->id . '/detail');
 
                 break;
 
@@ -219,7 +225,7 @@ class RoutingController extends Controller
                 $routing->typeService()->attach($type_services);
 
 
-                
+
                 break;
 
             case 3:
@@ -234,7 +240,6 @@ class RoutingController extends Controller
                 # code...
                 break;
         }
-
     }
 
     public function validateForm($request, $id)

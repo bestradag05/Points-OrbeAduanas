@@ -11,5 +11,13 @@ class Custom extends Model
 
     protected $table = 'custom';
 
-    protected $fillable = ['nro_orde', 'nro_dam', 'date_register', 'cif_value', 'channel','nro_bl', 'regularization_date', 'state', 'nro_operation'];
+    protected $fillable = ['nro_orde', 'nro_dam', 'date_register', 'cif_value', 'channel', 'nro_bl', 'regularization_date', 'state', 'nro_operation'];
+
+
+
+
+    public function concepts()
+    {
+        return $this->belongsToMany(Concepts::class, 'concepts_customs', 'id_customs', 'id_concepts');
+    }
 }

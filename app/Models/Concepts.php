@@ -17,4 +17,9 @@ class Concepts extends Model
     {
         return $this->belongsTo(TypeService::class, 'id_type_service', 'id');
     }
+
+    public function custom()
+    {
+        return $this->belongsToMany(Custom::class);
+    }
 }
