@@ -156,7 +156,7 @@ class DatabaseSeeder extends Seeder
           Personal::create(['name' => 'Anderson', 'last_name' => 'moron', 'cellphone' => '977234697', 'email' => 'liquidador@orbeaduanas.com', 'dni' => '73184116', 'immigration_card' => '', 'passport' => '', 'img_url' => '73184116.png', 'id_user' => 2]);
           Customer::create(['ruc' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'id_user' => 2]);
           Shipper::create(['type_id' => 'RUC', 'number_id' => '20554630740', 'name_businessname' => 'HENAN XINGSHENGDA', 'addres' => 'North section of renmin road, changge city', 'contact_name' => 'Asten Zho' , 'contact_number' => '944653246', 'contact_email' => 'asten@hnidel.com']);
-          Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU - CALLAO', 'destination' => 'CHINA - SHANGAI', 'freight_value' => '2500', 'load_value' => '2700', 'insurance_value' => '25', 'id_personal' => 1, 'id_customer' => 1, 'id_type_shipment' => 1, 'id_modality' => 1, 'id_regime' => 1, 'id_incoterms' => 1, 'id_shipper' => 1, 'commodity' => 'CILINDRO']);
+          Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU - CALLAO', 'destination' => 'CHINA - SHANGAI', 'freight_value' => '2500', 'load_value' => '2700', 'insurance_value' => '25', 'id_personal' => 1, 'id_customer' => 1, 'id_type_shipment' => 8, 'id_modality' => 1, 'id_regime' => 1, 'id_incoterms' => 1, 'id_shipper' => 1, 'commodity' => 'CILINDRO']);
     
     
           Concepts::create(['name'=> 'COMISION DE ADUANA', 'id_type_shipment'=> 8, 'id_type_service'=> 1]);

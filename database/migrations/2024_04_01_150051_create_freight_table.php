@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('freight', function (Blueprint $table) {
             $table->id();
-            $table->string('roi');
-            $table->string('hawb_hbl');
-            $table->string('bl_work');
-            $table->date('edt');
-            $table->date('eta');
-            $table->string('value_utility');
-            $table->string('value_freight');
+            $table->string('roi')->nullable();
+            $table->string('hawb_hbl')->nullable();
+            $table->string('bl_work')->nullable();
+            $table->date('edt')->nullable();
+            $table->date('eta')->nullable();
+            $table->string('value_utility')->nullable();
+            $table->string('value_freight')->nullable();
             $table->string('nro_operation');
             $table->timestamps();
 

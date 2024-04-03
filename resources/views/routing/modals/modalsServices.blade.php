@@ -11,7 +11,7 @@
 
                             <div class="form-group">
 
-                                <x-adminlte-select2 name="concept" id="concept" label="Conceptos"
+                                <x-adminlte-select2 name="concept" id="concept_aduana" label="Conceptos"
                                     data-placeholder="Seleccione un concepto...">
                                     <option />
                                     @foreach ($concepts as $concept)
@@ -157,11 +157,11 @@
                     <div id="formConceptsFlete" class="formConcepts row">
                         <div class="col-4">
 
-                            <x-adminlte-select2 name="concept" id="concept" label="Conceptos"
+                            <x-adminlte-select2 name="concept" id="concept_flete" label="Conceptos"
                                 data-placeholder="Seleccione un concepto...">
                                 <option />
                                 @foreach ($concepts as $concept)
-                                    @if ($concept->typeService->name == 'Flete' && $routing->type_shipment->id == $concept->id_type_shipment)
+                                    @if($concept->typeService->name == 'Flete' && $routing->type_shipment->id == $concept->id_type_shipment)
                                         <option value="{{ $concept->id }}">{{ $concept->name }}</option>
                                     @endif
                                 @endforeach

@@ -78,28 +78,33 @@
             </x-adminlte-select2> --}}
 
 
+            {{-- @dd($type_services[0]) --}}
             <select name="type_service" id="type_service" class="form-control" onchange="openModalForm(this)">
                 <option></option>
                 @foreach ($type_services as $type_service)
-                    @if ($routing->typeService->count() == 0)
-                            <option value="{{ $type_service->id }}">
-                                {{ $type_service->name }}
-                            </option>
-                    @else
-                        @foreach ($routing_services as $routing_service)
-                            <option value="{{ $type_service->id }}"
-                                {{ $type_service->id == $routing_service->id ? 'disabled' : '' }}>
-                                {{ $type_service->name }}
-                            </option>
-                        @endforeach
-                    @endif
+                    @php
+                        $disabled = false;
+                        foreach ($routing_services as $routing_service) {
+                            if ($type_service->id == $routing_service->id) {
+                                $disabled = true;
+                                break;
+                            }
+                        }
+                    @endphp
+                    <option value="{{ $type_service->id }}" {{ $disabled ? 'disabled' : '' }}>
+                        {{ $type_service->name }}
+                    </option>
                 @endforeach
             </select>
 
 
             <hr>
-            <p class="text-indigo text-bold">Lista de Servicios: </p>
+            {{-- <p class="text-indigo text-bold">Lista de Servicios: </p> --}}
             <table class="table">
+                <thead>
+                    <th class="text-indigo text-bold">Servicios</th>
+                    <th class="text-indigo text-bold">Estado para punto</th>
+                </thead>
                 <tbody>
 
                     @foreach ($routing_services as $routing_service)
@@ -108,6 +113,9 @@
                                 <a class="btn btn-indigo">
                                     {{ $routing_service->name }}
                                 </a>
+                            </td>
+                            <td>
+                               Pendiente
                             </td>
                         </tr>
                     @endforeach
@@ -243,16 +251,15 @@
             if (camposInvalidos === 0) {
                 // Si no hay campos inválidos, envía el formulario
 
-                conceptsArray[inputs[0].value] =
-                {
-                    'id' : inputs[0].value,
+                conceptsArray[inputs[0].value] = {
+                    'id': inputs[0].value,
                     'name': inputs[0].options[inputs[0].selectedIndex].text,
-                    'value':  formatValue(inputs[1].value)
-                } 
+                    'value': formatValue(inputs[1].value)
+                }
 
                 updateTable(conceptsArray, container.id);
 
-                console.log( inputs[0].value(null).trigger('change'));
+                console.log(inputs[0].value(null).trigger('change'));
 
                 inputs[0].value = '';
                 inputs[1].value = '';

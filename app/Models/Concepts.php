@@ -22,4 +22,9 @@ class Concepts extends Model
     {
         return $this->belongsToMany(Custom::class);
     }
+
+    public function freight()
+    {
+        return $this->belongsToMany(Freight::class);
+    }
 }
