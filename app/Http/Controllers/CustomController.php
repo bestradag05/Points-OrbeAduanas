@@ -23,10 +23,15 @@ class CustomController extends Controller
 
         $heads = [
             '#',
-            'nro_orde',
-            'ruc',
-            'nro_dam',
-            'date_register',
+            'N° Operacion',
+            'N° de orden',
+            'N° de Dam',
+            'Fecha de Registro',
+            'Valor Cif',
+            'Canal',
+            'N° de BL',
+            'Fecha de reguralizacion',
+            'Estado',
             'Acciones'
         ];
         
@@ -34,12 +39,19 @@ class CustomController extends Controller
         return view("custom/list-custom", compact("customs","heads"));
     }
 
+    public function getCustomPending(){
+
+        dd('Llego aqui pending');
+    }
+
+
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
         // Redireccion al formulario para crear una aduana
+        dd('Llego aqui');
 
         $customers= Customer::all();
         $type_shipments = TypeShipment::all();

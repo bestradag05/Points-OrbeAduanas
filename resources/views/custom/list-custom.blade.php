@@ -14,12 +14,15 @@
         @foreach ($customs as $custom)
             <tr>
                 <td>{{ $loop->iteration }}</td>
-                <td>{{ $custom->ruc }}</td>
-                <td>{{ $custom->name_businessname }}</td>
-                <td>{{ $custom->contact_name }}</td>
-                <td>{{ $custom->contact_number }}</td>
-                <td>{{ $custom->contact_email }}</td>
-                <td>{{ $custom->usercustom->name . ' ' . $custom->usercustom->last_name}}</td>
+                <td>{{ $custom->nro_operation }}</td>
+                <td>{{ $custom->nro_orde }}</td>
+                <td>{{ $custom->nro_dam }}</td>
+                <td>{{ $custom->date_register }}</td>
+                <td>{{ $custom->cif_value }}</td>
+                <td>{{ $custom->channel }}</td>
+                <td>{{ $custom->nro_bl }}</td>
+                <td>{{ $custom->regularization_date }}</td>
+                <td>{{ $custom->state }}</td>
                 <td>
                      <a href="{{ url('/custom/'. $custom->id . '/edit') }}"> <i class="fa-solid fa-pen-to-square"></i> </a>
                      <form action="{{ url('/custom/'.$custom->id) }}" class="form-delete" method="POST" style="display: inline;" data-confirm-delete="true">

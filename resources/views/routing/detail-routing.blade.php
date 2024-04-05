@@ -65,20 +65,6 @@
                 Servicios
             </h5>
 
-            {{--             <x-adminlte-select2 name="type_service" id="type_service" igroup-size="md"
-                data-placeholder="Seleccione una opcion..." onchange="openModalForm(this)">
-                <option />
-                @foreach ($type_services as $type_service)
-                    @foreach ($routing_services as $routing_service)
-                        <option value="{{ $type_service->id }}">
-                            {{ $type_service->name }}
-                        </option>
-                    @endforeach
-                @endforeach
-            </x-adminlte-select2> --}}
-
-
-            {{-- @dd($type_services[0]) --}}
             <select name="type_service" id="type_service" class="form-control" onchange="openModalForm(this)">
                 <option></option>
                 @foreach ($type_services as $type_service)
@@ -104,18 +90,28 @@
                 <thead>
                     <th class="text-indigo text-bold">Servicios</th>
                     <th class="text-indigo text-bold">Estado para punto</th>
+                    <th class="text-indigo text-bold">Acciones</th>
                 </thead>
                 <tbody>
 
                     @foreach ($routing_services as $routing_service)
                         <tr>
                             <td>
-                                <a class="btn btn-indigo">
+                                <a class="btn btn-indigo w-100">
                                     {{ $routing_service->name }}
                                 </a>
                             </td>
                             <td>
-                               Pendiente
+                                Pendiente
+                            </td>
+
+                            <td>
+                                <x-adminlte-select2 id="{{ $routing_service->id}}" name="actions_operation" data-placeholder="Seleciona una accion...">
+                                    <option/>
+                                    <option>Eliminar Servicio</option>
+                                    <option>Editar Servicio</option>
+                                    <option>Generar Documento</option>
+                                </x-adminlte-select2>
                             </td>
                         </tr>
                     @endforeach

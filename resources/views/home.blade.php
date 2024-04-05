@@ -10,6 +10,7 @@
         <div class="col-12">
             <div class="card mt-2">
                 <div class="card-body">
+                    <a href="custom/pendiente"> Click aqui</a>
                     @yield('dinamic-content')
                 </div>
             </div>

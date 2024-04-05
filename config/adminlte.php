@@ -346,9 +346,21 @@ return [
         ],
         [
             'text' => 'Liquidacion',
-            'url'  => 'custom',
             'icon' => 'fas fa-fw fa-laptop',
-            'active' => ['liquida', 'liquida*', 'regex:@^content/[0-9]+$@']
+            'submenu' => [
+                [
+                    'text' => 'Puntos pendientes',
+                    'url' => 'custom/pendiente',
+                    'icon'  => 'fa-solid fa-bell-exclamation' ,
+                    'active' => ['users', 'users*', 'regex:@^content/[0-9]+$@'],
+                ],
+                [
+                    'text' => 'Todos los puntos',
+                    'url'  => 'custom',
+                    'icon' => 'fa-solid fa-check-double',
+                    'active' => ['roles', 'roles*', 'regex:@^content/[0-9]+$@'],
+                ]
+            ]
         ],
         [
             'text' => 'Operaciones',

@@ -12,6 +12,7 @@ use App\Http\Controllers\RolesController;
 use App\Http\Controllers\RoutingController;
 use App\Http\Controllers\TypeShipmentController;
 use App\Http\Controllers\UserController;
+use App\Models\Custom;
 use App\Models\Modality;
 use PhpParser\Node\Expr\List_;
 
@@ -62,8 +63,12 @@ Route::middleware('auth')->group(function () {
     Route::resource('customer', CustomerController::class);
     Route::resource('type_shipment', TypeShipmentController::class);
     Route::resource('modality', ModalityController::class);
-    Route::resource('custom', CustomController::class);
+   
     Route::resource('routing', RoutingController::class);
     Route::get('routing/{id_routing}/detail', [RoutingController::class, 'getTemplateDetailRouting']);
     Route::post('routing_service', [RoutingController::class, 'storeRoutingService']);
+
+    Route::resource('custom', CustomController::class);
+    Route::get('custom/pendiente', [CustomController::class, 'getCustomPending']);
+    
 });

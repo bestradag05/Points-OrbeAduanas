@@ -106,6 +106,7 @@
         @endif
     @endif
 
+
     {{-- Custom Scripts --}}
     @yield('adminlte_js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
