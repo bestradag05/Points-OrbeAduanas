@@ -52,6 +52,11 @@ class Routing extends Model
         return $this->belongsToMany(TypeService::class, 'routing_typeservice', 'id_routing', 'id_type_service');
     }
 
+    public function custom()
+    {
+        return $this->hasOne(Custom::class);
+    }
+
 
 
 }

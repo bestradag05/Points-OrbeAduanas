@@ -2,7 +2,7 @@
 
 @section('content_header')
     <div class="d-flex justify-content-between">
-        <h2>Actualizar un Cliente</h2>
+        <h2>Generar punto de aduana</h2>
         <div>
             <button class="btn btn-primary"> Atras </button>
         </div>
@@ -10,10 +10,10 @@
 
 @stop
 @section('dinamic-content')
-    <form action={{ url('/customer/'. $customer->id) }} method="POST" enctype="multipart/form-data">
+    <form action={{ url('/custom/'. $custom->id) }} method="POST" enctype="multipart/form-data">
         {{ method_field('PATCH') }}
         {{ csrf_field() }}
-        @include ('customer.form-customer', ['formMode' => 'edit'])
+        @include ('custom.form-point-custom', ['formMode' => 'edit'])
     </form>
 
    

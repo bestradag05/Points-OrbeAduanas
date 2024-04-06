@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Custom extends Model
 {
@@ -20,4 +21,10 @@ class Custom extends Model
     {
         return $this->belongsToMany(Concepts::class, 'concepts_customs', 'id_customs', 'id_concepts');
     }
+
+    public function routing()
+    {
+        return $this->belongsTo(Routing::class, 'nro_operation', 'nro_operation');
+    }
+
 }

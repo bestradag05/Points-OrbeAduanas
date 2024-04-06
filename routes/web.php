@@ -68,7 +68,8 @@ Route::middleware('auth')->group(function () {
     Route::get('routing/{id_routing}/detail', [RoutingController::class, 'getTemplateDetailRouting']);
     Route::post('routing_service', [RoutingController::class, 'storeRoutingService']);
 
-    Route::resource('custom', CustomController::class);
     Route::get('custom/pendiente', [CustomController::class, 'getCustomPending']);
+    Route::resource('custom', CustomController::class);
+
     
 });

@@ -41,7 +41,21 @@ class CustomController extends Controller
 
     public function getCustomPending(){
 
-        dd('Llego aqui pending');
+        //Listar aduanas
+
+        $customs = Custom::where('state', 'Pendiente')->get()->load('routing.personal');
+       
+
+        $heads = [
+            '#',
+            'N° Operacion',
+            'Asesor',
+            'Estado',
+            'Acciones'
+        ];
+        
+
+        return view("custom/pending-list-custom", compact("customs","heads"));
     }
 
 
@@ -51,7 +65,7 @@ class CustomController extends Controller
     public function create()
     {
         // Redireccion al formulario para crear una aduana
-        dd('Llego aqui');
+        
 
         $customers= Customer::all();
         $type_shipments = TypeShipment::all();
@@ -83,7 +97,7 @@ class CustomController extends Controller
      */
     public function show(string $id)
     {
-        //
+        // Mostamos el formulario para completar 
     }
 
     /**
@@ -91,7 +105,11 @@ class CustomController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        // Obtenemos el registro que se va editar
+
+        $custom = Custom::find($id);
+
+        return view('custom/edit-custom', compact('custom'));
     }
 
     /**
