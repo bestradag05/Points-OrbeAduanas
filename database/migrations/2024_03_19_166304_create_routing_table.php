@@ -22,7 +22,6 @@ return new class extends Migration
             $table->unsignedBigInteger('id_personal');
             $table->unsignedBigInteger('id_customer');
             $table->unsignedBigInteger('id_type_shipment');
-            $table->unsignedBigInteger('id_modality')->nullable();
             $table->unsignedBigInteger('id_regime');
             $table->unsignedBigInteger('id_incoterms');
             $table->unsignedBigInteger('id_shipper');
@@ -40,7 +39,6 @@ return new class extends Migration
             $table->foreign('id_personal')->references('id')->on('personal');
             $table->foreign('id_customer')->references('id')->on('customer');
             $table->foreign('id_type_shipment')->references('id')->on('type_shipment');
-            $table->foreign('id_modality')->references('id')->on('modality');
             $table->foreign('id_regime')->references('id')->on('regime');
             $table->foreign('id_incoterms')->references('id')->on('incoterms');
             $table->foreign('id_shipper')->references('id')->on('shipper');

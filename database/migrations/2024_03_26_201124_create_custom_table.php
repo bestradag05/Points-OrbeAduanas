@@ -21,10 +21,12 @@ return new class extends Migration
             $table->string('nro_bl')->nullable();
             $table->date('regularization_date')->nullable();
             $table->string('state');
+            $table->unsignedBigInteger('id_modality');
             $table->string('nro_operation');
             $table->timestamps();
 
             $table->foreign('nro_operation')->references('nro_operation')->on('routing');
+            $table->foreign('id_modality')->references('id')->on('modality');
         });
     }
 

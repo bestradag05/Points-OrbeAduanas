@@ -70,6 +70,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('custom/pendiente', [CustomController::class, 'getCustomPending']);
     Route::resource('custom', CustomController::class);
+    Route::post('custom/load', [CustomController::class, 'loadDocument']);
 
     
 });

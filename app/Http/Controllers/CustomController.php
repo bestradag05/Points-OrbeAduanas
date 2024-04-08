@@ -43,13 +43,13 @@ class CustomController extends Controller
 
         //Listar aduanas
 
-        $customs = Custom::where('state', 'Pendiente')->get()->load('routing.personal');
-       
-
+        $customs = Custom::where('state', 'Pendiente')->get()->load('routing.personal', 'modality');
+    
         $heads = [
             '#',
             'N° Operacion',
             'Asesor',
+            'Modalidad',
             'Estado',
             'Acciones'
         ];
@@ -117,7 +117,14 @@ class CustomController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // Se actualiza la aduana
+
+        $this->validateForm($request, $id);
+
+
+        dd($request->all());
+
+
     }
 
     /**
@@ -128,15 +135,20 @@ class CustomController extends Controller
         //
     }
 
+    public function loadDocument(Request $request){
+
+        dd($request->all());
+    }
+
     public function validateForm($request, $id){
         $request->validate([
-            'nro_orde' => 'required|string|unique:customs,nro_orde,' . $id,
-            'ruc' => 'required|string|unique:customs,ruc,' . $id,
-            'nro_dam' => 'string|unique:customs,nro_dam,' . $id,
-            'regime' => 'string|unique:customs,nro_dam,' . $id,
-            'id_type_shipment' => 'required',
-            'id_modality'=> 'required',
-            'contact_email' => 'required|email',
+            'nro_orde' => 'required|string|unique:custom,nro_orde,' . $id,
+            'nro_dam' => 'string|unique:custom,nro_dam,' . $id,
+            'date_register' => 'required|string',
+            'cif_value' => 'required|numeric',
+            'channel' => 'required|string',
+            'nro_bl' => 'required|string',
+            'regularization_date' => 'required|string'
         ]);
     
     }

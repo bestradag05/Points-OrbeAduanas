@@ -255,8 +255,6 @@
 
                 updateTable(conceptsArray, container.id);
 
-                console.log(inputs[0].value(null).trigger('change'));
-
                 inputs[0].value = '';
                 inputs[1].value = '';
             }
@@ -337,7 +335,7 @@
         function submitForm() {
 
             let form = $(`#${container.id}`).find('form');
-            const inputs = form.find('input, select').not('.formConcepts  input');
+            const inputs = form.find('input, select').not('.formConcepts  input, .formConcepts select');
 
             inputs.each(function(index, input) {
 

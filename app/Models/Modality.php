@@ -12,4 +12,10 @@ class Modality extends Model
     protected $table = 'modality';
 
     protected $fillable = ['name', 'description'];
+
+
+    public function routing()
+    {
+        return $this->hasOne(Routing::class, 'id', 'id_modality');
+    }
 }

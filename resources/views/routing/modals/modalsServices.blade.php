@@ -6,7 +6,20 @@
                     <input type="hidden" name="nro_operation" value="{{ $routing->nro_operation }}">
                     <input type="hidden" name="typeService" id="typeService">
 
+                    <div class="col-12">
+
+                        <x-adminlte-select2 name="modality" id="modality" label="Modalidad"
+                                data-placeholder="Seleccione un concepto...">
+                                <option />
+                                @foreach ($modalitys as $modality)
+                                        <option value="{{ $modality->id }}">{{ $modality->name }}</option>
+                                @endforeach
+                            </x-adminlte-select2>
+
+                    </div>
+
                     <div id="formConceptsAduanas" class="formConcepts row">
+                        
                         <div class="col-4">
 
                             <div class="form-group">

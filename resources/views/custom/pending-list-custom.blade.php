@@ -17,6 +17,7 @@
                     </a>
                 </td>
                 <td><img src="{{ asset('fotos-de-usuarios/'.$custom->routing->personal->img_url)}}" class="img-circle user-img-xs elevation-2" alt=""></td>
+                <td>{{ $custom->modality->name }}</td>
                 <td>{{ $custom->state }}</td>
 
                 <td>

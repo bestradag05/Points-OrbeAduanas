@@ -12,7 +12,7 @@ class Custom extends Model
 
     protected $table = 'custom';
 
-    protected $fillable = ['nro_orde', 'nro_dam', 'date_register', 'cif_value', 'channel', 'nro_bl', 'regularization_date', 'state', 'nro_operation'];
+    protected $fillable = ['nro_orde', 'nro_dam', 'date_register', 'cif_value', 'channel', 'nro_bl', 'regularization_date', 'state', 'id_modality','nro_operation'];
 
 
 
@@ -25,6 +25,11 @@ class Custom extends Model
     public function routing()
     {
         return $this->belongsTo(Routing::class, 'nro_operation', 'nro_operation');
+    }
+
+    public function modality()
+    {
+        return $this->belongsTo(Modality::class, 'id_modality', 'id');
     }
 
 }

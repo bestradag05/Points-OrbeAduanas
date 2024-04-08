@@ -179,18 +179,18 @@ class RoutingController extends Controller
         $routing = Routing::find($id);
         $routing->load('customer', 'type_shipment', 'regime', 'shipper');
         $type_services = TypeService::all();
+        $modalitys = Modality::all();
         $concepts = Concepts::all()->load('typeService');
         $routing_services = $routing->typeService()->get();
 
         /* dd($routing_services); */
 
-        return view('routing/detail-routing', compact('routing', 'type_services', 'routing_services', 'concepts'));
+        return view('routing/detail-routing', compact('routing', 'type_services', 'routing_services', 'concepts', 'modalitys'));
     }
 
 
     public function storeRoutingService(Request $request)
     {
-
         $routing = Routing::where('nro_operation', $request->nro_operation)->first();
         $type_services = TypeService::find($request->typeService);
 
@@ -203,6 +203,7 @@ class RoutingController extends Controller
                 // Creamos nuestro registro de aduanas para los puntos
                 $custom = Custom::create([
                     'state' => 'Pendiente',
+                    'id_modality' => $request->modality,
                     'nro_operation' => $routing->nro_operation
                 ]);
 
