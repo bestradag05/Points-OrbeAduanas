@@ -1,19 +1,4 @@
 <div class="row">
-
-    @section('plugins.BsCustomFileInput', true)
-
-    <form id="form_doc" action="{{ url('/custom/load') }}" method="post" enctype="multipart/form-data">
-        <div class="col-12">
-            <x-adminlte-input-file name="doc_custom" igroup-size="md" placeholder="Suba el archivo...">
-                <x-slot name="prependSlot">
-                    <div class="input-group-text bg-lightblue">
-                        <i class="fas fa-upload"></i>
-                    </div>
-                </x-slot>
-            </x-adminlte-input-file>
-            <hr>
-        </div>
-    </form>
     {{-- Placeholder, sm size, and prepend icon --}}
     <div class="col-6">
 
@@ -41,10 +26,20 @@
 
     <div class="col-6">
 
+        <div class="form-group">
+            <label for="nro_dua">N° de Dua</label>
+            <input type="text" class="form-control @error('nro_dua') is-invalid @enderror" id="nro_dua"
+                name="nro_dua" placeholder="Ingrese su numero de dua"
+                value="{{ isset($custom->nro_dua) ? $custom->nro_dua : '' }}">
+            @error('nro_dua')
+                <strong class="invalid-feedback d-block">{{ $message }}</strong>
+            @enderror
+        </div>
+
         @php
-            $config = ['format' => 'L'];
+            $config = ['format' => 'DD/MM/YYYY'];
         @endphp
-        <x-adminlte-input-date name="date_register" id="date_register" value="{{ now()->format('d/m/Y') }}" disabled
+        <x-adminlte-input-date name="date_register" id="date_register" value="{{ now()->format('d/m/Y') }}"
             label="Fecha de Registro" :config="$config" placeholder="Ingresa la fecha...">
             <x-slot name="appendSlot">
                 <div class="input-group-append">
@@ -55,20 +50,20 @@
 
 
 
+    </div>
+
+
+    <div class="col-6">
+
         <div class="form-group">
             <label for="cif_value">Valor CIF</label>
-            <input type="text" class="form-control @error('cif_value') is-invalid @enderror" id="cif_value"
-                name="cif_value" placeholder="Ingrese el valor cif"
+            <input type="text" class="form-control CurrencyInput @error('cif_value') is-invalid @enderror"
+                id="cif_value" name="cif_value" data-type="currency" placeholder="Ingrese el valor cif"
                 value="{{ isset($custom->cif_value) ? $custom->cif_value : '' }}">
             @error('cif_value')
                 <strong class="invalid-feedback d-block">{{ $message }}</strong>
             @enderror
         </div>
-
-    </div>
-
-
-    <div class="col-6">
 
         <div class="form-group">
             <label for="channel">Canal</label>
@@ -84,22 +79,13 @@
         </div>
 
 
-        <label for="regularization_date">Fecha de reguralizacion</label>
-        <div class="input-group date" id="reguralization" data-target-input="nearest">
-            <input type="text" class="form-control @error('regularization_date') is-invalid @enderror"
-                name="regularization_date" data-target="#reguralization">
-            <div class="input-group-append" data-target="#reguralization" data-toggle="datetimepicker">
-                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
-            </div>
-        </div>
 
-        @error('regularization_date')
-            <strong class="invalid-feedback d-block">{{ $message }}</strong>
-        @enderror
 
     </div>
 
     <div class="col-6">
+
+
 
 
         <div class="form-group">
@@ -113,6 +99,38 @@
         </div>
 
 
+        <label for="regularization_date">Fecha de reguralizacion</label>
+
+
+        @if ($custom->modality->name == 'DIFERIDO')
+            <div class="input-group date" id="reguralization">
+
+                <input type="text" class="form-control @error('regularization_date') is-invalid @enderror"
+                    name="regularization_date" data-target="#reguralization" @readonly(true) value="NO REQUIERE">
+
+
+                <div class="input-group-append" data-target="#reguralization" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+            </div>
+        @else
+            <div class="input-group date" id="reguralization" data-target-input="nearest">
+
+                <input type="text" class="form-control @error('regularization_date') is-invalid @enderror"
+                    name="regularization_date" data-target="#reguralization" @readonly(true)>
+
+
+                <div class="input-group-append" data-target="#reguralization" data-toggle="datetimepicker">
+                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+            </div>
+        @endif
+
+        @error('regularization_date')
+            <strong class="invalid-feedback d-block">{{ $message }}</strong>
+        @enderror
+
+
 
     </div>
 
@@ -123,24 +141,3 @@
 <div class="container text-center mt-5">
     <input class="btn btn-primary" type="submit" value="Guardar">
 </div>
-
-@push('scripts')
-    <script>
-        $('#reguralization').datetimepicker({
-            format: 'L'
-        });
-
-        $('#doc_custom').change(function() {
-            var archivo = $(this).prop('files')[0];
-            if (archivo) {
-                // Por ejemplo, podrías enviar el formulario después de seleccionar el archivo
-                console.log(archivo);
-                console.log($('#form_doc'));
-                $('#form_doc').submit();
-            }
-        });
-
-    </script>
-
-
-@endpush

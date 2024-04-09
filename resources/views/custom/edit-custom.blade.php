@@ -10,11 +10,50 @@
 
 @stop
 @section('dinamic-content')
-    <form action={{ url('/custom/'. $custom->id) }} method="POST" enctype="multipart/form-data">
-        {{ method_field('PATCH') }}
-        {{ csrf_field() }}
-        @include ('custom.form-point-custom', ['formMode' => 'edit'])
-    </form>
 
-   
+{{-- @section('plugins.BsCustomFileInput', true)
+
+<form action="{{ url('/custom/load') }}" id="formLoadFile" method="post" enctype="multipart/form-data">
+    @csrf
+    <div class="col-12">
+        <x-adminlte-input-file name="doc_custom" igroup-size="md" placeholder="Suba el archivo...">
+            <x-slot name="prependSlot">
+                <div class="input-group-text bg-lightblue">
+                    <i class="fas fa-upload"></i>
+                </div>
+            </x-slot>
+        </x-adminlte-input-file>
+        <hr>
+    </div>
+</form> --}}
+
+<form action={{ url('/custom/' . $custom->id) }} method="POST" enctype="multipart/form-data">
+    {{ method_field('PATCH') }}
+    {{ csrf_field() }}
+    @include ('custom.form-point-custom', ['formMode' => 'edit'])
+</form>
+
+
 @stop
+
+
+@push('scripts')
+    <script>
+        $('#reguralization').datetimepicker({
+            format: 'L'
+        });
+
+        $('#doc_custom').change(function() {
+            var archivo = $(this).prop('files')[0];
+            if (archivo) {
+                // Por ejemplo, podrías enviar el formulario después de seleccionar el archivo
+
+                $('#formLoadFile').submit();
+            }
+        });
+
+    </script>
+
+
+@endpush
+

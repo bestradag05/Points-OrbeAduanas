@@ -8,6 +8,7 @@ use App\Models\Modality;
 use App\Models\TypeShipment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Spatie\PdfToText\Pdf;
 
 class CustomController extends Controller
 {
@@ -107,7 +108,7 @@ class CustomController extends Controller
     {
         // Obtenemos el registro que se va editar
 
-        $custom = Custom::find($id);
+        $custom = Custom::find($id)->load('modality');
 
         return view('custom/edit-custom', compact('custom'));
     }
@@ -135,14 +136,52 @@ class CustomController extends Controller
         //
     }
 
-    public function loadDocument(Request $request){
+/*     public function loadDocument(Request $request){
 
-        dd($request->all());
+        if (!$request->hasFile('doc_custom')) {
+            return response()->json(['mensaje' => 'No se ha proporcionado un archivo PDF'], 400);
+        }
+
+        // Obtener el archivo PDF de la solicitud
+        $pdfFile = $request->file('doc_custom');
+
+    
+        $pdfFileName = uniqid() . '.' . $pdfFile->getClientOriginalExtension();
+
+        // Mover el archivo PDF a la carpeta temporal
+        $pdfFile->storeAs('pdf_temp', $pdfFileName);
+
+        $textoCompleto = Pdf::getText('pdf/'.$pdfFileName, 'C:\Program Files\Git\mingw64\bin/pdftotext');
+        
+        $posicionInicio = strpos($textoCompleto, utf8_decode('No Declaración'));
+
+
+        if ($posicionInicio !== false) {
+            // Avanzar la posición de inicio a la posición justo después de la palabra "No Declaración"
+            $posicionInicio += strlen('No Declaración ');
+        
+            // Buscar la posición del próximo salto de línea después de la posición de inicio
+            $posicionSaltoLinea = strpos($textoCompleto, "\r\n", $posicionInicio);
+        
+            if ($posicionSaltoLinea !== false) {
+                // Extraer el texto que sigue después de la palabra "No Declaración" hasta el próximo salto de línea
+                $textoDespues = substr($textoCompleto, $posicionInicio, $posicionSaltoLinea - $posicionInicio);
+        
+    
+            } else {
+                echo "No se encontró el próximo salto de línea después de la palabra 'No Declaración'.";
+            }
+        } else {
+            echo "No se encontró la palabra 'No Declaración' en el texto.";
+        }
+
+        return false;
     }
-
+ */
     public function validateForm($request, $id){
         $request->validate([
             'nro_orde' => 'required|string|unique:custom,nro_orde,' . $id,
+            'nro_dua' => 'required|string|unique:custom,nro_dua,' . $id,
             'nro_dam' => 'string|unique:custom,nro_dam,' . $id,
             'date_register' => 'required|string',
             'cif_value' => 'required|numeric',

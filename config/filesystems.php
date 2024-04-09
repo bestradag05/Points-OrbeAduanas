@@ -41,6 +41,12 @@ return [
             'url' => env('APP_URL') . '/fotos-de-usuarios',
             'visibility' => 'public',
         ],
+        'dua' => [
+            'driver' => 'local',
+            'root' => storage_path('app/pdf_temp'),
+            'url' => env('APP_URL') . '/pdf',
+            'visibility' => 'public',
+        ],
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
@@ -77,6 +83,7 @@ return [
     'links' => [
         public_path('storage') => storage_path('app/public'),
         public_path('fotos-de-usuarios') => storage_path('app/user-avatars'),
+        public_path('pdf') => storage_path('app/pdf_temp'),
     ],
 
 ];
