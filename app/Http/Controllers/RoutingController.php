@@ -59,6 +59,7 @@ class RoutingController extends Controller
         $customers = Customer::all();
         $incoterms = Incoterms::all();
         $shippers = Shipper::all();
+        $type_services = TypeService::all();
 
 
 

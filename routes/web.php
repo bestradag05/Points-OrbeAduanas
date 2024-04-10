@@ -68,7 +68,7 @@ Route::middleware('auth')->group(function () {
     Route::get('routing/{id_routing}/detail', [RoutingController::class, 'getTemplateDetailRouting']);
     Route::post('routing_service', [RoutingController::class, 'storeRoutingService']);
 
-    Route::get('custom/pendiente', [CustomController::class, 'getCustomPending']);
+    Route::get('custom/pending', [CustomController::class, 'getCustomPending']);
     Route::resource('custom', CustomController::class);
     /* Route::post('custom/load', [CustomController::class, 'loadDocument']); */
 

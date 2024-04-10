@@ -350,7 +350,7 @@ return [
             'submenu' => [
                 [
                     'text' => 'Puntos pendientes',
-                    'url' => 'custom/pendiente',
+                    'url' => 'custom/pending',
                     'icon'  => 'fa-solid fa-bell-exclamation' ,
                     'active' => ['users', 'users*', 'regex:@^content/[0-9]+$@'],
                 ],

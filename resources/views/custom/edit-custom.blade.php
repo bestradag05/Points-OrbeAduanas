@@ -40,7 +40,12 @@
 @push('scripts')
     <script>
         $('#reguralization').datetimepicker({
-            format: 'L'
+            format: 'DD/MM/YYYY',
+            lang: 'es',
+            mask: true,
+            timepicker: false
+            
+            
         });
 
         $('#doc_custom').change(function() {

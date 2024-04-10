@@ -18,7 +18,9 @@
                 </td>
                 <td><img src="{{ asset('fotos-de-usuarios/'.$custom->routing->personal->img_url)}}" class="img-circle user-img-xs elevation-2" alt=""></td>
                 <td>{{ $custom->modality->name }}</td>
-                <td>{{ $custom->state }}</td>
+                <td class="{{($custom->state == 'Pendiente') ? 'text-warning' : ''}}">
+                    {{ $custom->state }}
+                </td>
 
                 <td>
                      <a href="{{ url('/custom/'.$custom->id.'/edit') }}" class="btn btn-outline-success btn-sm"> Generar punto </a>

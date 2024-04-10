@@ -12,7 +12,7 @@ class Custom extends Model
 
     protected $table = 'custom';
 
-    protected $fillable = ['nro_orde', 'nro_dam', 'date_register', 'cif_value', 'channel', 'nro_bl', 'regularization_date', 'state', 'id_modality','nro_operation'];
+    protected $fillable = ['nro_orde', 'nro_dua','nro_dam', 'date_register', 'cif_value', 'channel', 'nro_bl', 'regularization_date', 'state', 'id_modality','nro_operation'];
 
 
 

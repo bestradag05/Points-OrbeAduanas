@@ -6,6 +6,7 @@ use App\Models\Custom;
 use App\Models\Customer;
 use App\Models\Modality;
 use App\Models\TypeShipment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Spatie\PdfToText\Pdf;
@@ -19,22 +20,18 @@ class CustomController extends Controller
     {
         //Listar aduanas
 
-        $customs = Custom::all();
+        $customs = Custom::all()->load('routing.personal', 'modality');;
        
 
         $heads = [
             '#',
             'N° Operacion',
-            'N° de orden',
-            'N° de Dam',
-            'Fecha de Registro',
-            'Valor Cif',
-            'Canal',
-            'N° de BL',
-            'Fecha de reguralizacion',
+            'Asesor',
+            'Modalidad',
             'Estado',
             'Acciones'
         ];
+        
         
 
         return view("custom/list-custom", compact("customs","heads"));
@@ -122,10 +119,36 @@ class CustomController extends Controller
 
         $this->validateForm($request, $id);
 
+        $custom = Custom::find($id);
+        $request['cif_value'] = $this->parseDouble($request->cif_value);
+        $request['state'] = "Numerado";
 
-        dd($request->all());
+    
+        $dateRegisterFormat = Carbon::createFromFormat('d/m/Y', $request['date_register'])->toDateString();
+        $request['date_register'] = $dateRegisterFormat;
 
+        if($request->regularization_date != ''){
 
+            $dateRegularizationFormat = Carbon::createFromFormat('d/m/Y', $request->regularization_date)->toDateString();
+            $request['regularization_date'] = $dateRegularizationFormat;
+        }else{
+            $request['regularization_date'] = 'Pendiente';
+        }
+       
+        $custom->fill($request->all());
+        $custom->save();
+
+        return redirect('custom/pending');
+
+    }
+    
+
+    public function parseDouble($num)
+    {
+
+        $valorDecimal = (float)str_replace(',', '', $num);
+
+        return $valorDecimal;
     }
 
     /**
@@ -184,10 +207,9 @@ class CustomController extends Controller
             'nro_dua' => 'required|string|unique:custom,nro_dua,' . $id,
             'nro_dam' => 'string|unique:custom,nro_dam,' . $id,
             'date_register' => 'required|string',
-            'cif_value' => 'required|numeric',
+            'cif_value' => 'required',
             'channel' => 'required|string',
             'nro_bl' => 'required|string',
-            'regularization_date' => 'required|string'
         ]);
     
     }

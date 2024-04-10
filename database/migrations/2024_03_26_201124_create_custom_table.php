@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('cif_value', 8, 2)->nullable();
             $table->string('channel')->nullable();
             $table->string('nro_bl')->nullable();
-            $table->date('regularization_date')->nullable();
+            $table->string('regularization_date')->nullable();
             $table->string('state');
             $table->unsignedBigInteger('id_modality');
             $table->string('nro_operation');
