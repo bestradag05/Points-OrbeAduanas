@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('eta')->nullable();
             $table->string('value_utility')->nullable();
             $table->string('value_freight')->nullable();
+            $table->string('state');
             $table->string('nro_operation');
             $table->timestamps();
 

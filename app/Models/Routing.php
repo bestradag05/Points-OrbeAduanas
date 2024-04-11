@@ -54,7 +54,12 @@ class Routing extends Model
 
     public function custom()
     {
-        return $this->hasOne(Custom::class);
+        return $this->hasOne(Custom::class, 'nro_operation', 'nro_operation');
+    }
+
+    public function freight()
+    {
+        return $this->hasOne(Freight::class, 'nro_operation', 'nro_operation');
     }
 
 

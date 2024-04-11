@@ -19,3 +19,7 @@
 .user-img-xs {
     max-width: 40px!important;
 }
+
+.nav-treeview .nav-link{
+    padding-left: 30px;
+}

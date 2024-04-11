@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\CustomController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\FreightController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LiquidacionController;
 use App\Http\Controllers\ModalityController;
 use App\Http\Controllers\PermissionsController;
 use App\Http\Controllers\PersonalController;
+use App\Http\Controllers\PointsController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\RoutingController;
 use App\Http\Controllers\TypeShipmentController;
@@ -71,6 +73,11 @@ Route::middleware('auth')->group(function () {
     Route::get('custom/pending', [CustomController::class, 'getCustomPending']);
     Route::resource('custom', CustomController::class);
     /* Route::post('custom/load', [CustomController::class, 'loadDocument']); */
+
+    Route::get('freight/pending', [FreightController::class, 'getFreightPending']);
+    Route::resource('freight', FreightController::class);
+
+    Route::get('points/customs', [PointsController::class, 'getPointCustoms']);
 
     
 });

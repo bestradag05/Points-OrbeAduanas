@@ -101,17 +101,12 @@
                                     {{ $routing_service->name }}
                                 </a>
                             </td>
-                            <td>
-                                Pendiente
+                            <td class="text-bold  {{ $routing->custom->state == 'Numerado' ? 'text-success' : 'text-danger'}}">
+                               {{$routing->custom->state}}
                             </td>
 
                             <td>
-                                <x-adminlte-select2 id="{{ $routing_service->id}}" name="actions_operation" data-placeholder="Seleciona una accion...">
-                                    <option/>
-                                    <option>Eliminar Servicio</option>
-                                    <option>Editar Servicio</option>
-                                    <option>Generar Documento</option>
-                                </x-adminlte-select2>
+                                <a href="#"></a>
                             </td>
                         </tr>
                     @endforeach

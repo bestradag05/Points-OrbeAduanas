@@ -213,7 +213,7 @@ return [
     'sidebar_mini' => 'lg',
     'sidebar_collapse' => false,
     'sidebar_collapse_auto_size' => false,
-    'sidebar_collapse_remember' => false,
+    'sidebar_collapse_remember' => true,
     'sidebar_collapse_remember_no_transition' => true,
     'sidebar_scrollbar_theme' => 'os-theme-light',
     'sidebar_scrollbar_auto_hide' => 'l',
@@ -352,21 +352,34 @@ return [
                     'text' => 'Puntos pendientes',
                     'url' => 'custom/pending',
                     'icon'  => 'fa-solid fa-bell-exclamation' ,
-                    'active' => ['users', 'users*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['custom', 'custom*', 'regex:@^content/[0-9]+$@'],
                 ],
                 [
                     'text' => 'Todos los puntos',
                     'url'  => 'custom',
                     'icon' => 'fa-solid fa-check-double',
-                    'active' => ['roles', 'roles*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['custom', 'custom*', 'regex:@^content/[0-9]+$@'],
                 ]
             ]
         ],
         [
             'text' => 'Operaciones',
-            'url'  => '#',
             'icon' => 'fas fa-fw fa-user-tie',
-            'active' => ['opera', 'opera*', 'regex:@^content/[0-9]+$@']
+            'submenu' => [
+                [
+                    'text' => 'Puntos pendientes',
+                    'url' => 'freight/pending',
+                    'icon'  => 'fa-solid fa-bell-exclamation' ,
+                    'active' => ['freight', 'freight*', 'regex:@^content/[0-9]+$@'],
+                ],
+                [
+                    'text' => 'Todos los puntos',
+                    'url'  => 'freight',
+                    'icon' => 'fa-solid fa-check-double',
+                    'active' => ['freight', 'freight*', 'regex:@^content/[0-9]+$@'],
+                ]
+            ]
+            
         ],
         [
             'text' => 'Transporte',
@@ -379,6 +392,36 @@ return [
             'url'  => '#',
             'icon' => 'fas fa-fw fa-copy',
             'active' => ['admin', 'admin*', 'regex:@^content/[0-9]+$@']
+        ],
+        [
+            'text' => 'Puntos',
+            'icon' => 'fas fa-fw fa-copy',
+            'submenu' => [
+                [
+                    'text' => 'Puntos Flete',
+                    'url'  => 'points/freight',
+                    'icon' => 'fa-solid fa-check-double',
+                    'active' => ['points', 'points*', 'regex:@^content/[0-9]+$@'],
+                ],
+                [
+                    'text' => 'Puntos Aduana',
+                    'url' => 'points/customs',
+                    'icon'  => 'fa-solid fa-bell-exclamation' ,
+                    'active' => ['points', 'points*', 'regex:@^content/[0-9]+$@'],
+                ],
+                [
+                    'text' => 'Puntos Transporte',
+                    'url'  => 'points/transport',
+                    'icon' => 'fa-solid fa-check-double',
+                    'active' => ['points', 'points*', 'regex:@^content/[0-9]+$@'],
+                ],
+                [
+                    'text' => 'Puntos Seguro',
+                    'url'  => 'points/insurance',
+                    'icon' => 'fa-solid fa-check-double',
+                    'active' => ['points', 'points*', 'regex:@^content/[0-9]+$@'],
+                ]
+            ]
         ],
         [
             'text' => 'Clientes',

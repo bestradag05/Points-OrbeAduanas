@@ -19,4 +19,8 @@ class Personal extends Model
         return $this->belongsTo(User::class, 'id_user', 'id');
     }
 
+    public function routing(){
+        return $this->hasOne(Routing::class, 'id_personal', 'id');
+    }
+
 }

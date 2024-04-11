@@ -178,7 +178,7 @@ class RoutingController extends Controller
     {
 
         $routing = Routing::find($id);
-        $routing->load('customer', 'type_shipment', 'regime', 'shipper');
+        $routing->load('customer','custom', 'type_shipment', 'regime', 'shipper');
         $type_services = TypeService::all();
         $modalitys = Modality::all();
         $concepts = Concepts::all()->load('typeService');

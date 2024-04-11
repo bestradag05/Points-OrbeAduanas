@@ -20,7 +20,7 @@ class CustomController extends Controller
     {
         //Listar aduanas
 
-        $customs = Custom::all()->load('routing.personal', 'modality');;
+        $customs = Custom::all()->load('routing.personal', 'modality');
        
 
         $heads = [
@@ -127,7 +127,8 @@ class CustomController extends Controller
         $dateRegisterFormat = Carbon::createFromFormat('d/m/Y', $request['date_register'])->toDateString();
         $request['date_register'] = $dateRegisterFormat;
 
-        if($request->regularization_date != ''){
+
+        if($request->regularization_date != '' && $request->regularization_date != 'NO REQUIERE'){
 
             $dateRegularizationFormat = Carbon::createFromFormat('d/m/Y', $request->regularization_date)->toDateString();
             $request['regularization_date'] = $dateRegularizationFormat;
@@ -138,7 +139,7 @@ class CustomController extends Controller
         $custom->fill($request->all());
         $custom->save();
 
-        return redirect('custom/pending');
+        return redirect('custom');
 
     }
     

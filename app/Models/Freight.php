@@ -12,10 +12,16 @@ class Freight extends Model
 
     protected $table = 'freight';
 
-    protected $fillable = ['roi', 'hawb_hbl', 'bl_work', 'edt', 'eta','value_utility', 'value_freight', 'nro_operation'];
+    protected $fillable = ['roi', 'hawb_hbl', 'bl_work', 'edt', 'eta','value_utility', 'value_freight', 'state', 'nro_operation'];
 
     public function concepts()
     {
-        return $this->belongsToMany(Concepts::class, 'concepts_freight', 'id_freight', 'id_concepts');
+        return $this->belongsToMany(Concepts::class, 'concepts_freight', 'id_freight', 'id_concepts')->withPivot('value_concept');;
     }
+
+    public function routing()
+    {
+        return $this->belongsTo(Routing::class, 'nro_operation', 'nro_operation');
+    }
+    
 }
