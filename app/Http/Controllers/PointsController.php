@@ -19,18 +19,20 @@ class PointsController extends Controller
         })->get();
 
 
+        $personalPoints = [];
+
         foreach($personals as $personal){
 
             if ($personal->routing) {
-                /* var_dump( $personal->name. ': '  . $personal->routing->custom()->count() ); */
-                $personal->load('routing.custom');
-                dump($personal->routing->nro_operation);
-               
+
+                $personalPoints[$personal->id] = $personal->load('routing.custom', 'user.roles');
+            
             }
 
         }
                 
 
+        return view('points/points-customs', compact('personalPoints'));
 
 
     }

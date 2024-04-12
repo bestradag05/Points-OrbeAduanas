@@ -20,7 +20,7 @@ class Personal extends Model
     }
 
     public function routing(){
-        return $this->hasOne(Routing::class, 'id_personal', 'id');
+        return $this->hasMany(Routing::class, 'id_personal', 'id');
     }
 
 }
