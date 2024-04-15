@@ -8,33 +8,75 @@ use Illuminate\Http\Request;
 class PointsController extends Controller
 {
 
-    public function getPointCustoms(){
+    public function getPointCustoms()
+    {
 
-        //Obtenemos el personal que tenga roles de Asesores comerciales
+        $personals = $this->getPersonalRoles('custom');
 
-        $personals = Personal::whereHas('user.roles', function($query){
-            
-            $query->where('name', 'Asesor Comercial');
-
-        })->get();
+        $personalPoints = $personals->map(function ($personal) {
 
 
-        $personalPoints = [];
+            $filteredRouting = $personal->routing->filter(function ($route) {
 
-        foreach($personals as $personal){
+                return $route->custom != null;
+            });
 
-            if ($personal->routing) {
+            // Contar el número de registros en la tabla custom
+            $customCount = $filteredRouting->count();
 
-                $personalPoints[$personal->id] = $personal->load('routing.custom', 'user.roles');
-            
-            }
+            /* dump($customCount); */
 
-        }
-                
+            // Retornar el personal con el número de puntos
+            return [
+                'personal' => $personal,
+                'puntos' => $customCount
+            ];
+        });
+
 
         return view('points/points-customs', compact('personalPoints'));
+    }
 
+
+    public function getPointFreight()
+    {
+
+        $personals = $this->getPersonalRoles('freight');
+
+        $personalPoints = $personals->map(function ($personal) {
+
+
+            $filteredRouting = $personal->routing->filter(function ($route) {
+
+                return $route->freight != null;
+            });
+
+            // Contar el número de registros en la tabla custom
+            $count = $filteredRouting->count();
+
+            /* dump($customCount); */
+
+            // Retornar el personal con el número de puntos
+            return [
+                'personal' => $personal,
+                'puntos' => $count
+            ];
+        });
+
+
+        return view('points/points-freight', compact('personalPoints'));
 
     }
 
+
+    public function getPersonalRoles($relationship)
+    {
+        return Personal::whereHas('user.roles', function ($query) {
+            $query->where('name', 'Asesor Comercial');
+        })->with(['routing.'.$relationship => function ($query) {
+            // Filtrar los registros de la tabla custom por estado 'Punto'
+            $query->where('state', 'Generado');
+        }])->get();
+
+    }
 }

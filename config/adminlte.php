@@ -345,6 +345,12 @@ return [
             'active' => ['personal', 'personal*', 'regex:@^content/[0-9]+$@']
         ],
         [
+            'text' => 'Conceptos',
+            'url'  => 'concepts',
+            'icon' => 'fas fa-fw fa-copy',
+            'active' => ['concepts', 'concepts*', 'regex:@^content/[0-9]+$@']
+        ],
+        [
             'text' => 'Liquidacion',
             'icon' => 'fas fa-fw fa-laptop',
             'submenu' => [
@@ -401,25 +407,25 @@ return [
                     'text' => 'Puntos Flete',
                     'url'  => 'points/freight',
                     'icon' => 'fa-solid fa-check-double',
-                    'active' => ['points', 'points*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['points/freight', 'points/freight*', 'regex:@^content/[0-9]+$@'],
                 ],
                 [
                     'text' => 'Puntos Aduana',
                     'url' => 'points/customs',
                     'icon'  => 'fa-solid fa-bell-exclamation' ,
-                    'active' => ['points', 'points*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['points/customs', 'points/customs*', 'regex:@^content/[0-9]+$@'],
                 ],
                 [
                     'text' => 'Puntos Transporte',
                     'url'  => 'points/transport',
                     'icon' => 'fa-solid fa-check-double',
-                    'active' => ['points', 'points*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['points/transport', 'points/transport*', 'regex:@^content/[0-9]+$@'],
                 ],
                 [
                     'text' => 'Puntos Seguro',
                     'url'  => 'points/insurance',
                     'icon' => 'fa-solid fa-check-double',
-                    'active' => ['points', 'points*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['points/insurance', 'points/insurance*', 'regex:@^content/[0-9]+$@'],
                 ]
             ]
         ],

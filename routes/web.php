@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ConceptsController;
 use App\Http\Controllers\CustomController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\FreightController;
@@ -62,6 +63,7 @@ Route::middleware('auth')->group(function () {
     Route::get('roles/grupos/add-all-permissions/{id_role}/{modulo}', [PermissionsController::class, 'addAllPermissions']);
     Route::get('roles/grupos/remove-all-permissions/{id_role}/{modulo}', [PermissionsController::class, 'removeAllPermissions']);
 
+    Route::resource('concepts', ConceptsController::class);
     Route::resource('customer', CustomerController::class);
     Route::resource('type_shipment', TypeShipmentController::class);
     Route::resource('modality', ModalityController::class);
@@ -76,8 +78,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('freight/pending', [FreightController::class, 'getFreightPending']);
     Route::resource('freight', FreightController::class);
+    
 
     Route::get('points/customs', [PointsController::class, 'getPointCustoms']);
+    Route::get('points/freight', [PointsController::class, 'getPointFreight']);
 
     
 });

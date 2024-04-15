@@ -101,7 +101,7 @@
                                     {{ $routing_service->name }}
                                 </a>
                             </td>
-                            <td class="text-bold  {{ $routing->custom->state == 'Numerado' ? 'text-success' : 'text-danger'}}">
+                            <td class="text-bold  {{ $routing->custom->state == 'Generado' ? 'text-success' : 'text-danger'}}">
                                {{$routing->custom->state}}
                             </td>
 
