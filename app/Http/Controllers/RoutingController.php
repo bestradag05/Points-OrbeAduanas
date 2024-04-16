@@ -183,10 +183,21 @@ class RoutingController extends Controller
         $modalitys = Modality::all();
         $concepts = Concepts::all()->load('typeService');
         $routing_services = $routing->typeService()->get();
+        $tab = 'detail';
 
         /* dd($routing_services); */
 
-        return view('routing/detail-routing', compact('routing', 'type_services', 'routing_services', 'concepts', 'modalitys'));
+        return view('routing/detail-routing', compact('routing', 'type_services', 'routing_services', 'concepts', 'modalitys', 'tab'));
+    }
+
+
+    public function getTemplateDocumentsRouting($id){
+        $tab = 'documents';
+        $routing = Routing::find($id);
+
+        $routing_services = $routing->typeService()->get();
+        dd($routing_services);
+        return view('routing/detail-routing', compact('tab', 'routing', 'routing_services'));
     }
 
 
