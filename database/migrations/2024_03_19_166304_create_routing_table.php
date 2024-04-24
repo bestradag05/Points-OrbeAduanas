@@ -24,7 +24,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_type_shipment');
             $table->unsignedBigInteger('id_regime');
             $table->unsignedBigInteger('id_incoterms');
-            $table->unsignedBigInteger('id_shipper');
+            $table->unsignedBigInteger('id_supplier');
             $table->string('commodity');
             $table->string('nro_package')->nullable();
             $table->decimal('pounds', 8, 2)->nullable();
@@ -41,7 +41,7 @@ return new class extends Migration
             $table->foreign('id_type_shipment')->references('id')->on('type_shipment');
             $table->foreign('id_regime')->references('id')->on('regime');
             $table->foreign('id_incoterms')->references('id')->on('incoterms');
-            $table->foreign('id_shipper')->references('id')->on('shipper');
+            $table->foreign('id_supplier')->references('id')->on('suppliers');
         });
     }
 

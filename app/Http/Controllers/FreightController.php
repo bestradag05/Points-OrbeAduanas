@@ -113,7 +113,7 @@ class FreightController extends Controller
         $etaFormat = Carbon::createFromFormat('d/m/Y', $request['eta'])->toDateString();
         $request['eta'] = $etaFormat;
 
-        $request['state'] = "Numerado";
+        $request['state'] = "Generado";
 
         $freight->fill($request->all());
         $freight->save();

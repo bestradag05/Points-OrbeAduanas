@@ -23,3 +23,8 @@
 .nav-treeview .nav-link{
     padding-left: 30px;
 }
+
+.select2-selection__choice{
+    background: #4609a8!important;
+    color: white!important;
+}

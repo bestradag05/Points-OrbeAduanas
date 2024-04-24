@@ -13,7 +13,7 @@ class Routing extends Model
     protected $table = 'routing';
 
     protected $fillable = ['nro_operation', 'origin', 'destination', 'freight_value', 'load_value', 'insurance_value', 'id_personal', 'id_customer',
-                           'id_type_shipment', 'id_modality', 'id_regime', 'id_incoterms', 'id_shipper', 'commodity', 'nro_package', 'pounds', 'kilograms', 
+                           'id_type_shipment', 'id_modality', 'id_regime', 'id_incoterms', 'id_supplier', 'commodity', 'nro_package', 'pounds', 'kilograms', 
                             'meassurement', 'hs_code', 'observation', 'concepts'];
 
     protected $casts = [
@@ -42,9 +42,9 @@ class Routing extends Model
         return $this->belongsTo(Regime::class, 'id_regime', 'id');
     }
 
-    public function shipper()
+    public function supplier()
     {
-        return $this->belongsTo(Shipper::class, 'id_shipper', 'id');
+        return $this->belongsTo(Supplier::class, 'id_supplier', 'id');
     }
 
     public function typeService()
@@ -62,6 +62,10 @@ class Routing extends Model
         return $this->hasOne(Freight::class, 'nro_operation', 'nro_operation');
     }
 
+    public function transport()
+    {
+        return $this->hasOne(Transport::class, 'nro_operation', 'nro_operation');
+    }
 
 
 }

@@ -11,8 +11,9 @@ use App\Models\Incoterms;
 use App\Models\Modality;
 use App\Models\Regime;
 use App\Models\Routing;
-use App\Models\Shipper;
 use App\Models\StateCountry;
+use App\Models\Supplier;
+use App\Models\Transport;
 use App\Models\TypeService;
 use App\Models\TypeShipment;
 use Illuminate\Http\Request;
@@ -58,7 +59,7 @@ class RoutingController extends Controller
         $regimes = Regime::all();
         $customers = Customer::all();
         $incoterms = Incoterms::all();
-        $shippers = Shipper::all();
+        $suppliers = Supplier::all();
         $type_services = TypeService::all();
 
 
@@ -71,7 +72,7 @@ class RoutingController extends Controller
             'modalitys',
             'regimes',
             'incoterms',
-            'shippers',
+            'suppliers',
             'type_services'
         ));
     }
@@ -91,7 +92,7 @@ class RoutingController extends Controller
             'destination' => $request->destination,
             'load_value' => $this->parseDouble($request->load_value),
             'id_customer' => $request->id_customer,
-            'id_shipper' => $request->id_shipper,
+            'id_supplier' => $request->id_supplier,
             'id_type_shipment' => $request->id_type_shipment,
             'id_regime' => $request->id_regime,
             'id_incoterms' => $request->id_incoterms,
@@ -178,16 +179,35 @@ class RoutingController extends Controller
     {
 
         $routing = Routing::find($id);
-        $routing->load('customer','custom', 'type_shipment', 'regime', 'shipper');
+        $routing->load('customer', 'type_shipment', 'regime', 'supplier');
         $type_services = TypeService::all();
         $modalitys = Modality::all();
         $concepts = Concepts::all()->load('typeService');
-        $routing_services = $routing->typeService()->get();
+        
+        $stateCountrys = StateCountry::whereHas('country', function ($query) {
+            $query->where('name', 'Perú');
+        })->get();
+
+
+        $services = [];
+
+        if ($routing->custom()->exists()) {
+            $services['Aduanas'] = $routing->custom ;
+        }
+
+        if ($routing->freight()->exists()) {
+            $services['Flete'] = $routing->freight;
+        }
+
+        if ($routing->transport()->exists()) {
+            $services['Transporte'] = $routing->transport;
+        }
+
         $tab = 'detail';
 
-        /* dd($routing_services); */
 
-        return view('routing/detail-routing', compact('routing', 'type_services', 'routing_services', 'concepts', 'modalitys', 'tab'));
+
+        return view('routing/detail-routing', compact('routing', 'type_services', 'services', 'concepts', 'modalitys', 'tab', 'stateCountrys'));
     }
 
 
@@ -196,14 +216,16 @@ class RoutingController extends Controller
         $routing = Routing::find($id);
 
         $routing_services = $routing->typeService()->get();
-        dd($routing_services);
+
         return view('routing/detail-routing', compact('tab', 'routing', 'routing_services'));
     }
 
 
     public function storeRoutingService(Request $request)
     {
+
         $routing = Routing::where('nro_operation', $request->nro_operation)->first();
+
         $type_services = TypeService::find($request->typeService);
 
         //Agregamos el registro a la tabla pivot
@@ -248,8 +270,21 @@ class RoutingController extends Controller
                 break;
 
             case "Transporte":
-                # Transporte...
-                break;
+
+                  # Transporte...
+                Transport::create([
+
+                    'address' => $request->origin . ' - ' . $request->destination,
+                    'total' => $request->transport_value,
+                    'igv' => (isset($request->igv)) ? (float) $request->transport_value *  0.18 : 0,
+                    'tax_base' => (isset($request->igv)) ? (float) $request->transport_value  / 1.18 : $request->transport_value,
+                    'nro_operation' => $routing->nro_operation,
+                    'state' => 'Pendiente'
+
+                ]);
+
+                return redirect('/routing/' . $routing->id . '/detail');
+              
 
             default:
                 # code...
@@ -265,7 +300,7 @@ class RoutingController extends Controller
             'destination' => 'required|string',
             'load_value' => 'required',
             'id_customer' => 'required',
-            'id_shipper' => 'required',
+            'id_supplier' => 'required',
             'id_type_shipment' => 'required',
             'id_regime' => 'required',
             'id_incoterms' => 'required',

@@ -29,7 +29,7 @@
                 </tr>
                 <tr>
                     <td class="text-secondary text-bold text-uppercase">Proveedor del Cliente</td>
-                    <td>{{ $routing->shipper->name_businessname }}</td>
+                    <td>{{ $routing->supplier->name_businessname }}</td>
                 </tr>
                 <tr>
                     <td class="text-secondary text-bold text-uppercase">Tipo de embarque</td>
@@ -52,14 +52,13 @@
             Servicios
         </h5>
 
-        <select name="type_service" id="type_service" class="form-control"
-            onchange="openModalForm(this)">
+        <select name="type_service" id="type_service" class="form-control" onchange="openModalForm(this)">
             <option></option>
             @foreach ($type_services as $type_service)
-                @php
+                  @php
                     $disabled = false;
-                    foreach ($routing_services as $routing_service) {
-                        if ($type_service->id == $routing_service->id) {
+                    foreach ($services as $index => $service) {
+                        if ($type_service->name == $index) {
                             $disabled = true;
                             break;
                         }
@@ -82,17 +81,19 @@
             </thead>
             <tbody>
 
-                @foreach ($routing_services as $routing_service)
+                @foreach ($services as $index => $service)
                     <tr>
                         <td>
                             <a class="btn btn-indigo w-100">
-                                {{ $routing_service->name }}
+                                {{ $index }}
                             </a>
                         </td>
+
                         <td
-                            class="text-bold  {{ $routing->custom->state == 'Generado' ? 'text-success' : 'text-danger' }}">
-                            {{ $routing->custom->state }}
+                            class="text-bold  {{ $service->state == 'Pendiente' ? 'text-danger' : 'text-success' }}">
+                            {{ $service->state }}
                         </td>
+
 
                         <td>
                             <a href="#"></a>
@@ -305,6 +306,7 @@
 
         function submitForm() {
 
+
             let form = $(`#${container.id}`).find('form');
             const inputs = form.find('input, select').not('.formConcepts  input, .formConcepts select');
 
@@ -326,9 +328,10 @@
 
             });
 
+
             var camposInvalidos = form.find('.is-invalid').length;
 
-            if (camposInvalidos === 0) {
+            if (camposInvalidos == 0) {
 
                 let conceptops = JSON.stringify(conceptsArray);
 

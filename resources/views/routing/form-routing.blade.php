@@ -82,13 +82,13 @@
           </div>
 
           <div class="col-6">
-              <x-adminlte-select2 name="id_shipper" label="Provedor del Cliente" igroup-size="md"
+              <x-adminlte-select2 name="id_supplier" label="Provedor del Cliente" igroup-size="md"
                   data-placeholder="Seleccione una opcion...">
                   <option />
-                  @foreach ($shippers as $shipper)
-                      <option value="{{ $shipper->id }}"
-                          {{ (isset($routing->id_shipper) && $routing->id_shipper == $shipper->id) || old('id_shipper') == $shipper->id ? 'selected' : '' }}>
-                          {{ $shipper->name_businessname }}
+                  @foreach ($suppliers as $supplier)
+                      <option value="{{ $supplier->id }}"
+                          {{ (isset($routing->id_supplier) && $routing->id_supplier == $supplier->id) || old('id_supplier') == $supplier->id ? 'selected' : '' }}>
+                          {{ $supplier->name_businessname }}
                       </option>
                   @endforeach
               </x-adminlte-select2>
@@ -265,45 +265,17 @@
       <button class="btn btn-secondary mt-5" onclick="stepper.previous()">Anterior</button>
       <button type="submit" class="btn btn-indigo mt-5" onclick="submitForm()">Guardar</button>
   </div>
-  {{--   <div id="test-l-3" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepper1trigger3">
+  
 
-      <div class="row">
+  @push('scripts')
+    <script>
 
-          <div class="col-6">
-
-              <div class="form-group">
-                  <label for="freight_value">Valor del Flete</label>
-
-                  <div class="input-group">
-                      <div class="input-group-prepend">
-                          <span class="input-group-text text-bold">
-                              $
-                          </span>
-                      </div>
-                      <input type="text" class="form-control CurrencyInput" name="freight_value"
-                          data-type="currency" placeholder="Ingrese valor del flete">
-
-                      @error('freight_value')
-                          <div class="text-danger">{{ $message }}</div>
-                      @enderror
-                  </div>
-
-              </div>
-
-          </div>
+        $('#id_type_shipment').on('change', (e) => {
 
 
 
 
-      </div>
+        })
 
-
-
-      
-  </div> --}}
-
-
-  {{--     <div class="container text-center mt-5">
-        <input class="btn btn-primary" type="submit" value="{{ $formMode === 'edit' ? 'Actualizar' : 'Guardar' }}">
-    </div>
- --}}
+    </script>
+@endpush
