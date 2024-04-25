@@ -94,27 +94,35 @@
               </x-adminlte-select2>
           </div>
 
-          <div class="col-6">
-              <x-adminlte-select2 name="id_type_shipment" label="Tipo de embarque" igroup-size="md"
-                  data-placeholder="Seleccione una opcion...">
-                  <option />
-                  @foreach ($type_shipments as $type_shipment)
-                      <option value="{{ $type_shipment->id }}"
-                          {{ (isset($routing->id_type_shipment) && $routing->id_type_shipment == $type_shipment->id) || old('id_type_shipment') == $type_shipment->id ? 'selected' : '' }}>
-                          {{ $type_shipment->code . ' - ( ' . $type_shipment->description . ' )' }}</option>
-                  @endforeach
-              </x-adminlte-select2>
-          </div>
+          <div class="col-6 row">
+              <div class="col-8">
+                  <x-adminlte-select2 name="id_type_shipment" label="Tipo de embarque" igroup-size="md"
+                      data-placeholder="Seleccione una opcion...">
+                      <option />
+                      @foreach ($type_shipments as $type_shipment)
+                          <option value="{{ $type_shipment->id }}"
+                              {{ (isset($routing->id_type_shipment) && $routing->id_type_shipment == $type_shipment->id) || old('id_type_shipment') == $type_shipment->id ? 'selected' : '' }}>
+                              {{ $type_shipment->code . ' - ' . $type_shipment->name }}</option>
+                      @endforeach
+                  </x-adminlte-select2>
 
-          {{-- <div class="col-6">
-              <x-adminlte-select2 name="id_modality" label="Modalidad" igroup-size="md"
-                  data-placeholder="Seleccione una opcion...">
-                  <option />
-                  @foreach ($modalitys as $modality)
-                      <option value="{{ $modality->id }}">{{ $modality->name }}</option>
-                  @endforeach
-              </x-adminlte-select2>
-          </div> --}}
+              </div>
+              <div class="col-4 d-none">
+                  <div class="form-check d-inline">
+                      <input type="radio" id="radioLclFcl" name="lcl_fcl">
+                      <label for="radioLclFcl">
+                          LCL
+                      </label>
+                  </div>
+                  <div class="form-check d-inline">
+                      <input type="radio" id="radioLclFcl" name="lcl_fcl">
+                      <label for="radioLclFcl">
+                          FCL
+                      </label>
+                  </div>
+              </div>
+
+          </div>
 
           <div class="col-6">
               <x-adminlte-select2 name="id_regime" label="Regimen" igroup-size="md"
@@ -207,8 +215,9 @@
               <div class="form-group row">
                   <label for="kilograms" class="col-sm-4 col-form-label">Kilogramos: </label>
                   <div class="col-sm-8">
-                      <input type="text" class="form-control CurrencyInput @error('kilograms') is-invalid @enderror" id="kilograms" name="kilograms"
-                          data-type="currency" placeholder="Ingrese el nro de paquetes.."
+                      <input type="text"
+                          class="form-control CurrencyInput @error('kilograms') is-invalid @enderror" id="kilograms"
+                          name="kilograms" data-type="currency" placeholder="Ingrese el nro de paquetes.."
                           value="{{ isset($routing->kilograms) ? $routing->kilograms : old('kilograms') }}">
                       @error('kilograms')
                           <span class="invalid-feedback d-block" role="alert">
@@ -223,8 +232,10 @@
               <div class="form-group row">
                   <label for="meassurement" class="col-sm-4 col-form-label">Medicion: </label>
                   <div class="col-sm-8">
-                      <input type="text" class="form-control CurrencyInput @error('meassurement') is-invalid @enderror" id="meassurement" name="meassurement"
-                          data-type="currency" placeholder="Ingrese el nro de paquetes.."
+                      <input type="text"
+                          class="form-control CurrencyInput @error('meassurement') is-invalid @enderror"
+                          id="meassurement" name="meassurement" data-type="currency"
+                          placeholder="Ingrese el nro de paquetes.."
                           value="{{ isset($routing->meassurement) ? $routing->meassurement : old('meassurement') }}">
                       @error('meassurement')
                           <span class="invalid-feedback d-block" role="alert">
@@ -265,17 +276,20 @@
       <button class="btn btn-secondary mt-5" onclick="stepper.previous()">Anterior</button>
       <button type="submit" class="btn btn-indigo mt-5" onclick="submitForm()">Guardar</button>
   </div>
-  
+
 
   @push('scripts')
-    <script>
-
-        $('#id_type_shipment').on('change', (e) => {
-
+      <script>
+          $('#id_type_shipment').on('change', (e) => {
 
 
+              var idShipment = $(e.target).find("option:selected").val();
 
-        })
+              console.log(idShipment);
 
-    </script>
-@endpush
+
+          })
+
+
+      </script>
+  @endpush

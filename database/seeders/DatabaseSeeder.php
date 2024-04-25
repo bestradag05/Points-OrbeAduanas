@@ -96,28 +96,28 @@ class DatabaseSeeder extends Seeder
 
         /*  type_shipment */
 
-        TypeShipment::create(['code' => '046', 'description' => 'Marítima - Paita']);
-        TypeShipment::create(['code' => '028', 'description' => 'Marítima - Talara']);
-        TypeShipment::create(['code' => '082', 'description' => 'Marítima - Salaverry']);
-        TypeShipment::create(['code' => '091', 'description' => 'Marítima - Chimbote']);
-        TypeShipment::create(['code' => '127', 'description' => 'Marítima - Pisco']);
-        TypeShipment::create(['code' => '163', 'description' => 'Marítima - Ilo']);
-        TypeShipment::create(['code' => '145', 'description' => 'Marítima - Mollendo']);
-        TypeShipment::create(['code' => '118', 'description' => 'Marítima - Callao']);
-        TypeShipment::create(['code' => '019', 'description' => 'Marítima - Tumbes']);
-        TypeShipment::create(['code' => '055', 'description' => 'Marítima - IAT Lambayeque']);
-        TypeShipment::create(['code' => '154', 'description' => 'Terrestre - Arequipa']);
-        TypeShipment::create(['code' => '172', 'description' => 'Terrestre - Tacna']);
-        TypeShipment::create(['code' => '262', 'description' => 'Terrestre - Desaguadero']);
-        TypeShipment::create(['code' => '280', 'description' => 'Terrestre - Puerto Maldonado']);
-        TypeShipment::create(['code' => '299', 'description' => 'Terrestre - La Tina']);
-        TypeShipment::create(['code' => '181', 'description' => 'Terrestre - Puno']);
-        TypeShipment::create(['code' => '271', 'description' => 'Terrestre - Tarapoto']);
-        TypeShipment::create(['code' => '226', 'description' => 'Fluvial - Iquitos']);
-        TypeShipment::create(['code' => '217', 'description' => 'Fluvial - Pucallpa']);
-        TypeShipment::create(['code' => '190', 'description' => 'Fluvial - Cusco']);
-        TypeShipment::create(['code' => '235', 'description' => 'Aérea - Callao']);
-        TypeShipment::create(['code' => '244', 'description' => 'Aérea - Postal']);
+        TypeShipment::create(['code' => '046', 'name' => 'Paita' , 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '028', 'name' => 'Talara' , 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '082', 'name' => 'Salaverry' , 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '091', 'name' => 'Chimbote' , 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '127', 'name' => 'Pisco' , 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '163', 'name' => 'Ilo' , 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '145', 'name' => 'Mollendo' , 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '118', 'name' => 'Maritima del Callao' , 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '019', 'name' => 'Tumbes' , 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '055', 'name' => 'IAT Lambayeque' , 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '154', 'name' => 'Arequipa' , 'description' => 'Terrestre']);
+        TypeShipment::create(['code' => '172', 'name' => 'Tacna' , 'description' => 'Terrestre']);
+        TypeShipment::create(['code' => '262', 'name' => 'Desaguadero' , 'description' => 'Terrestre']);
+        TypeShipment::create(['code' => '280', 'name' => 'Puerto Maldonado' , 'description' => 'Terrestre']);
+        TypeShipment::create(['code' => '299', 'name' => 'La Tina' , 'description' => 'Terrestre']);
+        TypeShipment::create(['code' => '181', 'name' => 'Puno' , 'description' => 'Terrestre']);
+        TypeShipment::create(['code' => '271', 'name' => 'Tarapoto' , 'description' => 'Terrestre']);
+        TypeShipment::create(['code' => '226', 'name' => 'Iquitos' , 'description' => 'Fluvial']);
+        TypeShipment::create(['code' => '217', 'name' => 'Pucallpa' , 'description' => 'Fluvial']);
+        TypeShipment::create(['code' => '190', 'name' => 'Cusco' , 'description' => 'Fluvial']);
+        TypeShipment::create(['code' => '235', 'name' => 'Aerea del Callao' , 'description' => 'Aérea']);
+        TypeShipment::create(['code' => '244', 'name' => 'Postal' , 'description' => 'Aérea']);
 
 
         /*  incoterms */
