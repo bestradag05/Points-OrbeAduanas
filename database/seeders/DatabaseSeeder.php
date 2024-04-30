@@ -13,6 +13,7 @@ use App\Models\Regime;
 use App\Models\Routing;
 use App\Models\Shipper;
 use App\Models\Supplier;
+use App\Models\TypeLoad;
 use App\Models\TypeService;
 use App\Models\TypeShipment;
 use App\Models\User;
@@ -120,6 +121,14 @@ class DatabaseSeeder extends Seeder
         TypeShipment::create(['code' => '244', 'name' => 'Postal' , 'description' => 'Aérea']);
 
 
+        /* Type load */
+
+        TypeLoad::create(['name' => 'Carga general' , 'description' => 'Carga general']);
+        TypeLoad::create(['name' => 'Carga a granel' , 'description' => 'Carga a granel']);
+        TypeLoad::create(['name' => 'Carga peligrosa' , 'description' => 'Carga peligrosa']);
+        TypeLoad::create(['name' => 'Carga perecedera' , 'description' => 'Carga perecedera']);
+        TypeLoad::create(['name' => 'Carga fragil' , 'description' => 'Carga fragil']);
+
         /*  incoterms */
         Incoterms::create(['code' => 'EXW', 'name' => 'Ex Works']);
         Incoterms::create(['code' => 'FCA', 'name' => 'Free Carrier']);
@@ -157,7 +166,7 @@ class DatabaseSeeder extends Seeder
           Personal::create(['name' => 'Anderson', 'last_name' => 'moron', 'cellphone' => '977234697', 'email' => 'liquidador@orbeaduanas.com', 'dni' => '73184116', 'immigration_card' => '', 'passport' => '', 'img_url' => '73184116.png', 'id_user' => 2]);
           Customer::create(['ruc' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'id_user' => 2]);
           Supplier::create(['type_id' => 'RUC', 'number_id' => '20554630740', 'name_businessname' => 'HENAN XINGSHENGDA', 'addres' => 'North section of renmin road, changge city', 'contact_name' => 'Asten Zho' , 'contact_number' => '944653246', 'contact_email' => 'asten@hnidel.com', 'type_suppliers' => 'Venta']);
-          Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU - CALLAO', 'destination' => 'CHINA - SHANGAI', 'freight_value' => '2500', 'load_value' => '2700', 'insurance_value' => '25', 'id_personal' => 1, 'id_customer' => 1, 'id_type_shipment' => 8, 'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'commodity' => 'CILINDRO']);
+          Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU - CALLAO', 'destination' => 'CHINA - SHANGAI', 'freight_value' => '2500', 'load_value' => '2700', 'insurance_value' => '25', 'id_personal' => 1, 'id_customer' => 1, 'id_type_shipment' => 8, 'lcl_fcl' => 'LCL' , 'id_type_load' => 1 ,'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'commodity' => 'CILINDRO']);
     
     
           Concepts::create(['name'=> 'COMISION DE ADUANA', 'id_type_shipment'=> 8, 'id_type_service'=> 1]);

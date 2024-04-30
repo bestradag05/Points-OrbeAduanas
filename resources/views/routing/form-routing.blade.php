@@ -94,8 +94,8 @@
               </x-adminlte-select2>
           </div>
 
-          <div class="col-6 row">
-              <div class="col-8">
+          <div class="col-6 row" id="lclfcl_content">
+              <div class="col-12">
                   <x-adminlte-select2 name="id_type_shipment" label="Tipo de embarque" igroup-size="md"
                       data-placeholder="Seleccione una opcion...">
                       <option />
@@ -107,7 +107,7 @@
                   </x-adminlte-select2>
 
               </div>
-              <div class="col-4 d-none">
+              <div class="col-4 d-none align-items-center ">
                   <div class="form-check d-inline">
                       <input type="radio" id="radioLclFcl" name="lcl_fcl">
                       <label for="radioLclFcl">
@@ -282,14 +282,30 @@
       <script>
           $('#id_type_shipment').on('change', (e) => {
 
-
               var idShipment = $(e.target).find("option:selected").val();
 
-              console.log(idShipment);
+              $.ajax({
+                  type: "GET",
+                  url: "/getLCLFCL",
+                  data: {
+                      idShipment
+                  },
+                  dataType: "JSON",
+                  success: function(respu) {
+                      if (respu.description === "Marítima") {
+                        $('#lclfcl_content').children().first().removeClass('col-12').addClass('col-8');
+                        $('#lclfcl_content').children().last().removeClass('d-none').addClass('d-flex');
+                        
+
+                      }else{
+                        $('#lclfcl_content').children().first().removeClass('col-8').addClass('col-12');
+                        $('#lclfcl_content').children().last().removeClass('d-flex').addClass('d-none');
+                        $('input[name="lcl_fcl"]').prop('checked', false);
+                      }
+                  }
+              });
 
 
-          })
-
-
+          });
       </script>
   @endpush

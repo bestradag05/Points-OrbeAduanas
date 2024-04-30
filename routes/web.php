@@ -72,6 +72,7 @@ Route::middleware('auth')->group(function () {
     Route::get('routing/{id_routing}/detail', [RoutingController::class, 'getTemplateDetailRouting']);
     Route::get('routing/{id_routing}/documents', [RoutingController::class, 'getTemplateDocumentsRouting']);
     Route::post('routing_service', [RoutingController::class, 'storeRoutingService']);
+    Route::get('getLCLFCL', [RoutingController::class, 'getLCLFCL']);
 
     Route::get('custom/pending', [CustomController::class, 'getCustomPending']);
     Route::resource('custom', CustomController::class);
@@ -84,5 +85,7 @@ Route::middleware('auth')->group(function () {
     Route::get('points/customs', [PointsController::class, 'getPointCustoms']);
     Route::get('points/freight', [PointsController::class, 'getPointFreight']);
 
+
+    
     
 });

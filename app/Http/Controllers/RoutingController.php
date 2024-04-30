@@ -314,4 +314,10 @@ class RoutingController extends Controller
             'observation' => 'nullable'
         ]);
     }
+
+    public function getLCLFCL(Request $request) {
+        $type_shipment = TypeShipment::find($request->idShipment);
+
+        return $type_shipment;
+    }
 }

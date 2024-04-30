@@ -25,6 +25,8 @@ return new class extends Migration
             $table->unsignedBigInteger('id_regime');
             $table->unsignedBigInteger('id_incoterms');
             $table->unsignedBigInteger('id_supplier');
+            $table->unsignedBigInteger('id_type_load');
+            $table->string('lcl_fcl')->nullable();
             $table->string('commodity');
             $table->string('nro_package')->nullable();
             $table->decimal('pounds', 8, 2)->nullable();
@@ -42,6 +44,7 @@ return new class extends Migration
             $table->foreign('id_regime')->references('id')->on('regime');
             $table->foreign('id_incoterms')->references('id')->on('incoterms');
             $table->foreign('id_supplier')->references('id')->on('suppliers');
+            $table->foreign('id_type_load')->references('id')->on('type_load');
         });
     }
 
