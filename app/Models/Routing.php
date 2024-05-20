@@ -13,7 +13,7 @@ class Routing extends Model
     protected $table = 'routing';
 
     protected $fillable = ['nro_operation', 'origin', 'destination', 'freight_value', 'load_value', 'insurance_value', 'id_personal', 'id_customer',
-                           'id_type_shipment', 'lcl_fcl', 'id_modality', 'id_regime', 'id_incoterms', 'id_supplier', 'commodity', 'nro_package', 'pounds', 'kilograms', 
+                           'id_type_shipment', 'lcl_fcl', 'id_type_load', 'id_modality', 'id_regime', 'id_incoterms', 'id_supplier', 'commodity', 'nro_package', 'pounds', 'kilograms', 
                             'meassurement', 'hs_code', 'observation', 'concepts'];
 
     protected $casts = [
@@ -25,6 +25,11 @@ class Routing extends Model
     public function type_shipment()
     {
         return $this->belongsTo(TypeShipment::class, 'id_type_shipment', 'id');
+    }
+
+    public function type_load()
+    {
+        return $this->belongsTo(TypeLoad::class, 'id_type_load', 'id');
     }
 
     public function personal()

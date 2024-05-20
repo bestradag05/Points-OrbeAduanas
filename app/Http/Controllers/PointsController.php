@@ -8,8 +8,9 @@ use Illuminate\Http\Request;
 class PointsController extends Controller
 {
 
-    public function getPointCustoms()
+    public function getPointCustoms(Request $request)
     {
+        
 
         $personals = $this->getPersonalRoles('custom');
 
@@ -33,6 +34,9 @@ class PointsController extends Controller
             ];
         });
 
+        if($request->type){
+            return response()->json($personalPoints);
+        }
 
         return view('points/points-customs', compact('personalPoints'));
     }

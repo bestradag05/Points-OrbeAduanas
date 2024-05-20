@@ -117,7 +117,6 @@
 
     <script src="{{ asset('js/formatInputCurren.js') }}"></script>
 
-
 </body>
 
 </html>

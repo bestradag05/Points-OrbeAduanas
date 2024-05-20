@@ -121,7 +121,7 @@ class CustomController extends Controller
 
         $custom = Custom::find($id);
         $request['cif_value'] = $this->parseDouble($request->cif_value);
-        $request['state'] = "Numerado";
+        $request['state'] = "GENERADO";
 
     
         $dateRegisterFormat = Carbon::createFromFormat('d/m/Y', $request['date_register'])->toDateString();

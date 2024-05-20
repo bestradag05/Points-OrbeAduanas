@@ -14,6 +14,7 @@ use App\Models\Routing;
 use App\Models\StateCountry;
 use App\Models\Supplier;
 use App\Models\Transport;
+use App\Models\TypeLoad;
 use App\Models\TypeService;
 use App\Models\TypeShipment;
 use Illuminate\Http\Request;
@@ -61,6 +62,7 @@ class RoutingController extends Controller
         $incoterms = Incoterms::all();
         $suppliers = Supplier::all();
         $type_services = TypeService::all();
+        $type_loads = TypeLoad::all();
 
 
 
@@ -73,7 +75,8 @@ class RoutingController extends Controller
             'regimes',
             'incoterms',
             'suppliers',
-            'type_services'
+            'type_services',
+            'type_loads'
         ));
     }
 
@@ -95,6 +98,7 @@ class RoutingController extends Controller
             'id_supplier' => $request->id_supplier,
             'id_type_shipment' => $request->id_type_shipment,
             'id_regime' => $request->id_regime,
+            'id_type_load' => $request->id_type_load,
             'id_incoterms' => $request->id_incoterms,
             'wr_loading' => $request->wr_loading,
             'commodity' => $request->commodity,
@@ -179,7 +183,7 @@ class RoutingController extends Controller
     {
 
         $routing = Routing::find($id);
-        $routing->load('customer', 'type_shipment', 'regime', 'supplier');
+        $routing->load('customer', 'type_shipment', 'regime', 'supplier', 'type_load');
         $type_services = TypeService::all();
         $modalitys = Modality::all();
         $concepts = Concepts::all()->load('typeService');
@@ -190,7 +194,7 @@ class RoutingController extends Controller
 
 
         $services = [];
-
+        //Verificamos los servicios que esten dentro de nuestro detalle de la carga y lo agregamos
         if ($routing->custom()->exists()) {
             $services['Aduanas'] = $routing->custom ;
         }
@@ -303,6 +307,7 @@ class RoutingController extends Controller
             'id_supplier' => 'required',
             'id_type_shipment' => 'required',
             'id_regime' => 'required',
+            'id_type_load' => 'required',
             'id_incoterms' => 'required',
             'wr_loading' => 'nullable',
             'commodity' => 'required',

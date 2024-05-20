@@ -125,6 +125,19 @@
           </div>
 
           <div class="col-6">
+              <x-adminlte-select2 name="id_type_load" label="Tipo de carga" igroup-size="md"
+                  data-placeholder="Seleccione una opcion...">
+                  <option />
+                  @foreach ($type_loads as $type_load)
+                      <option value="{{ $type_load->id }}"
+                          {{ (isset($routing->id_type_load) && $routing->id_type_load == $type_load->id) || old('id_type_load') == $type_load->id ? 'selected' : '' }}>
+                          {{ $type_load->name }}
+                      </option>
+                  @endforeach
+              </x-adminlte-select2>
+          </div>
+
+          <div class="col-6">
               <x-adminlte-select2 name="id_regime" label="Regimen" igroup-size="md"
                   data-placeholder="Seleccione una opcion...">
                   <option />
@@ -293,19 +306,28 @@
                   dataType: "JSON",
                   success: function(respu) {
                       if (respu.description === "Marítima") {
-                        $('#lclfcl_content').children().first().removeClass('col-12').addClass('col-8');
-                        $('#lclfcl_content').children().last().removeClass('d-none').addClass('d-flex');
-                        
+                          $('#lclfcl_content').children().first().removeClass('col-12').addClass('col-8');
+                          $('#lclfcl_content').children().last().removeClass('d-none').addClass('d-flex');
 
-                      }else{
-                        $('#lclfcl_content').children().first().removeClass('col-8').addClass('col-12');
-                        $('#lclfcl_content').children().last().removeClass('d-flex').addClass('d-none');
-                        $('input[name="lcl_fcl"]').prop('checked', false);
+
+                      } else {
+                          $('#lclfcl_content').children().first().removeClass('col-8').addClass('col-12');
+                          $('#lclfcl_content').children().last().removeClass('d-flex').addClass('d-none');
+                          $('input[name="lcl_fcl"]').prop('checked', false);
                       }
                   }
               });
 
 
           });
+
+
+          $('select').on('select2:open', function(e) {
+            var searchField = $(this).data('select2').dropdown.$search || $(this).data('select2').selection.$search;
+            if (searchField) {
+                searchField[0].focus();
+            }
+        });
+
       </script>
   @endpush
