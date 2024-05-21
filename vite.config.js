@@ -7,7 +7,8 @@ export default defineConfig({
             input: [
                 'resources/sass/app.scss',
                 'resources/js/app.js',
-                'resources/js/chart.js'
+                'resources/js/chartjs/custom.js',
+                'resources/js/chartjs/freight.js'
             ],
             refresh: true,
         }),

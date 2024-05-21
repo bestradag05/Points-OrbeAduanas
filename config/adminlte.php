@@ -416,6 +416,12 @@ return [
             'icon' => 'fas fa-fw fa-copy',
             'submenu' => [
                 [
+                    'text' => 'Detalle por vendedor',
+                    'url'  => 'points/detail',
+                    'icon' => 'fa-solid fa-check-double',
+                    'active' => ['points/detail', 'points/detail*', 'regex:@^content/[0-9]+$@'],
+                ],
+                [
                     'text' => 'Puntos Flete',
                     'url'  => 'points/freight',
                     'icon' => 'fa-solid fa-check-double',

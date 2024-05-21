@@ -86,6 +86,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('transport', TransportController::class);
 
 
+    Route::get('points/detail', [PointsController::class, 'getPointDetail']);
     Route::get('points/customs', [PointsController::class, 'getPointCustoms']);
     Route::get('points/freight', [PointsController::class, 'getPointFreight']);
+    Route::get('points/transport', [PointsController::class, 'getPointTransport']);
 });

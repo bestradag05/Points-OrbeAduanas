@@ -1,6 +1,7 @@
 // resources/js/chart.js
 import { Chart } from 'chart.js/auto';
 import axios from 'axios';
+import { color } from 'chart.js/helpers';
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -18,6 +19,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 points.push(puntos);
             })
 
+            //Condicionamos colores de acuerdo al valor
+            const colors = response.data.map(({puntos}) => puntos > 15 ? '#0C3C70':'#FE000F');
+            console.log(colors);
+
             const ctx = document.getElementById('customChart').getContext('2d');
             new Chart(ctx, {
                 type: 'bar',
@@ -28,22 +33,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     datasets: [{
                         label: 'Puntos x Vendedor',
                         data: points,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 159, 64, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(255, 159, 64, 1)'
-                        ],
+                        backgroundColor: colors,
+                       
                         borderWidth: 1
                     }]
                 },
