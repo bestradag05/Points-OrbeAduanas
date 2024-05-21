@@ -18,7 +18,9 @@ use App\Models\TypeService;
 use App\Models\TypeShipment;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -39,6 +41,7 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('admin')
         ]);
 
+
         Personal::create([
             'name' => 'admin',
             'last_name' => 'administrador',
@@ -48,7 +51,35 @@ class DatabaseSeeder extends Seeder
             'img_url' => 'user_default.png',
             'id_user' => 1
         ]);
-        
+
+        $contador = 0;
+
+        do {
+            User::create([
+                'email' => Str::random(5) . '@orbeaduanas.com',
+                'password' => Hash::make('admin')
+            ]);
+
+
+            Personal::create([
+                'name' => Str::random(5),
+                'last_name' => Str::random(5),
+                'cellphone' => Str::random(5),
+                'email' => Str::random(5) . 'orbeaduanas.com',
+                'dni' => Str::random(5),
+                'img_url' => 'user_default.png',
+                'id_user' =>  $contador + 1
+            ]);
+
+
+            $contador++;
+        } while ($contador <= 10);
+
+
+
+
+
+
         Permission::create(['name' => 'users.create', 'alias' => 'Crear usuarios', 'guard_name' => 'web']);
         Permission::create(['name' => 'users.update', 'alias' => 'Actualizar usuarios', 'guard_name' => 'web']);
         Permission::create(['name' => 'users.delete', 'alias' => 'Eliminar usuarios', 'guard_name' => 'web']);
@@ -97,37 +128,37 @@ class DatabaseSeeder extends Seeder
 
         /*  type_shipment */
 
-        TypeShipment::create(['code' => '046', 'name' => 'Paita' , 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '028', 'name' => 'Talara' , 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '082', 'name' => 'Salaverry' , 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '091', 'name' => 'Chimbote' , 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '127', 'name' => 'Pisco' , 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '163', 'name' => 'Ilo' , 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '145', 'name' => 'Mollendo' , 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '118', 'name' => 'Maritima del Callao' , 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '019', 'name' => 'Tumbes' , 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '055', 'name' => 'IAT Lambayeque' , 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '154', 'name' => 'Arequipa' , 'description' => 'Terrestre']);
-        TypeShipment::create(['code' => '172', 'name' => 'Tacna' , 'description' => 'Terrestre']);
-        TypeShipment::create(['code' => '262', 'name' => 'Desaguadero' , 'description' => 'Terrestre']);
-        TypeShipment::create(['code' => '280', 'name' => 'Puerto Maldonado' , 'description' => 'Terrestre']);
-        TypeShipment::create(['code' => '299', 'name' => 'La Tina' , 'description' => 'Terrestre']);
-        TypeShipment::create(['code' => '181', 'name' => 'Puno' , 'description' => 'Terrestre']);
-        TypeShipment::create(['code' => '271', 'name' => 'Tarapoto' , 'description' => 'Terrestre']);
-        TypeShipment::create(['code' => '226', 'name' => 'Iquitos' , 'description' => 'Fluvial']);
-        TypeShipment::create(['code' => '217', 'name' => 'Pucallpa' , 'description' => 'Fluvial']);
-        TypeShipment::create(['code' => '190', 'name' => 'Cusco' , 'description' => 'Fluvial']);
-        TypeShipment::create(['code' => '235', 'name' => 'Aerea del Callao' , 'description' => 'Aérea']);
-        TypeShipment::create(['code' => '244', 'name' => 'Postal' , 'description' => 'Aérea']);
+        TypeShipment::create(['code' => '046', 'name' => 'Paita', 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '028', 'name' => 'Talara', 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '082', 'name' => 'Salaverry', 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '091', 'name' => 'Chimbote', 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '127', 'name' => 'Pisco', 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '163', 'name' => 'Ilo', 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '145', 'name' => 'Mollendo', 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '118', 'name' => 'Maritima del Callao', 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '019', 'name' => 'Tumbes', 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '055', 'name' => 'IAT Lambayeque', 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '154', 'name' => 'Arequipa', 'description' => 'Terrestre']);
+        TypeShipment::create(['code' => '172', 'name' => 'Tacna', 'description' => 'Terrestre']);
+        TypeShipment::create(['code' => '262', 'name' => 'Desaguadero', 'description' => 'Terrestre']);
+        TypeShipment::create(['code' => '280', 'name' => 'Puerto Maldonado', 'description' => 'Terrestre']);
+        TypeShipment::create(['code' => '299', 'name' => 'La Tina', 'description' => 'Terrestre']);
+        TypeShipment::create(['code' => '181', 'name' => 'Puno', 'description' => 'Terrestre']);
+        TypeShipment::create(['code' => '271', 'name' => 'Tarapoto', 'description' => 'Terrestre']);
+        TypeShipment::create(['code' => '226', 'name' => 'Iquitos', 'description' => 'Fluvial']);
+        TypeShipment::create(['code' => '217', 'name' => 'Pucallpa', 'description' => 'Fluvial']);
+        TypeShipment::create(['code' => '190', 'name' => 'Cusco', 'description' => 'Fluvial']);
+        TypeShipment::create(['code' => '235', 'name' => 'Aerea del Callao', 'description' => 'Aérea']);
+        TypeShipment::create(['code' => '244', 'name' => 'Postal', 'description' => 'Aérea']);
 
 
         /* Type load */
 
-        TypeLoad::create(['name' => 'Carga general' , 'description' => 'Carga general']);
-        TypeLoad::create(['name' => 'Carga a granel' , 'description' => 'Carga a granel']);
-        TypeLoad::create(['name' => 'Carga peligrosa' , 'description' => 'Carga peligrosa']);
-        TypeLoad::create(['name' => 'Carga perecedera' , 'description' => 'Carga perecedera']);
-        TypeLoad::create(['name' => 'Carga fragil' , 'description' => 'Carga fragil']);
+        TypeLoad::create(['name' => 'Carga general', 'description' => 'Carga general']);
+        TypeLoad::create(['name' => 'Carga a granel', 'description' => 'Carga a granel']);
+        TypeLoad::create(['name' => 'Carga peligrosa', 'description' => 'Carga peligrosa']);
+        TypeLoad::create(['name' => 'Carga perecedera', 'description' => 'Carga perecedera']);
+        TypeLoad::create(['name' => 'Carga fragil', 'description' => 'Carga fragil']);
 
         /*  incoterms */
         Incoterms::create(['code' => 'EXW', 'name' => 'Ex Works']);
@@ -144,15 +175,15 @@ class DatabaseSeeder extends Seeder
 
         /*  modality */
         Modality::create(['name' => 'ANTICIPADO']);
-        Modality::create([ 'name' => 'DIFERIDO']);
+        Modality::create(['name' => 'DIFERIDO']);
 
         /* Type_Service */
 
-        TypeService::create(['name'=> 'Aduanas']);
-        TypeService::create(['name'=> 'Flete']);
-        TypeService::create(['name'=> 'Seguro']);
-        TypeService::create(['name'=> 'Transporte']);
-        TypeService::create(['name'=> 'Adicionales']);
+        TypeService::create(['name' => 'Aduanas']);
+        TypeService::create(['name' => 'Flete']);
+        TypeService::create(['name' => 'Seguro']);
+        TypeService::create(['name' => 'Transporte']);
+        TypeService::create(['name' => 'Adicionales']);
 
 
 
@@ -161,24 +192,22 @@ class DatabaseSeeder extends Seeder
 
 
 
-          /* Proceso para el routing */
-          User::create(['email' => 'liquidador@orbeaduanas.com', 'password' => bcrypt('password')]);
-          Personal::create(['name' => 'Anderson', 'last_name' => 'moron', 'cellphone' => '977234697', 'email' => 'liquidador@orbeaduanas.com', 'dni' => '73184116', 'immigration_card' => '', 'passport' => '', 'img_url' => '73184116.png', 'id_user' => 2]);
-          Customer::create(['ruc' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'id_user' => 2]);
-          Supplier::create(['type_id' => 'RUC', 'number_id' => '20554630740', 'name_businessname' => 'HENAN XINGSHENGDA', 'addres' => 'North section of renmin road, changge city', 'contact_name' => 'Asten Zho' , 'contact_number' => '944653246', 'contact_email' => 'asten@hnidel.com', 'type_suppliers' => 'Venta']);
-          Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU - CALLAO', 'destination' => 'CHINA - SHANGAI', 'freight_value' => '2500', 'load_value' => '2700', 'insurance_value' => '25', 'id_personal' => 1, 'id_customer' => 1, 'id_type_shipment' => 8, 'lcl_fcl' => 'LCL' , 'id_type_load' => 1 ,'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'commodity' => 'CILINDRO']);
-    
-    
-          Concepts::create(['name'=> 'COMISION DE ADUANA', 'id_type_shipment'=> 8, 'id_type_service'=> 1]);
-          Concepts::create(['name'=>'GASTOS OPERATIVOS', 'id_type_shipment'=>8, 'id_type_service'=> 1]);
-          Concepts::create(['name'=>'GASTOS ADMINISTRATIVOS', 'id_type_shipment'=>21, 'id_type_service' => 1]);
-          Concepts::create(['name'=>'HAWB', 'id_type_shipment'=>8, 'id_type_service' => 1]);
-          Concepts::create(['name'=>'INLAND GROUND', 'id_type_shipment'=>8, 'id_type_service' => 1]);
-          Concepts::create(['name'=>'DELIVERY AIRPO', 'id_type_shipment'=>21, 'id_type_service' => 2]);
-          Concepts::create(['name'=>'AIR FREIGHT', 'id_type_shipment'=>21, 'id_type_service' => 2]);
-          Concepts::create(['name'=>'F.S.C', 'id_type_shipment'=>8, 'id_type_service' => 2]);
-          Concepts::create(['name'=>'OCEAN FREIGHT', 'id_type_shipment'=>8, 'id_type_service' => 2]);
+        /* Proceso para el routing */
+        User::create(['email' => 'liquidador@orbeaduanas.com', 'password' => bcrypt('password')]);
+        Personal::create(['name' => 'Anderson', 'last_name' => 'moron', 'cellphone' => '977234697', 'email' => 'liquidador@orbeaduanas.com', 'dni' => '73184116', 'immigration_card' => '', 'passport' => '', 'img_url' => '73184116.png', 'id_user' => 2]);
+        Customer::create(['ruc' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'id_user' => 2]);
+        Supplier::create(['type_id' => 'RUC', 'number_id' => '20554630740', 'name_businessname' => 'HENAN XINGSHENGDA', 'addres' => 'North section of renmin road, changge city', 'contact_name' => 'Asten Zho', 'contact_number' => '944653246', 'contact_email' => 'asten@hnidel.com', 'type_suppliers' => 'Venta']);
+        Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU - CALLAO', 'destination' => 'CHINA - SHANGAI', 'freight_value' => '2500', 'load_value' => '2700', 'insurance_value' => '25', 'id_personal' => 1, 'id_customer' => 1, 'id_type_shipment' => 8, 'lcl_fcl' => 'LCL', 'id_type_load' => 1, 'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'commodity' => 'CILINDRO']);
 
-    
+
+        Concepts::create(['name' => 'COMISION DE ADUANA', 'id_type_shipment' => 8, 'id_type_service' => 1]);
+        Concepts::create(['name' => 'GASTOS OPERATIVOS', 'id_type_shipment' => 8, 'id_type_service' => 1]);
+        Concepts::create(['name' => 'GASTOS ADMINISTRATIVOS', 'id_type_shipment' => 21, 'id_type_service' => 1]);
+        Concepts::create(['name' => 'HAWB', 'id_type_shipment' => 8, 'id_type_service' => 1]);
+        Concepts::create(['name' => 'INLAND GROUND', 'id_type_shipment' => 8, 'id_type_service' => 1]);
+        Concepts::create(['name' => 'DELIVERY AIRPO', 'id_type_shipment' => 21, 'id_type_service' => 2]);
+        Concepts::create(['name' => 'AIR FREIGHT', 'id_type_shipment' => 21, 'id_type_service' => 2]);
+        Concepts::create(['name' => 'F.S.C', 'id_type_shipment' => 8, 'id_type_service' => 2]);
+        Concepts::create(['name' => 'OCEAN FREIGHT', 'id_type_shipment' => 8, 'id_type_service' => 2]);
     }
 }

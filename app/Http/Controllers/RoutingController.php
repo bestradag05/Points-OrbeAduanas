@@ -187,7 +187,7 @@ class RoutingController extends Controller
         $type_services = TypeService::all();
         $modalitys = Modality::all();
         $concepts = Concepts::all()->load('typeService');
-        
+
         $stateCountrys = StateCountry::whereHas('country', function ($query) {
             $query->where('name', 'Perú');
         })->get();
@@ -196,7 +196,7 @@ class RoutingController extends Controller
         $services = [];
         //Verificamos los servicios que esten dentro de nuestro detalle de la carga y lo agregamos
         if ($routing->custom()->exists()) {
-            $services['Aduanas'] = $routing->custom ;
+            $services['Aduanas'] = $routing->custom;
         }
 
         if ($routing->freight()->exists()) {
@@ -215,7 +215,8 @@ class RoutingController extends Controller
     }
 
 
-    public function getTemplateDocumentsRouting($id){
+    public function getTemplateDocumentsRouting($id)
+    {
         $tab = 'documents';
         $routing = Routing::find($id);
 
@@ -275,20 +276,23 @@ class RoutingController extends Controller
 
             case "Transporte":
 
-                  # Transporte...
+                $tax_base = $this->parseDouble($request->transport_value);
+
+                # Transporte...
                 Transport::create([
 
-                    'address' => $request->origin . ' - ' . $request->destination,
-                    'total' => $request->transport_value,
-                    'igv' => (isset($request->igv)) ? (float) $request->transport_value *  0.18 : 0,
-                    'tax_base' => (isset($request->igv)) ? (float) $request->transport_value  / 1.18 : $request->transport_value,
+                    'origin' => $request->origin,
+                    'destination' => $request->destination,
+                    'tax_base' => (isset($request->igv)) ? $tax_base  / 1.18 : $tax_base,
+                    'igv' => (isset($request->igv)) ? ($tax_base /  1.18) *  0.18 : $tax_base * 0.18,
+                    'total' => (isset($request->igv)) ?  $tax_base : $tax_base * 1.18,
                     'nro_operation' => $routing->nro_operation,
                     'state' => 'Pendiente'
 
                 ]);
 
                 return redirect('/routing/' . $routing->id . '/detail');
-              
+
 
             default:
                 # code...
@@ -320,7 +324,8 @@ class RoutingController extends Controller
         ]);
     }
 
-    public function getLCLFCL(Request $request) {
+    public function getLCLFCL(Request $request)
+    {
         $type_shipment = TypeShipment::find($request->idShipment);
 
         return $type_shipment;

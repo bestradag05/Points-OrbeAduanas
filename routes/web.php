@@ -13,6 +13,7 @@ use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\PointsController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\RoutingController;
+use App\Http\Controllers\TransportController;
 use App\Http\Controllers\TypeShipmentController;
 use App\Http\Controllers\UserController;
 use App\Models\Custom;
@@ -67,7 +68,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('customer', CustomerController::class);
     Route::resource('type_shipment', TypeShipmentController::class);
     Route::resource('modality', ModalityController::class);
-   
+
     Route::resource('routing', RoutingController::class);
     Route::get('routing/{id_routing}/detail', [RoutingController::class, 'getTemplateDetailRouting']);
     Route::get('routing/{id_routing}/documents', [RoutingController::class, 'getTemplateDocumentsRouting']);
@@ -80,12 +81,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('freight/pending', [FreightController::class, 'getFreightPending']);
     Route::resource('freight', FreightController::class);
-    
+
+    Route::get('transport/pending', [TransportController::class, 'getTransportPending']);
+    Route::resource('transport', TransportController::class);
+
 
     Route::get('points/customs', [PointsController::class, 'getPointCustoms']);
     Route::get('points/freight', [PointsController::class, 'getPointFreight']);
-
-
-    
-    
 });

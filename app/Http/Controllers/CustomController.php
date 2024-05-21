@@ -21,7 +21,7 @@ class CustomController extends Controller
         //Listar aduanas
 
         $customs = Custom::all()->load('routing.personal', 'modality');
-       
+
 
         $heads = [
             '#',
@@ -31,18 +31,19 @@ class CustomController extends Controller
             'Estado',
             'Acciones'
         ];
-        
-        
 
-        return view("custom/list-custom", compact("customs","heads"));
+
+
+        return view("custom/list-custom", compact("customs", "heads"));
     }
 
-    public function getCustomPending(){
+    public function getCustomPending()
+    {
 
         //Listar aduanas
 
         $customs = Custom::where('state', 'Pendiente')->get()->load('routing.personal', 'modality');
-    
+
         $heads = [
             '#',
             'N° Operacion',
@@ -51,9 +52,9 @@ class CustomController extends Controller
             'Estado',
             'Acciones'
         ];
-        
 
-        return view("custom/pending-list-custom", compact("customs","heads"));
+
+        return view("custom/pending-list-custom", compact("customs", "heads"));
     }
 
 
@@ -63,9 +64,9 @@ class CustomController extends Controller
     public function create()
     {
         // Redireccion al formulario para crear una aduana
-        
 
-        $customers= Customer::all();
+
+        $customers = Customer::all();
         $type_shipments = TypeShipment::all();
         $modalitys = Modality::all();
 
@@ -87,7 +88,6 @@ class CustomController extends Controller
             'contact_email' => $request->contact_email,
             'id_user' => Auth::user()->id
         ]);
-
     }
 
     /**
@@ -123,26 +123,25 @@ class CustomController extends Controller
         $request['cif_value'] = $this->parseDouble($request->cif_value);
         $request['state'] = "GENERADO";
 
-    
+
         $dateRegisterFormat = Carbon::createFromFormat('d/m/Y', $request['date_register'])->toDateString();
         $request['date_register'] = $dateRegisterFormat;
 
 
-        if($request->regularization_date != '' && $request->regularization_date != 'NO REQUIERE'){
+        if ($request->regularization_date != '' && $request->regularization_date != 'NO REQUIERE') {
 
             $dateRegularizationFormat = Carbon::createFromFormat('d/m/Y', $request->regularization_date)->toDateString();
             $request['regularization_date'] = $dateRegularizationFormat;
-        }else{
+        } else {
             $request['regularization_date'] = 'Pendiente';
         }
-       
+
         $custom->fill($request->all());
         $custom->save();
 
         return redirect('custom');
-
     }
-    
+
 
     public function parseDouble($num)
     {
@@ -160,7 +159,7 @@ class CustomController extends Controller
         //
     }
 
-/*     public function loadDocument(Request $request){
+    /*     public function loadDocument(Request $request){
 
         if (!$request->hasFile('doc_custom')) {
             return response()->json(['mensaje' => 'No se ha proporcionado un archivo PDF'], 400);
@@ -202,7 +201,8 @@ class CustomController extends Controller
         return false;
     }
  */
-    public function validateForm($request, $id){
+    public function validateForm($request, $id)
+    {
         $request->validate([
             'nro_orde' => 'required|string|unique:custom,nro_orde,' . $id,
             'nro_dua' => 'required|string|unique:custom,nro_dua,' . $id,
@@ -212,6 +212,5 @@ class CustomController extends Controller
             'channel' => 'required|string',
             'nro_bl' => 'required|string',
         ]);
-    
     }
 }

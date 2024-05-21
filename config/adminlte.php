@@ -300,11 +300,11 @@ return [
             'type'         => 'fullscreen-widget',
             'topnav_right' => true,
         ],
-        
-        
+
+
 
         // Sidebar items:
-/*         [
+        /*         [
             'type' => 'sidebar-menu-search',
             'text' => 'search',
         ],
@@ -327,7 +327,7 @@ return [
                 [
                     'text' => 'Usuarios',
                     'url'  => 'users',
-                    'icon'  => 'fa-solid fa-user-tie' ,
+                    'icon'  => 'fa-solid fa-user-tie',
                     'active' => ['users', 'users*', 'regex:@^content/[0-9]+$@'],
                 ],
                 [
@@ -357,7 +357,7 @@ return [
                 [
                     'text' => 'Puntos pendientes',
                     'url' => 'custom/pending',
-                    'icon'  => 'fa-solid fa-bell-exclamation' ,
+                    'icon'  => 'fa-solid fa-bell-exclamation',
                     'active' => ['custom', 'custom*', 'regex:@^content/[0-9]+$@'],
                 ],
                 [
@@ -375,7 +375,7 @@ return [
                 [
                     'text' => 'Puntos pendientes',
                     'url' => 'freight/pending',
-                    'icon'  => 'fa-solid fa-bell-exclamation' ,
+                    'icon'  => 'fa-solid fa-bell-exclamation',
                     'active' => ['freight', 'freight*', 'regex:@^content/[0-9]+$@'],
                 ],
                 [
@@ -385,13 +385,25 @@ return [
                     'active' => ['freight', 'freight*', 'regex:@^content/[0-9]+$@'],
                 ]
             ]
-            
+
         ],
         [
             'text' => 'Transporte',
-            'url'  => '#',
             'icon' => 'fas fa-fw fa-truck-moving',
-            'active' => ['transporte', 'transporte*', 'regex:@^content/[0-9]+$@']
+            'submenu' => [
+                [
+                    'text' => 'Puntos pendientes',
+                    'url' => 'transport/pending',
+                    'icon'  => 'fa-solid fa-bell-exclamation',
+                    'active' => ['transport', 'transport*', 'regex:@^content/[0-9]+$@'],
+                ],
+                [
+                    'text' => 'Todos los puntos',
+                    'url'  => 'transport',
+                    'icon' => 'fa-solid fa-check-double',
+                    'active' => ['transport', 'transport*', 'regex:@^content/[0-9]+$@'],
+                ]
+            ]
         ],
         [
             'text' => 'Administracion',
@@ -412,7 +424,7 @@ return [
                 [
                     'text' => 'Puntos Aduana',
                     'url' => 'points/customs',
-                    'icon'  => 'fa-solid fa-bell-exclamation' ,
+                    'icon'  => 'fa-solid fa-bell-exclamation',
                     'active' => ['points/customs', 'points/customs*', 'regex:@^content/[0-9]+$@'],
                 ],
                 [

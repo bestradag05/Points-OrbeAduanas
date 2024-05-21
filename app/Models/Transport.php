@@ -11,13 +11,11 @@ class Transport extends Model
 
     protected $table = 'transport';
 
-    protected $fillable = ['nro_orden', 'date','invoice_number', 'nro_dua', 'address', 'tax_base', 'igv', 'total', 'state', 'weight','nro_operation', 'id_suppliers'];
+    protected $fillable = ['nro_orden', 'date_register', 'invoice_number', 'nro_dua', 'origin', 'destination', 'tax_base', 'igv', 'total', 'state', 'payment_state', 'payment_date',  'weight', 'nro_operation', 'id_supplier'];
 
 
     public function routing()
     {
         return $this->belongsTo(Routing::class, 'nro_operation', 'nro_operation');
     }
-
-
 }
