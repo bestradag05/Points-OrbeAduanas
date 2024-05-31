@@ -142,8 +142,9 @@
         });
 
         function enableInsurance(checkbox) {
-
+        
             const contenedorInsurance = $(`#content_${checkbox.id}`);
+            console.log(contenedorInsurance);
 
             if (checkbox.checked) {
                 contenedorInsurance.addClass('d-flex').removeClass('d-none');

@@ -18,6 +18,49 @@
 
                     </div>
 
+                    <div class="form-group">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="seguroCustom"
+                                onchange="enableInsurance(this)">
+                            <label class="custom-control-label" for="seguroCustom">Agregar Seguro</label>
+                        </div>
+                    </div>
+
+                    <div class="row d-none" id="content_seguroCustom">
+                        <div class="col-6">
+                            <x-adminlte-select2 name="type_insurance" label="Tipo de seguro" igroup-size="md"
+                                data-placeholder="Seleccione una opcion...">
+                                <option />
+                                <option>Seguro A</option>
+                                <option>Seguro B</option>
+                            </x-adminlte-select2>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="load_value">Valor del seguro</label>
+
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span
+                                            class="input-group-text text-bold @error('value_insurance') is-invalid @enderror">
+                                            $
+                                        </span>
+                                    </div>
+                                    <input type="text"
+                                        class="form-control CurrencyInput @error('value_insurance') is-invalid @enderror "
+                                        name="value_insurance" data-type="currency"
+                                        placeholder="Ingrese valor de la carga" onchange="updateInsuranceTotal(this)">
+                                </div>
+                                @error('value_insurance')
+                                    <span class="invalid-feedback d-block" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+
+                            </div>
+                        </div>
+                    </div>
+
                     <div id="formConceptsAduanas" class="formConcepts row">
 
                         <div class="col-4">
@@ -107,44 +150,6 @@
 
                     <div class="row">
 
-                        {{-- <div class="col-6">
-                            <div class="form-group">
-
-                                @if ($routing->type_shipment->code == 235)
-                                    <label for="air_freight">Air Freight</label>
-
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text text-bold">
-                                                $
-                                            </span>
-                                        </div>
-                                        <input type="text" class="form-control CurrencyInput" id="air_freight"
-                                            name="air_freight" onchange="updateFleteTotal(this)" data-type="currency"
-                                            placeholder="Ingrese valor del flete">
-                                    </div>
-                                @elseif($routing->type_shipment->code == 118)
-                                    <label for="ocean_freight">Ocean Freight</label>
-
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text text-bold">
-                                                $
-                                            </span>
-                                        </div>
-                                        <input type="text" class="form-control CurrencyInput" id="freight_value"
-                                            name="freight_value" onchange="updateFleteTotal(this)" data-type="currency"
-                                            placeholder="Ingrese valor del flete">
-
-                                        @error('freight_value')
-                                            <div class="text-danger">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                @endif
-                            </div>
-
-                        </div> --}}
-
                         <div class="col-12">
 
                             <div class="form-group">
@@ -157,7 +162,8 @@
                                         </span>
                                     </div>
                                     <input type="text" class="form-control CurrencyInput" id="utility"
-                                        name="utility" data-type="currency" placeholder="Ingrese valor de la utilidad">
+                                        name="utility" data-type="currency"
+                                        placeholder="Ingrese valor de la utilidad">
 
                                 </div>
 
@@ -165,6 +171,48 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="seguroFreight"
+                                onchange="enableInsurance(this)">
+                            <label class="custom-control-label" for="seguroFreight">Agregar Seguro</label>
+                        </div>
+                    </div>
+    
+                    <div class="row d-none" id="content_seguroFreight">
+                        <div class="col-6">
+                            <x-adminlte-select2 name="type_insurance" label="Tipo de seguro" igroup-size="md"
+                                data-placeholder="Seleccione una opcion...">
+                                <option />
+                                <option>Seguro A</option>
+                                <option>Seguro B</option>
+                            </x-adminlte-select2>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="load_value">Valor del seguro</label>
+    
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span
+                                            class="input-group-text text-bold @error('value_insurance') is-invalid @enderror">
+                                            $
+                                        </span>
+                                    </div>
+                                    <input type="text"
+                                        class="form-control CurrencyInput @error('value_insurance') is-invalid @enderror "
+                                        name="value_insurance" data-type="currency"
+                                        placeholder="Ingrese valor de la carga" onchange="updateInsuranceTotal(this)">
+                                </div>
+                                @error('value_insurance')
+                                    <span class="invalid-feedback d-block" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+    
+                            </div>
+                        </div>
+                    </div>
 
 
                     <div id="formConceptsFlete" class="formConcepts row">
@@ -245,7 +293,7 @@
             </x-adminlte-modal>
 
             {{-- Seguro --}}
-            <x-adminlte-modal id="modalSeguro" class="modal" title="Seguro" size='lg' scrollable>
+            {{--     <x-adminlte-modal id="modalSeguro" class="modal" title="Seguro" size='lg' scrollable>
 
                 <div class="form-group">
                     <label for="insurance_value">Valor del Seguro</label>
@@ -377,7 +425,7 @@
                     <x-adminlte-button theme="secondary" label="cerrar" data-dismiss="modal" />
                 </x-slot>
 
-            </x-adminlte-modal>
+            </x-adminlte-modal> --}}
 
             {{-- Transporte --}}
             <x-adminlte-modal id="modalTransporte" class="modal" title="Transporte" size='lg' scrollable>
@@ -414,8 +462,7 @@
 
                         <div class="col-4 d-flex justify-content-center align-items-center">
                             <div class="custom-control custom-checkbox">
-                                <input class="custom-control-input" type="checkbox" id="igvCheckbox"
-                                name="igv">
+                                <input class="custom-control-input" type="checkbox" id="igvCheckbox" name="igv">
                                 <label for="igvCheckbox" class="custom-control-label">Incluido IGV</label>
                             </div>
                         </div>
@@ -439,9 +486,9 @@
 
                             <div class="form-group">
                                 <label for="destination">Destino</label>
-                                
+
                                 <input type="text" class="form-control" id="destination" name="destination"
-                                placeholder="Ingrese el destino">
+                                    placeholder="Ingrese el destino">
 
 
                                 @error('destination')

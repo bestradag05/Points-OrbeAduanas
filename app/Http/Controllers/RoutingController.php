@@ -161,7 +161,7 @@ class RoutingController extends Controller
 
     public function getNroOperation()
     {
-        $lastCode = Routing::latest()->value('nro_operation');
+        $lastCode = Routing::latest('id')->first();
         $year = date('y');
         $prefix = 'ORBE-';
 
@@ -170,7 +170,7 @@ class RoutingController extends Controller
             $codigo = $prefix . $year . '-1';
         } else {
             // Extraer el número y aumentarlo
-            $number = (int) substr($lastCode, 7);
+            $number = (int) substr($lastCode->nro_operation, 7);
             $number++;
             $codigo = $prefix . $year  . $number;
         }
