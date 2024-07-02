@@ -128,7 +128,6 @@ class PointsController extends Controller
 
 
         $personalPoints =$this->getPersonalRoles(null);
-        dd($personalPoints);
         
 
         return view('points/points-detail', compact('personalPoints'));

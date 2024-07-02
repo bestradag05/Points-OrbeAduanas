@@ -258,6 +258,8 @@
                                     <th style="width: 10px">#</th>
                                     <th>Concepto</th>
                                     <th>Valor del concepto</th>
+                                    <th>Puntos Puros</th>
+                                    <th>Puntos Adicionales</th>
                                     <th>x</th>
                                 </tr>
                             </thead>

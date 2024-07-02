@@ -200,7 +200,7 @@
         function addConcept(buton) {
 
             let divConcepts = containerResult.find('.formConcepts');
-            const inputs = divConcepts.find('input, select');
+            const inputs = divConcepts.find('input:not(.points), select');
 
             // Busca todos los campos de entrada dentro del formulario
             inputs.each(function(index, input) {
@@ -220,11 +220,14 @@
             if (camposInvalidos === 0) {
                 // Si no hay campos inválidos, envía el formulario
 
+                //TODO: Debe agregar cada item hacia el agregado de cellda para que no dibuje todo de nuevo y se pierdan los datos de las antiguas celdas
                 conceptsArray[inputs[0].value] = {
                     'id': inputs[0].value,
                     'name': inputs[0].options[inputs[0].selectedIndex].text,
                     'value': formatValue(inputs[1].value)
                 }
+
+             
 
                 updateTable(conceptsArray, container.id);
 
@@ -239,7 +242,6 @@
 
             tbodyRouting.innerHTML = '';
             TotalConcepts = 0;
-
 
             var contador = 0;
 
@@ -264,9 +266,37 @@
                     var celdaValor = fila.insertCell(2);
                     celdaValor.textContent = item.value;
 
+                    // Insertar la celda para puntos puros, PP = Puntos  Puros - PA = Puntos Adicionales
+                    var celdaPP = fila.insertCell(3);
+                    celdaPP.style.width = '15%';
+                    var inputPP = document.createElement('input');
+                    inputPP.type = 'number';
+                    inputPP.classList.add('form-control', 'points');
+                    inputPP.classList.remove('is-invalid');
+                    inputPP.min = 0;
+
+                    inputPP.addEventListener('input', (e) => {
+                        
+                        const puntosMaximos = Math.floor(item.value / 45 );
+                        console.log(puntosMaximos);
+
+                    })
+
+
+                    celdaPP.appendChild(inputPP);
+
+                    var celdaPA = fila.insertCell(4);
+                    celdaPA.style.width = '15%';
+                    var inputPA = document.createElement('input');
+                    inputPA.type = 'number';
+                    inputPA.classList.add('form-control', 'points');
+                    inputPA.classList.remove('is-invalid');
+                    inputPA.min = 0; 
+                    celdaPA.appendChild(inputPA);
+
 
                     // Insertar un botón para eliminar la fila en la cuarta celda de la fila
-                    var celdaEliminar = fila.insertCell(3);
+                    var celdaEliminar = fila.insertCell(5);
                     var botonEliminar = document.createElement('a');
                     botonEliminar.href = '#';
                     botonEliminar.innerHTML = '<i class="fa-solid fa-ban text-danger"></i>';
