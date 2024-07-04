@@ -178,7 +178,7 @@
                             <label class="custom-control-label" for="seguroFreight">Agregar Seguro</label>
                         </div>
                     </div>
-    
+
                     <div class="row d-none" id="content_seguroFreight">
                         <div class="col-6">
                             <x-adminlte-select2 name="type_insurance" label="Tipo de seguro" igroup-size="md"
@@ -191,7 +191,7 @@
                         <div class="col-6">
                             <div class="form-group">
                                 <label for="load_value">Valor del seguro</label>
-    
+
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span
@@ -209,11 +209,12 @@
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
-    
+
                             </div>
                         </div>
                     </div>
 
+                    <hr>
 
                     <div id="formConceptsFlete" class="formConcepts row">
                         <div class="col-4">
@@ -231,7 +232,7 @@
                         </div>
                         <div class="col-4">
                             <div class="form-group">
-                                <label for="value_concept">Valor del Concepto</label>
+                                <label for="value_concept">Valor del neto del concepto</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text text-bold">
@@ -239,12 +240,28 @@
                                         </span>
                                     </div>
                                     <input type="text" class="form-control CurrencyInput " name="value_concept"
-                                        data-type="currency" placeholder="Ingrese valor de la carga" value="">
+                                        data-type="currency" placeholder="Ingrese valor del concepto" value="">
                                 </div>
                             </div>
 
                         </div>
-                        <div class="col-4 d-flex align-items-center pt-3">
+
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="value_concept">Valor ha agregar</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text text-bold">
+                                            $
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control CurrencyInput " name="value_added"
+                                        data-type="currency" placeholder="Ingrese valor agregado" value="0">
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-12 d-flex justify-content-center align-items-center pt-3 mb-2">
                             <button class="btn btn-indigo" type="button" id="btnAddConcept"
                                 onclick="addConcept(this)">
                                 Agregar
@@ -258,7 +275,7 @@
                                     <th style="width: 10px">#</th>
                                     <th>Concepto</th>
                                     <th>Valor del concepto</th>
-                                    <th>Puntos Puros</th>
+                                    <th>Valor agregado</th>
                                     <th>Puntos Adicionales</th>
                                     <th>x</th>
                                 </tr>

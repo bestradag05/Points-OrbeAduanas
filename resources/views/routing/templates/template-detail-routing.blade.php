@@ -55,7 +55,7 @@
         <select name="type_service" id="type_service" class="form-control" onchange="openModalForm(this)">
             <option></option>
             @foreach ($type_services as $type_service)
-                  @php
+                @php
                     $disabled = false;
                     foreach ($services as $index => $service) {
                         if ($type_service->name == $index) {
@@ -89,8 +89,7 @@
                             </a>
                         </td>
 
-                        <td
-                            class="text-bold  {{ $service->state == 'Pendiente' ? 'text-danger' : 'text-success' }}">
+                        <td class="text-bold  {{ $service->state == 'Pendiente' ? 'text-danger' : 'text-success' }}">
                             {{ $service->state }}
                         </td>
 
@@ -142,7 +141,7 @@
         });
 
         function enableInsurance(checkbox) {
-        
+
             const contenedorInsurance = $(`#content_${checkbox.id}`);
             console.log(contenedorInsurance);
 
@@ -224,15 +223,15 @@
                 conceptsArray[inputs[0].value] = {
                     'id': inputs[0].value,
                     'name': inputs[0].options[inputs[0].selectedIndex].text,
-                    'value': formatValue(inputs[1].value)
+                    'value': formatValue(inputs[1].value),
+                    'added': formatValue(inputs[2].value),
                 }
-
-             
 
                 updateTable(conceptsArray, container.id);
 
                 inputs[0].value = '';
                 inputs[1].value = '';
+                inputs[2].value = '';
             }
         };
 
@@ -243,68 +242,74 @@
             tbodyRouting.innerHTML = '';
             TotalConcepts = 0;
 
-            var contador = 0;
+            let contador = 0;
 
-            for (var clave in conceptsArray) {
+            for (let clave in conceptsArray) {
 
-                var item = conceptsArray[clave];
+                let item = conceptsArray[clave];
 
                 if (conceptsArray.hasOwnProperty(clave)) {
                     contador++; // Incrementar el contador en cada iteración
                     // Crear una nueva fila
-                    var fila = tbodyRouting.insertRow();
+                    let fila = tbodyRouting.insertRow();
 
                     // Insertar el número de iteración en la primera celda de la fila
-                    var celdaNumero = fila.insertCell(0);
+                    let celdaNumero = fila.insertCell(0);
                     celdaNumero.textContent = contador;
 
                     // Insertar la clave en la segunda celda de la fila
-                    var celdaClave = fila.insertCell(1);
+                    let celdaClave = fila.insertCell(1);
                     celdaClave.textContent = item.name;
 
                     // Insertar el valor en la tercera celda de la fila
-                    var celdaValor = fila.insertCell(2);
+                    let celdaValor = fila.insertCell(2);
                     celdaValor.textContent = item.value;
 
-                    // Insertar la celda para puntos puros, PP = Puntos  Puros - PA = Puntos Adicionales
-                    var celdaPP = fila.insertCell(3);
-                    celdaPP.style.width = '15%';
-                    var inputPP = document.createElement('input');
-                    inputPP.type = 'number';
-                    inputPP.classList.add('form-control', 'points');
-                    inputPP.classList.remove('is-invalid');
-                    inputPP.min = 0;
-
-                    inputPP.addEventListener('input', (e) => {
-                        
-                        const puntosMaximos = Math.floor(item.value / 45 );
-                        console.log(puntosMaximos);
-
-                    })
+                    // Insertar el valor en la cuarta celda de la fila
+                    let celdaAdded = fila.insertCell(3);
+                    celdaAdded.textContent = item.added;
 
 
-                    celdaPP.appendChild(inputPP);
-
-                    var celdaPA = fila.insertCell(4);
+                    let celdaPA = fila.insertCell(4);
                     celdaPA.style.width = '15%';
-                    var inputPA = document.createElement('input');
+                    let inputPA = document.createElement('input');
                     inputPA.type = 'number';
+                    inputPA.value = (conceptsArray[clave].pa) ? conceptsArray[clave].pa : '';
+                    inputPA.name = 'pa';
                     inputPA.classList.add('form-control', 'points');
                     inputPA.classList.remove('is-invalid');
-                    inputPA.min = 0; 
+                    inputPA.min = 0;
                     celdaPA.appendChild(inputPA);
+
+                    inputPA.addEventListener('keydown', (e) => {
+                        e.preventDefault();
+                    });
+
+                    if (Math.floor(item.added / 45) === 0) {
+
+                        inputPA.max = 0;
+                    } else {
+                        inputPA.addEventListener('input', (e) => {
+                            // Indicamos cual es el maximo de puntos que puede asignarle
+                            inputPA.max = Math.floor(item.added / 45);
+                            // Agregamos este valor del punto al objeto, para que cuando dibujemos la tabla nuevamente, no se eliminen
+                            conceptsArray[clave].pa = e.target.value
+                        })
+                    }
+
+
 
 
                     // Insertar un botón para eliminar la fila en la cuarta celda de la fila
-                    var celdaEliminar = fila.insertCell(5);
-                    var botonEliminar = document.createElement('a');
+                    let celdaEliminar = fila.insertCell(5);
+                    let botonEliminar = document.createElement('a');
                     botonEliminar.href = '#';
-                    botonEliminar.innerHTML = '<i class="fa-solid fa-ban text-danger"></i>';
+                    botonEliminar.innerHTML = '<p class="text-danger">X</p>';
                     botonEliminar.addEventListener('click', function() {
 
                         // Eliminar la fila correspondiente al hacer clic en el botón
-                        var fila = this.parentNode.parentNode;
-                        var indice = fila.rowIndex -
+                        let fila = this.parentNode.parentNode;
+                        let indice = fila.rowIndex -
                             1; // Restar 1 porque el índice de las filas en tbody comienza en 0
                         delete conceptsArray[Object.keys(conceptsArray)[indice]];
                         updateTable(conceptsArray, idContent);
