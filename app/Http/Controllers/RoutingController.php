@@ -228,6 +228,7 @@ class RoutingController extends Controller
 
     public function storeRoutingService(Request $request)
     {
+        dd($request->all());
 
         $routing = Routing::where('nro_operation', $request->nro_operation)->first();
 
@@ -262,10 +263,11 @@ class RoutingController extends Controller
                     'nro_operation' => $routing->nro_operation
                 ]);
 
-                //Relacionamos los conceptos que tendra esta aduana
+                //Relacionamos los conceptos que tendra este flete
 
                 foreach (json_decode($request->conceptos) as $concepto) {
                     $freight->concepts()->attach($concepto->id, ['value_concept' => $concepto->value]);
+                    
                 }
 
                 return redirect('/routing/' . $routing->id . '/detail');

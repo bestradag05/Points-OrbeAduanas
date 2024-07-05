@@ -219,7 +219,6 @@
             if (camposInvalidos === 0) {
                 // Si no hay campos inválidos, envía el formulario
 
-                //TODO: Debe agregar cada item hacia el agregado de cellda para que no dibuje todo de nuevo y se pierdan los datos de las antiguas celdas
                 conceptsArray[inputs[0].value] = {
                     'id': inputs[0].value,
                     'name': inputs[0].options[inputs[0].selectedIndex].text,
@@ -316,7 +315,7 @@
                     });
                     celdaEliminar.appendChild(botonEliminar);
 
-                    TotalConcepts += parseFloat(item.value);
+                    TotalConcepts += parseFloat(item.value) + parseFloat(item.added);
                 }
             }
 

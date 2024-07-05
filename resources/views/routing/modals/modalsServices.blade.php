@@ -179,6 +179,7 @@
                         </div>
                     </div>
 
+                    <hr>
                     <div class="row d-none" id="content_seguroFreight">
                         <div class="col-6">
                             <x-adminlte-select2 name="type_insurance" label="Tipo de seguro" igroup-size="md"
