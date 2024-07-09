@@ -134,9 +134,15 @@ class AuthController extends Controller
     protected function respondWithToken($token)
     {
 
+        //obtiene los permisos del usuario autenticado
         $permissions = auth("api")->user()->getAllPermissions()->map(function ($perm) {
             return $perm->name;
         });
+
+        //obtener la relacion con la tabla personal
+        $user = auth('api')->user();
+        $personal = $user->personal;
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
@@ -145,7 +151,12 @@ class AuthController extends Controller
                 "email" => auth('api')->user()->email,
                 "roles" => auth('api')->user()->getRoleNames(),
                 "permissions" => $permissions,
+                "personal" => [
+                    "name" => $personal->name,
+                    "last_name" => $personal->last_name
+                ]
             ],
+            
         ]);
     }
 }

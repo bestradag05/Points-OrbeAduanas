@@ -21,6 +21,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -36,10 +37,15 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        User::create([
+
+        $role = Role::create(['guard_name' => 'api','name' => 'Super-Admin']);
+
+        $user = User::create([
             'email' => 'admin@orbeaduanas.com',
             'password' => bcrypt('admin')
         ]);
+
+        $user->assignRole($role);
 
 
         Personal::create([
