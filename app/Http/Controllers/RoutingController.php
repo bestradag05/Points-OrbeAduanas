@@ -14,6 +14,7 @@ use App\Models\Routing;
 use App\Models\StateCountry;
 use App\Models\Supplier;
 use App\Models\Transport;
+use App\Models\TypeInsurance;
 use App\Models\TypeLoad;
 use App\Models\TypeService;
 use App\Models\TypeShipment;
@@ -228,11 +229,11 @@ class RoutingController extends Controller
 
     public function storeRoutingService(Request $request)
     {
-        dd($request->all());
 
         $routing = Routing::where('nro_operation', $request->nro_operation)->first();
 
         $type_services = TypeService::find($request->typeService);
+        $type_insurace = TypeInsurance::all();
 
         //Agregamos el registro a la tabla pivot
         $routing->typeService()->attach($type_services);
@@ -257,18 +258,28 @@ class RoutingController extends Controller
 
             case "Flete":
                 # Flete...
-                $freight = Freight::create([
+                /* $freight = Freight::create([
                     'value_utility' => $request->utility,
                     'state' => 'Pendiente',
                     'nro_operation' => $routing->nro_operation
                 ]);
-
+ */
                 //Relacionamos los conceptos que tendra este flete
 
-                foreach (json_decode($request->conceptos) as $concepto) {
+               /*  foreach (json_decode($request->conceptos) as $concepto) {
                     $freight->concepts()->attach($concepto->id, ['value_concept' => $concepto->value]);
                     
-                }
+                } */
+
+                // Verificamos si el flete tiene seguro : 
+
+                    foreach(json_decode($request->concepts, true) as $concept){
+                        if($type_insurace->pluck('name')->contains($concept['name']))
+                        {
+                            dd($concept);
+                        }
+                    }
+
 
                 return redirect('/routing/' . $routing->id . '/detail');
 
