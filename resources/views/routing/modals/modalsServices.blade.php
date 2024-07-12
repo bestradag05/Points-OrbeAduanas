@@ -180,8 +180,8 @@
                     </div>
 
                     <hr>
-                    <div class="row d-none" id="content_seguroFreight">
-                        <div class="col-6">
+                    <div class="row d-none justify-content-center" id="content_seguroFreight">
+                        <div class="col-3">
                             <x-adminlte-select2 name="type_insurance" label="Tipo de seguro" igroup-size="md"
                                 data-placeholder="Seleccione una opcion...">
                                 <option />
@@ -189,27 +189,49 @@
                                 <option>Seguro B</option>
                             </x-adminlte-select2>
                         </div>
-                        <div class="col-6">
+                        <div class="col-3">
                             <div class="form-group">
                                 <label for="load_value">Valor del seguro</label>
 
                                 <div class="input-group">
                                     <div class="input-group-prepend">
-                                        <span
-                                            class="input-group-text text-bold @error('value_insurance') is-invalid @enderror">
+                                        <span class="input-group-text text-bold">
                                             $
                                         </span>
                                     </div>
-                                    <input type="text"
-                                        class="form-control CurrencyInput @error('value_insurance') is-invalid @enderror "
-                                        name="value_insurance" data-type="currency"
-                                        placeholder="Ingrese valor de la carga" onchange="updateInsuranceTotal(this)">
+                                    <input type="text" class="form-control CurrencyInput " name="value_insurance"
+                                        data-type="currency" placeholder="Ingrese valor de la carga"
+                                        onchange="updateInsuranceTotal(this)">
                                 </div>
-                                @error('value_insurance')
-                                    <span class="invalid-feedback d-block" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+
+                            </div>
+                        </div>
+
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="load_value">Valor ha agregar</label>
+
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text text-bold">
+                                            $
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control CurrencyInput" id="insurance_added" name="insurance_added"
+                                        data-type="currency" value="0" placeholder="Ingrese valor de la carga"
+                                        onchange="updateInsuranceTotal(this)">
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="load_value">Puntos</label>
+
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="insurance_points" name="insurance_points"
+                                     min="0" onkeydown="preventeDefaultAction(event)" oninput="addPointsInsurance(this)">
+                                </div>
 
                             </div>
                         </div>

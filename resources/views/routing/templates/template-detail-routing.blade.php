@@ -281,7 +281,7 @@
                     celdaPA.appendChild(inputPA);
 
                     inputPA.addEventListener('keydown', (e) => {
-                        e.preventDefault();
+                        preventeDefaultAction(e);
                     });
 
                     if (Math.floor(item.added / 45) === 0) {
@@ -323,6 +323,7 @@
 
         }
 
+
         function calcTotal(TotalConcepts, flete, seguro, idContent) {
 
             total = TotalConcepts + flete + seguro;
@@ -339,7 +340,31 @@
             return value.replace(/,/g, '');
         }
 
+        const preventeDefaultAction = (e) => {
+            e.preventDefault();
+        }
+
+
+        const addPointsInsurance = (input) => {
+            let value_added = $('#insurance_added').val();
+        
+            if(Math.floor(value_added / 45) === 0){
+                input.max = 0;
+            }else{
+                input.max = Math.floor(value_added / 45);
+            }
+        }
+
+        // Asegúrate de que la función se ejecute cada vez que el valor de #insurance_added cambie
+        $('#insurance_added').on('input', function() {
+            
+            let insurancePointsInput = $('#insurance_points')[0]; // Obtén el elemento de entrada de puntos de seguro
+            addPointsInsurance(insurancePointsInput); // Llama a la función con el elemento de entrada
+        });
+
+
         function submitForm() {
+
 
 
             let form = $(`#${container.id}`).find('form');
@@ -370,7 +395,7 @@
 
                 let conceptops = JSON.stringify(conceptsArray);
 
-                form.append(`<input type="hidden" name="conceptos" value='${conceptops}' />`);
+                form.append(`<input type="hidden" name="concepts" value='${conceptops}' />`);
                 form[0].submit();
             }
         };
