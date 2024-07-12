@@ -173,7 +173,7 @@
 
                     <div class="form-group">
                         <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input" id="seguroFreight"
+                            <input type="checkbox" name="state_insurance" class="custom-control-input" id="seguroFreight"
                                 onchange="enableInsurance(this)">
                             <label class="custom-control-label" for="seguroFreight">Agregar Seguro</label>
                         </div>
@@ -182,11 +182,16 @@
                     <hr>
                     <div class="row d-none justify-content-center" id="content_seguroFreight">
                         <div class="col-3">
-                            <x-adminlte-select2 name="type_insurance" label="Tipo de seguro" igroup-size="md"
+                            <x-adminlte-select2 name="type_insurance" class="d-none" label="Tipo de seguro" igroup-size="md"
                                 data-placeholder="Seleccione una opcion...">
                                 <option />
-                                <option>Seguro A</option>
-                                <option>Seguro B</option>
+                                @foreach($type_insurace as $type)
+
+                                <option value="{{$type->id}}">{{$type->name}}</option>
+
+                                @endforeach
+
+                                
                             </x-adminlte-select2>
                         </div>
                         <div class="col-3">
@@ -199,7 +204,7 @@
                                             $
                                         </span>
                                     </div>
-                                    <input type="text" class="form-control CurrencyInput " name="value_insurance"
+                                    <input type="text" class="form-control CurrencyInput d-none " name="value_insurance"
                                         data-type="currency" placeholder="Ingrese valor de la carga"
                                         onchange="updateInsuranceTotal(this)">
                                 </div>
@@ -217,9 +222,9 @@
                                             $
                                         </span>
                                     </div>
-                                    <input type="text" class="form-control CurrencyInput" id="insurance_added" name="insurance_added"
+                                    <input type="text" class="form-control CurrencyInput d-none" id="insurance_added" name="insurance_added"
                                         data-type="currency" value="0" placeholder="Ingrese valor de la carga"
-                                        onchange="updateInsuranceTotal(this)">
+                                        onchange="updateInsuranceAddedTotal(this)">
                                 </div>
 
                             </div>
@@ -229,7 +234,7 @@
                                 <label for="load_value">Puntos</label>
 
                                 <div class="input-group">
-                                    <input type="number" class="form-control" id="insurance_points" name="insurance_points"
+                                    <input type="number" class="form-control d-none" id="insurance_points" name="insurance_points"
                                      min="0" onkeydown="preventeDefaultAction(event)" oninput="addPointsInsurance(this)">
                                 </div>
 

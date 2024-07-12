@@ -11,5 +11,5 @@ class CargoInsurance extends Model
 
     protected $table = 'cargo_insurance';
 
-    protected $fillable = ['certified_number', 'insured_references', 'date', 'sales_value', 'igv', 'id_type_insurance'];
+    protected $fillable = ['certified_number', 'insured_references', 'date', 'insurance_sale', 'sales_value', 'sales_price', 'id_type_insurance'];
 }
