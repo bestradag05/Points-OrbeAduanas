@@ -91,3 +91,5 @@ Route::middleware('auth')->group(function () {
     Route::get('points/freight', [PointsController::class, 'getPointFreight']);
     Route::get('points/transport', [PointsController::class, 'getPointTransport']);
 });
+
+

@@ -13,6 +13,7 @@ use App\Models\Regime;
 use App\Models\Routing;
 use App\Models\Shipper;
 use App\Models\Supplier;
+use App\Models\TypeInsurance;
 use App\Models\TypeLoad;
 use App\Models\TypeService;
 use App\Models\TypeShipment;
@@ -40,6 +41,10 @@ class DatabaseSeeder extends Seeder
 
         //Crear un rol de Super-Admin
         $role = Role::create(['guard_name' => 'api','name' => 'Super-Admin']);
+        Permission::create(['guard_name' => 'api','name' => 'register_rol']);
+        $listar_rol= Permission::create(['guard_name' => 'api','name' => 'list_rol']);
+        Permission::create(['guard_name' => 'api','name' => 'edit_rol']);
+        Permission::create(['guard_name' => 'api','name' => 'delete_rol']);
 
         $user = User::create([
             'email' => 'admin@orbeaduanas.com',
@@ -47,6 +52,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $user->assignRole($role);
+        $user->givePermissionTo($listar_rol);
 
 
         Personal::create([
@@ -192,8 +198,12 @@ class DatabaseSeeder extends Seeder
         TypeService::create(['name' => 'Transporte']);
         TypeService::create(['name' => 'Adicionales']);
 
+        /* TypeInsurance */
 
-
+        
+        TypeInsurance::create(['name' => 'Seguro A']);
+        TypeInsurance::create(['name' => 'Seguro B']);
+        
         $this->call(CountrySeeder::class);
         $this->call(StatesCountrySeeder::class);
 

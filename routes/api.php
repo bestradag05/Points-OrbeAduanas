@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\RolesController as ApiRolesController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -37,3 +38,13 @@ Route::group(
         Route::post('/reg', [AuthController::class, 'reg']);
     }
 );
+
+
+
+
+Route::group([
+    /* 'middleware' => 'auth:api', */
+], function ($router) {
+    Route::resource("roles", ApiRolesController::class);
+
+});
