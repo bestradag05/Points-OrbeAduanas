@@ -41,10 +41,10 @@ class DatabaseSeeder extends Seeder
 
         //Crear un rol de Super-Admin
         $role = Role::create(['guard_name' => 'api','name' => 'Super-Admin']);
-        Permission::create(['guard_name' => 'api','name' => 'register_rol']);
+        $register_rol = Permission::create(['guard_name' => 'api','name' => 'register_rol']);
         $listar_rol= Permission::create(['guard_name' => 'api','name' => 'list_rol']);
-        Permission::create(['guard_name' => 'api','name' => 'edit_rol']);
-        Permission::create(['guard_name' => 'api','name' => 'delete_rol']);
+        $edit_rol = Permission::create(['guard_name' => 'api','name' => 'edit_rol']);
+        $dete_rol = Permission::create(['guard_name' => 'api','name' => 'delete_rol']);
 
         $user = User::create([
             'email' => 'admin@orbeaduanas.com',
@@ -52,7 +52,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $user->assignRole($role);
-        $user->givePermissionTo($listar_rol);
+        $user->givePermissionTo([$listar_rol, $register_rol, $edit_rol, $dete_rol]);
 
 
         Personal::create([

@@ -43,7 +43,7 @@ Route::group(
 
 
 Route::group([
-    /* 'middleware' => 'auth:api', */
+    'middleware' => 'auth:api',
 ], function ($router) {
     Route::resource("roles", ApiRolesController::class);
 
