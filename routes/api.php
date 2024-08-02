@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\RolesController as ApiRolesController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
@@ -46,5 +47,6 @@ Route::group([
     'middleware' => 'auth:api',
 ], function ($router) {
     Route::resource("roles", ApiRolesController::class);
+    Route::resource("documents", DocumentController::class);
 
 });
