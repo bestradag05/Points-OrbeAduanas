@@ -29,8 +29,8 @@ return new class extends Migration
             $table->date('dtFechaInicio');
             $table->date('dtFechaFin');
             $table->string('state');
-            $table->integer('inCodUserCreate');
-            $table->integer('inCodUserEdit');
+            $table->integer('cod_user_create');
+            $table->integer('cod_user_edit');
             $table->timestamps();
         });
     }
