@@ -13,6 +13,7 @@ use App\Models\Regime;
 use App\Models\Routing;
 use App\Models\Shipper;
 use App\Models\Supplier;
+use App\Models\TypeInsurance;
 use App\Models\TypeLoad;
 use App\Models\TypeService;
 use App\Models\TypeShipment;
@@ -40,6 +41,10 @@ class DatabaseSeeder extends Seeder
 
         //Crear un rol de Super-Admin
         $role = Role::create(['guard_name' => 'api','name' => 'Super-Admin']);
+        $register_rol = Permission::create(['guard_name' => 'api','name' => 'register_rol']);
+        $listar_rol= Permission::create(['guard_name' => 'api','name' => 'list_rol']);
+        $edit_rol = Permission::create(['guard_name' => 'api','name' => 'edit_rol']);
+        $dete_rol = Permission::create(['guard_name' => 'api','name' => 'delete_rol']);
 
         $user = User::create([
             'email' => 'admin@orbeaduanas.com',
@@ -47,19 +52,22 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $user->assignRole($role);
+        $user->givePermissionTo([$listar_rol, $register_rol, $edit_rol, $dete_rol]);
 
 
         Personal::create([
-            'name' => 'admin',
-            'last_name' => 'administrador',
-            'cellphone' => '966523654',
+            'document_number' => '73184116',
+            'names' => 'Bryan David',
+            'last_name' => 'Estrada',
+            'mother_last_name' => 'Gomez',
+            'cellphone' => '977834697',
             'email' => 'admin@orbeaduanas.com',
-            'dni' => '75214554',
             'img_url' => 'user_default.png',
+            'state' => 'Activo',
             'id_user' => 1
         ]);
 
-        $contador = 0;
+        /* $contador = 0;
 
         do {
             User::create([
@@ -82,7 +90,7 @@ class DatabaseSeeder extends Seeder
             $contador++;
         } while ($contador <= 10);
 
-
+ */
 
 
 
@@ -192,8 +200,12 @@ class DatabaseSeeder extends Seeder
         TypeService::create(['name' => 'Transporte']);
         TypeService::create(['name' => 'Adicionales']);
 
+        /* TypeInsurance */
 
-
+        
+        TypeInsurance::create(['name' => 'Seguro A']);
+        TypeInsurance::create(['name' => 'Seguro B']);
+        
         $this->call(CountrySeeder::class);
         $this->call(StatesCountrySeeder::class);
 
@@ -201,7 +213,7 @@ class DatabaseSeeder extends Seeder
 
         /* Proceso para el routing */
         User::create(['email' => 'liquidador@orbeaduanas.com', 'password' => bcrypt('password')]);
-        Personal::create(['name' => 'Anderson', 'last_name' => 'moron', 'cellphone' => '977234697', 'email' => 'liquidador@orbeaduanas.com', 'dni' => '73184116', 'immigration_card' => '', 'passport' => '', 'img_url' => '73184116.png', 'id_user' => 2]);
+        Personal::create(['document_number' => '73184112','names' => 'Anderson', 'last_name' => 'moron', 'mother_last_name' => 'Santiago', 'cellphone' => '977234697', 'email' => 'liquidador@orbeaduanas.com',   'id_user' => 2]);
         Customer::create(['ruc' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'id_user' => 2]);
         Supplier::create(['type_id' => 'RUC', 'number_id' => '20554630740', 'name_businessname' => 'HENAN XINGSHENGDA', 'addres' => 'North section of renmin road, changge city', 'contact_name' => 'Asten Zho', 'contact_number' => '944653246', 'contact_email' => 'asten@hnidel.com', 'type_suppliers' => 'Venta']);
         Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU - CALLAO', 'destination' => 'CHINA - SHANGAI', 'freight_value' => '2500', 'load_value' => '2700', 'insurance_value' => '25', 'id_personal' => 1, 'id_customer' => 1, 'id_type_shipment' => 8, 'lcl_fcl' => 'LCL', 'id_type_load' => 1, 'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'commodity' => 'CILINDRO']);

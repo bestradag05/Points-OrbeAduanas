@@ -121,7 +121,8 @@
         let TotalConcepts = 0;
         let total = 0;
         let flete = 0;
-        let seguro = 0;
+        let value_insurance = 0;
+        let valuea_added_insurance = 0;
         let containerResult = '';
         let container = '';
         let typeService = '';
@@ -131,7 +132,8 @@
             TotalConcepts = 0;
             total = 0;
             flete = 0;
-            seguro = 0;
+            value_insurance = 0;
+            valuea_added_insurance = 0;
 
             updateTable(conceptsArray, e.target.id);
 
@@ -143,19 +145,21 @@
         function enableInsurance(checkbox) {
 
             const contenedorInsurance = $(`#content_${checkbox.id}`);
-            console.log(contenedorInsurance);
-
+            console.log();
             if (checkbox.checked) {
                 contenedorInsurance.addClass('d-flex').removeClass('d-none');
                 contenedorInsurance.find("input").removeClass('d-none');
                 contenedorInsurance.find('select').removeClass('d-none');
+                
             } else {
                 contenedorInsurance.addClass('d-none').removeClass('d-flex');
                 contenedorInsurance.find("input").val('').addClass('d-none').removeClass('is-invalid');
                 contenedorInsurance.find('select').val('').addClass('d-none').removeClass('is-invalid');
-                seguro = 0;
+                
+                value_insurance = 0;
+                valuea_added_insurance = 0;
 
-                calcTotal(TotalConcepts, flete, seguro, container.id);
+                calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, container.id);
 
             }
         }
@@ -181,18 +185,32 @@
                 flete = parseFloat(formatValue(element.value));
             }
 
-            calcTotal(TotalConcepts, flete, seguro, container.id);
+            calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, container.id);
         }
 
 
         function updateInsuranceTotal(element) {
+            console.log(element);
             if (element.value === "") {
-                seguro = 0;
+                value_insurance = 0;
             } else {
-                seguro = parseFloat(element.value);
+                value_insurance = parseFloat(element.value);
             }
 
-            calcTotal(TotalConcepts, flete, seguro, container.id);
+            console.log(value_insurance);
+
+            calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, container.id);
+        }
+
+
+        function updateInsuranceAddedTotal(element){
+            if (element.value === "") {
+                valuea_added_insurance = 0;
+            } else {
+                valuea_added_insurance = parseFloat(element.value);
+            }
+
+            calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, container.id);
         }
 
 
@@ -281,7 +299,7 @@
                     celdaPA.appendChild(inputPA);
 
                     inputPA.addEventListener('keydown', (e) => {
-                        e.preventDefault();
+                        preventeDefaultAction(e);
                     });
 
                     if (Math.floor(item.added / 45) === 0) {
@@ -319,13 +337,14 @@
                 }
             }
 
-            calcTotal(TotalConcepts, flete, seguro, container.id);
+            calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, container.id);
 
         }
 
-        function calcTotal(TotalConcepts, flete, seguro, idContent) {
 
-            total = TotalConcepts + flete + seguro;
+        function calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, idContent) {
+
+            total = TotalConcepts + flete + value_insurance + valuea_added_insurance;
 
             //Buscamos dentro del contenedor el campo total
 
@@ -339,11 +358,36 @@
             return value.replace(/,/g, '');
         }
 
+        const preventeDefaultAction = (e) => {
+            e.preventDefault();
+        }
+
+
+        const addPointsInsurance = (input) => {
+            let value_added = $('#insurance_added').val();
+        
+            if(Math.floor(value_added / 45) === 0){
+                input.value = 0;
+                input.max = 0;
+                
+            }else{
+                input.max = Math.floor(value_added / 45);
+            }
+        }
+
+        // Asegúrate de que la función se ejecute cada vez que el valor de #insurance_added cambie
+        $('#insurance_added').on('input', function() {
+            
+            let insurancePointsInput = $('#insurance_points')[0]; // Obtén el elemento de entrada de puntos de value_insurance
+            addPointsInsurance(insurancePointsInput); // Llama a la función con el elemento de entrada
+        });
+
+
         function submitForm() {
 
-
             let form = $(`#${container.id}`).find('form');
-            const inputs = form.find('input, select').not('.formConcepts  input, .formConcepts select');
+            const inputs = form.find('input, select').not('.formConcepts  input, .formConcepts select, input.d-none');
+            
 
             inputs.each(function(index, input) {
 
@@ -370,7 +414,7 @@
 
                 let conceptops = JSON.stringify(conceptsArray);
 
-                form.append(`<input type="hidden" name="conceptos" value='${conceptops}' />`);
+                form.append(`<input type="hidden" name="concepts" value='${conceptops}' />`);
                 form[0].submit();
             }
         };

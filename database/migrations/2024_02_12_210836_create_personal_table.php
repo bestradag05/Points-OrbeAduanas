@@ -13,14 +13,17 @@ return new class extends Migration
     {
         Schema::create('personal', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('document_number')->unique();
+            $table->string('names');
             $table->string('last_name');
+            $table->string('mother_last_name');
+            $table->date('birthdate')->nullable();
+            $table->string('civil_status')->nullable();
+            $table->string('sexo')->nullable();
             $table->string('cellphone');
             $table->string('email')->nullable();
-            $table->string('dni')->nullable()->unique();
-            $table->string('immigration_card')->nullable()->unique();
-            $table->string('passport')->nullable()->unique();
             $table->string('img_url')->nullable();
+            $table->string('state')->nullable();
             $table->unsignedBigInteger('id_user')->nullable();
             $table->timestamps();
 

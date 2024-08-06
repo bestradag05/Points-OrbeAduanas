@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CargoInsurance;
 use App\Models\Concepts;
 use App\Models\Country;
 use App\Models\Custom;
@@ -14,11 +15,13 @@ use App\Models\Routing;
 use App\Models\StateCountry;
 use App\Models\Supplier;
 use App\Models\Transport;
+use App\Models\TypeInsurance;
 use App\Models\TypeLoad;
 use App\Models\TypeService;
 use App\Models\TypeShipment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Ramsey\Uuid\Type\Integer;
 
 class RoutingController extends Controller
 {
@@ -187,6 +190,7 @@ class RoutingController extends Controller
         $type_services = TypeService::all();
         $modalitys = Modality::all();
         $concepts = Concepts::all()->load('typeService');
+        $type_insurace = TypeInsurance::all();
 
         $stateCountrys = StateCountry::whereHas('country', function ($query) {
             $query->where('name', 'Perú');
@@ -211,7 +215,7 @@ class RoutingController extends Controller
 
 
 
-        return view('routing/detail-routing', compact('routing', 'type_services', 'services', 'concepts', 'modalitys', 'tab', 'stateCountrys'));
+        return view('routing/detail-routing', compact('routing', 'type_services', 'services', 'concepts', 'modalitys', 'tab', 'stateCountrys', 'type_insurace'));
     }
 
 
@@ -228,11 +232,11 @@ class RoutingController extends Controller
 
     public function storeRoutingService(Request $request)
     {
-        dd($request->all());
-
+        
         $routing = Routing::where('nro_operation', $request->nro_operation)->first();
 
         $type_services = TypeService::find($request->typeService);
+
 
         //Agregamos el registro a la tabla pivot
         $routing->typeService()->attach($type_services);
@@ -257,18 +261,35 @@ class RoutingController extends Controller
 
             case "Flete":
                 # Flete...
+                // Verificamos si tiene seguro
+
+                if($request->state_insurance){
+                    
+                    $sales_price = $request->value_insurance + $request->insurance_added;
+                  
+                    $cargo_insurance = CargoInsurance::create([
+                        'insurance_sale' => $sales_price,
+                        'sales_value' => $sales_price * 0.18,
+                        'sales_price' => $sales_price * 1.18,
+                        'id_type_insurance' =>  $request->type_insurance
+                    ]);
+                
+                }
+               
                 $freight = Freight::create([
                     'value_utility' => $request->utility,
                     'state' => 'Pendiente',
-                    'nro_operation' => $routing->nro_operation
+                    'nro_operation' => $routing->nro_operation,
+                    'id_cargo_insurance' => isset($cargo_insurance->id) ? $cargo_insurance->id : null
                 ]);
-
+ 
                 //Relacionamos los conceptos que tendra este flete
 
-                foreach (json_decode($request->conceptos) as $concepto) {
-                    $freight->concepts()->attach($concepto->id, ['value_concept' => $concepto->value]);
+                foreach (json_decode($request->concepts) as $concept) {
+                    $freight->concepts()->attach($concept->id, ['value_concept' => $concept->value]);
                     
                 }
+
 
                 return redirect('/routing/' . $routing->id . '/detail');
 

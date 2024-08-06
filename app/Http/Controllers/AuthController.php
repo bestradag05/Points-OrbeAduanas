@@ -152,8 +152,9 @@ class AuthController extends Controller
                 "roles" => auth('api')->user()->getRoleNames(),
                 "permissions" => $permissions,
                 "personal" => [
-                    "name" => $personal->name,
-                    "last_name" => $personal->last_name
+                    "names" => $personal->names,
+                    "last_name" => $personal->last_name,
+                    "mother_last_name" => $personal->mother_last_name
                 ]
             ],
             
