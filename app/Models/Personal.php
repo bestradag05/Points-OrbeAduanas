@@ -11,7 +11,20 @@ class Personal extends Model
 
     protected $table = 'personal';
 
-    protected $fillable = ['name', 'last_name', 'cellphone', 'email', 'dni', 'immigration_card', 'passport', 'img_url', 'id_user'];
+    protected $fillable = [
+            'document_number',
+            'names',
+            'last_name',
+            'mother_last_name',
+            'birthdate',
+            'civil_status',
+            'sexo',
+            'cellphone',
+            'email',
+            'img_url',
+            'state',
+            'id_user',
+    ];
 
 
     public function user()

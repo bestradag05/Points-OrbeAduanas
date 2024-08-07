@@ -101,6 +101,7 @@ class RolesController extends Controller
         }
         $is_role = Role::where("id","<>",$id)->where("name",$request->name)->first();
 
+        
         if($is_role){
             return response()->json([
                 "message" => 403,

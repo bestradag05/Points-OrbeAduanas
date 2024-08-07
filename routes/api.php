@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\DocumentController;
+use App\Http\Controllers\Api\PersonalController;
 use App\Http\Controllers\Api\RolesController as ApiRolesController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
@@ -48,5 +49,6 @@ Route::group([
 ], function ($router) {
     Route::resource("roles", ApiRolesController::class);
     Route::resource("documents", DocumentController::class);
+    Route::resource("personals", PersonalController::class);
 
 });
