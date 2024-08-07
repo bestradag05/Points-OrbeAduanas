@@ -16,9 +16,9 @@ class CargoController extends Controller
             return response()->json(["message"=>"EL USUARIO NO ESTA AUTORIZADO"],403);
         }
 
-        $name=$request->search;
+        $nombre=$request->search;
 
-        $cargos=Cargo::where("name","like","%".name."%")->orderBy("id","desc")->get();
+        $cargos=Cargo::where("nombre","like","%".$nombre."%")->orderBy("id","desc")->get();
         
         return response()->json([
             "roles"=> $cargos->map(function($cargo){
@@ -50,7 +50,21 @@ class CargoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if(!auth('api')->user()->can('register_rol')){
+            return response()->json(['message'=> "EL USUARIO NO ESTA AUTORIZADO"],403);
+        }
+        $exist_cargo=Cargo::where("nombre",$request->nombre)->first();
+        if($exist_cargo){
+            return response()->json([
+                "message"=>403,
+                "message_text"=>"EL NOMBRE DEL CARGO YA EXISTE"
+            ]);
+        }
+
+        $cargo = Cargo::create([
+            'guard_nombre' => 'api',
+            'nombre' => $request->nombre
+        ]);
     }
 
     /**
@@ -76,19 +90,30 @@ class CargoController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
-    /**
+    
+
+
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
-        //
+        if(!auth('api')->user()->can('edit_cargo')){
+            return response()->json(["message" => "EL USUARIO NO ESTA AUTORIZADO"],403);
+        }
+        $is_cargo = Cargo::where("id","<>",$id)->where("nombre",$request->nombre)->first();
+
+        if($is_cargo)
+        {
+            return response()->json([
+                "messager" =>403,
+                "message_text"=> "EL NOMBRE DEL CARGO YA EXISTE"
+            ]);
+        }
+        $cargo=Cargo::findOrFail($id);
+        
+        $cargo->update($request->all());
+
     }
 
     /**
@@ -97,14 +122,20 @@ class CargoController extends Controller
     public function destroy(string $id)
     {
         if(!auth('api')->user()->can('delete_rol')){
-            return response()->json(["message"=>"EL USUARIO NO ETSA AUTORIZADO"],403);
+            return response()->json(["message"=>"EL USUARIO NO ESTA AUTORIZADO"],403);
         }
-        $cargo=Cargo::finOrFail($id);
+
+        /* $cargo=Cargo::finOrFail($id);
         if($cargo->users->count()>0){
             return response()->json([
                 "message"=> 403,
-                "message_text" => ""
+                "message_text" => "EL ROL SELECCIONADO NO SE PUEDE ELIMINAR"
             ]);
-        }
+        } */
+
+        $cargo->delete();
+        return response()->json([
+            "message"=> 200,
+        ]);
     }
 }
