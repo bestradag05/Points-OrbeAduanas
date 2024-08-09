@@ -4,16 +4,36 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Personal;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PersonalController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $name = $request->search;
+
+        $personals = Personal::where("names","like","%".$name."%")->orderBy("id","desc")->get();
+
+        return response()->json([
+            "personals" => $personals->map(function($personal) {
+                return [
+                    "document_number" => $personal->document_number,
+                    "names" => $personal->names,
+                    "last_name" => $personal->last_name,
+                    "mother_last_name" => $personal->mother_last_name,
+                    "cellphone" => $personal->cellphone,
+                    "email" => $personal->email,
+                    "state" => $personal->state,
+                    "img_url" => $personal ? env("APP_URL")."storage/".$personal->img_url : NULL,
+                ];
+            }),
+        ]);
     }
 
     /**
@@ -33,14 +53,44 @@ class PersonalController extends Controller
 
         if($exist_personal){
             return response()->json([
-                "message" => 403,
-                "message_text" => "ESTE PERSONAL YA HA SIDO REGISTRADO"
-            ]);
+                "message" => "Ya existe un usuario con este numero de documento"
+            ], 403);
         }
 
-        return response()->json([
-            "message" => "paso la validacion",
-        ]);
+        //Consultamos si tiene usuario
+
+        if($request->email && $request->password){
+            
+            $exist_usuario = User::where("email", $request->email)->first();
+
+            if($exist_usuario){
+                return response()->json([
+                    "message" => "Este correo ya esta asignado a un usuario"
+                ], 403);
+            }
+
+            $user = User::create([
+                'email' => $request->email,
+                'password' => $request->password
+            ]);
+    
+        }
+
+
+        // "Fri Oct 08 1993 00:00:00 GMT-0500 (hora estándar de Perú)"
+        // Eliminar la parte de la zona horaria (GMT-0500 y entre paréntesis)
+        $date_clean = preg_replace('/\(.*\)|[A-Z]{3}-\d{4}/', '', $request->birth_date);
+
+        $request->birthdate =  Carbon::parse($date_clean)->format("Y-m-d h:i:s");
+
+        if($request->hasFile("img_url")){
+            $path = Storage::putFile("personals",$request->file("img_url"));
+            $request->img_url = $path;
+        }
+
+        if($request->password){
+            $request->password = bcrypt($request->password);
+        }
 
         Personal::create([
             'document_number' => $request->document_number,
@@ -54,12 +104,16 @@ class PersonalController extends Controller
             'email' => $request->email,
             'img_url'  => $request->img_url,
             'state'  => $request->state,
-            'id_user'  => $request->id_user,
+            'id_user'  => (isset($user)) ? $user->id : null,
         ]);
 
+        
         return response()->json([
-            "message" => 200,
-        ]);
+            "message" => "Se creo un nuevo personal",
+        ], 200);
+
+
+  
     }
 
     /**
