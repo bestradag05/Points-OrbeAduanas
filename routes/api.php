@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\RolesController as ApiRolesController;
+use App\Http\Controllers\Api\CargoController as ApiCargosController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -48,5 +49,6 @@ Route::group([
 ], function ($router) {
     Route::resource("roles", ApiRolesController::class);
     Route::resource("documents", DocumentController::class);
+    Route::resource("cargos", ApiCargosController::class);
 
 });

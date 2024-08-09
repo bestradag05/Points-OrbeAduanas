@@ -72,7 +72,7 @@ class CargoController extends Controller
      */
     public function show(string $id)
     {
-        if(!auth('api')->user()->can('edit-rol')){
+        if(!auth('api')->user()->can('edit_rol')){
             return response()->json(["message"=>"EL USUARIO NO ESTA AUTORIZADO"],403);
         }
         $cargo=Cargo::finOrFail($id);
@@ -90,10 +90,6 @@ class CargoController extends Controller
     }
 
     /**
-
-    
-
-
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
