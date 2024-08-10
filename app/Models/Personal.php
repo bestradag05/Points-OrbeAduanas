@@ -24,6 +24,7 @@ class Personal extends Model
             'img_url',
             'state',
             'id_user',
+            'id_document'
     ];
 
 

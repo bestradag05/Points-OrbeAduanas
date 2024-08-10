@@ -25,9 +25,11 @@ return new class extends Migration
             $table->string('img_url')->nullable();
             $table->string('state')->nullable();
             $table->unsignedBigInteger('id_user')->nullable();
+            $table->unsignedBigInteger('id_document')->nullable();//TODO: Recordar cambiar el nullbale, no debe ser un valor null
             $table->timestamps();
 
             $table->foreign('id_user')->references('id')->on('users');
+            $table->foreign('id_document')->references('id')->on('documents');
         });
     }
 

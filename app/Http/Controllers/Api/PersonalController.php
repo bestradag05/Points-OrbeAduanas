@@ -30,7 +30,7 @@ class PersonalController extends Controller
                     "cellphone" => $personal->cellphone,
                     "email" => $personal->email,
                     "state" => $personal->state,
-                    "img_url" => $personal ? env("APP_URL")."storage/".$personal->img_url : NULL,
+                    "img_url" => $personal->img_url ? env("APP_URL")."storage/".$personal->img_url : env("APP_URL")."storage/personals/user_default.png",
                 ];
             }),
         ]);
@@ -49,6 +49,7 @@ class PersonalController extends Controller
      */
     public function store(Request $request)
     {
+
         $exist_personal = Personal::where("document_number", $request->document_number)->first();
 
         if($exist_personal){
@@ -94,6 +95,7 @@ class PersonalController extends Controller
 
         Personal::create([
             'document_number' => $request->document_number,
+            'id_document' => $request->id_document,
             'names' => $request->names,
             'last_name' => $request->last_name,
             'mother_last_name' => $request->mother_last_name,
