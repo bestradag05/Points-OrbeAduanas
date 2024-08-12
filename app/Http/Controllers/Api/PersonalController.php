@@ -18,11 +18,12 @@ class PersonalController extends Controller
     {
         $name = $request->search;
 
-        $personals = Personal::where("names","like","%".$name."%")->orderBy("id","desc")->get();
+        $personals = Personal::where("names", "like", "%" . $name . "%")->orderBy("id", "desc")->get();
 
         return response()->json([
-            "personals" => $personals->map(function($personal) {
+            "personals" => $personals->map(function ($personal) {
                 return [
+                    "id" => $personal->id,
                     "document_number" => $personal->document_number,
                     "names" => $personal->names,
                     "last_name" => $personal->last_name,
@@ -30,7 +31,7 @@ class PersonalController extends Controller
                     "cellphone" => $personal->cellphone,
                     "email" => $personal->email,
                     "state" => $personal->state,
-                    "img_url" => $personal->img_url ? env("APP_URL")."storage/".$personal->img_url : env("APP_URL")."storage/personals/user_default.png",
+                    "img_url" => $personal->img_url ? env("APP_URL") . "storage/" . $personal->img_url : env("APP_URL") . "storage/personals/user_default.png",
                 ];
             }),
         ]);
@@ -52,7 +53,7 @@ class PersonalController extends Controller
 
         $exist_personal = Personal::where("document_number", $request->document_number)->first();
 
-        if($exist_personal){
+        if ($exist_personal) {
             return response()->json([
                 "message" => "Ya existe un usuario con este numero de documento"
             ], 403);
@@ -60,11 +61,11 @@ class PersonalController extends Controller
 
         //Consultamos si tiene usuario
 
-        if($request->email && $request->password){
-            
+        if ($request->email && $request->password) {
+
             $exist_usuario = User::where("email", $request->email)->first();
 
-            if($exist_usuario){
+            if ($exist_usuario) {
                 return response()->json([
                     "message" => "Este correo ya esta asignado a un usuario"
                 ], 403);
@@ -74,7 +75,6 @@ class PersonalController extends Controller
                 'email' => $request->email,
                 'password' => $request->password
             ]);
-    
         }
 
 
@@ -84,12 +84,12 @@ class PersonalController extends Controller
 
         $request->birthdate =  Carbon::parse($date_clean)->format("Y-m-d h:i:s");
 
-        if($request->hasFile("img_url")){
-            $path = Storage::putFile("personals",$request->file("img_url"));
+        if ($request->hasFile("img_url")) {
+            $path = Storage::putFile("personals", $request->file("img_url"));
             $request->img_url = $path;
         }
 
-        if($request->password){
+        if ($request->password) {
             $request->password = bcrypt($request->password);
         }
 
@@ -109,13 +109,10 @@ class PersonalController extends Controller
             'id_user'  => (isset($user)) ? $user->id : null,
         ]);
 
-        
+
         return response()->json([
             "message" => "Se creo un nuevo personal",
         ], 200);
-
-
-  
     }
 
     /**
@@ -123,7 +120,23 @@ class PersonalController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $personal = Personal::findOrFail($id);
+        return response()->json([
+            "id" => $personal->id,
+            "document_number" => $personal->document_number,
+            "id_document" => $personal->id_document,
+            "names" => $personal->names,
+            "last_name" => $personal->last_name,
+            "mother_last_name" => $personal->mother_last_name,
+            "birthdate" => $personal->birthdate,
+            "civil_status" => $personal->civil_status,
+            "sexo" => $personal->sexo,
+            "cellphone" => $personal->cellphone,
+            "email" => $personal->email,
+            "user" => $personal->user,
+            "state" => $personal->state,
+            "img_url" => $personal->img_url ? env("APP_URL") . "storage/" . $personal->img_url : env("APP_URL") . "storage/personals/user_default.png",
+        ]);
     }
 
     /**
@@ -139,7 +152,36 @@ class PersonalController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+
+        $is_personal = Personal::where("id", "<>", $id)->where("document_number", $request->document_number)->first();
+
+        if ($is_personal) {
+            return response()->json([
+                "message" => "Ya existe este personal con este numero de identificacion"
+            ], 403);
+        }
+
+        $personal = Personal::findOrFail($id);
+
+        if($request->hasFile("img_url")){
+            if($personal->img_url){
+                Storage::delete($personal->img_url);
+            }
+            $path = $request->file('img_url')->store('personals');
+           
+            $personal->update(['img_url' => $path]);
+    
+
+            return response()->json([
+                "imagen" =>  $request['img_url']
+            ], 200);
+        }
+
+        $personal->update($request->all()); 
+
+        return response()->json([
+            "message" => "Personal actualizado"
+        ], 200);
     }
 
     /**

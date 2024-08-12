@@ -49,6 +49,7 @@ Route::group([
 ], function ($router) {
     Route::resource("roles", ApiRolesController::class);
     Route::resource("documents", DocumentController::class);
+    Route::post("personals/{id}",[PersonalController::class,"update"]);
     Route::resource("personals", PersonalController::class);
 
 });
