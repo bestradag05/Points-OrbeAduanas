@@ -5,11 +5,15 @@
     <h2>Actualizar cargos</h2>
     <div>
         <a href="{{url('/cargos') }}" class="btn btn-primary">Atras</a>
-    </div> 
+    </div>
 </div>
 
 @strpos
 @section('dinamic-content')
 <form action={{ url('/cargos/'. $cargo->id) }} method="POST enctype="multipart/form-data">
-  {{method_field('')}}  
+  {{method_field('')}}
+  {{csrf_field () }}
+  @include ('cargos.form-cargos', ['formMode' => 'edit'])
 </form>
+
+@stop
