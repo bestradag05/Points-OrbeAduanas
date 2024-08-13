@@ -153,6 +153,9 @@ class PersonalController extends Controller
     public function update(Request $request, string $id)
     {
 
+        return response()->json([
+            "message" => $request->all()
+        ], 200);
         $is_personal = Personal::where("id", "<>", $id)->where("document_number", $request->document_number)->first();
 
         if ($is_personal) {
@@ -163,18 +166,15 @@ class PersonalController extends Controller
 
         $personal = Personal::findOrFail($id);
 
-        if($request->hasFile("img_url")){
+        if($request->hasFile("imagen")){
             if($personal->img_url){
                 Storage::delete($personal->img_url);
             }
-            $path = $request->file('img_url')->store('personals');
-           
-            $personal->update(['img_url' => $path]);
-    
 
-            return response()->json([
-                "imagen" =>  $request['img_url']
-            ], 200);
+            $path = $request->file('imagen')->store('personals');
+           
+            $request->request->add(["img_url" => $path]);
+
         }
 
         $personal->update($request->all()); 
