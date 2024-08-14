@@ -51,6 +51,10 @@ class PersonalController extends Controller
     public function store(Request $request)
     {
 
+
+         /* return response()->json([
+            "message" => $request->email
+        ], 200); */
         $exist_personal = Personal::where("document_number", $request->document_number)->first();
 
         if ($exist_personal) {
@@ -81,7 +85,7 @@ class PersonalController extends Controller
 
         // "Fri Oct 08 1993 00:00:00 GMT-0500 (hora estándar de Perú)"
         // Eliminar la parte de la zona horaria (GMT-0500 y entre paréntesis)
-        $date_clean = preg_replace('/\(.*\)|[A-Z]{3}-\d{4}/', '', $request->birth_date);
+        $date_clean = preg_replace('/\(.*\)|[A-Z]{3}-\d{4}/', '', $request->birthdate);
 
         $request->birthdate =  Carbon::parse($date_clean)->format("Y-m-d h:i:s");
 
@@ -154,9 +158,6 @@ class PersonalController extends Controller
     public function update(Request $request, string $id)
     {
 
-        /* return response()->json([
-            "message" => $request->all()
-        ], 200); */
         $is_personal = Personal::where("id", "<>", $id)->where("document_number", $request->document_number)->first();
         $exist_email = Personal::where("id", "<>", $id)->where("email", $request->email)->first();
 
@@ -174,26 +175,13 @@ class PersonalController extends Controller
 
         $personal = Personal::findOrFail($id);
 
-        // Actualizamos el usuario
-        if ($personal->user()) {
-            $user = User::findOrFail($personal->user->id);
-            if ($request->email != $user->email) {
-                /* return "si actualizo email"; */
-                $user->update(['email' => $request->email]);
-               
-            }
+         // "Fri Oct 08 1993 00:00:00 GMT-0500 (hora estándar de Perú)"
+        // Eliminar la parte de la zona horaria (GMT-0500 y entre paréntesis)
+        $date_clean = preg_replace('/\(.*\)|[A-Z]{3}-\d{4}/', '', $request->birth_date);
 
-            if ($request->password != $user->passwor) {
-                /* return "si actualizo password"; */
-                $user->update(['password' => $request->password]);
-            }
+        $dateFormat =  Carbon::parse($date_clean)->format("Y-m-d h:i:s");
 
-            if ($request->state_user != $user->state) {
-                /* return "si actualizo state"; */
-                $user->update(['state' => $request->state_user]);
-            }
-        }
-
+        $request->request->add(["birthdate" => $dateFormat]);
 
         if ($request->hasFile("imagen")) {
             if ($personal->img_url) {

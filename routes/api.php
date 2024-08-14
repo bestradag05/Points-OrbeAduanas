@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\PersonalController;
 use App\Http\Controllers\Api\RolesController as ApiRolesController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -51,5 +52,6 @@ Route::group([
     Route::resource("documents", DocumentController::class);
     Route::post("personals/{id}",[PersonalController::class,"update"]);
     Route::resource("personals", PersonalController::class);
+    Route::resource("users", UserController::class);
 
 });
