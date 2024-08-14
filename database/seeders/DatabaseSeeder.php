@@ -48,7 +48,8 @@ class DatabaseSeeder extends Seeder
 
         $user = User::create([
             'email' => 'admin@orbeaduanas.com',
-            'password' => bcrypt('admin')
+            'password' => bcrypt('admin'),
+            'state' => 'Activo'
         ]);
 
         $user->assignRole($role);
@@ -212,7 +213,7 @@ class DatabaseSeeder extends Seeder
 
 
         /* Proceso para el routing */
-        User::create(['email' => 'liquidador@orbeaduanas.com', 'password' => bcrypt('password')]);
+        User::create(['email' => 'liquidador@orbeaduanas.com', 'password' => bcrypt('password'), 'state' => 'Activo']);
         Personal::create(['document_number' => '73184112','names' => 'Anderson', 'last_name' => 'moron', 'mother_last_name' => 'Santiago', 'cellphone' => '977234697', 'email' => 'liquidador@orbeaduanas.com',   'id_user' => 2]);
         Customer::create(['ruc' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'id_user' => 2]);
         Supplier::create(['type_id' => 'RUC', 'number_id' => '20554630740', 'name_businessname' => 'HENAN XINGSHENGDA', 'addres' => 'North section of renmin road, changge city', 'contact_name' => 'Asten Zho', 'contact_number' => '944653246', 'contact_email' => 'asten@hnidel.com', 'type_suppliers' => 'Venta']);

@@ -61,7 +61,7 @@ class PersonalController extends Controller
 
         //Consultamos si tiene usuario
 
-        if ($request->email && $request->password) {
+        if ($request->password) {
 
             $exist_usuario = User::where("email", $request->email)->first();
 
@@ -73,7 +73,8 @@ class PersonalController extends Controller
 
             $user = User::create([
                 'email' => $request->email,
-                'password' => $request->password
+                'password' => $request->password,
+                'state' => 'Activo'
             ]);
         }
 
@@ -153,10 +154,11 @@ class PersonalController extends Controller
     public function update(Request $request, string $id)
     {
 
-        return response()->json([
+        /* return response()->json([
             "message" => $request->all()
-        ], 200);
+        ], 200); */
         $is_personal = Personal::where("id", "<>", $id)->where("document_number", $request->document_number)->first();
+        $exist_email = Personal::where("id", "<>", $id)->where("email", $request->email)->first();
 
         if ($is_personal) {
             return response()->json([
@@ -164,20 +166,46 @@ class PersonalController extends Controller
             ], 403);
         }
 
+        if ($exist_email) {
+            return response()->json([
+                "message" => "Este email ya esta registrado para otro personal"
+            ], 403);
+        }
+
         $personal = Personal::findOrFail($id);
 
-        if($request->hasFile("imagen")){
-            if($personal->img_url){
+        // Actualizamos el usuario
+        if ($personal->user()) {
+            $user = User::findOrFail($personal->user->id);
+            if ($request->email != $user->email) {
+                /* return "si actualizo email"; */
+                $user->update(['email' => $request->email]);
+               
+            }
+
+            if ($request->password != $user->passwor) {
+                /* return "si actualizo password"; */
+                $user->update(['password' => $request->password]);
+            }
+
+            if ($request->state_user != $user->state) {
+                /* return "si actualizo state"; */
+                $user->update(['state' => $request->state_user]);
+            }
+        }
+
+
+        if ($request->hasFile("imagen")) {
+            if ($personal->img_url) {
                 Storage::delete($personal->img_url);
             }
 
             $path = $request->file('imagen')->store('personals');
-           
-            $request->request->add(["img_url" => $path]);
 
+            $request->request->add(["img_url" => $path]);
         }
 
-        $personal->update($request->all()); 
+        $personal->update($request->all());
 
         return response()->json([
             "message" => "Personal actualizado"
