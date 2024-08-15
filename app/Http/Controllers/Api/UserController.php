@@ -23,8 +23,8 @@ class UserController extends Controller
                     "id" => $user->id,
                     "email" => $user->email,
                     "state" => $user->state,
-                    "personal" => $user->personal,
-                    "img_url" => $user->personal->img_url ? env("APP_URL") . "storage/" . $user->personal->img_url : env("APP_URL") . "storage/personals/user_default.png",
+                    "personal" => isset($user->personal) ? $user->personal : '',
+                    "img_url" => isset($user->personal->img_url)  ? env("APP_URL") . "storage/" . $user->personal->img_url : env("APP_URL") . "storage/personals/user_default.png",
                 ];
             }),
         ]);
@@ -44,7 +44,24 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $exist_user = User::where("email", $request->email)->first();
+
+        if($exist_user){
+            return response()->json([
+                "message" => 403,
+                "message_text" => "EL USUARIO YA EXISTE"
+            ]);
+        }
+
+        User::create([
+            'email' => $request->email,
+            'password' => $request->password,
+            'state' => $request->state
+        ]);
+
+        return response()->json([
+            "message" => "El usuario se registro",
+        ], 201);
     }
 
     /**

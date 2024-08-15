@@ -69,7 +69,7 @@ class DatabaseSeeder extends Seeder
             'mother_last_name' => 'Gomez',
             'cellphone' => '977834697',
             'email' => 'admin@orbeaduanas.com',
-            'img_url' => '',
+            'img_url' =>  null,
             'state' => 'Activo',
             'sexo' => 'Masculino',
             'civil_status' => 'Soltero',

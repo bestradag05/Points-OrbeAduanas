@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('names');
             $table->string('last_name');
             $table->string('mother_last_name');
-            $table->date('birthdate')->nullable();
+            $table->dateTime('birthdate')->nullable();
             $table->string('civil_status')->nullable();
             $table->string('sexo')->nullable();
             $table->string('cellphone');
