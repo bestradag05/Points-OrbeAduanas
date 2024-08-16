@@ -101,9 +101,9 @@ class UserController extends Controller
         //
 
         
-        return response()->json([
+        /* return response()->json([
             'response' => $request->all()
-        ]);
+        ]); */
 
         $is_document = User::where("id","<>",$id)->where("email",$request->email)->first();
 
@@ -114,7 +114,19 @@ class UserController extends Controller
             ]);
         }
 
+        if($request->id_personal){
+            $personal = Personal::findOrFail($request->id_personal);
+
+            $personal->update(['id_user' => $id]);
+        }
+
         $user = User::findOrFail($id);
+
+        $user->update($request->all());
+
+        return response()->json([
+            'message' => 'Usuario actualizado'
+        ], 200);
 
       
 
@@ -125,6 +137,18 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        if($user->state == 'Activo'){
+            $user->update(['state' => 'Desactivado']);
+        }else{
+            $user->update(['state' => 'Activo']);
+        }
+
+        return response()->json([
+            'message' => 'Usuario ' . $user->state,
+            'state' => $user->state
+        ], 200);
+
     }
 }
