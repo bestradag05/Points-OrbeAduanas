@@ -37,6 +37,29 @@ class PersonalController extends Controller
         ]);
     }
 
+
+    public function getPersonalWithUser() {
+
+        $personals = Personal::doesntHave('user')->get();
+
+        return response()->json([
+            "personals" => $personals->map(function ($personal) {
+                return [
+                    "id" => $personal->id,
+                    "document_number" => $personal->document_number,
+                    "names" => $personal->names,
+                    "last_name" => $personal->last_name,
+                    "mother_last_name" => $personal->mother_last_name,
+                    "cellphone" => $personal->cellphone,
+                    "email" => $personal->email,
+                    "state" => $personal->state,
+                    "img_url" => $personal->img_url ? env("APP_URL") . "storage/" . $personal->img_url : env("APP_URL") . "storage/personals/user_default.png"
+                ];
+            }),
+        ]);
+
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -53,7 +76,7 @@ class PersonalController extends Controller
 
 
          /* return response()->json([
-            "message" => $request->email
+            "message" => $request->all()
         ], 200); */
         $exist_personal = Personal::where("document_number", $request->document_number)->first();
 
