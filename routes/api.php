@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\DocumentController;
+use App\Http\Controllers\Api\MoneyController;
 use App\Http\Controllers\Api\RolesController as ApiRolesController;
+use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -48,5 +51,8 @@ Route::group([
 ], function ($router) {
     Route::resource("roles", ApiRolesController::class);
     Route::resource("documents", DocumentController::class);
-
+    Route::resource("companys", CompanyController::class);
+    Route::post("companys/{id}", [CompanyController::class,"update"]);
+    Route::resource("moneys", MoneyController::class);
+    Route::resource("services", ServiceController::class);
 });
