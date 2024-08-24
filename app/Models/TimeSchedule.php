@@ -30,6 +30,7 @@ class TimeSchedule extends Model
         'state',
         'inCodUserCreate',
         'inCodUserEdit',
+        'id_personal'
     ];
 
 

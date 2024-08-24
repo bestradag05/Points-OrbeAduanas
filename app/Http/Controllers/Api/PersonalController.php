@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Personal;
+use App\Models\TimeSchedule;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -38,7 +39,8 @@ class PersonalController extends Controller
     }
 
 
-    public function getPersonalWithUser() {
+    public function getPersonalWithUser()
+    {
 
         $personals = Personal::doesntHave('user')->get();
 
@@ -57,7 +59,6 @@ class PersonalController extends Controller
                 ];
             }),
         ]);
-
     }
 
     /**
@@ -74,9 +75,10 @@ class PersonalController extends Controller
     public function store(Request $request)
     {
 
+      
 
-         /* return response()->json([
-            "message" => $request->all()
+        /* return response()->json([
+            "message" => $schedule
         ], 200); */
         $exist_personal = Personal::where("document_number", $request->document_number)->first();
 
@@ -121,7 +123,7 @@ class PersonalController extends Controller
             $request->password = bcrypt($request->password);
         }
 
-        Personal::create([
+        $personal = Personal::create([
             'document_number' => $request->document_number,
             'id_document' => $request->id_document,
             'names' => $request->names,
@@ -136,6 +138,37 @@ class PersonalController extends Controller
             'state'  => $request->state,
             'id_user'  => (isset($user)) ? $user->id : null,
         ]);
+
+
+        $schedule = [
+            'heLunes' =>$request->heLunes,
+            'hsLunes' =>$request->hsLunes,
+            'heMartes' =>$request->heMartes,
+            'hsMartes' =>$request->hsMartes,
+            'heMiercoles' =>$request->heMiercoles,
+            'hsMiercoles' =>$request->hsMiercoles,
+            'heJueves' =>$request->heJueves,
+            'hsJueves' =>$request->hsJueves,
+            'heViernes' =>$request->heViernes,
+            'hsViernes' =>$request->hsViernes,
+            'heSabado' =>$request->heSabado,
+            'hsSabado' =>$request->hsSabado
+        ];
+
+        foreach ($schedule as $key => $day) {
+            
+            $date_clean = preg_replace('/\(.*\)|[A-Z]{3}-\d{4}/', '', $day);
+
+            if($day){
+                $schedule[$key] =  Carbon::parse($date_clean)->format("Y-m-d h:i:s");
+            }
+            
+        }
+
+       $schedule['id_personal'] =  $personal->id;
+       $schedule['state'] =  'Activo';
+
+       TimeSchedule::create($schedule);
 
 
         return response()->json([
@@ -198,7 +231,7 @@ class PersonalController extends Controller
 
         $personal = Personal::findOrFail($id);
 
-         // "Fri Oct 08 1993 00:00:00 GMT-0500 (hora estándar de Perú)"
+        // "Fri Oct 08 1993 00:00:00 GMT-0500 (hora estándar de Perú)"
         // Eliminar la parte de la zona horaria (GMT-0500 y entre paréntesis)
         $date_clean = preg_replace('/\(.*\)|[A-Z]{3}-\d{4}/', '', $request->birth_date);
 
