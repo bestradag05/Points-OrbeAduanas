@@ -99,15 +99,16 @@ class RolesController extends Controller
         if(!auth('api')->user()->can('edit_rol')){
             return response()->json(["message" => "EL USUARIO NO ESTA AUTORIZADO"],403);
         }
-        $is_role = Role::where("id","<>",$id)->where("name",$request->name)->first();
+            $is_role = Role::where("id","<>",$id)->where("name",$request->name)->first();
 
-        
+
         if($is_role){
             return response()->json([
                 "message" => 403,
                 "message_text" => "EL NOMBRE DEL ROL YA EXISTE"
             ]);
         }
+
 
         $role = Role::findOrFail($id);
 

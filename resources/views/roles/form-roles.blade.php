@@ -1,6 +1,6 @@
 <div class="form-group">
     <label for="name">Nombre</label>
-    <input type="text" class="form-control" id="name" name="name" 
+    <input type="text" class="form-control" id="name" name="name"
     placeholder="Ingrese su nombre" value="{{ isset($rol->name) ? $rol->name : ''}}">
     @error('name')
     <div class="text-danger">{{ $message }}</div>
