@@ -111,6 +111,9 @@ class CargoController extends Controller
         
         $cargo->update($request->all());
 
+        return response()->json([
+            "message" => "El cargo se actualizo",
+        ], 200);
     }
 
     /**
@@ -128,6 +131,7 @@ class CargoController extends Controller
 
         return response()->json([
             "message"=> 200,
+            "state" => $cargo->state
         ]);
     }
 }
