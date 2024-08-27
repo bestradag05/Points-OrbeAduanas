@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\PersonalController;
 use App\Http\Controllers\Api\RolesController as ApiRolesController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CargoController as ApiCargosController;
+use App\Http\Controllers\Api\ContractController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -59,5 +60,7 @@ Route::group([
     Route::resource("users", UserController::class);
 
     Route::resource("cargos", ApiCargosController::class);
+
+    Route::resource("contracts", ContractController::class);
 
 });
