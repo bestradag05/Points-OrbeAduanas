@@ -21,6 +21,7 @@ class Personal extends Model
             'sexo',
             'cellphone',
             'email',
+            'address',
             'img_url',
             'state',
             'id_user',
@@ -31,6 +32,11 @@ class Personal extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user', 'id');
+    }
+
+    public function document()
+    {
+        return $this->belongsTo(Document::class, 'id_document', 'id');
     }
 
     public function routing(){

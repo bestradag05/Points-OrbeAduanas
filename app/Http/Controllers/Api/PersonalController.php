@@ -31,6 +31,7 @@ class PersonalController extends Controller
                     "mother_last_name" => $personal->mother_last_name,
                     "cellphone" => $personal->cellphone,
                     "email" => $personal->email,
+                    "address" => $personal->address,
                     "state" => $personal->state,
                     "img_url" => $personal->img_url ? env("APP_URL") . "storage/" . $personal->img_url : env("APP_URL") . "storage/personals/user_default.png",
                 ];
@@ -54,6 +55,7 @@ class PersonalController extends Controller
                     "mother_last_name" => $personal->mother_last_name,
                     "cellphone" => $personal->cellphone,
                     "email" => $personal->email,
+                    "address" => $personal->address,
                     "state" => $personal->state,
                     "img_url" => $personal->img_url ? env("APP_URL") . "storage/" . $personal->img_url : env("APP_URL") . "storage/personals/user_default.png"
                 ];
@@ -134,6 +136,7 @@ class PersonalController extends Controller
             'sexo' => $request->sexo,
             'cellphone' => $request->cellphone,
             'email' => $request->email,
+            "address" => $request->address,
             'img_url'  => $request->img_url,
             'state'  => $request->state,
             'id_user'  => (isset($user)) ? $user->id : null,
@@ -186,6 +189,7 @@ class PersonalController extends Controller
             "id" => $personal->id,
             "document_number" => $personal->document_number,
             "id_document" => $personal->id_document,
+            "document" => $personal->document,
             "names" => $personal->names,
             "last_name" => $personal->last_name,
             "mother_last_name" => $personal->mother_last_name,
@@ -194,6 +198,7 @@ class PersonalController extends Controller
             "sexo" => $personal->sexo,
             "cellphone" => $personal->cellphone,
             "email" => $personal->email,
+            "address" => $personal->address,
             "user" => $personal->user,
             "state" => $personal->state,
             "img_url" => $personal->img_url ? env("APP_URL") . "storage/" . $personal->img_url : env("APP_URL") . "storage/personals/user_default.png",

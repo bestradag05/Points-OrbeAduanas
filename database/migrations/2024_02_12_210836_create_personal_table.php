@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('sexo')->nullable();
             $table->string('cellphone');
             $table->string('email')->nullable();
+            $table->string('address')->nullable();
             $table->string('img_url')->nullable();
             $table->string('state')->nullable();
             $table->unsignedBigInteger('id_user')->nullable();
