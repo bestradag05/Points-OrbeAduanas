@@ -1,11 +1,14 @@
 <?php
 
+use App\Http\Controllers\Api\CompanyController;
 use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\PersonalController;
 use App\Http\Controllers\Api\RolesController as ApiRolesController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CargoController as ApiCargosController;
 use App\Http\Controllers\Api\ContractController;
+use App\Http\Controllers\Api\MoneyController;
+use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -52,7 +55,6 @@ Route::group([
 ], function ($router) {
     Route::resource("roles", ApiRolesController::class);
     Route::resource("documents", DocumentController::class);
-
     Route::post("personals/{id}",[PersonalController::class,"update"]);
     Route::get("personals/users", [PersonalController::class, "getPersonalWithUser"]);
     Route::resource("personals", PersonalController::class);
@@ -63,4 +65,9 @@ Route::group([
 
     Route::resource("contracts", ContractController::class);
 
+    Route::resource("companys", CompanyController::class);
+    Route::post("companys/{id}", [CompanyController::class,"update"]);
+    Route::resource("moneys", MoneyController::class);
+    Route::resource("services", ServiceController::class);
 });
+
