@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Contract;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ContractController extends Controller
@@ -16,12 +17,14 @@ class ContractController extends Controller
         $contracts = Contract::all();
 
         return response()->json([
-            "contracts" => $contracts->map(function($document) {
+            "contracts" => $contracts->map(function($contract) {
                 return [
-                    "start_date" => $document->start_date,
-                    "end_date" => $document->end_date,
-                    "salary" => $document->salary,
-                    "state" => $document->state
+                    "personal" => $contract->personal,
+                    "img_url" => $contract->personal->img_url ? env("APP_URL") . "storage/" . $contract->personal->img_url : env("APP_URL") . "storage/personals/user_default.png",
+                    "start_date" => $contract->start_date,
+                    "end_date" => $contract->end_date,
+                    "salary" => $contract->salary,
+                    "state" => $contract->state
                 ];
             }),
         ], 200);
@@ -40,7 +43,26 @@ class ContractController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $formattedDateStart =  $this->formatdateUTC($request->start_date);
+        $formattedDateEnd =  $this->formatdateUTC($request->end_date);
+
+        $request->merge([
+            'start_date' => $formattedDateStart,
+            'end_date' => $formattedDateEnd
+        ]);
+
+        Contract::create([
+            'id_personal' => $request->id_personal,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'salary' => $request->salary,
+            'state' => 'Pendiente'
+        ]);
+
+        return response()->json([
+            "message" => "Contrato registrado",
+        ], 200);
+
     }
 
     /**
@@ -73,5 +95,13 @@ class ContractController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+
+    public function formatdateUTC($date){
+       
+        $date_clean = preg_replace('/\(.*\)|[A-Z]{3}-\d{4}/', '', $date);
+        $dateFormat =   Carbon::parse($date_clean)->format("Y-m-d h:i:s");
+        return $dateFormat;
     }
 }

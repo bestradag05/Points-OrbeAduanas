@@ -184,6 +184,7 @@ class PersonalController extends Controller
      */
     public function show(string $id)
     {
+        
         $personal = Personal::findOrFail($id);
         return response()->json([
             "id" => $personal->id,

@@ -11,5 +11,12 @@ class Contract extends Model
 
     protected $table = 'contract';
 
-    protected $fillable = ['id_personal','start_date','end_date','sueldo','user_register','user_update','state'];
+    protected $fillable = ['id_personal','start_date','end_date','salary','user_register','user_update','state'];
+
+
+    public function personal()
+    {
+        return $this->belongsTo(Personal::class, 'id_personal', 'id');
+    }
+
 }
