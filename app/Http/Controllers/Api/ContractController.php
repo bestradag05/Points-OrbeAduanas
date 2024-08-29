@@ -17,8 +17,9 @@ class ContractController extends Controller
         $contracts = Contract::all();
 
         return response()->json([
-            "contracts" => $contracts->map(function($contract) {
+            "contracts" => $contracts->map(function ($contract) {
                 return [
+                    "id" => $contract->id,
                     "personal" => $contract->personal,
                     "img_url" => $contract->personal->img_url ? env("APP_URL") . "storage/" . $contract->personal->img_url : env("APP_URL") . "storage/personals/user_default.png",
                     "start_date" => $contract->start_date,
@@ -56,13 +57,14 @@ class ContractController extends Controller
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
             'salary' => $request->salary,
+            'id_cargo' => $request->id_cargo,
+            'id_company' => $request->id_company,
             'state' => 'Pendiente'
         ]);
 
         return response()->json([
             "message" => "Contrato registrado",
         ], 200);
-
     }
 
     /**
@@ -70,7 +72,20 @@ class ContractController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $contract = Contract::findOrFail($id);
+
+        return response()->json([
+            "id" => $contract->id,
+            "personal" => $contract->personal,
+            "cargo" => $contract->cargo,
+            "company" => $contract->company,
+            "document" => $contract->personal->document,
+            "img_url" => $contract->personal->img_url ? env("APP_URL") . "storage/" . $contract->personal->img_url : env("APP_URL") . "storage/personals/user_default.png",
+            "start_date" => $contract->start_date,
+            "end_date" => $contract->end_date,
+            "salary" => $contract->salary,
+            "state" => $contract->state
+        ], 200);
     }
 
     /**
@@ -86,7 +101,21 @@ class ContractController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $contract = Contract::findOrFail($id);
+
+        $formattedDateStart =  $this->formatdateUTC($request->start_date);
+        $formattedDateEnd =  $this->formatdateUTC($request->end_date);
+
+        $request->merge([
+            'start_date' => $formattedDateStart,
+            'end_date' => $formattedDateEnd
+        ]);
+
+        $contract->update($request->all());
+
+        return response()->json([
+            "message" => "Contrato actualizado"
+        ], 200);
     }
 
     /**
@@ -98,8 +127,9 @@ class ContractController extends Controller
     }
 
 
-    public function formatdateUTC($date){
-       
+    public function formatdateUTC($date)
+    {
+
         $date_clean = preg_replace('/\(.*\)|[A-Z]{3}-\d{4}/', '', $date);
         $dateFormat =   Carbon::parse($date_clean)->format("Y-m-d h:i:s");
         return $dateFormat;

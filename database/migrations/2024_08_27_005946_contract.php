@@ -17,12 +17,16 @@ return new class extends Migration
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();
             $table->decimal('salary', 8,2);
+            $table->unsignedBigInteger('id_cargo');
+            $table->unsignedBigInteger('id_company');
             $table->integer('user_register')->nullable();
             $table->integer('user_update')->nullable();
             $table->string('state')->nullable();
             $table->timestamps();
 
             $table->foreign('id_personal')->references('id')->on('personal');
+            $table->foreign('id_cargo')->references('id')->on('cargo');
+            $table->foreign('id_company')->references('id')->on('companys');
 
 
         });
