@@ -22,6 +22,7 @@ class ContractController extends Controller
                     "id" => $contract->id,
                     "personal" => $contract->personal,
                     "img_url" => $contract->personal->img_url ? env("APP_URL") . "storage/" . $contract->personal->img_url : env("APP_URL") . "storage/personals/user_default.png",
+                    "contract_modality" => $contract->contract_modality,
                     "start_date" => $contract->start_date,
                     "end_date" => $contract->end_date,
                     "salary" => $contract->salary,
@@ -54,6 +55,7 @@ class ContractController extends Controller
 
         Contract::create([
             'id_personal' => $request->id_personal,
+            "contract_modality" => $request->contract_modality,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
             'salary' => $request->salary,
@@ -81,6 +83,7 @@ class ContractController extends Controller
             "company" => $contract->company,
             "document" => $contract->personal->document,
             "img_url" => $contract->personal->img_url ? env("APP_URL") . "storage/" . $contract->personal->img_url : env("APP_URL") . "storage/personals/user_default.png",
+            "contract_modality" => $contract->contract_modality,
             "start_date" => $contract->start_date,
             "end_date" => $contract->end_date,
             "salary" => $contract->salary,
