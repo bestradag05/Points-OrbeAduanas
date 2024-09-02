@@ -48,7 +48,7 @@ Route::group(
 );
 
 
-
+Route::get("contracts/documentTest/{id}", [ContractController::class, "getDocumentContract"]);
 
 Route::group([
     'middleware' => 'auth:api',
@@ -63,6 +63,7 @@ Route::group([
 
     Route::resource("cargos", ApiCargosController::class);
 
+    Route::get("contracts/document/{id}", [ContractController::class, "getDocumentContract"]);
     Route::resource("contracts", ContractController::class);
 
     Route::resource("companys", CompanyController::class);

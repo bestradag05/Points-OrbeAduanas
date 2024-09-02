@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Contract;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -89,6 +90,21 @@ class ContractController extends Controller
             "salary" => $contract->salary,
             "state" => $contract->state
         ], 200);
+    }
+
+    public function getDocumentContract(string $id){
+
+        $contract = Contract::findOrFail($id);
+        $contract->personal;
+
+        $data = [
+            'contract' => $contract
+        ];
+       
+        $pdf = Pdf::loadView('pdf/practice_agreement', $data);
+
+        return $pdf->stream('archivo.pdf');
+
     }
 
     /**
