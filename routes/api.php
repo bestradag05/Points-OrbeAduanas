@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\RolesController as ApiRolesController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CargoController as ApiCargosController;
 use App\Http\Controllers\Api\ContractController;
+use App\Http\Controllers\Api\ContratModalitieController;
 use App\Http\Controllers\Api\MoneyController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\AuthController;
@@ -65,6 +66,8 @@ Route::group([
 
     Route::get("contracts/document/{id}", [ContractController::class, "getDocumentContract"]);
     Route::resource("contracts", ContractController::class);
+
+    Route::resource("contract_modalities", ContratModalitieController::class);
 
     Route::resource("companys", CompanyController::class);
     Route::post("companys/{id}", [CompanyController::class,"update"]);

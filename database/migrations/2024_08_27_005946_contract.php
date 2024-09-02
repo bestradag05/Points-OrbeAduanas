@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('salary', 8,2);
             $table->unsignedBigInteger('id_cargo');
             $table->unsignedBigInteger('id_company');
+            $table->unsignedBigInteger('id_contract_modalities');
             $table->integer('user_register')->nullable();
             $table->integer('user_update')->nullable();
             $table->string('state')->nullable();
@@ -28,6 +29,8 @@ return new class extends Migration
             $table->foreign('id_personal')->references('id')->on('personal');
             $table->foreign('id_cargo')->references('id')->on('cargo');
             $table->foreign('id_company')->references('id')->on('companys');
+            $table->foreign('id_contract_modalities')->references('id')->on('contract_modalities');
+            
 
 
         });

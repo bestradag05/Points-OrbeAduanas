@@ -4,7 +4,10 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Cargo;
+use App\Models\Company;
 use App\Models\Concepts;
+use App\Models\ContractModalitie;
 use App\Models\Customer;
 use App\Models\Document;
 use App\Models\Incoterms;
@@ -69,6 +72,7 @@ class DatabaseSeeder extends Seeder
             'mother_last_name' => 'Gomez',
             'cellphone' => '977834697',
             'email' => 'admin@orbeaduanas.com',
+            'address' => 'Av Revolucion Calle Q - Villa el Salvador',
             'img_url' =>  null,
             'state' => 'Activo',
             'sexo' => 'Masculino',
@@ -76,34 +80,6 @@ class DatabaseSeeder extends Seeder
             'id_document' => $document->id,
             'id_user' => 1
         ]);
-
-        /* $contador = 0;
-
-        do {
-            User::create([
-                'email' => Str::random(5) . '@orbeaduanas.com',
-                'password' => Hash::make('admin')
-            ]);
-
-
-            Personal::create([
-                'name' => Str::random(5),
-                'last_name' => Str::random(5),
-                'cellphone' => Str::random(5),
-                'email' => Str::random(5) . 'orbeaduanas.com',
-                'dni' => Str::random(5),
-                'img_url' => 'user_default.png',
-                'id_user' =>  $contador + 1
-            ]);
-
-
-            $contador++;
-        } while ($contador <= 10);
-
- */
-
-
-
 
         Permission::create(['name' => 'users.create', 'alias' => 'Crear usuarios', 'guard_name' => 'web']);
         Permission::create(['name' => 'users.update', 'alias' => 'Actualizar usuarios', 'guard_name' => 'web']);
@@ -223,7 +199,7 @@ class DatabaseSeeder extends Seeder
 
         /* Proceso para el routing */
         User::create(['email' => 'liquidador@orbeaduanas.com', 'password' => bcrypt('password'), 'state' => 'Activo']);
-        Personal::create(['document_number' => '73184112','names' => 'Anderson', 'last_name' => 'moron', 'mother_last_name' => 'Santiago', 'cellphone' => '977234697', 'email' => 'liquidador@orbeaduanas.com', 'sexo' => 'Masculino', 'civil_status' => 'Soltero', 'state' => 'Activo', 'id_document' => $document->id, 'id_user' => 2]);
+        Personal::create(['document_number' => '73184112','names' => 'Anderson', 'last_name' => 'moron', 'mother_last_name' => 'Santiago', 'cellphone' => '977234697', 'email' => 'liquidador@orbeaduanas.com', 'address' => 'Av Chalaca - Callao', 'sexo' => 'Masculino', 'civil_status' => 'Soltero', 'state' => 'Activo', 'id_document' => $document->id, 'id_user' => 2]);
         Customer::create(['ruc' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'id_user' => 2]);
         Supplier::create(['type_id' => 'RUC', 'number_id' => '20554630740', 'name_businessname' => 'HENAN XINGSHENGDA', 'addres' => 'North section of renmin road, changge city', 'contact_name' => 'Asten Zho', 'contact_number' => '944653246', 'contact_email' => 'asten@hnidel.com', 'type_suppliers' => 'Venta']);
         Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU - CALLAO', 'destination' => 'CHINA - SHANGAI', 'freight_value' => '2500', 'load_value' => '2700', 'insurance_value' => '25', 'id_personal' => 1, 'id_customer' => 1, 'id_type_shipment' => 8, 'lcl_fcl' => 'LCL', 'id_type_load' => 1, 'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'commodity' => 'CILINDRO']);
@@ -238,5 +214,46 @@ class DatabaseSeeder extends Seeder
         Concepts::create(['name' => 'AIR FREIGHT', 'id_type_shipment' => 21, 'id_type_service' => 2]);
         Concepts::create(['name' => 'F.S.C', 'id_type_shipment' => 8, 'id_type_service' => 2]);
         Concepts::create(['name' => 'OCEAN FREIGHT', 'id_type_shipment' => 8, 'id_type_service' => 2]);
+
+
+        Company::create([
+            'ruc' => '20550590710',
+            'business_name' => 'Orbe Aduanas S.A.C',
+            'address' => 'Av Elmer faucett 474',
+            'manager' => 'Jhon Fritsgard Cordova Orbezo',
+            'phone' => '977834694',
+            'email' => 'jhon.cordova@orbeaduanas.com',
+            'avatar' => 'companys/0AwnrxoJiJAy7LDvBHw8x6BgnrleXgOKBBjsu3qW.png',
+            'estate' => 'Activo'
+        ]);
+
+        Cargo::create([
+            'name' => 'Jefe de Sistemas',
+           'state' => 'Activo'
+        ]);
+
+        Cargo::create([
+            'name' => 'Liquidador',
+           'state' => 'Activo'
+        ]);
+
+        ContractModalitie::create([
+            'name' => 'Convenio de Practicas Pre-Profesionales',
+            'description' => 'Convenio de Practicas Pre-Profesionales',
+           'state' => 'Activo'
+        ]);
+
+        ContractModalitie::create([
+            'name' => 'Convenio de Practicas Profesionales',
+            'description' => 'Convenio de Practicas Profesionales',
+           'state' => 'Activo'
+        ]);
+
+        ContractModalitie::create([
+            'name' => 'Contrato de locacion de servicio',
+            'description' => 'Contrato de locacion de servicio',
+           'state' => 'Activo'
+        ]);
+
     }
 }
