@@ -237,7 +237,7 @@ class DatabaseSeeder extends Seeder
            'state' => 'Activo'
         ]);
 
-        ContractModalitie::create([
+/*         ContractModalitie::create([
             'name' => 'Convenio de Practicas Pre-Profesionales',
             'description' => 'Convenio de Practicas Pre-Profesionales',
            'state' => 'Activo'
@@ -253,7 +253,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Contrato de locacion de servicio',
             'description' => 'Contrato de locacion de servicio',
            'state' => 'Activo'
-        ]);
+        ]); */
 
     }
 }

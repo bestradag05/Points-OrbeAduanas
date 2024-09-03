@@ -11,5 +11,5 @@ class ContractModalitie extends Model
 
     protected $table = 'contract_modalities';
 
-    protected $fillable = ['name', 'description', 'state'];
+    protected $fillable = ['name', 'description', 'format' ,'state'];
 }

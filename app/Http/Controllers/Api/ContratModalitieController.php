@@ -40,6 +40,8 @@ class ContratModalitieController extends Controller
      */
     public function store(Request $request)
     {
+
+       
         $exist_personal = ContractModalitie::where("name", $request->name)->first();
 
         if ($exist_personal) {
@@ -49,9 +51,15 @@ class ContratModalitieController extends Controller
         }
 
 
+        if($request->hasFile('format')){
+            $file = $request->file('format');
+            $path = $file->store('formatos_contrato', 'public');
+        }
+
         ContractModalitie::create([
             'name' => $request->name,
             "description" => $request->description,
+            "format" => $path,
             'state' => 'Activo'
         ]);
 

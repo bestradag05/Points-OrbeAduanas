@@ -46,6 +46,7 @@ class ContractController extends Controller
      */
     public function store(Request $request)
     {
+
         $formattedDateStart =  $this->formatdateUTC($request->start_date);
         $formattedDateEnd =  $this->formatdateUTC($request->end_date);
 
