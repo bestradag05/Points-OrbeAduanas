@@ -7,6 +7,9 @@ use App\Models\Contract;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Luecano\NumeroALetras\NumeroALetras;
+use PhpOffice\PhpWord\TemplateProcessor;
 
 class ContractController extends Controller
 {
@@ -96,16 +99,57 @@ class ContractController extends Controller
 
     public function getDocumentContract(string $id){
 
+
         $contract = Contract::findOrFail($id);
-        $contract->personal;
+        
+        $filePath = storage_path('app/public/' . $contract->contractModalities->format);
 
-        $data = [
-            'contract' => $contract
-        ];
+    
+        if(!Storage::exists($contract->contractModalities->format)){
+            return response()->json(['message' => 'Archivo no encontrado']);
+        }
        
-        $pdf = Pdf::loadView('pdf/practice_agreement', $data);
 
-        return $pdf->stream('archivo.pdf');
+        $templateProcessor = new TemplateProcessor($filePath);
+
+        $full_name = $contract->personal->names. ' ' . $contract->personal->last_name . ' ' . $contract->personal->mother_last_name;
+        $templateProcessor->setValue('nombres', strtoupper($full_name));
+        $templateProcessor->setValue('tipo_documento', $contract->personal->document->name);
+        $templateProcessor->setValue('numero_documento', $contract->personal->document_number);
+        $templateProcessor->setValue('direccion', $contract->personal->address);
+        $templateProcessor->setValue('empresa', strtoupper($contract->company->business_name));
+        $templateProcessor->setValue('ruc', $contract->company->ruc);
+        $templateProcessor->setValue('representante_legal', strtoupper($contract->company->manager));
+        $templateProcessor->setValue('dni_representante', $contract->company->ruc);
+
+        //Conversion de fechas
+        $date_start = Carbon::parse($contract->start_date);
+        $end_start = Carbon::parse($contract->end_date);
+        $formattedDateStart = $date_start->format('d/m/Y');
+        $formattedDateEnd = $end_start->format('d/m/Y');
+        
+        $templateProcessor->setValue('duracion', $formattedDateStart . ' hasta el ' . $formattedDateEnd);
+        $templateProcessor->setValue('cargo', $contract->cargo->name);
+        $templateProcessor->setValue('sueldo', 'S/.' . $contract->salary);
+        $text_salary  = new NumeroALetras();
+        $text_salary_format = $text_salary->toMoney( $contract->salary, 2, 'SOLES');
+        $templateProcessor->setValue('sueldo_texto', '( '.$text_salary_format.')');
+
+        $directory = 'contracts';
+        $outputPath = $directory . '/' . $contract->personal->document_number . '.docx';
+    
+       
+        // Crear el directorio si no existe
+        if (!Storage::exists($directory)) {
+            Storage::makeDirectory($directory);
+        }
+       
+        // Guardar el archivo en el directorio
+        $templateProcessor->saveAs(storage_path('app/public/' . $outputPath));
+    
+       
+
+       
 
     }
 

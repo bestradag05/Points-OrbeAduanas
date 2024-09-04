@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ContractModalitie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ContratModalitieController extends Controller
 {
@@ -77,6 +78,7 @@ class ContratModalitieController extends Controller
     public function show($id)
     {
         $contract_modalities = ContractModalitie::findOrFail($id);
+        
 
         return response()->json([
             "id" => $contract_modalities->id,
@@ -101,10 +103,25 @@ class ContratModalitieController extends Controller
     {
         $contract_modalities = ContractModalitie::findOrFail($id);
 
-        $contract_modalities->update($request->all());
+
+        if($request->hasFile('format')){
+
+            if ($contract_modalities->format) {
+                Storage::delete($contract_modalities->format);
+            }
+
+            $file = $request->file('format');
+            $path = $file->store('formatos_contrato', 'public');
+
+            $contract_modalities->format = $path;
+
+        }
+
+
+        $contract_modalities->update($request->except('format'));
 
         return response()->json([
-            "message" => "Modalidad de contrato actualizado"
+            "message" =>  'Se actulizo la modalidad de contratacion'
         ], 200);
     }
 
