@@ -11,7 +11,7 @@ class Contract extends Model
 
     protected $table = 'contract';
 
-    protected $fillable = ['id_personal', 'contract_modality' , 'start_date','end_date','salary', 'id_cargo', 'id_company', 'id_contract_modalities', 'user_register','user_update','state'];
+    protected $fillable = ['id_personal', 'contract_modality' , 'start_date','end_date','salary', 'id_cargo', 'id_company', 'id_contract_modalities' , 'functions', 'user_register','user_update','state'];
 
 
     public function personal()

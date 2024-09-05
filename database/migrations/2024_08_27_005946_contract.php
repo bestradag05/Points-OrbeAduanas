@@ -21,6 +21,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_cargo');
             $table->unsignedBigInteger('id_company');
             $table->unsignedBigInteger('id_contract_modalities');
+            $table->text('functions');
             $table->integer('user_register')->nullable();
             $table->integer('user_update')->nullable();
             $table->string('state')->nullable();

@@ -43,4 +43,10 @@ class Personal extends Model
         return $this->hasMany(Routing::class, 'id_personal', 'id');
     }
 
+    public function timeschedule()
+    {
+        return $this->hasMany(TimeSchedule::class, 'id_personal', 'id');
+    }
+
+
 }

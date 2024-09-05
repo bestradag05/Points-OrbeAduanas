@@ -67,6 +67,7 @@ class ContractController extends Controller
             'id_cargo' => $request->id_cargo,
             'id_company' => $request->id_company,
             'id_contract_modalities' => $request->id_contract_modalities,
+            'functions' =>  json_encode($request->functions),
             'state' => 'Pendiente'
         ]);
 
@@ -135,9 +136,70 @@ class ContractController extends Controller
         $text_salary_format = $text_salary->toMoney( $contract->salary, 2, 'SOLES');
         $templateProcessor->setValue('sueldo_texto', '( '.$text_salary_format.')');
 
+        //Modificando horario
+
+        $schedule = $contract->personal->timeschedule->first();
+
+        $daysOfWeek = [
+            'Lunes' => ['he' => $schedule->heLunes, 'hs' => $schedule->hsLunes],
+            'Martes' => ['he' => $schedule->heMartes, 'hs' => $schedule->hsMartes],
+            'Miércoles' => ['he' => $schedule->heMiercoles, 'hs' => $schedule->hsMiercoles],
+            'Jueves' => ['he' => $schedule->heJueves, 'hs' => $schedule->hsJueves],
+            'Viernes' => ['he' => $schedule->heViernes, 'hs' => $schedule->hsViernes],
+            'Sábado' => ['he' => $schedule->heSabado, 'hs' => $schedule->hsSabado],
+        ];
+
+        $groupedDays = [];
+
+        foreach ($daysOfWeek as $day => $times) {
+            if ($times['he'] && $times['hs']) {
+                $formattedEntry = date('h:i a', strtotime($times['he']));
+                $formattedExit = date('h:i a', strtotime($times['hs']));
+    
+                $key = $formattedEntry . ' a ' . $formattedExit;
+                
+                $groupedDays[$key][] = $day;
+            }
+        }
+
+
+        $output = '';
+
+
+        foreach ($groupedDays as $timeRange => $days) {
+            // Convertir el array de días a una cadena con formato adecuado (Lunes, Martes y Miércoles)
+            $formattedDays = implode(', ', array_slice($days, 0, -1));
+
+            if (count($days) > 1) {
+                $formattedDays .= ' y ' . end($days);
+            } else {
+                $formattedDays = $days[0];
+            }
+    
+            $output .= $formattedDays . ' de ' . $timeRange . "\n";
+        }
+    
+
+        dd($output);
+       
+
+        //Listar las funciones del trabajador
+        $functions = '';
+
+        foreach (json_decode($contract->functions) as $index => $function) {
+            // Agrega un punto de bala y el texto de la función
+            $functions .= "• " . $function;
+            
+            // Añade un salto de línea solo si no es el último elemento
+            if ($index < count(json_decode($contract->functions)) - 1) {
+                $functions .= "\n";
+            }
+        }
+
+        $templateProcessor->setValue('funciones' , $functions);
+
         $directory = 'contracts';
         $outputPath = $directory . '/' . $contract->personal->document_number . '.docx';
-    
        
         // Crear el directorio si no existe
         if (!Storage::exists($directory)) {
