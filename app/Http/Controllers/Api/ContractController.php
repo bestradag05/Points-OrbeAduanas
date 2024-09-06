@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Contract;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Dompdf\Dompdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Luecano\NumeroALetras\NumeroALetras;
+use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 class ContractController extends Controller
@@ -98,121 +100,63 @@ class ContractController extends Controller
         ], 200);
     }
 
-    public function getDocumentContract(string $id){
-
+    public function getDocumentContract(string $id)
+    {
 
         $contract = Contract::findOrFail($id);
-        
+
         $filePath = storage_path('app/public/' . $contract->contractModalities->format);
 
-    
-        if(!Storage::exists($contract->contractModalities->format)){
+
+        if (!Storage::exists($contract->contractModalities->format)) {
             return response()->json(['message' => 'Archivo no encontrado']);
         }
-       
-
-        $templateProcessor = new TemplateProcessor($filePath);
-
-        $full_name = $contract->personal->names. ' ' . $contract->personal->last_name . ' ' . $contract->personal->mother_last_name;
-        $templateProcessor->setValue('nombres', strtoupper($full_name));
-        $templateProcessor->setValue('tipo_documento', $contract->personal->document->name);
-        $templateProcessor->setValue('numero_documento', $contract->personal->document_number);
-        $templateProcessor->setValue('direccion', $contract->personal->address);
-        $templateProcessor->setValue('empresa', strtoupper($contract->company->business_name));
-        $templateProcessor->setValue('ruc', $contract->company->ruc);
-        $templateProcessor->setValue('representante_legal', strtoupper($contract->company->manager));
-        $templateProcessor->setValue('dni_representante', $contract->company->ruc);
-
-        //Conversion de fechas
-        $date_start = Carbon::parse($contract->start_date);
-        $end_start = Carbon::parse($contract->end_date);
-        $formattedDateStart = $date_start->format('d/m/Y');
-        $formattedDateEnd = $end_start->format('d/m/Y');
-        
-        $templateProcessor->setValue('duracion', $formattedDateStart . ' hasta el ' . $formattedDateEnd);
-        $templateProcessor->setValue('cargo', $contract->cargo->name);
-        $templateProcessor->setValue('sueldo', 'S/.' . $contract->salary);
-        $text_salary  = new NumeroALetras();
-        $text_salary_format = $text_salary->toMoney( $contract->salary, 2, 'SOLES');
-        $templateProcessor->setValue('sueldo_texto', '( '.$text_salary_format.')');
-
-        //Modificando horario
-
-        $schedule = $contract->personal->timeschedule->first();
-
-        $daysOfWeek = [
-            'Lunes' => ['he' => $schedule->heLunes, 'hs' => $schedule->hsLunes],
-            'Martes' => ['he' => $schedule->heMartes, 'hs' => $schedule->hsMartes],
-            'Miércoles' => ['he' => $schedule->heMiercoles, 'hs' => $schedule->hsMiercoles],
-            'Jueves' => ['he' => $schedule->heJueves, 'hs' => $schedule->hsJueves],
-            'Viernes' => ['he' => $schedule->heViernes, 'hs' => $schedule->hsViernes],
-            'Sábado' => ['he' => $schedule->heSabado, 'hs' => $schedule->hsSabado],
-        ];
-
-        $groupedDays = [];
-
-        foreach ($daysOfWeek as $day => $times) {
-            if ($times['he'] && $times['hs']) {
-                $formattedEntry = date('h:i a', strtotime($times['he']));
-                $formattedExit = date('h:i a', strtotime($times['hs']));
-    
-                $key = $formattedEntry . ' a ' . $formattedExit;
-                
-                $groupedDays[$key][] = $day;
-            }
-        }
 
 
-        $output = '';
+        $templateProcessor = $this->generateContratFormat($contract, $filePath);
 
-
-        foreach ($groupedDays as $timeRange => $days) {
-            // Convertir el array de días a una cadena con formato adecuado (Lunes, Martes y Miércoles)
-            $formattedDays = implode(', ', array_slice($days, 0, -1));
-
-            if (count($days) > 1) {
-                $formattedDays .= ' y ' . end($days);
-            } else {
-                $formattedDays = $days[0];
-            }
-    
-            $output .= $formattedDays . ' de ' . $timeRange . "\n";
-        }
-    
-
-        dd($output);
-       
-
-        //Listar las funciones del trabajador
-        $functions = '';
-
-        foreach (json_decode($contract->functions) as $index => $function) {
-            // Agrega un punto de bala y el texto de la función
-            $functions .= "• " . $function;
-            
-            // Añade un salto de línea solo si no es el último elemento
-            if ($index < count(json_decode($contract->functions)) - 1) {
-                $functions .= "\n";
-            }
-        }
-
-        $templateProcessor->setValue('funciones' , $functions);
 
         $directory = 'contracts';
         $outputPath = $directory . '/' . $contract->personal->document_number . '.docx';
-       
+
         // Crear el directorio si no existe
         if (!Storage::exists($directory)) {
             Storage::makeDirectory($directory);
         }
-       
+
         // Guardar el archivo en el directorio
         $templateProcessor->saveAs(storage_path('app/public/' . $outputPath));
-    
-       
 
-       
+        // Convertir el archivo Word a HTML
+        $phpWord = IOFactory::load(storage_path('app/public/' . $outputPath));
+        $htmlWriter = IOFactory::createWriter($phpWord, 'HTML');
 
+        // Guardar el contenido HTML en una variable
+        ob_start();
+        $htmlWriter->save('php://output');
+        $htmlContent = ob_get_contents();
+        dd($htmlContent);
+        ob_end_clean();
+
+        
+        // Convertir el HTML a PDF usando DomPDF
+        $dompdf = new Dompdf();
+        $dompdf->loadHtml($htmlContent);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+
+        // Obtener el contenido del PDF
+        $pdfContent = $dompdf->output();
+
+        // Devolver el PDF en la respuesta HTTP
+        return response($pdfContent, 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="' . $contract->personal->document_number . '.pdf"');
+
+        // Guardar el archivo PDF
+        $pdfPath = storage_path('app/public/contracts/' . $contract->personal->document_number . '.pdf');
+        file_put_contents($pdfPath, $dompdf->output());
     }
 
     /**
@@ -260,5 +204,119 @@ class ContractController extends Controller
         $date_clean = preg_replace('/\(.*\)|[A-Z]{3}-\d{4}/', '', $date);
         $dateFormat =   Carbon::parse($date_clean)->format("Y-m-d h:i:s");
         return $dateFormat;
+    }
+
+
+    public function generateContratFormat($contract, $filePath)
+    {
+
+        $templateProcessor = new TemplateProcessor($filePath);
+
+        $full_name = $contract->personal->names . ' ' . $contract->personal->last_name . ' ' . $contract->personal->mother_last_name;
+        $templateProcessor->setValue('nombres', strtoupper($full_name));
+        $templateProcessor->setValue('tipo_documento', $contract->personal->document->name);
+        $templateProcessor->setValue('numero_documento', $contract->personal->document_number);
+        $templateProcessor->setValue('direccion', $contract->personal->address);
+        $templateProcessor->setValue('empresa', strtoupper($contract->company->business_name));
+        $templateProcessor->setValue('ruc', $contract->company->ruc);
+        $templateProcessor->setValue('representante_legal', strtoupper($contract->company->manager));
+        $templateProcessor->setValue('dni_representante', $contract->company->ruc);
+
+        //Conversion de fechas
+        $date_start = Carbon::parse($contract->start_date);
+        $end_start = Carbon::parse($contract->end_date);
+        $formattedDateStart = $date_start->format('d/m/Y');
+        $formattedDateEnd = $end_start->format('d/m/Y');
+
+        $templateProcessor->setValue('duracion', $formattedDateStart . ' hasta el ' . $formattedDateEnd);
+        $templateProcessor->setValue('cargo', $contract->cargo->name);
+        $templateProcessor->setValue('sueldo', 'S/.' . $contract->salary);
+        $text_salary  = new NumeroALetras();
+        $text_salary_format = $text_salary->toMoney($contract->salary, 2, 'SOLES');
+        $templateProcessor->setValue('sueldo_texto', '( ' . $text_salary_format . ')');
+
+        //Modificar formato de horario para el contrato
+        $schedule = $contract->personal->timeschedule->first();
+        $scheduleFormat = $this->formatScheduleContract($schedule);
+        $templateProcessor->setValue('horario', $scheduleFormat);
+
+
+        //Listar las funciones del personal en el contrato
+        $functionArray = json_decode($contract->functions);
+        $functions = $this->listFunctionContrat($functionArray);
+        $templateProcessor->setValue('funciones', $functions);
+
+
+        return $templateProcessor;
+    }
+
+
+    public function formatScheduleContract($schedule)
+    {
+        $daysOfWeek = [
+            'Lunes' => ['he' => $schedule->heLunes, 'hs' => $schedule->hsLunes],
+            'Martes' => ['he' => $schedule->heMartes, 'hs' => $schedule->hsMartes],
+            'Miércoles' => ['he' => $schedule->heMiercoles, 'hs' => $schedule->hsMiercoles],
+            'Jueves' => ['he' => $schedule->heJueves, 'hs' => $schedule->hsJueves],
+            'Viernes' => ['he' => $schedule->heViernes, 'hs' => $schedule->hsViernes],
+            'Sábado' => ['he' => $schedule->heSabado, 'hs' => $schedule->hsSabado],
+        ];
+
+        $groupedDays = [];
+
+        foreach ($daysOfWeek as $day => $times) {
+            if ($times['he'] && $times['hs']) {
+                $formattedEntry = date('h:i a', strtotime($times['he']));
+                $formattedExit = date('h:i a', strtotime($times['hs']));
+
+                $key = $formattedEntry . ' a ' . $formattedExit;
+
+                $groupedDays[$key][] = $day;
+            }
+        }
+
+
+        $output = '';
+
+
+        foreach ($groupedDays as $timeRange => $days) {
+            // Convertir el array de días a una cadena con formato adecuado (Lunes, Martes y Miércoles)
+            $formattedDays = implode(', ', array_slice($days, 0, -1));
+
+            if (count($days) > 1) {
+                $formattedDays .= ' y ' . end($days);
+            } else {
+                $formattedDays = $days[0];
+            }
+
+            $output .= "• " . $formattedDays . ' de ' . $timeRange;
+
+            if ($timeRange !== array_key_last($groupedDays)) {
+                $output .= "\n";
+            }
+        }
+
+
+        return $output;
+    }
+
+
+    public function listFunctionContrat($functionsArray)
+    {
+        //Listar las funciones del trabajador
+        $functions = '';
+
+        foreach ($functionsArray as $index => $function) {
+            // Agrega un punto de bala y el texto de la función
+            $functions .= "• " . $function;
+
+            // Añade un salto de línea solo si no es el último elemento
+            if ($index < count($functionsArray) - 1) {
+                $functions .= "\n";
+            }
+        }
+
+
+        return $functions;
     }
 }
