@@ -6,11 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Contract;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
-use Dompdf\Dompdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Luecano\NumeroALetras\NumeroALetras;
-use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 class ContractController extends Controller
@@ -60,7 +58,7 @@ class ContractController extends Controller
             'end_date' => $formattedDateEnd
         ]);
 
-        Contract::create([
+        $contract = Contract::create([
             'id_personal' => $request->id_personal,
             "id_contract_modality" => $request->contract_modality,
             'start_date' => $request->start_date,
@@ -72,6 +70,8 @@ class ContractController extends Controller
             'functions' =>  json_encode($request->functions),
             'state' => 'Pendiente'
         ]);
+
+        $this->generateDocumentContract($contract->id);
 
         return response()->json([
             "message" => "Contrato registrado",
@@ -100,7 +100,23 @@ class ContractController extends Controller
         ], 200);
     }
 
-    public function getDocumentContract(string $id)
+
+    public function getDocumentContract(string $id) {
+        
+        $contract = Contract::findOrFail($id);
+
+        $startDate = Carbon::parse($contract->start_date);
+        $endDate = Carbon::parse($contract->end_date);
+
+        $directory = 'contracts';
+        $outputPath = $directory . '/' . $contract->personal->document_number.'_'.$startDate->toDateString().'_'.$endDate->toDateString(). '.docx';
+
+        return response()->download(storage_path('app/public/' . $outputPath));
+
+    }
+
+
+    public function generateDocumentContract(string $id)
     {
 
         $contract = Contract::findOrFail($id);
@@ -116,8 +132,11 @@ class ContractController extends Controller
         $templateProcessor = $this->generateContratFormat($contract, $filePath);
 
 
+        $startDate = Carbon::parse($contract->start_date);
+        $endDate = Carbon::parse($contract->end_date);
+
         $directory = 'contracts';
-        $outputPath = $directory . '/' . $contract->personal->document_number . '.docx';
+        $outputPath = $directory . '/' . $contract->personal->document_number.'_'.$startDate->toDateString().'_'.$endDate->toDateString(). '.docx';
 
         // Crear el directorio si no existe
         if (!Storage::exists($directory)) {
@@ -126,37 +145,6 @@ class ContractController extends Controller
 
         // Guardar el archivo en el directorio
         $templateProcessor->saveAs(storage_path('app/public/' . $outputPath));
-
-        // Convertir el archivo Word a HTML
-        $phpWord = IOFactory::load(storage_path('app/public/' . $outputPath));
-        $htmlWriter = IOFactory::createWriter($phpWord, 'HTML');
-
-        // Guardar el contenido HTML en una variable
-        ob_start();
-        $htmlWriter->save('php://output');
-        $htmlContent = ob_get_contents();
-        dd($htmlContent);
-        ob_end_clean();
-
-        
-        // Convertir el HTML a PDF usando DomPDF
-        $dompdf = new Dompdf();
-        $dompdf->loadHtml($htmlContent);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-
-
-        // Obtener el contenido del PDF
-        $pdfContent = $dompdf->output();
-
-        // Devolver el PDF en la respuesta HTTP
-        return response($pdfContent, 200)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'inline; filename="' . $contract->personal->document_number . '.pdf"');
-
-        // Guardar el archivo PDF
-        $pdfPath = storage_path('app/public/contracts/' . $contract->personal->document_number . '.pdf');
-        file_put_contents($pdfPath, $dompdf->output());
     }
 
     /**
@@ -239,7 +227,7 @@ class ContractController extends Controller
         $schedule = $contract->personal->timeschedule->first();
         $scheduleFormat = $this->formatScheduleContract($schedule);
         $templateProcessor->setValue('horario', $scheduleFormat);
-
+        
 
         //Listar las funciones del personal en el contrato
         $functionArray = json_decode($contract->functions);
@@ -301,22 +289,22 @@ class ContractController extends Controller
     }
 
 
-    public function listFunctionContrat($functionsArray)
-    {
-        //Listar las funciones del trabajador
-        $functions = '';
+    public function listFunctionContrat($functionsArray){
+         //Listar las funciones del trabajador
+         $functions = '';
 
-        foreach ($functionsArray as $index => $function) {
-            // Agrega un punto de bala y el texto de la función
-            $functions .= "• " . $function;
+         foreach ($functionsArray as $index => $function) {
+             // Agrega un punto de bala y el texto de la función
+             $functions .= "• " . $function;
+ 
+             // Añade un salto de línea solo si no es el último elemento
+             if ($index < count($functionsArray) - 1) {
+                 $functions .= "\n";
+             }
+         }
 
-            // Añade un salto de línea solo si no es el último elemento
-            if ($index < count($functionsArray) - 1) {
-                $functions .= "\n";
-            }
-        }
 
+         return $functions;
 
-        return $functions;
     }
 }
