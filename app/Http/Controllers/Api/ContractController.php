@@ -113,18 +113,13 @@ class ContractController extends Controller
             ]);
         }
 
-        $startDate = Carbon::parse($contract->start_date);
-        $endDate = Carbon::parse($contract->end_date);
 
-        $directory = 'contracts';
-        $outputPath = $directory . '/' . $contract->personal->document_number . '_' . $startDate->toDateString() . '_' . $endDate->toDateString() . '.docx';
-
-
-        if (!Storage::exists($outputPath)) {
-            $this->generateDocumentContract($id);
+        if (!Storage::exists($contract->path_contract)) {
+            
+           return response()->json(['message' => 'No se cuentra el contrato, comuniquese con el administrador']);
         }
 
-        return response()->download(storage_path('app/public/' . $outputPath));
+        return response()->download(storage_path('app/public/' . $contract->path_contract));
 
         
     }
@@ -185,11 +180,14 @@ class ContractController extends Controller
             'start_date' => $formattedDateStart,
             'end_date' => $formattedDateEnd
         ]);
-
+        
+        Storage::delete($contract->path_contract);
+        
         $contract->update($request->all());
 
         $this->generateDocumentContract($id);
-        
+
+
         return response()->json([
             "message" => "Contrato actualizado"
         ], 200);
@@ -248,6 +246,7 @@ class ContractController extends Controller
             $templateProcessor->setValue('horario', $scheduleFormat);
         }
 
+        //TODO: Obtenemos el mes y el año 
 
 
         //Listar las funciones del personal en el contrato
