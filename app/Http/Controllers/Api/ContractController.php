@@ -96,23 +96,37 @@ class ContractController extends Controller
             "start_date" => $contract->start_date,
             "end_date" => $contract->end_date,
             "salary" => $contract->salary,
+            "functions" => json_decode($contract->functions),
             "state" => $contract->state
         ], 200);
     }
 
 
-    public function getDocumentContract(string $id) {
-        
+    public function getDocumentContract(string $id)
+    {
+
         $contract = Contract::findOrFail($id);
+
+        if($contract){
+            response()->json([
+                'message' => "Parece que este documento no existe"
+            ]);
+        }
 
         $startDate = Carbon::parse($contract->start_date);
         $endDate = Carbon::parse($contract->end_date);
 
         $directory = 'contracts';
-        $outputPath = $directory . '/' . $contract->personal->document_number.'_'.$startDate->toDateString().'_'.$endDate->toDateString(). '.docx';
+        $outputPath = $directory . '/' . $contract->personal->document_number . '_' . $startDate->toDateString() . '_' . $endDate->toDateString() . '.docx';
+
+
+        if (!Storage::exists($outputPath)) {
+            $this->generateDocumentContract($id);
+        }
 
         return response()->download(storage_path('app/public/' . $outputPath));
 
+        
     }
 
 
@@ -136,7 +150,7 @@ class ContractController extends Controller
         $endDate = Carbon::parse($contract->end_date);
 
         $directory = 'contracts';
-        $outputPath = $directory . '/' . $contract->personal->document_number.'_'.$startDate->toDateString().'_'.$endDate->toDateString(). '.docx';
+        $outputPath = $directory . '/' . $contract->personal->document_number . '_' . $startDate->toDateString() . '_' . $endDate->toDateString() . '.docx';
 
         // Crear el directorio si no existe
         if (!Storage::exists($directory)) {
@@ -145,6 +159,8 @@ class ContractController extends Controller
 
         // Guardar el archivo en el directorio
         $templateProcessor->saveAs(storage_path('app/public/' . $outputPath));
+
+        $contract->update(['path_contract' => $outputPath]);
     }
 
     /**
@@ -172,6 +188,8 @@ class ContractController extends Controller
 
         $contract->update($request->all());
 
+        $this->generateDocumentContract($id);
+        
         return response()->json([
             "message" => "Contrato actualizado"
         ], 200);
@@ -225,9 +243,12 @@ class ContractController extends Controller
 
         //Modificar formato de horario para el contrato
         $schedule = $contract->personal->timeschedule->first();
-        $scheduleFormat = $this->formatScheduleContract($schedule);
-        $templateProcessor->setValue('horario', $scheduleFormat);
-        
+        if ($schedule) {
+            $scheduleFormat = $this->formatScheduleContract($schedule);
+            $templateProcessor->setValue('horario', $scheduleFormat);
+        }
+
+
 
         //Listar las funciones del personal en el contrato
         $functionArray = json_decode($contract->functions);
@@ -289,22 +310,22 @@ class ContractController extends Controller
     }
 
 
-    public function listFunctionContrat($functionsArray){
-         //Listar las funciones del trabajador
-         $functions = '';
+    public function listFunctionContrat($functionsArray)
+    {
+        //Listar las funciones del trabajador
+        $functions = '';
 
-         foreach ($functionsArray as $index => $function) {
-             // Agrega un punto de bala y el texto de la función
-             $functions .= "• " . $function;
- 
-             // Añade un salto de línea solo si no es el último elemento
-             if ($index < count($functionsArray) - 1) {
-                 $functions .= "\n";
-             }
-         }
+        foreach ($functionsArray as $index => $function) {
+            // Agrega un punto de bala y el texto de la función
+            $functions .= "• " . $function;
+
+            // Añade un salto de línea solo si no es el último elemento
+            if ($index < count($functionsArray) - 1) {
+                $functions .= "\n";
+            }
+        }
 
 
-         return $functions;
-
+        return $functions;
     }
 }

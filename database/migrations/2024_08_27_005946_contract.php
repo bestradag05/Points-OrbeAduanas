@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('contract', function(Blueprint $table){
             $table->id();
             $table->unsignedBigInteger('id_personal');
-            $table->string('contract_modality')->nullable();
             $table->dateTime('start_date')->nullable();
             $table->dateTime('end_date')->nullable();
             $table->decimal('salary', 8,2);
@@ -22,6 +21,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_company');
             $table->unsignedBigInteger('id_contract_modalities');
             $table->text('functions');
+            $table->string('path_contract')->nullable();
             $table->integer('user_register')->nullable();
             $table->integer('user_update')->nullable();
             $table->string('state')->nullable();

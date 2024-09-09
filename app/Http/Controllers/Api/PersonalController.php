@@ -77,7 +77,7 @@ class PersonalController extends Controller
     public function store(Request $request)
     {
 
-      
+
 
         /* return response()->json([
             "message" => $schedule
@@ -144,34 +144,33 @@ class PersonalController extends Controller
 
 
         $schedule = [
-            'heLunes' =>$request->heLunes,
-            'hsLunes' =>$request->hsLunes,
-            'heMartes' =>$request->heMartes,
-            'hsMartes' =>$request->hsMartes,
-            'heMiercoles' =>$request->heMiercoles,
-            'hsMiercoles' =>$request->hsMiercoles,
-            'heJueves' =>$request->heJueves,
-            'hsJueves' =>$request->hsJueves,
-            'heViernes' =>$request->heViernes,
-            'hsViernes' =>$request->hsViernes,
-            'heSabado' =>$request->heSabado,
-            'hsSabado' =>$request->hsSabado
+            'heLunes' => $request->heLunes,
+            'hsLunes' => $request->hsLunes,
+            'heMartes' => $request->heMartes,
+            'hsMartes' => $request->hsMartes,
+            'heMiercoles' => $request->heMiercoles,
+            'hsMiercoles' => $request->hsMiercoles,
+            'heJueves' => $request->heJueves,
+            'hsJueves' => $request->hsJueves,
+            'heViernes' => $request->heViernes,
+            'hsViernes' => $request->hsViernes,
+            'heSabado' => $request->heSabado,
+            'hsSabado' => $request->hsSabado
         ];
 
         foreach ($schedule as $key => $day) {
-            
+
             $date_clean = preg_replace('/\(.*\)|[A-Z]{3}-\d{4}/', '', $day);
 
-            if($day){
+            if ($day) {
                 $schedule[$key] =  Carbon::parse($date_clean)->format("Y-m-d h:i:s");
             }
-            
         }
 
-       $schedule['id_personal'] =  $personal->id;
-       $schedule['state'] =  'Activo';
+        $schedule['id_personal'] =  $personal->id;
+        $schedule['state'] =  'Activo';
 
-       TimeSchedule::create($schedule);
+        TimeSchedule::create($schedule);
 
 
         return response()->json([
@@ -184,7 +183,7 @@ class PersonalController extends Controller
      */
     public function show(string $id)
     {
-        
+
         $personal = Personal::findOrFail($id);
         return response()->json([
             "id" => $personal->id,
@@ -203,6 +202,7 @@ class PersonalController extends Controller
             "user" => $personal->user,
             "state" => $personal->state,
             "img_url" => $personal->img_url ? env("APP_URL") . "storage/" . $personal->img_url : env("APP_URL") . "storage/personals/user_default.png",
+            "timesSchedule" => $personal->timeschedule->first()
         ]);
     }
 
@@ -256,6 +256,41 @@ class PersonalController extends Controller
         }
 
         $personal->update($request->all());
+
+
+        $timesScheduleId = $personal->timeschedule->first()->id;
+
+        $TimeSchudele = TimeSchedule::findOrFail($timesScheduleId);
+
+        $schedule = [
+            'heLunes' => $request->heLunes,
+            'hsLunes' => $request->hsLunes,
+            'heMartes' => $request->heMartes,
+            'hsMartes' => $request->hsMartes,
+            'heMiercoles' => $request->heMiercoles,
+            'hsMiercoles' => $request->hsMiercoles,
+            'heJueves' => $request->heJueves,
+            'hsJueves' => $request->hsJueves,
+            'heViernes' => $request->heViernes,
+            'hsViernes' => $request->hsViernes,
+            'heSabado' => $request->heSabado,
+            'hsSabado' => $request->hsSabado
+        ];
+
+        foreach ($schedule as $key => $day) {
+
+            $date_clean = preg_replace('/\(.*\)|[A-Z]{3}-\d{4}/', '', $day);
+
+            if ($day) {
+                $schedule[$key] =  Carbon::parse($date_clean)->format("Y-m-d h:i:s");
+            }
+        }
+
+        $schedule['id_personal'] =  $personal->id;
+        $schedule['state'] =  'Activo';
+
+        $TimeSchudele->update($schedule);
+
 
         return response()->json([
             "message" => "Personal actualizado"
