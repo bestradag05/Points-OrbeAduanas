@@ -119,7 +119,20 @@ class ContractController extends Controller
            return response()->json(['message' => 'No se cuentra el contrato, comuniquese con el administrador']);
         }
 
-        return response()->download(storage_path('app/public/' . $contract->path_contract));
+        /*  return response()->download(storage_path('app/public/' . $contract->path_contract)); */
+       
+        $filePath = storage_path('app/public/' . $contract->path_contract);
+        $fileContent = file_get_contents($filePath);
+        $base64File = base64_encode($fileContent);
+
+        $fileName = 'contrato_'.$contract->personal->names.'_' . $contract->personal->document_number; 
+
+       return response()->json([
+
+        "file" => $base64File,
+        "fileName" => $fileName,
+        "fileType" => mime_content_type($filePath)
+       ]);
 
         
     }
