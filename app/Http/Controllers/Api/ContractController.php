@@ -107,7 +107,7 @@ class ContractController extends Controller
 
         $contract = Contract::findOrFail($id);
 
-        if($contract){
+        if ($contract) {
             response()->json([
                 'message' => "Parece que este documento no existe"
             ]);
@@ -115,26 +115,73 @@ class ContractController extends Controller
 
 
         if (!Storage::exists($contract->path_contract)) {
-            
-           return response()->json(['message' => 'No se cuentra el contrato, comuniquese con el administrador']);
+
+            return response()->json(['message' => 'No se cuentra el contrato, comuniquese con el administrador']);
         }
 
         /*  return response()->download(storage_path('app/public/' . $contract->path_contract)); */
-       
+
         $filePath = storage_path('app/public/' . $contract->path_contract);
         $fileContent = file_get_contents($filePath);
         $base64File = base64_encode($fileContent);
 
-        $fileName = 'contrato_'.$contract->personal->names.'_' . $contract->personal->document_number; 
+        $fileName = 'contrato_' . $contract->personal->names . '_' . $contract->personal->document_number;
 
-       return response()->json([
+        return response()->json([
 
-        "file" => $base64File,
-        "fileName" => $fileName,
-        "fileType" => mime_content_type($filePath)
-       ]);
+            "file" => $base64File,
+            "fileName" => $fileName,
+            "fileType" => mime_content_type($filePath)
+        ]);
+    }
 
-        
+
+    public function confirmContract(string $id, Request $request)
+    {
+
+        $contract = Contract::findOrFail($id);
+
+        if (!$contract) {
+            response()->json([
+                'message' => "El contrato no fue encontrado"
+            ]);
+        }
+
+
+
+        if ($request->hasFile('accepted_contract')) {
+
+
+            if ($contract->path_contract) {
+                Storage::delete($contract->path_contract);
+            }
+
+
+            $file = $request->file('accepted_contract');
+
+            $startDate = Carbon::parse($contract->start_date);
+            $endDate = Carbon::parse($contract->end_date);
+
+            $fileName = $contract->personal->document_number . '_' . $startDate->toDateString() . '_' . $endDate->toDateString() . '.pdf';
+
+
+            $path = $file->storeAs('contracts', $fileName, 'public');
+
+            $contract->update(['path_contract' => $path]);
+            $contract->update(['state' => 'Vigente']);
+
+
+            $filePath = storage_path('app/public/' . $contract->path_contract);
+            $fileContent = file_get_contents($filePath);
+            $base64File = base64_encode($fileContent);
+
+
+
+            return response()->json([
+              "message" => "El contrato fue confirmado y se encuentra vigente",
+              "confirmado" => true
+            ]);
+        }
     }
 
 
@@ -193,9 +240,9 @@ class ContractController extends Controller
             'start_date' => $formattedDateStart,
             'end_date' => $formattedDateEnd
         ]);
-        
+
         Storage::delete($contract->path_contract);
-        
+
         $contract->update($request->all());
 
         $this->generateDocumentContract($id);
