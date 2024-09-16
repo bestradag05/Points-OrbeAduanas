@@ -64,6 +64,7 @@ Route::group([
 
     Route::get("contracts/document/{id}", [ContractController::class, "getDocumentContract"]);
     Route::post("contracts/confirm/{id}", [ContractController::class, "confirmContract"]);
+    Route::put("contracts/state/{id}", [ContractController::class, "updateStateContract"]);
     Route::resource("contracts", ContractController::class);
 
     Route::post("contract_modalities/{id}",[ContratModalitieController::class,"update"]);

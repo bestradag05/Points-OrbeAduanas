@@ -179,7 +179,7 @@ class ContractController extends Controller
 
             return response()->json([
               "message" => "El contrato fue confirmado y se encuentra vigente",
-              "confirmado" => true
+              "state" => $contract->state
             ]);
         }
     }
@@ -188,7 +188,7 @@ class ContractController extends Controller
     public function generateDocumentContract(string $id)
     {
 
-        $contract = Contract::findOrFail($id);
+        $contract = Contract::findOrFail($id);  
 
         $filePath = storage_path('app/public/' . $contract->contractModalities->format);
 
@@ -224,6 +224,20 @@ class ContractController extends Controller
     public function edit(string $id)
     {
         //
+    }
+
+    public function updateStateContract(string $id, Request $request){
+        
+        $contract = Contract::findOrFail($id);
+
+        $contract->update(['state' => $request->state]);
+
+
+        return response()->json([
+            'state' => $contract->state
+        ]);
+
+
     }
 
     /**
