@@ -105,15 +105,9 @@ class DocumentController extends Controller
     public function destroy(string $id)
     {
         $document = Document::findOrFail($id);
-        /* if($document->personal->count() > 0){
-            return response()->json([
-                "message" => 403,
-                "message_text" => "EL ROL SELECCIONADO NO SE PUEDE ELIMINAR POR MOTIVOS QUE YA TIENE USUARIOS RELACIONADOS"
-            ]);
-        } */
-        $document->delete();
+        $document->update(['state' => 'Inactivo']);
         return response()->json([
-            "message" => 200,
+            "state" => $document->state,
         ]);
     }
 }
