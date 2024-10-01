@@ -1,0 +1,113 @@
+<div class="row">
+    {{-- Placeholder, sm size, and prepend icon --}}
+    <div class="col-6">
+        <div class="form-group">
+            <label for="roi">ROI</label>
+            <input type="text" class="form-control @error('roi') is-invalid @enderror" id="roi" name="roi"
+                placeholder="Ingrese el numero de ROI" value="{{ isset($freight->roi) ? $freight->roi : old('roi') }}">
+            @error('roi')
+                <strong class="invalid-feedback d-block">{{ $message }}</strong>
+            @enderror
+        </div>
+
+    </div>
+
+    <div class="col-6">
+        <div class="form-group">
+            <label for="hawb_hbl">Hawb / HBL</label>
+            <input type="text" class="form-control @error('hawb_hbl') is-invalid @enderror" id="hawb_hbl"
+                name="hawb_hbl" placeholder="Ingrese su numero de Hawb/HBL"
+                value="{{ isset($freight->hawb_hbl) ? $freight->hawb_hbl : old('hawb_hbl') }}">
+            @error('hawb_hbl')
+                <strong class="invalid-feedback d-block">{{ $message }}</strong>
+            @enderror
+        </div>
+    </div>
+
+
+    <div class="col-6">
+
+        @php
+            $config = ['format' => 'DD/MM/YYYY'];
+
+        @endphp
+        <x-adminlte-input-date name="edt" id="edt"
+            value="{{ isset($freight->edt) ? \Carbon\Carbon::parse($freight->edt)->format('d/m/Y') : now()->format('d/m/Y') }}"
+            label="Fecha de arribo" :config="$config" placeholder="Ingresa la fecha...">
+            <x-slot name="appendSlot">
+                <div class="input-group-append">
+                    <div class="input-group-text"><i class="fa fa-calendar" aria-hidden="true"></i></div>
+                </div>
+            </x-slot>
+        </x-adminlte-input-date>
+
+    </div>
+
+    <div class="col-6">
+
+        @php
+            $config = ['format' => 'DD/MM/YYYY'];
+
+        @endphp
+        <x-adminlte-input-date name="eta" id="eta"
+            value="{{ isset($freight->eta) ? \Carbon\Carbon::parse($freight->eta)->format('d/m/Y') : now()->format('d/m/Y') }}"
+            label="Fecha de Llegada" :config="$config" placeholder="Ingresa la fecha...">
+            <x-slot name="appendSlot">
+                <div class="input-group-append">
+                    <div class="input-group-text"><i class="fa fa-calendar" aria-hidden="true"></i></div>
+                </div>
+            </x-slot>
+        </x-adminlte-input-date>
+
+    </div>
+
+
+
+    <div class="col-6">
+
+        <div class="form-group">
+            <label for="bl_work">BL a trabajar</label>
+            <input type="text" class="form-control @error('bl_work') is-invalid @enderror" id="bl_work"
+                name="bl_work" placeholder="Ingrese su numero de BL"
+                value="{{ isset($freight->bl_work) ? $freight->bl_work : old('bl_work') }}">
+            @error('bl_work')
+                <strong class="invalid-feedback d-block">{{ $message }}</strong>
+            @enderror
+        </div>
+
+    </div>
+
+
+    <div class="col-6">
+
+        <div class="form-group">
+            <label for="value_utility">Utilidad</label>
+            <input type="number" class="form-control @error('value_utility') is-invalid @enderror" id="value_utility"
+                @readonly(true) name="value_utility" placeholder="Ingrese su numero de dam"
+                value="{{ isset($freight->value_utility) ? $freight->value_utility : old('value_utility') }}">
+            @error('value_utility')
+                <strong class="invalid-feedback d-block">{{ $message }}</strong>
+            @enderror
+        </div>
+
+    </div>
+
+
+    <div class="col-6">
+
+        <div class="form-group">
+            <label for="value_freight">Valor del Flete</label>
+            <input type="number" class="form-control @error('value_freight') is-invalid @enderror" @readonly(true)
+                id="value_freight" name="value_freight" placeholder="Ingrese el valor cif"
+                value="{{ number_format($value_freight, 2) }}">
+            @error('value_freight')
+                <strong class="invalid-feedback d-block">{{ $message }}</strong>
+            @enderror
+        </div>
+    </div>
+
+</div>
+
+<div class="container text-center mt-5">
+    <input class="btn btn-primary" type="submit" value="Guardar">
+</div>

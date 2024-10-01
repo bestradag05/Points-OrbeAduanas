@@ -1,0 +1,31 @@
+
+.btn-indigo, .bg-indigo{
+    background: #6610f2;
+    color: white;
+}
+
+.btn-indigo:hover{
+    background: #4609a8;
+    color: white;
+}
+
+.select2-selection{
+    height: 41px!important;
+}
+
+#select2-type_service-container{
+    height: 100%!important;
+}
+
+.user-img-xs {
+    max-width: 40px!important;
+}
+
+.nav-treeview .nav-link{
+    padding-left: 30px;
+}
+
+.select2-selection__choice{
+    background: #4609a8!important;
+    color: white!important;
+}
