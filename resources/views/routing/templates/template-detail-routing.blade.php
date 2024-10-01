@@ -172,8 +172,6 @@
             typeService = element.value;
             $(`#${container.id}`).find('#typeService').val(typeService);
             element.value = '';
-
-
         }
 
 
@@ -364,8 +362,10 @@
 
 
         const addPointsInsurance = (input) => {
-            let value_added = $('#insurance_added').val();
-        
+ 
+            //Indicamos el modal donde estemos trabajando y luego seleccionamos el campo.
+            let value_added = $(`#${container.id} #insurance_added`).val();
+
             if(Math.floor(value_added / 45) === 0){
                 input.value = 0;
                 input.max = 0;

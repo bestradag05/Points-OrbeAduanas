@@ -25,63 +25,86 @@
                             <label class="custom-control-label" for="seguroCustom">Agregar Seguro</label>
                         </div>
                     </div>
-
-                    <div class="row d-none" id="content_seguroCustom">
-                        <div class="col-6">
-                            <x-adminlte-select2 name="type_insurance" label="Tipo de seguro" igroup-size="md"
-                                data-placeholder="Seleccione una opcion...">
+                    <hr>
+                    <div class="row d-none justify-content-center" id="content_seguroCustom">
+                        <div class="col-3">
+                            <label for="type_insurance">Tipo de seguro</label>
+                            <select name="type_insurance" class="d-none form-control" label="Tipo de seguro"
+                                igroup-size="md" data-placeholder="Seleccione una opcion...">
                                 <option />
-                                <option>Seguro A</option>
-                                <option>Seguro B</option>
-                            </x-adminlte-select2>
+                                @foreach ($type_insurace as $type)
+                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
-                        <div class="col-6">
+                        <div class="col-3">
                             <div class="form-group">
                                 <label for="load_value">Valor del seguro</label>
 
                                 <div class="input-group">
                                     <div class="input-group-prepend">
-                                        <span
-                                            class="input-group-text text-bold @error('value_insurance') is-invalid @enderror">
+                                        <span class="input-group-text text-bold">
                                             $
                                         </span>
                                     </div>
-                                    <input type="text"
-                                        class="form-control CurrencyInput @error('value_insurance') is-invalid @enderror "
+                                    <input type="text" class="form-control CurrencyInput d-none "
                                         name="value_insurance" data-type="currency"
                                         placeholder="Ingrese valor de la carga" onchange="updateInsuranceTotal(this)">
                                 </div>
-                                @error('value_insurance')
-                                    <span class="invalid-feedback d-block" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+
+                            </div>
+                        </div>
+
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="load_value">Valor ha agregar</label>
+
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text text-bold">
+                                            $
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control CurrencyInput d-none" id="insurance_added"
+                                        name="insurance_added" data-type="currency" value="0"
+                                        placeholder="Ingrese valor de la carga"
+                                        onchange="updateInsuranceAddedTotal(this)">
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="load_value">Puntos</label>
+
+                                <div class="input-group">
+                                    <input type="number" class="form-control d-none" id="insurance_points"
+                                        name="insurance_points" min="0" onkeydown="preventeDefaultAction(event)"
+                                        oninput="addPointsInsurance(this)">
+                                </div>
 
                             </div>
                         </div>
                     </div>
 
+                    <hr>
                     <div id="formConceptsAduanas" class="formConcepts row">
-
                         <div class="col-4">
 
-                            <div class="form-group">
-
-                                <x-adminlte-select2 name="concept" id="concept_aduana" label="Conceptos"
-                                    data-placeholder="Seleccione un concepto...">
-                                    <option />
-                                    @foreach ($concepts as $concept)
-                                        @if ($concept->typeService->name == 'Aduanas' && $routing->type_shipment->id == $concept->id_type_shipment)
-                                            <option value="{{ $concept->id }}">{{ $concept->name }}</option>
-                                        @endif
-                                    @endforeach
-                                </x-adminlte-select2>
-                            </div>
+                            <x-adminlte-select2 name="concept" id="concept_aduana" label="Conceptos"
+                                data-placeholder="Seleccione un concepto...">
+                                <option />
+                                @foreach ($concepts as $concept)
+                                    @if ($concept->typeService->name == 'Aduanas' && $routing->type_shipment->id == $concept->id_type_shipment)
+                                        <option value="{{ $concept->id }}">{{ $concept->name }}</option>
+                                    @endif
+                                @endforeach
+                            </x-adminlte-select2>
 
                         </div>
                         <div class="col-4">
                             <div class="form-group">
-                                <label for="value_concept">Valor del Concepto</label>
+                                <label for="value_concept">Valor del neto del concepto</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text text-bold">
@@ -89,13 +112,30 @@
                                         </span>
                                     </div>
                                     <input type="text" class="form-control CurrencyInput " name="value_concept"
-                                        data-type="currency" placeholder="Ingrese valor de la carga" value="">
+                                        data-type="currency" placeholder="Ingrese valor del concepto" value="">
                                 </div>
                             </div>
 
                         </div>
-                        <div class="col-4 d-flex align-items-center pt-3">
-                            <button class="btn btn-indigo" type="button" id="btnAddConcept" onclick="addConcept(this)">
+
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="value_concept">Valor ha agregar</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text text-bold">
+                                            $
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control CurrencyInput " name="value_added"
+                                        data-type="currency" placeholder="Ingrese valor agregado" value="0">
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-12 d-flex justify-content-center align-items-center pt-3 mb-2">
+                            <button class="btn btn-indigo" type="button" id="btnAddConcept"
+                                onclick="addConcept(this)">
                                 Agregar
                             </button>
 
@@ -173,8 +213,8 @@
 
                     <div class="form-group">
                         <div class="custom-control custom-switch">
-                            <input type="checkbox" name="state_insurance" class="custom-control-input" id="seguroFreight"
-                                onchange="enableInsurance(this)">
+                            <input type="checkbox" name="state_insurance" class="custom-control-input"
+                                id="seguroFreight" onchange="enableInsurance(this)">
                             <label class="custom-control-label" for="seguroFreight">Agregar Seguro</label>
                         </div>
                     </div>
@@ -182,17 +222,14 @@
                     <hr>
                     <div class="row d-none justify-content-center" id="content_seguroFreight">
                         <div class="col-3">
-                            <x-adminlte-select2 name="type_insurance" class="d-none" label="Tipo de seguro" igroup-size="md"
-                                data-placeholder="Seleccione una opcion...">
+                            <label for="type_insurance">Tipo de seguro</label>
+                            <select name="type_insurance" class="d-none form-control" label="Tipo de seguro"
+                                igroup-size="md" data-placeholder="Seleccione una opcion...">
                                 <option />
-                                @foreach($type_insurace as $type)
-
-                                <option value="{{$type->id}}">{{$type->name}}</option>
-
+                                @foreach ($type_insurace as $type)
+                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
                                 @endforeach
-
-                                
-                            </x-adminlte-select2>
+                            </select>
                         </div>
                         <div class="col-3">
                             <div class="form-group">
@@ -204,9 +241,9 @@
                                             $
                                         </span>
                                     </div>
-                                    <input type="text" class="form-control CurrencyInput d-none " name="value_insurance"
-                                        data-type="currency" placeholder="Ingrese valor de la carga"
-                                        onchange="updateInsuranceTotal(this)">
+                                    <input type="text" class="form-control CurrencyInput d-none "
+                                        name="value_insurance" data-type="currency"
+                                        placeholder="Ingrese valor de la carga" onchange="updateInsuranceTotal(this)">
                                 </div>
 
                             </div>
@@ -222,8 +259,9 @@
                                             $
                                         </span>
                                     </div>
-                                    <input type="text" class="form-control CurrencyInput d-none" id="insurance_added" name="insurance_added"
-                                        data-type="currency" value="0" placeholder="Ingrese valor de la carga"
+                                    <input type="text" class="form-control CurrencyInput d-none"
+                                        id="insurance_added" name="insurance_added" data-type="currency"
+                                        value="0" placeholder="Ingrese valor de la carga"
                                         onchange="updateInsuranceAddedTotal(this)">
                                 </div>
 
@@ -234,8 +272,9 @@
                                 <label for="load_value">Puntos</label>
 
                                 <div class="input-group">
-                                    <input type="number" class="form-control d-none" id="insurance_points" name="insurance_points"
-                                     min="0" onkeydown="preventeDefaultAction(event)" oninput="addPointsInsurance(this)">
+                                    <input type="number" class="form-control d-none" id="insurance_points"
+                                        name="insurance_points" min="0"
+                                        onkeydown="preventeDefaultAction(event)" oninput="addPointsInsurance(this)">
                                 </div>
 
                             </div>

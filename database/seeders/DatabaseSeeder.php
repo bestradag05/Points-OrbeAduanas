@@ -40,7 +40,7 @@ class DatabaseSeeder extends Seeder
 
 
         //Crear un rol de Super-Admin
-        $role = Role::create(['guard_name' => 'api','name' => 'Super-Admin']);
+        $role = Role::create(['guard_name' => 'web','name' => 'Super-Admin']);
         $register_rol = Permission::create(['guard_name' => 'api','name' => 'register_rol']);
         $listar_rol= Permission::create(['guard_name' => 'api','name' => 'list_rol']);
         $edit_rol = Permission::create(['guard_name' => 'api','name' => 'edit_rol']);
