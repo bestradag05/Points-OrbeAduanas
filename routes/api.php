@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CargoController as ApiCargosController;
 use App\Http\Controllers\Api\ContractController;
 use App\Http\Controllers\Api\ContratModalitieController;
+use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\MoneyController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\AuthController;
@@ -74,5 +75,6 @@ Route::group([
     Route::post("companys/{id}", [CompanyController::class,"update"]);
     Route::resource("moneys", MoneyController::class);
     Route::resource("services", ServiceController::class);
+    Route::resource("customers", CustomerController::class);
 });
 

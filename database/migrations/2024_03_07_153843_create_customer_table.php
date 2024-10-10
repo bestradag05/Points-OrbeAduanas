@@ -13,15 +13,19 @@ return new class extends Migration
     {
         Schema::create('customer', function (Blueprint $table) {
             $table->id();
-            $table->string('ruc')->unique();
+            $table->string('document_number')->unique();
             $table->string('name_businessname')->unique();
+            $table->string('address');
             $table->string('contact_name');
             $table->string('contact_number');
             $table->string('contact_email');
+            $table->string('state');
+            $table->unsignedBigInteger('id_document');//TODO: Recordar cambiar el nullbale, no debe ser un valor null
             $table->unsignedBigInteger('id_user');
             $table->timestamps();
 
             $table->foreign('id_user')->references('id')->on('users');
+            $table->foreign('id_document')->references('id')->on('documents');
         });
     }
 
