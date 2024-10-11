@@ -20,6 +20,7 @@ class CustomerController extends Controller
         return response()->json([
             "customers" => $customers->map(function($customer) {
                 return [
+                    'id' => $customer->id,
                    'document_number' => $customer->document_number,
                    'name_businessname' => $customer->name_businessname,
                    'address' => $customer->address,
@@ -46,7 +47,31 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
+        $exist_customer = Customer::where("document_number", $request->document_number)->first();
+
+        if($exist_customer){
+            return response()->json([
+                "message" => 403,
+                "message_text" => "El cliente ya existe"
+            ]);
+        }
+
+        Customer::create([
+            'id_document' => $request->id_document,
+            'document_number' => $request->document_number,
+            'name_businessname' => $request->name_businessname,
+            'address' => $request->address,
+            'contact_name' => $request->contact_name,
+            'contact_number' => $request->contact_number,
+            'contact_email' => $request->contact_email,
+            'id_user' => $request->id_user,
+            'state' => 'Activo'
+        ]);
+
+        return response()->json([
+            "message" => "El cliente se registro con exito",
+        ], 200);
     }
 
     /**
@@ -54,7 +79,18 @@ class CustomerController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $customer = Customer::findOrFail($id);
+        return response()->json([
+            "id" => $customer->id,
+            "id_document" => $customer->id_document,
+            "document_number" => $customer->document_number,
+            "name_businessname" => $customer->name_businessname,
+            "address" => $customer->address,
+            "contact_name" => $customer->contact_name,
+            "contact_number" => $customer->contact_number,
+            "contact_email" => $customer->contact_email,
+
+        ]);
     }
 
     /**
@@ -70,7 +106,26 @@ class CustomerController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+
+        $exist_customer = Customer::where("id", "<>", $id)->where("document_number", $request->document_number)->first();
+
+        if($exist_customer){
+            return response()->json([
+                "message" => 403,
+                "message_text" => "El cliente ya existe"
+            ]);
+        }
+
+        $customer = Customer::findOrFail($id);
+
+      
+
+        $customer->update($request->all());
+
+
+        return response()->json([
+            "message" => "Cliente actualizado"
+        ], 200);
     }
 
     /**
@@ -78,6 +133,17 @@ class CustomerController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        if(!auth('api')->user()->can('delete_rol')){
+            return response()->json(["message"=>"EL USUARIO NO ESTA AUTORIZADO"],403);
+        }
+
+        $customer = Customer::findOrFail($id);
+
+        $customer->update(['state' => 'Inactivo']);
+
+        return response()->json([
+            "message"=> 200,
+            "state" => $customer->state
+        ]);
     }
 }
