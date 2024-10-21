@@ -99,7 +99,7 @@
             <label for="value_freight">Valor del Flete</label>
             <input type="number" class="form-control @error('value_freight') is-invalid @enderror" @readonly(true)
                 id="value_freight" name="value_freight" placeholder="Ingrese el valor cif"
-                value="{{ number_format($value_freight, 2) }}">
+                value="{{ isset($freight->value_freight) ?  $freight->value_freight  : number_format($value_freight, 2) }}">
             @error('value_freight')
                 <strong class="invalid-feedback d-block">{{ $message }}</strong>
             @enderror

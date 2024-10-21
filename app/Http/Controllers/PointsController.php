@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Personal;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PointsController extends Controller
@@ -10,7 +11,7 @@ class PointsController extends Controller
 
     public function getPointCustoms(Request $request)
     {
-        
+
 
         $personals = $this->getPersonalRoles('custom');
 
@@ -36,7 +37,7 @@ class PointsController extends Controller
         // Ordenamos del mayor al menor
         $personalPoints = $personalPoints->sortByDesc('puntos')->values();
 
-        if($request->type){
+        if ($request->type) {
             return response()->json($personalPoints);
         }
 
@@ -45,22 +46,38 @@ class PointsController extends Controller
 
 
     public function getPointFreight(Request $request)
-    {
+    {        /* echo "<script>console.log(" . json_encode($endDate) . ");</script>"; */
 
+        //Obtenemos todo el personal que tenga el rol de Asesor comercial y tenga relacion con la tabla freight
         $personals = $this->getPersonalRoles('freight');
 
-        $personalPoints = $personals->map(function ($personal) {
+        //Si las fechas existen, entonces lo convertimos en el formato adecuado
 
+        // Convertir las fechas si están presentes en el formato adecuado
+        $startDate = $request->startDate ? Carbon::parse($request->startDate)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();;
+        $endDate = $request->endDate ? Carbon::parse($request->endDate)->endOfDay() : Carbon::now()->endOfMonth()->endOfDay();;
+       
+        //Vamos a recorrer los personales 
+        $personalPoints = $personals->map(function ($personal) use ($startDate, $endDate)  {
 
-            $filteredRouting = $personal->routing->filter(function ($route) {
+            // ahora que tenemos los personales, obtenemos los routing que tienen estos personales y comenzamos a filtrar
+            // Solo los routing que tenga una relacion con la tabla freight
+            $filteredRouting = $personal->routing->filter(function ($route) use ($startDate, $endDate)  {
 
-                return $route->freight != null;
+                $freightCondition = $route->freight != null;
+
+                $dateCondition = true;
+                if($startDate && $endDate){
+                    $dateCondition = $route->freight->created_at >= $startDate && $route->freight->created_at <= $endDate;
+                }
+
+                return $freightCondition && $dateCondition;
+
             });
 
-            // Contar el número de registros en la tabla custom
+            // Contar el número de registros en la tabla freigth
             $count = $filteredRouting->count();
 
-            /* dump($customCount); */
 
             // Retornar el personal con el número de puntos
             return [
@@ -69,17 +86,16 @@ class PointsController extends Controller
             ];
         });
 
-        
+
         // Ordenamos del mayor al menor
         $personalPoints = $personalPoints->sortByDesc('puntos')->values();
 
-        if($request->type){
+        //verificamos que sea una solicitud ajax para reenviar como json la informacion
+        if ($request->type) {
             return response()->json($personalPoints);
         }
 
-
         return view('points/points-freight', compact('personalPoints'));
-
     }
 
 
@@ -109,26 +125,26 @@ class PointsController extends Controller
             ];
         });
 
-        
+
         // Ordenamos del mayor al menor
         $personalPoints = $personalPoints->sortByDesc('puntos')->values();
 
-        if($request->type){
+        if ($request->type) {
             return response()->json($personalPoints);
         }
 
 
         return view('points/points-transport', compact('personalPoints'));
-
     }
 
 
 
-    public function getPointDetail() {
+    public function getPointDetail()
+    {
 
 
-        $personalPoints =$this->getPersonalRoles(null);
-        
+        $personalPoints = $this->getPersonalRoles(null);
+
 
         return view('points/points-detail', compact('personalPoints'));
     }
@@ -138,20 +154,19 @@ class PointsController extends Controller
 
     public function getPersonalRoles($relationship)
     {
-        
-        if($relationship != null){
+
+        if ($relationship != null) {
 
             return Personal::whereHas('user.roles', function ($query) {
                 $query->where('name', 'Asesor Comercial');
-            })->with(['routing.'.$relationship => function ($query) {
+            })->with(['routing.' . $relationship => function ($query) {
                 // Filtrar los registros de la tabla custom por estado 'Punto'
                 $query->where('state', 'Generado');
             }])->get();
-        }else{
+        } else {
             return Personal::whereHas('user.roles', function ($query) {
                 $query->where('name', 'Asesor Comercial');
             })->get();
         }
-
     }
 }

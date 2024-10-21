@@ -42,13 +42,11 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 
 Route::middleware('auth')->group(function () {
+    
     Route::get('/home', function () {
         return view('home');
     })->name('home');
 
-    /*   Route::get('/users', function () {
-        return view('users/list-users');
-    })->name('users'); */
 
     Route::resource('users', UserController::class);
     Route::resource('personal', PersonalController::class);

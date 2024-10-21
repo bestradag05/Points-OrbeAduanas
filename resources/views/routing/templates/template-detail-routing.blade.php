@@ -417,6 +417,6 @@
                 form.append(`<input type="hidden" name="concepts" value='${conceptops}' />`);
                 form[0].submit();
             }
-        };
+        }
     </script>
 @endpush

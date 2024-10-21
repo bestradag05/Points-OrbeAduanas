@@ -244,6 +244,20 @@ class RoutingController extends Controller
         switch ($type_services->name) {
             case "Aduanas":
                 # Aduana...
+                 // Verificamos si tiene seguro
+                if($request->state_insurance){
+                    
+                    $sales_price = $request->value_insurance + $request->insurance_added;
+                  
+                    $cargo_insurance = CargoInsurance::create([
+                        'insurance_sale' => $sales_price,
+                        'sales_value' => $sales_price * 0.18,
+                        'sales_price' => $sales_price * 1.18,
+                        'id_type_insurance' =>  $request->type_insurance
+                    ]);
+                
+                }
+
                 // Creamos nuestro registro de aduanas para los puntos
                 $custom = Custom::create([
                     'state' => 'Pendiente',
@@ -253,8 +267,9 @@ class RoutingController extends Controller
 
                 //Relacionamos los conceptos que tendra esta aduana
 
-                foreach (json_decode($request->conceptos) as $concepto) {
-                    $custom->concepts()->attach($concepto->id, ['value_concept' => $concepto->value]);
+                foreach (json_decode($request->concepts) as $concept) {
+                    $custom->concepts()->attach($concept->id, ['value_concept' => $concept->value]);
+                    
                 }
 
                 return redirect('/routing/' . $routing->id . '/detail');
@@ -277,6 +292,7 @@ class RoutingController extends Controller
                 }
                
                 $freight = Freight::create([
+                    'value_freight' => $request->total,
                     'value_utility' => $request->utility,
                     'state' => 'Pendiente',
                     'nro_operation' => $routing->nro_operation,

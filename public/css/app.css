@@ -4,9 +4,31 @@
     color: white;
 }
 
+
+
+.btn-outline-indigo {
+    color: #6610f2;
+    border-color: #6610f2;
+  }
+  
+  .btn-outline-indigo:hover {
+    color: #fff;
+    background-color: #6610f2;
+    border-color: #6610f2;
+  }
+  
+  .btn-outline-indigo:focus, .btn-outline-indigo.focus {
+    box-shadow: 0 0 0 0 #6610f2;;
+  }
+
+
 .btn-indigo:hover{
     background: #4609a8;
     color: white;
+}
+
+.text-indigo {
+    color: #6610f2;
 }
 
 .select2-selection{
