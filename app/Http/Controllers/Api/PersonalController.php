@@ -77,11 +77,6 @@ class PersonalController extends Controller
     public function store(Request $request)
     {
 
-
-
-        /* return response()->json([
-            "message" => $schedule
-        ], 200); */
         $exist_personal = Personal::where("document_number", $request->document_number)->first();
 
         if ($exist_personal) {
@@ -117,7 +112,9 @@ class PersonalController extends Controller
         $request->birthdate =  Carbon::parse($date_clean)->format("Y-m-d h:i:s");
 
         if ($request->hasFile("img_url")) {
+            
             $path = Storage::putFile("personals", $request->file("img_url"));
+          
             $request->img_url = $path;
         }
 
