@@ -1,24 +1,24 @@
 
 .btn-indigo, .bg-indigo{
-    background: #6610f2;
+    background: #2e37a4;
     color: white;
 }
 
 
 
 .btn-outline-indigo {
-    color: #6610f2;
-    border-color: #6610f2;
+    color: #2e37a4;
+    border-color: #2e37a4;
   }
   
   .btn-outline-indigo:hover {
     color: #fff;
-    background-color: #6610f2;
-    border-color: #6610f2;
+    background-color: #2e37a4;
+    border-color: #2e37a4;
   }
   
   .btn-outline-indigo:focus, .btn-outline-indigo.focus {
-    box-shadow: 0 0 0 0 #6610f2;;
+    box-shadow: 0 0 0 0 #2e37a4;;
   }
 
 
@@ -28,7 +28,7 @@
 }
 
 .text-indigo {
-    color: #6610f2;
+    color: #2e37a4!important;
 }
 
 .select2-selection{

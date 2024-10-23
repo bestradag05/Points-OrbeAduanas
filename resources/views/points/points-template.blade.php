@@ -13,9 +13,9 @@
     </div>
 
     <div class="container-fluid">
-        <div class="row justify-content-center align-items-center flex-column ">
+        <div class="row justify-content-center align-items-center flex-row ">
 
-            <div class="col-4 text-center">
+            <div class="col-4 text-center offset-4">
 
                 {{-- LG size with some config and add-ons --}}
                 @php
@@ -61,11 +61,16 @@
                         </div>
                     </x-slot>
                     <x-slot name="appendSlot">
-                        <x-adminlte-button theme="outline-indigo" id="searchPoint" label="Search" icon="fas fa-search" />
+                        <x-adminlte-button theme="outline-indigo" id="searchPoint" label="Buscar" icon="fas fa-search" />
                     </x-slot>
                 </x-adminlte-date-range>
 
 
+            </div>
+
+            <div class="col-4 row justify-content-center">
+                <div class="mx-2 "><a href="" class="text-indigo" ><i class="fa-sharp fa-xl fa-solid fa-file-pdf"></i></a></div>
+                <div class="mx-2"><a href="" class="text-indigo"> <i class="fa-sharp fa-xl fa-solid fa-file-excel"></i></a></div>
             </div>
 
 
@@ -75,9 +80,7 @@
 
 
 
-            <div class="col-10 row justify-content-center ">
-
-                <h2 class="text-center mb-3">Detalle de puntos</h2>
+            <div class="col-10 row justify-content-center mt-2 ">
 
                 {{-- Setup data for datatables --}}
                 @php
@@ -86,25 +89,8 @@
                 @endphp
 
                 {{-- Minimal example / fill data using the component slot --}}
-                <x-adminlte-datatable id="table1" :heads="$heads">
-                    @foreach ($personalPoints as $personalPoint)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td><img src="{{ asset('/fotos-de-usuarios/' . $personalPoint['personal']->img_url) }}"
-                                    width="50px" /></td>
-                            <td>
-                                {{ $personalPoint['personal']['name'] . ' ' . $personalPoint['personal']['last_name'] }}
-                            </td>
-
-                            <td class="{{ $personalPoint['puntos'] < 15 ? 'text-secondary' : 'text-success' }}">
-                                {{ $personalPoint['puntos'] }}
-                            </td>
-                        </tr>
-                    @endforeach
+                <x-adminlte-datatable id="table-points" :heads="$heads">
                 </x-adminlte-datatable>
-
-
-
 
             </div>
 

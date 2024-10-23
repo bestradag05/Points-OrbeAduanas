@@ -3,9 +3,8 @@ import { Chart } from "chart.js/auto";
 import axios from "axios";
 import moment from "moment";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import annotationPlugin from "chartjs-plugin-annotation";
 
-Chart.register(ChartDataLabels, annotationPlugin);
+Chart.register(ChartDataLabels);
 
 let freightChart; // Variable para almacenar la instancia del gráfico
 
@@ -37,15 +36,20 @@ function getPointsFreight(startDate = null, endDate = null) {
             },
         })
         .then(function (response) {
+
+            //Actualizamos la tabla: 
+
+            actualizarDataTable(response.data);
+
             response.data.map(({ personal, puntos }) => {
                 personals.push(personal.name);
                 points.push(puntos);
             });
 
             // Condicionamos colores de acuerdo al valor
-            const colors = response.data.map(({ puntos }) =>
+            /* const colors = response.data.map(({ puntos }) =>
                 puntos > 15 ? "#0C3C70" : "#7F7F7F"
-            );
+            ); */
 
             const ctx = document
                 .getElementById("freightChart")
@@ -62,7 +66,7 @@ function getPointsFreight(startDate = null, endDate = null) {
                             {
                                 label: "Puntos x Vendedor",
                                 data: points,
-                                backgroundColor: colors,
+                                backgroundColor: '#2e37a4' ,
                                 borderWidth: 1,
                             },
                         ],
@@ -98,23 +102,6 @@ function getPointsFreight(startDate = null, endDate = null) {
                                 borderRadius: 4,
                             },
                         },
-                        annotation: {
-                            annotations: {
-                                line1: {
-                                    type: "line",
-                                    yMin: 2, // El valor de la meta
-                                    yMax: 2, // El valor de la meta
-                                    borderColor: "red",
-                                    borderWidth: 2,
-                                    label: {
-                                        content: "Meta",
-                                        enabled: true,
-                                        position: "end",
-                                        color: "red",
-                                    },
-                                },
-                            },
-                        },
                     },
                 });
             } else {
@@ -125,4 +112,25 @@ function getPointsFreight(startDate = null, endDate = null) {
                 freightChart.update(); // Redibuja el gráfico
             }
         });
+}
+
+
+
+function actualizarDataTable(data) {
+    // Limpia el contenido actual del DataTable
+    var table = $('#table-points').DataTable();
+    table.clear();
+
+    // Añadir las nuevas filas
+    data.forEach(function(personalPoint, index) {
+        table.row.add([
+            index + 1,
+            `<img src="/fotos-de-usuarios/${personalPoint.personal.img_url}" width="50px" />`,
+            `${personalPoint.personal.name} ${personalPoint.personal.last_name}`,
+            `<span class="${personalPoint.puntos < 15 ? 'text-secondary' : 'text-success'}">${personalPoint.puntos}</span>`
+        ]);
+    });
+
+    // Renderiza nuevamente la tabla
+    table.draw();
 }

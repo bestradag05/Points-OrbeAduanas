@@ -95,7 +95,7 @@ class PointsController extends Controller
             return response()->json($personalPoints);
         }
 
-        return view('points/points-freight', compact('personalPoints'));
+        return view('points/points-freight');
     }
 
 
