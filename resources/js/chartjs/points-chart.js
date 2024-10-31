@@ -24,11 +24,20 @@ $("#searchPoint").on("click", () => {
 
 // Petición hacia el backend para traer los puntos
 function getPointsFreight(startDate = null, endDate = null) {
+
+    //Obtenemos el canva donde posicionaremos nuestra grafica
+    const ctx = document
+    .querySelector("canvas")
+    .getContext("2d");
+
+    const service = document
+    .querySelector("canvas").id;
+
     const personals = [];
     const points = [];
 
     axios
-        .get(`/points/freight`, {
+        .get(`/points/${service}`, {
             params: {
                 type: "chart",
                 startDate,
@@ -51,9 +60,7 @@ function getPointsFreight(startDate = null, endDate = null) {
                 puntos > 15 ? "#0C3C70" : "#7F7F7F"
             ); */
 
-            const ctx = document
-                .getElementById("freightChart")
-                .getContext("2d");
+
 
             // Si el gráfico no existe, crearlo
             if (!freightChart) {
@@ -108,7 +115,7 @@ function getPointsFreight(startDate = null, endDate = null) {
                 // Actualizar los datos del gráfico existente
                 freightChart.data.labels = personals; // Actualiza las etiquetas
                 freightChart.data.datasets[0].data = points; // Actualiza los datos
-                freightChart.data.datasets[0].backgroundColor = colors; // Actualiza los colores
+                freightChart.data.datasets[0].backgroundColor = '#2e37a4'; // Actualiza los colores
                 freightChart.update(); // Redibuja el gráfico
             }
         });

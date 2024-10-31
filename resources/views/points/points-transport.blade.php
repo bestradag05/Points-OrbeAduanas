@@ -1,3 +1,3 @@
-@vite(['resources/js/app.js', 'resources/js/chartjs/transport.js'])
+@vite(['resources/js/chartjs/points-chart.js'])
 
-@include('points.points-template', ['title' => 'Puntos de Transporte', 'chart' => 'transportChart']);
+@include('points.points-template', ['title' => 'Puntos de Transporte', 'chart' => 'transport']);

@@ -75,7 +75,7 @@
 
 
             <div class="col-8 my-5 ">
-                <canvas id="{{ $chart }}"></canvas>
+                <canvas  id="{{ $chart }}"></canvas>
             </div>
 
 

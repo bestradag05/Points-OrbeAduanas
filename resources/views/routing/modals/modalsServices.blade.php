@@ -20,7 +20,7 @@
 
                     <div class="form-group">
                         <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input" id="seguroCustom"
+                            <input type="checkbox" name="state_insurance" class="custom-control-input" id="seguroCustom"
                                 onchange="enableInsurance(this)">
                             <label class="custom-control-label" for="seguroCustom">Agregar Seguro</label>
                         </div>
@@ -147,6 +147,7 @@
                                     <th style="width: 10px">#</th>
                                     <th>Concepto</th>
                                     <th>Valor del concepto</th>
+                                    <th>Valor agregado</th>
                                     <th>x</th>
                                 </tr>
                             </thead>

@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CargoInsurance;
 use App\Models\Concepts;
 use App\Models\Country;
 use App\Models\Custom;
 use App\Models\Customer;
 use App\Models\Freight;
 use App\Models\Incoterms;
+use App\Models\Insurance;
 use App\Models\Modality;
 use App\Models\Regime;
 use App\Models\Routing;
@@ -232,7 +232,7 @@ class RoutingController extends Controller
 
     public function storeRoutingService(Request $request)
     {
-        
+
         $routing = Routing::where('nro_operation', $request->nro_operation)->first();
 
         $type_services = TypeService::find($request->typeService);
@@ -244,32 +244,39 @@ class RoutingController extends Controller
         switch ($type_services->name) {
             case "Aduanas":
                 # Aduana...
-                 // Verificamos si tiene seguro
-                if($request->state_insurance){
-                    
-                    $sales_price = $request->value_insurance + $request->insurance_added;
-                  
-                    $cargo_insurance = CargoInsurance::create([
-                        'insurance_sale' => $sales_price,
-                        'sales_value' => $sales_price * 0.18,
-                        'sales_price' => $sales_price * 1.18,
-                        'id_type_insurance' =>  $request->type_insurance
-                    ]);
-                
-                }
-
                 // Creamos nuestro registro de aduanas para los puntos
                 $custom = Custom::create([
                     'state' => 'Pendiente',
                     'id_modality' => $request->modality,
-                    'nro_operation' => $routing->nro_operation
+                    'nro_operation' => $routing->nro_operation,
+                    'id_insurance'  => isset($insurance->id) ? $insurance->id : null
                 ]);
+
+
+                // Verificamos si tiene seguro
+                if ($request->state_insurance) {
+
+                    $sales_price = $request->value_insurance + $request->insurance_added;
+
+                    $insurance = Insurance::create([
+                        'insurance_sale' => $sales_price,
+                        'sales_value' => $sales_price * 0.18,
+                        'sales_price' => $sales_price * 1.18,
+                        'id_type_insurance' =>  $request->type_insurance,
+                        'name_service' => 'Aduanas',
+                        'id_insurable_service' => $custom->id,
+                        'model_insurable_service' => Custom::class,
+                        'state' => 'Pendiente'
+                    ]);
+
+                    $custom->insurance()->save($insurance);
+                }
+
 
                 //Relacionamos los conceptos que tendra esta aduana
 
                 foreach (json_decode($request->concepts) as $concept) {
                     $custom->concepts()->attach($concept->id, ['value_concept' => $concept->value]);
-                    
                 }
 
                 return redirect('/routing/' . $routing->id . '/detail');
@@ -278,40 +285,42 @@ class RoutingController extends Controller
                 # Flete...
                 // Verificamos si tiene seguro
 
-                if($request->state_insurance){
-                    
-                    $sales_price = $request->value_insurance + $request->insurance_added;
-                  
-                    $cargo_insurance = CargoInsurance::create([
-                        'insurance_sale' => $sales_price,
-                        'sales_value' => $sales_price * 0.18,
-                        'sales_price' => $sales_price * 1.18,
-                        'id_type_insurance' =>  $request->type_insurance
-                    ]);
-                
-                }
-               
                 $freight = Freight::create([
                     'value_freight' => $request->total,
                     'value_utility' => $request->utility,
                     'state' => 'Pendiente',
                     'nro_operation' => $routing->nro_operation,
-                    'id_cargo_insurance' => isset($cargo_insurance->id) ? $cargo_insurance->id : null
+                    'id_insurance' => isset($insurance->id) ? $insurance->id : null
                 ]);
- 
+
+
+                if ($request->state_insurance) {
+
+                    $sales_price = $request->value_insurance + $request->insurance_added;
+
+                    $insurance = Insurance::create([
+                        'insurance_sale' => $sales_price,
+                        'sales_value' => $sales_price * 0.18,
+                        'sales_price' => $sales_price * 1.18,
+                        'id_type_insurance' =>  $request->type_insurance,
+                        'name_service' => 'Flete',
+                        'id_insurable_service' => $freight->id,
+                        'model_insurable_service' => Freight::class,
+                        'state' => 'Pendiente'
+                    ]);
+
+                    $freight->insurance()->save($insurance);
+                }
+
+
                 //Relacionamos los conceptos que tendra este flete
 
                 foreach (json_decode($request->concepts) as $concept) {
                     $freight->concepts()->attach($concept->id, ['value_concept' => $concept->value]);
-                    
                 }
 
 
                 return redirect('/routing/' . $routing->id . '/detail');
-
-            case "Seguro":
-                # Seguro...
-                break;
 
             case "Transporte":
 

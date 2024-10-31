@@ -23,11 +23,13 @@ return new class extends Migration
             $table->string('regularization_date')->nullable();
             $table->string('state');
             $table->unsignedBigInteger('id_modality');
+            /* $table->unsignedBigInteger('id_insurance')->nullable(); */
             $table->string('nro_operation');
             $table->timestamps();
 
             $table->foreign('nro_operation')->references('nro_operation')->on('routing');
             $table->foreign('id_modality')->references('id')->on('modality');
+            /* $table->foreign('id_insurance')->references('id')->on('insurance'); */
         });
     }
 

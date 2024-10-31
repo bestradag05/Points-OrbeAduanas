@@ -373,16 +373,28 @@ return [
             'icon' => 'fas fa-fw fa-user-tie',
             'submenu' => [
                 [
-                    'text' => 'Puntos pendientes',
+                    'text' => 'Puntos pendientes - Flete',
                     'url' => 'freight/pending',
                     'icon'  => 'fa-solid fa-bell-exclamation',
                     'active' => ['freight', 'freight*', 'regex:@^content/[0-9]+$@'],
                 ],
                 [
-                    'text' => 'Todos los puntos',
+                    'text' => 'Todos los puntos - Flete',
                     'url'  => 'freight',
                     'icon' => 'fa-solid fa-check-double',
                     'active' => ['freight', 'freight*', 'regex:@^content/[0-9]+$@'],
+                ],
+                [
+                    'text' => 'Puntos pendientes - Seguro',
+                    'url'  => 'insurance/pending',
+                    'icon' => 'fa-solid fa-check-double',
+                    'active' => ['insurance', 'insurance*', 'regex:@^content/[0-9]+$@'],
+                ],
+                [
+                    'text' => 'Todos los puntos - Seguro',
+                    'url'  => 'insurance',
+                    'icon' => 'fa-solid fa-check-double',
+                    'active' => ['insurance', 'insurance*', 'regex:@^content/[0-9]+$@'],
                 ]
             ]
 

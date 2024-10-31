@@ -6,6 +6,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\FreightController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\LiquidacionController;
 use App\Http\Controllers\ModalityController;
 use App\Http\Controllers\PermissionsController;
@@ -82,12 +83,16 @@ Route::middleware('auth')->group(function () {
 
     Route::get('transport/pending', [TransportController::class, 'getTransportPending']);
     Route::resource('transport', TransportController::class);
+    
+    Route::get('insurance/pending', [InsuranceController::class, 'getInsurancePending']);
+    Route::resource('insurance', InsuranceController::class);
 
 
     Route::get('points/detail', [PointsController::class, 'getPointDetail']);
     Route::get('points/customs', [PointsController::class, 'getPointCustoms']);
     Route::get('points/freight', [PointsController::class, 'getPointFreight']);
     Route::get('points/transport', [PointsController::class, 'getPointTransport']);
+    Route::get('points/insurance', [PointsController::class, 'getPointInsurance']);
 });
 
 

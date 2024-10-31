@@ -16,17 +16,18 @@ return new class extends Migration
             $table->string('roi')->nullable();
             $table->string('hawb_hbl')->nullable();
             $table->string('bl_work')->nullable();
+            $table->date('date_register')->nullable();
             $table->date('edt')->nullable();
             $table->date('eta')->nullable();
             $table->string('value_utility')->nullable();
             $table->string('value_freight')->nullable();
             $table->string('state');
-            $table->unsignedBigInteger('id_cargo_insurance')->nullable();
+           /*  $table->unsignedBigInteger('id_insurance')->nullable(); */
             $table->string('nro_operation');
             $table->timestamps();
 
             $table->foreign('nro_operation')->references('nro_operation')->on('routing');
-            $table->foreign('id_cargo_insurance')->references('id')->on('cargo_insurance');
+           /*  $table->foreign('id_insurance')->references('id')->on('insurance'); */
         });
     }
 

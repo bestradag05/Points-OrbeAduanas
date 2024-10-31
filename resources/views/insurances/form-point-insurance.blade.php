@@ -21,10 +21,10 @@
 
     <div class="col-6">
         <div class="form-group">
-            <label for="roi">ROI</label>
-            <input type="text" class="form-control @error('roi') is-invalid @enderror" id="roi" name="roi"
-                placeholder="Ingrese el numero de ROI" value="{{ isset($freight->roi) ? $freight->roi : old('roi') }}">
-            @error('roi')
+            <label for="certified_number">Numero de Certificado</label>
+            <input type="text" class="form-control @error('certified_number') is-invalid @enderror" id="certified_number" name="certified_number"
+                placeholder="Ingrese el numero de certified_number" value="{{ isset($freight->certified_number) ? $freight->certified_number : old('certified_number') }}">
+            @error('certified_number')
                 <strong class="invalid-feedback d-block">{{ $message }}</strong>
             @enderror
         </div>
@@ -33,18 +33,18 @@
 
     <div class="col-6">
         <div class="form-group">
-            <label for="hawb_hbl">Hawb / HBL</label>
-            <input type="text" class="form-control @error('hawb_hbl') is-invalid @enderror" id="hawb_hbl"
-                name="hawb_hbl" placeholder="Ingrese su numero de Hawb/HBL"
-                value="{{ isset($freight->hawb_hbl) ? $freight->hawb_hbl : old('hawb_hbl') }}">
-            @error('hawb_hbl')
+            <label for="certified_number">N° de referencia de asegurado</label>
+            <input type="text" class="form-control @error('certified_number') is-invalid @enderror" id="certified_number"
+                name="certified_number" placeholder="Ingrese su numero de Hawb/HBL"
+                value="{{ isset($freight->certified_number) ? $freight->certified_number : old('certified_number') }}">
+            @error('certified_number')
                 <strong class="invalid-feedback d-block">{{ $message }}</strong>
             @enderror
         </div>
     </div>
 
 
-    <div class="col-6">
+ {{--    <div class="col-6">
 
         @php
             $config = ['format' => 'DD/MM/YYYY'];
@@ -124,7 +124,7 @@
             @enderror
         </div>
     </div>
-
+ --}}
 </div>
 
 <div class="container text-center mt-5">

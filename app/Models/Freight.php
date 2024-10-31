@@ -12,7 +12,7 @@ class Freight extends Model
 
     protected $table = 'freight';
 
-    protected $fillable = ['roi', 'hawb_hbl', 'bl_work', 'edt', 'eta','value_utility', 'value_freight', 'state', 'id_cargo_insurance', 'nro_operation'];
+    protected $fillable = ['roi', 'hawb_hbl', 'bl_work', 'date_register', 'edt', 'eta','value_utility', 'value_freight', 'state', 'nro_operation'];
 
     public function concepts()
     {
@@ -22,6 +22,11 @@ class Freight extends Model
     public function routing()
     {
         return $this->belongsTo(Routing::class, 'nro_operation', 'nro_operation');
+    }
+
+    public function insurance()
+    {
+        return $this->morphOne(Insurance::class, 'insurable', 'model_insurable_service', 'id_insurable_service');
     }
     
 }

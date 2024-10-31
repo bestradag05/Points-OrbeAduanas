@@ -107,6 +107,9 @@ class FreightController extends Controller
         $freight = Freight::find($id);
         
 
+        $dateRegisterFormat = Carbon::createFromFormat('d/m/Y', $request['edt'])->toDateString();
+        $request['date_register'] = $dateRegisterFormat;
+
         $edtFormat = Carbon::createFromFormat('d/m/Y', $request['edt'])->toDateString();
         $request['edt'] = $edtFormat;
 

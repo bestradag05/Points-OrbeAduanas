@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cargo_insurance', function (Blueprint $table) {
+        Schema::create('insurance', function (Blueprint $table) {
             $table->id();
             $table->string('certified_number')->nullable();
             $table->string('insured_references')->nullable();
@@ -20,6 +20,10 @@ return new class extends Migration
             $table->decimal('sales_value', 8,2);
             $table->decimal('sales_price', 8, 2);
             $table->unsignedBigInteger('id_type_insurance')->nullable();
+            $table->unsignedBigInteger('id_insurable_service');
+            $table->string('model_insurable_service');
+            $table->string('name_service');
+            $table->string('state');
             $table->timestamps();
 
             $table->foreign('id_type_insurance')->references('id')->on('type_insurance');
@@ -31,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cargo_insurance');
+        Schema::dropIfExists('insurance');
     }
 };
