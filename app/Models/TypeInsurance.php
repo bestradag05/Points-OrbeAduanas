@@ -12,4 +12,11 @@ class TypeInsurance extends Model
     protected $table = 'type_insurance';
 
     protected $fillable = ['name'];
+
+
+    public function insurances()
+    {
+        return $this->hasMany(Insurance::class, 'id_type_insurance');
+    }
+
 }

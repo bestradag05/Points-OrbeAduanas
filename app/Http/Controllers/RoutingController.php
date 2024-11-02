@@ -200,17 +200,19 @@ class RoutingController extends Controller
         $services = [];
         //Verificamos los servicios que esten dentro de nuestro detalle de la carga y lo agregamos
         if ($routing->custom()->exists()) {
-            $services['Aduanas'] = $routing->custom;
+            $services['Aduanas'] = $routing->custom->load('insurance');
         }
 
         if ($routing->freight()->exists()) {
-            $services['Flete'] = $routing->freight;
+            $services['Flete'] = $routing->freight->load('insurance');
         }
 
         if ($routing->transport()->exists()) {
             $services['Transporte'] = $routing->transport;
         }
 
+       /*  dd($services);
+ */
         $tab = 'detail';
 
 

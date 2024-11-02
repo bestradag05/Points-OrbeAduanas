@@ -73,9 +73,10 @@
 
         <hr>
         {{-- <p class="text-indigo text-bold">Lista de Servicios: </p> --}}
-        <table class="table">
+        <table class="table text-center">
             <thead>
                 <th class="text-indigo text-bold">Servicios</th>
+                <th class="text-indigo text-bold">Seguro</th>
                 <th class="text-indigo text-bold">Estado para punto</th>
                 <th class="text-indigo text-bold">Acciones</th>
             </thead>
@@ -89,6 +90,17 @@
                             </a>
                         </td>
 
+                        <td class="text-bold  {{ $service->insurance ? 'text-success' : 'text-danger' }}">
+                            @if ($service->insurance)
+                                Tiene seguro
+                            @else
+                                Sin seguro
+                                <button type="button" class="btn text-indigo"
+                                    onclick="openModalInsurance('{{ $service }}', '{{ $index }}')">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            @endif
+                        </td>
                         <td class="text-bold  {{ $service->state == 'Pendiente' ? 'text-danger' : 'text-success' }}">
                             {{ $service->state }}
                         </td>
@@ -150,12 +162,12 @@
                 contenedorInsurance.addClass('d-flex').removeClass('d-none');
                 contenedorInsurance.find("input").removeClass('d-none');
                 contenedorInsurance.find('select').removeClass('d-none');
-                
+
             } else {
                 contenedorInsurance.addClass('d-none').removeClass('d-flex');
                 contenedorInsurance.find("input").val('').addClass('d-none').removeClass('is-invalid');
                 contenedorInsurance.find('select').val('').addClass('d-none').removeClass('is-invalid');
-                
+
                 value_insurance = 0;
                 valuea_added_insurance = 0;
 
@@ -201,7 +213,7 @@
         }
 
 
-        function updateInsuranceAddedTotal(element){
+        function updateInsuranceAddedTotal(element) {
             if (element.value === "") {
                 valuea_added_insurance = 0;
             } else {
@@ -362,23 +374,34 @@
 
 
         const addPointsInsurance = (input) => {
- 
-            //Indicamos el modal donde estemos trabajando y luego seleccionamos el campo.
-            let value_added = $(`#${container.id} #insurance_added`).val();
+         
+            let value_added = 0;
 
-            if(Math.floor(value_added / 45) === 0){
+            if(container != ''){
+                 value_added = $(`#${container.id} #insurance_added`).val();
+            }else{
+                value_added = $(`#content_seguro #insurance_added`).val();
+            }
+
+            console.log(value_added);
+            
+            //Indicamos el modal donde estemos trabajando y luego seleccionamos el campo.
+            
+
+            if (Math.floor(value_added / 45) === 0) {
                 input.value = 0;
                 input.max = 0;
-                
-            }else{
+
+            } else {
                 input.max = Math.floor(value_added / 45);
             }
         }
 
         // Asegúrate de que la función se ejecute cada vez que el valor de #insurance_added cambie
         $('#insurance_added').on('input', function() {
-            
-            let insurancePointsInput = $('#insurance_points')[0]; // Obtén el elemento de entrada de puntos de value_insurance
+
+            let insurancePointsInput = $('#insurance_points')[
+                0]; // Obtén el elemento de entrada de puntos de value_insurance
             addPointsInsurance(insurancePointsInput); // Llama a la función con el elemento de entrada
         });
 
@@ -387,7 +410,7 @@
 
             let form = $(`#${container.id}`).find('form');
             const inputs = form.find('input, select').not('.formConcepts  input, .formConcepts select, input.d-none');
-            
+
 
             inputs.each(function(index, input) {
 
@@ -417,6 +440,12 @@
                 form.append(`<input type="hidden" name="concepts" value='${conceptops}' />`);
                 form[0].submit();
             }
+        }
+
+
+        function openModalInsurance(service, index) {
+            var myModal = new bootstrap.Modal(document.getElementById("modalSeguro"), {});
+            myModal.show();
         }
     </script>
 @endpush

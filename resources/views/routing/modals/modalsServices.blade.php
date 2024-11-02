@@ -461,3 +461,82 @@
                     </x-slot>
                 </form>
             </x-adminlte-modal>
+
+
+            {{-- Seguro --}}
+            <x-adminlte-modal id="modalSeguro" class="modal" title="Segudo" size='lg' scrollable>
+
+                <form action="/routing_service" method="POST">
+                    @csrf
+
+                    <input type="hidden" name="nro_operation" value="{{ $routing->nro_operation }}">
+                    <input type="hidden" name="typeService" id="typeService">
+
+                    <div class="row justify-content-center" id="content_seguro">
+                        <div class="col-3">
+                            <label for="type_insurance">Tipo de seguro</label>
+                            <select name="type_insurance" class="form-control" label="Tipo de seguro"
+                                igroup-size="md" data-placeholder="Seleccione una opcion...">
+                                <option />
+                                @foreach ($type_insurace as $type)
+                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="load_value">Valor del seguro</label>
+
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text text-bold">
+                                            $
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control CurrencyInput"
+                                        name="value_insurance" data-type="currency"
+                                        placeholder="Ingrese valor de la carga">
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="load_value">Valor ha agregar</label>
+
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text text-bold">
+                                            $
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control CurrencyInput"
+                                        id="insurance_added" name="insurance_added" data-type="currency"
+                                        value="0" placeholder="Ingrese valor de la carga"
+                                       >
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label for="load_value">Puntos</label>
+
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="insurance_points"
+                                        name="insurance_points" min="0"
+                                        onkeydown="preventeDefaultAction(event)" oninput="addPointsInsurance(this)">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <x-slot name="footerSlot">
+                        <x-adminlte-button class="btn-indigo" label="Guardar" id="btnSubmit" type="submit"
+                            onclick="submitForm(this)" />
+                        <x-adminlte-button theme="secondary" label="cerrar" data-dismiss="modal" />
+                    </x-slot>
+                </form>
+            </x-adminlte-modal>

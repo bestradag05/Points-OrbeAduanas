@@ -6,7 +6,7 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 
 Chart.register(ChartDataLabels);
 
-let freightChart; // Variable para almacenar la instancia del gráfico
+let pointChart; // Variable para almacenar la instancia del gráfico
 
 document.addEventListener("DOMContentLoaded", function () {
     getPointsFreight();
@@ -63,8 +63,8 @@ function getPointsFreight(startDate = null, endDate = null) {
 
 
             // Si el gráfico no existe, crearlo
-            if (!freightChart) {
-                freightChart = new Chart(ctx, {
+            if (!pointChart) {
+                pointChart = new Chart(ctx, {
                     type: "bar",
                     barPercentage: 1,
                     data: {
@@ -113,10 +113,10 @@ function getPointsFreight(startDate = null, endDate = null) {
                 });
             } else {
                 // Actualizar los datos del gráfico existente
-                freightChart.data.labels = personals; // Actualiza las etiquetas
-                freightChart.data.datasets[0].data = points; // Actualiza los datos
-                freightChart.data.datasets[0].backgroundColor = '#2e37a4'; // Actualiza los colores
-                freightChart.update(); // Redibuja el gráfico
+                pointChart.data.labels = personals; // Actualiza las etiquetas
+                pointChart.data.datasets[0].data = points; // Actualiza los datos
+                pointChart.data.datasets[0].backgroundColor = '#2e37a4'; // Actualiza los colores
+                pointChart.update(); // Redibuja el gráfico
             }
         });
 }

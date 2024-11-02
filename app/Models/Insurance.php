@@ -21,4 +21,9 @@ class Insurance extends Model
     }
 
 
+    public function typeInsurance()
+    {
+        return $this->belongsTo(typeInsurance::class, 'id_type_insurance');
+    }
+
 }   
