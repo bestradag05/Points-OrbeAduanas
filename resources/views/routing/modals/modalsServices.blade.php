@@ -464,13 +464,13 @@
 
 
             {{-- Seguro --}}
-            <x-adminlte-modal id="modalSeguro" class="modal" title="Segudo" size='lg' scrollable>
+            <x-adminlte-modal id="modalSeguro" class="modal" title="Seguro" size='lg' scrollable>
 
-                <form action="/routing_service" method="POST">
+                <form action="/routing_service" method="POST" id="form_insurance">
                     @csrf
 
-                    <input type="hidden" name="nro_operation" value="{{ $routing->nro_operation }}">
                     <input type="hidden" name="typeService" id="typeService">
+                    <input type="hidden" name="service_insurance" id="service_insurance">
 
                     <div class="row justify-content-center" id="content_seguro">
                         <div class="col-3">
@@ -513,7 +513,7 @@
                                     </div>
                                     <input type="text" class="form-control CurrencyInput"
                                         id="insurance_added" name="insurance_added" data-type="currency"
-                                        value="0" placeholder="Ingrese valor de la carga"
+                                        value="0" placeholder="Ingrese valor de la carga" onchange="updateInsuranceAddedTotal(this)"
                                        >
                                 </div>
 
@@ -535,7 +535,7 @@
 
                     <x-slot name="footerSlot">
                         <x-adminlte-button class="btn-indigo" label="Guardar" id="btnSubmit" type="submit"
-                            onclick="submitForm(this)" />
+                            onclick="submitFormInsurance(this)" />
                         <x-adminlte-button theme="secondary" label="cerrar" data-dismiss="modal" />
                     </x-slot>
                 </form>

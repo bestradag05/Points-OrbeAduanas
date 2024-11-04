@@ -220,6 +220,9 @@
                 valuea_added_insurance = parseFloat(element.value);
             }
 
+            //Cada que actualicemos el insurance_add borramos los puntos para poder volver a generar un maximo.
+            $(`#${container.id} #insurance_points`).val("");
+
             calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, container.id);
         }
 
@@ -266,7 +269,10 @@
 
             let tbodyRouting = $(`#${idContent}`).find('tbody')[0];
 
-            tbodyRouting.innerHTML = '';
+            if (tbodyRouting) {
+
+                tbodyRouting.innerHTML = '';
+            }
             TotalConcepts = 0;
 
             let contador = 0;
@@ -374,19 +380,17 @@
 
 
         const addPointsInsurance = (input) => {
-         
+
             let value_added = 0;
 
-            if(container != ''){
-                 value_added = $(`#${container.id} #insurance_added`).val();
-            }else{
+            if (container != '') {
+                value_added = $(`#${container.id} #insurance_added`).val();
+            } else {
                 value_added = $(`#content_seguro #insurance_added`).val();
             }
 
-            console.log(value_added);
-            
             //Indicamos el modal donde estemos trabajando y luego seleccionamos el campo.
-            
+
 
             if (Math.floor(value_added / 45) === 0) {
                 input.value = 0;
@@ -443,9 +447,62 @@
         }
 
 
-        function openModalInsurance(service, index) {
-            var myModal = new bootstrap.Modal(document.getElementById("modalSeguro"), {});
-            myModal.show();
+        function submitFormInsurance() {
+
+            let form = $('#form_insurance');
+            const inputs = form.find('input, select').not('');
+
+            inputs.each(function(index, input) {
+
+                if (!$(this).hasClass('d-none')) {
+
+                    // Verifica si el campo de entrada está vacío
+                    if ($(this).val() === '') {
+                        // Si está vacío, agrega la clase 'is-invalid'
+                        $(this).addClass('is-invalid');
+
+                    } else {
+                        // Si no está vacío, remueve la clase 'is-invalid' (en caso de que esté presente)
+                        $(this).removeClass('is-invalid');
+
+                    }
+                }
+
+            });
+
+
+            var camposInvalidos = form.find('.is-invalid').length;
+
+            if (camposInvalidos == 0) {
+
+                let conceptops = JSON.stringify(conceptsArray);
+
+                form.append(`<input type="hidden" name="concepts" value='${conceptops}' />`);
+                form[0].submit();
+            }
         }
+
+
+
+        //Modal de seguro
+
+        var modalInsurance = new bootstrap.Modal(document.getElementById("modalSeguro"), {});
+
+        function openModalInsurance(service, index) {
+
+            modalInsurance.show();
+
+            $('#modalSeguro #typeService').val("seguro");
+            $('#modalSeguro #service_insurance').val(index);
+
+
+        }
+
+
+        $('#modalSeguro').on('hidden.bs.modal', function() {
+
+            const formInsurance = $('#modalSeguro form')[0];
+            formInsurance.reset();
+        })
     </script>
 @endpush
