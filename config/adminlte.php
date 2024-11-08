@@ -418,10 +418,22 @@ return [
             ]
         ],
         [
-            'text' => 'Administracion',
-            'url'  => '#',
+            'text' => 'Adicionales',
             'icon' => 'fas fa-fw fa-copy',
-            'active' => ['admin', 'admin*', 'regex:@^content/[0-9]+$@']
+            'submenu' => [
+                [
+                    'text' => 'Puntos pendientes',
+                    'url' => 'additional/pending',
+                    'icon'  => 'fa-solid fa-bell-exclamation',
+                    'active' => ['additional', 'additional*', 'regex:@^content/[0-9]+$@'],
+                ],
+                [
+                    'text' => 'Todos los puntos',
+                    'url'  => 'additional',
+                    'icon' => 'fa-solid fa-check-double',
+                    'active' => ['additional', 'additional*', 'regex:@^content/[0-9]+$@'],
+                ]
+            ]
         ],
         [
             'text' => 'Puntos',

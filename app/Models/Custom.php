@@ -12,7 +12,7 @@ class Custom extends Model
 
     protected $table = 'custom';
 
-    protected $fillable = ['nro_orde', 'nro_dua','nro_dam', 'date_register', 'cif_value', 'channel', 'nro_bl', 'regularization_date', 'state', 'id_modality', 'nro_operation'];
+    protected $fillable = ['nro_orde', 'nro_dua','nro_dam', 'date_register', 'cif_value', 'channel', 'nro_bl', 'total_custom', 'regularization_date', 'state', 'id_modality', 'nro_operation'];
 
 
 
@@ -35,6 +35,11 @@ class Custom extends Model
     public function insurance()
     {
         return $this->morphOne(Insurance::class, 'insurable', 'model_insurable_service', 'id_insurable_service');
+    }
+
+    public function additional_point()
+    {
+        return $this->morphOne(AdditionalPoints::class, 'additional', 'model_additional_service', 'id_additional_service');
     }
 
 }

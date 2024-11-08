@@ -162,7 +162,7 @@
                             <div class="col-4 row">
                                 <label for="total" class="col-sm-4 col-form-label">Total:</label>
                                 <div class="col-sm-8">
-                                    <input type="text" class="form-control" id="total" value="0.00"
+                                    <input type="text" class="form-control" id="total" name="totalCustom" value="0.00"
                                         @readonly(true)>
                                 </div>
                             </div>
@@ -391,7 +391,16 @@
 
                     <div class="row">
 
-                        <div class="col-8">
+
+                       {{--  <div class="col-12 d-flex justify-content-start mb-4 align-items-center">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" type="checkbox" id="igvCheckbox" name="igv">
+                                <label for="igvCheckbox" class="custom-control-label">Incluido IGV</label>
+                            </div>
+                        </div> --}}
+
+
+                        <div class="col-4">
                             <div class="form-group">
                                 <label for="transport_value">Valor del Transporte</label>
 
@@ -402,7 +411,7 @@
                                         </span>
                                     </div>
                                     <input type="text" class="form-control CurrencyInput" id="transport_value"
-                                        name="transport_value" onchange="updateFleteTotal(this)" data-type="currency"
+                                        name="transport_value" onchange="updateInsuranceTotal(this)" data-type="currency"
                                         placeholder="Ingrese valor del flete">
 
                                     @error('transport_value')
@@ -413,13 +422,39 @@
                             </div>
                         </div>
 
-                        <div class="col-4 d-flex justify-content-center align-items-center">
-                            <div class="custom-control custom-checkbox">
-                                <input class="custom-control-input" type="checkbox" id="igvCheckbox" name="igv">
-                                <label for="igvCheckbox" class="custom-control-label">Incluido IGV</label>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="load_value">Valor ha agregar</label>
+
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text text-bold">
+                                            $
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control CurrencyInput"
+                                        id="transport_added" name="transport_added" data-type="currency"
+                                         placeholder="Ingrese valor de la carga"
+                                        onchange="updateInsuranceAddedTotal(this)">
+                                        
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label for="load_value">Puntos</label>
+
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="additional_points"
+                                        name="additional_points" min="0"
+                                        onkeydown="preventeDefaultAction(event)" oninput="addPointsTransport(this)">
+                                </div>
+
                             </div>
                         </div>
 
+                     
 
                         <div class="col-6">
 
@@ -452,6 +487,18 @@
 
                         </div>
 
+                        <div class="row w-100 justify-content-end">
+
+                            <div class="col-4 row">
+                                <label for="total" class="col-sm-4 col-form-label">Total:</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control" name="total" id="total"
+                                        value="0.00" @readonly(true)>
+                                </div>
+                            </div>
+
+                        </div>
+
                     </div>
 
                     <x-slot name="footerSlot">
@@ -466,11 +513,12 @@
             {{-- Seguro --}}
             <x-adminlte-modal id="modalSeguro" class="modal" title="Seguro" size='lg' scrollable>
 
-                <form action="/routing_service" method="POST" id="form_insurance">
+                <form action="/routing_insurance" method="POST" id="form_insurance">
                     @csrf
 
                     <input type="hidden" name="typeService" id="typeService">
                     <input type="hidden" name="service_insurance" id="service_insurance">
+                    <input type="hidden" name="id_insurable_service" id="id_insurable_service">
 
                     <div class="row justify-content-center" id="content_seguro">
                         <div class="col-3">

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_concepts');
             $table->unsignedBigInteger('id_freight');
             $table->decimal('value_concept', 8 , 2);
+            $table->integer('additional_points')->nullable();
             $table->timestamps();
 
             $table->foreign('id_concepts')->references('id')->on('concepts');

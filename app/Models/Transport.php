@@ -11,11 +11,18 @@ class Transport extends Model
 
     protected $table = 'transport';
 
-    protected $fillable = ['nro_orden', 'date_register', 'invoice_number', 'nro_dua', 'origin', 'destination', 'tax_base', 'igv', 'total', 'state', 'payment_state', 'payment_date',  'weight', 'nro_operation', 'id_supplier'];
+    protected $fillable = ['nro_orden', 'date_register', 'invoice_number', 'nro_dua', 'origin', 'destination', 'transport_value', 'added_value',  'tax_base', 'igv', 'total', 'additional_points', 'state', 'payment_state', 'payment_date',  'weight', 'nro_operation', 'id_supplier'];
 
 
     public function routing()
     {
         return $this->belongsTo(Routing::class, 'nro_operation', 'nro_operation');
     }
+
+    public function additional_point()
+    {
+        return $this->morphOne(AdditionalPoints::class, 'additional', 'model_additional_service', 'id_additional_service');
+    }
+    
+
 }

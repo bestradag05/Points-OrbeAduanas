@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdditionalPoints;
 use App\Models\Concepts;
 use App\Models\Country;
 use App\Models\Custom;
@@ -233,7 +234,7 @@ class RoutingController extends Controller
 
     public function storeRoutingService(Request $request)
     {
-
+        /* dd($request->all()); */
         $routing = Routing::where('nro_operation', $request->nro_operation)->first();
 
         $type_services = TypeService::find($request->typeService);
@@ -250,7 +251,7 @@ class RoutingController extends Controller
                     'state' => 'Pendiente',
                     'id_modality' => $request->modality,
                     'nro_operation' => $routing->nro_operation,
-                    'id_insurance'  => isset($insurance->id) ? $insurance->id : null
+                    'total_custom' => $request->totalCustom
                 ]);
 
 
@@ -277,7 +278,26 @@ class RoutingController extends Controller
                 //Relacionamos los conceptos que tendra esta aduana
 
                 foreach (json_decode($request->concepts) as $concept) {
-                    $custom->concepts()->attach($concept->id, ['value_concept' => $concept->value]);
+
+                    $total = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
+                    $ne_amount = $total / 1.18;
+                    $igv = $total - $ne_amount;
+
+                    $custom->concepts()->attach($concept->id, [
+                        'value_concept' => $concept->value, 
+                        'added_value' => $concept->added,
+                        'net_amount' => round($ne_amount, 2),
+                        'igv' => round($igv),
+                        'total' => round($total),
+                        'additional_points' => isset($concept->pa)                        
+                    ]);
+
+                    //Verificamos si tienen puntos adicionales
+                    if(isset($concept->pa)){
+                        $this->add_aditionals_point($concept, $custom, $ne_amount, $igv, $total);
+                    }
+
+
                 }
 
                 return redirect('/routing/' . $routing->id . '/detail');
@@ -291,7 +311,6 @@ class RoutingController extends Controller
                     'value_utility' => $request->utility,
                     'state' => 'Pendiente',
                     'nro_operation' => $routing->nro_operation,
-                    'id_insurance' => isset($insurance->id) ? $insurance->id : null
                 ]);
 
 
@@ -317,7 +336,12 @@ class RoutingController extends Controller
                 //Relacionamos los conceptos que tendra este flete
 
                 foreach (json_decode($request->concepts) as $concept) {
-                    $freight->concepts()->attach($concept->id, ['value_concept' => $concept->value]);
+                     $freight->concepts()->attach($concept->id, ['value_concept' => $concept->value, 'additional_points' => isset($concept->pa)]);
+                  
+                    if(isset($concept->pa)){
+                        $this->add_aditionals_point($concept, $freight);
+                    }
+
                 }
 
 
@@ -325,28 +349,85 @@ class RoutingController extends Controller
 
             case "Transporte":
 
-                $tax_base = $this->parseDouble($request->transport_value);
+                $tax_base = $this->parseDouble($request->transport_value) + $this->parseDouble($request->transport_added);
+                $igv = $tax_base * 0.18;
+                $total = $tax_base * 1.18;
 
                 # Transporte...
-                Transport::create([
+                $transport = Transport::create([
 
                     'origin' => $request->origin,
                     'destination' => $request->destination,
-                    'tax_base' => (isset($request->igv)) ? $tax_base  / 1.18 : $tax_base,
-                    'igv' => (isset($request->igv)) ? ($tax_base /  1.18) *  0.18 : $tax_base * 0.18,
-                    'total' => (isset($request->igv)) ?  $tax_base : $tax_base * 1.18,
+                    'transport_value' => $request->transport_value,
+                    'added_value' => $request->transport_added,
+                    'tax_base' => $tax_base,
+                    'igv' => $igv,
+                    'total' => $total,
+                    'additional_points' => $request->additional_points,
                     'nro_operation' => $routing->nro_operation,
                     'state' => 'Pendiente'
 
                 ]);
 
-                return redirect('/routing/' . $routing->id . '/detail');
+                if($transport->additional_points){
+                    $concept =(object) ['name' => 'Transporte', 'pa' => $transport->additional_points];
 
+                    $this->add_aditionals_point($concept, $transport, $transport->tax_base, $transport->igv, $transport->total);
+                }
+
+                return redirect('/routing/' . $routing->id . '/detail');
 
             default:
                 # code...
                 break;
         }
+    }
+
+
+    public function add_aditionals_point($concept, $service,  $ne_amount = null, $igv = null, $total = null){
+
+
+        $additional_point = AdditionalPoints::create([
+            'type_of_service' => $concept->name,
+            'amount' => ($ne_amount != 0 && $ne_amount != null) ? $ne_amount : $this->parseDouble($concept->value) +  $this->parseDouble($concept->added),
+            'igv' => $igv,
+            'total' => $total,
+            'points' => $concept->pa,
+            'id_additional_service' => $service->id,
+            'model_additional_service' => $service::class,
+            'state' => 'Pendiente'
+        ]);
+
+        $service->additional_point()->save($additional_point);
+
+
+    }
+
+
+    public function storeInsuranceService(Request $request){
+
+        $sales_price = $request->value_insurance + $request->insurance_added;
+        $model = '';
+
+        if($request->service_insurance === 'Aduanas'){
+            $model = Custom::class;
+        }else if($request->service_insurance === 'Flete')
+        {
+            $model = Freight::class;
+        }
+        
+        Insurance::create([
+            'insurance_sale' => $sales_price,
+            'sales_value' => $sales_price * 0.18,
+            'sales_price' => $sales_price * 1.18,
+            'id_type_insurance' =>  $request->type_insurance,
+            'name_service' => $request->service_insurance,
+            'id_insurable_service' => $request->id_insurable_service,
+            'model_insurable_service' => $model,
+            'state' => 'Pendiente'
+        ]);
+
+        return redirect()->back();
     }
 
     public function validateForm($request, $id)

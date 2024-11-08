@@ -91,13 +91,19 @@
                         </td>
 
                         <td class="text-bold  {{ $service->insurance ? 'text-success' : 'text-danger' }}">
+
                             @if ($service->insurance)
                                 Tiene seguro
                             @else
-                                Sin seguro
-                                <button type="button" class="btn text-indigo"
-                                    onclick="openModalInsurance('{{ $service }}', '{{ $index }}')">
-                                    <i class="fa-solid fa-plus"></i>
+                                @if ($index != 'Transporte')
+                                    Sin seguro
+                                    <button type="button" class="btn text-indigo"
+                                        onclick="openModalInsurance('{{ $service }}', '{{ $index }}')">
+
+                                        <i class="fa-solid fa-plus"></i>
+                                    @else
+                                        -
+                                @endif
                                 </button>
                             @endif
                         </td>
@@ -200,25 +206,25 @@
 
 
         function updateInsuranceTotal(element) {
-            console.log(element);
-            if (element.value === "") {
+
+            if (element.value === '') {
                 value_insurance = 0;
             } else {
-                value_insurance = parseFloat(element.value);
+                value_insurance = parseFloat(element.value.replace(/,/g, ''));
             }
-
-            console.log(value_insurance);
 
             calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, container.id);
         }
 
 
         function updateInsuranceAddedTotal(element) {
-            if (element.value === "") {
+
+            if (element.value === '') {
                 valuea_added_insurance = 0;
             } else {
-                valuea_added_insurance = parseFloat(element.value);
+                valuea_added_insurance = parseFloat(element.value.replace(/,/g, ''));
             }
+
 
             //Cada que actualicemos el insurance_add borramos los puntos para poder volver a generar un maximo.
             $(`#${container.id} #insurance_points`).val("");
@@ -389,16 +395,55 @@
                 value_added = $(`#content_seguro #insurance_added`).val();
             }
 
-            //Indicamos el modal donde estemos trabajando y luego seleccionamos el campo.
 
-
-            if (Math.floor(value_added / 45) === 0) {
+            if (!value_added.trim()) {
                 input.value = 0;
                 input.max = 0;
-
             } else {
-                input.max = Math.floor(value_added / 45);
+
+                //Indicamos el modal donde estemos trabajando y luego seleccionamos el campo.
+
+                let value_added_number = parseFloat(value_added.replace(/,/g, ''));
+
+                if (Math.floor(value_added_number / 45) === 0) {
+                    input.value = 0;
+                    input.max = 0;
+
+                } else {
+                    input.max = Math.floor(value_added_number / 45);
+                }
+
             }
+
+        }
+
+        const addPointsTransport = (input) => {
+
+
+            let value_added = $(`#${container.id} #transport_added`).val();
+
+            if (!value_added.trim()) {
+                input.value = 0;
+                input.max = 0;
+            } else {
+
+
+                let value_added_number = parseFloat(value_added.replace(/,/g, ''));
+
+                //Indicamos el modal donde estemos trabajando y luego seleccionamos el campo.
+
+                if (Math.floor(value_added_number / 45) === 0) {
+                    input.value = 0;
+                    input.max = 0;
+
+                } else {
+                    input.max = Math.floor(value_added_number / 45);
+                }
+
+
+            }
+
+
         }
 
         // Asegúrate de que la función se ejecute cada vez que el valor de #insurance_added cambie
@@ -492,8 +537,9 @@
 
             modalInsurance.show();
 
-            $('#modalSeguro #typeService').val("seguro");
+            $('#modalSeguro #typeService').val("Seguro");
             $('#modalSeguro #service_insurance').val(index);
+            $('#modalSeguro #id_insurable_service').val(JSON.parse(service).id);
 
 
         }
