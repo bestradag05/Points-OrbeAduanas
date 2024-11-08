@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdditionalPoints;
 use Illuminate\Http\Request;
 
 class AdditionalPointsController extends Controller
@@ -11,7 +12,43 @@ class AdditionalPointsController extends Controller
      */
     public function index()
     {
-        //
+        $additionals = AdditionalPoints::with('additional')->get();
+
+        $heads = [
+            '#',
+            'N° Operacion',
+            'Asesor',
+            'Aduana/Flete',
+            'Estado',
+            'Acciones'
+        ];
+        
+        
+
+        return view("insurances/list-insurance", compact("insurances","heads"));
+    }
+
+
+    public function getAdditionalPending(){
+
+        $additionals = AdditionalPoints::with('additional')->where('state', 'Pendiente')->get();
+
+        $heads = [
+            '#',
+            'N° Operacion',
+            'Servicio',
+            'Monto',
+            'IGV',
+            'Total',
+            'Puntos',
+            'Tipo Punto',
+            'Estado',
+            'Acciones'
+        ];
+        
+        
+
+        return view("additional_points/pending-list-additional", compact("additionals","heads"));
     }
 
     /**

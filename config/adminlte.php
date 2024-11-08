@@ -423,15 +423,15 @@ return [
             'submenu' => [
                 [
                     'text' => 'Puntos pendientes',
-                    'url' => 'additional/pending',
+                    'url' => 'additionals/pending',
                     'icon'  => 'fa-solid fa-bell-exclamation',
-                    'active' => ['additional', 'additional*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['additionals', 'additionals*', 'regex:@^content/[0-9]+$@'],
                 ],
                 [
                     'text' => 'Todos los puntos',
-                    'url'  => 'additional',
+                    'url'  => 'additionals',
                     'icon' => 'fa-solid fa-check-double',
-                    'active' => ['additional', 'additional*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['additionals', 'additionals*', 'regex:@^content/[0-9]+$@'],
                 ]
             ]
         ],

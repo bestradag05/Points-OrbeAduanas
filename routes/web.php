@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdditionalPointsController;
 use App\Http\Controllers\ConceptsController;
 use App\Http\Controllers\CustomController;
 use App\Http\Controllers\CustomerController;
@@ -17,9 +18,7 @@ use App\Http\Controllers\RoutingController;
 use App\Http\Controllers\TransportController;
 use App\Http\Controllers\TypeShipmentController;
 use App\Http\Controllers\UserController;
-use App\Models\Custom;
-use App\Models\Modality;
-use PhpParser\Node\Expr\List_;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -88,6 +87,8 @@ Route::middleware('auth')->group(function () {
     Route::get('insurance/pending', [InsuranceController::class, 'getInsurancePending']);
     Route::resource('insurance', InsuranceController::class);
 
+    Route::get('additionals/pending', [AdditionalPointsController::class, 'getAdditionalPending']);
+    Route::resource('additionals', AdditionalPointsController::class);
 
     Route::get('points/detail', [PointsController::class, 'getPointDetail']);
     Route::get('points/customs', [PointsController::class, 'getPointCustoms']);
