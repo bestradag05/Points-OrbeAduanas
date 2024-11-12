@@ -2,7 +2,7 @@
 
 @section('content_header')
     <div class="d-flex justify-content-between">
-        <h2>Generar punto de seguro</h2>
+        <h2>Generar puntos adicionales</h2>
         <div>
             <button class="btn btn-primary"> Atras </button>
         </div>
@@ -12,10 +12,10 @@
 @section('dinamic-content')
 
 
-<form action={{ url('/insurance/' . $insurance->id) }} method="POST" enctype="multipart/form-data">
+<form action={{ url('/additionals/' . $additional->id) }} method="POST" enctype="multipart/form-data">
     {{ method_field('PATCH') }}
     {{ csrf_field() }}
-    @include ('insurances.form-point-insurance', ['formMode' => 'edit'])
+    @include ('additional_points.form-point-additional', ['formMode' => 'edit'])
 </form>
 
 

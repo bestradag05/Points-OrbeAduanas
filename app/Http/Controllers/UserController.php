@@ -28,6 +28,9 @@ class UserController extends Controller
     public function create()
     {
         //
+
+        return view("users/register-user");
+
     }
 
     /**
@@ -35,7 +38,15 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validateForm($request, null);
+
+
+        User::create([$request->all()]);
+
+
+        return redirect('users');
+
+
     }
 
     /**
@@ -69,4 +80,20 @@ class UserController extends Controller
     {
         //
     }
+
+
+    public function validateForm($request, $id)
+    {
+
+        $request->validate([
+            'email' => 'required|string|unique:users,email,' . $id,
+            'password' => 'required|string',
+            'password_confirm' => 'required|string|same:password',
+        ], [
+            'password_confirm.same' => 'Las contraseñas no coinciden.',
+        ]);
+    }
+
+
+
 }

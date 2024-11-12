@@ -87,7 +87,8 @@ Route::middleware('auth')->group(function () {
     Route::get('insurance/pending', [InsuranceController::class, 'getInsurancePending']);
     Route::resource('insurance', InsuranceController::class);
 
-    Route::get('additionals/pending', [AdditionalPointsController::class, 'getAdditionalPending']);
+    Route::get('additionals/pending/custom', [AdditionalPointsController::class, 'getAdditionalPendingCustom']);
+    Route::get('additionals/pending/freight', [AdditionalPointsController::class, 'getAdditionalPendingFreight']);
     Route::resource('additionals', AdditionalPointsController::class);
 
     Route::get('points/detail', [PointsController::class, 'getPointDetail']);
@@ -95,6 +96,7 @@ Route::middleware('auth')->group(function () {
     Route::get('points/freight', [PointsController::class, 'getPointFreight']);
     Route::get('points/transport', [PointsController::class, 'getPointTransport']);
     Route::get('points/insurance', [PointsController::class, 'getPointInsurance']);
+    Route::get('points/additionals', [PointsController::class, 'getPointAdditional']);
 });
 
 

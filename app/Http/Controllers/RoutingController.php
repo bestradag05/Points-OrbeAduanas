@@ -272,6 +272,24 @@ class RoutingController extends Controller
                     ]);
 
                     $custom->insurance()->save($insurance);
+
+                    //Verificamos si hay puntos adicionales en el seguro
+
+                    if($request->insurance_points && $this->parseDouble($request->insurance_points) > 0){
+                        
+
+                        $concept =(object) ['name' => 'SEGURO', 'pa' => $request->insurance_points];
+
+                        $ne_amount = $this->parseDouble($request->value_insurance) + $this->parseDouble($request->insurance_added);
+                        $igv = $ne_amount * 0.18;
+                        $total = $ne_amount + $igv;
+
+
+                        $this->add_aditionals_point($concept, $custom, $ne_amount, $igv, $total);
+
+
+                    }
+
                 }
 
 
@@ -279,9 +297,9 @@ class RoutingController extends Controller
 
                 foreach (json_decode($request->concepts) as $concept) {
 
-                    $total = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
-                    $ne_amount = $total / 1.18;
-                    $igv = $total - $ne_amount;
+                    $ne_amount = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
+                    $igv = $ne_amount * 0.18;
+                    $total = $ne_amount + $igv;
 
                     $custom->concepts()->attach($concept->id, [
                         'value_concept' => $concept->value, 
@@ -330,6 +348,24 @@ class RoutingController extends Controller
                     ]);
 
                     $freight->insurance()->save($insurance);
+
+
+
+                    if($request->insurance_points && $this->parseDouble($request->insurance_points) > 0){
+                        
+
+                        $concept =(object) ['name' => 'SEGURO', 'pa' => $request->insurance_points];
+
+                        $ne_amount = $this->parseDouble($request->value_insurance) + $this->parseDouble($request->insurance_added);
+
+
+                        $this->add_aditionals_point($concept, $freight, $ne_amount);
+
+
+                    }
+                    
+
+
                 }
 
 
@@ -339,7 +375,10 @@ class RoutingController extends Controller
                      $freight->concepts()->attach($concept->id, ['value_concept' => $concept->value, 'additional_points' => isset($concept->pa)]);
                   
                     if(isset($concept->pa)){
-                        $this->add_aditionals_point($concept, $freight);
+
+                        $ne_amount = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
+
+                        $this->add_aditionals_point($concept, $freight, $ne_amount);
                     }
 
                 }
@@ -369,8 +408,8 @@ class RoutingController extends Controller
 
                 ]);
 
-                if($transport->additional_points){
-                    $concept =(object) ['name' => 'Transporte', 'pa' => $transport->additional_points];
+                if($transport->additional_points && $this->parseDouble($transport->additional_points) > 0){
+                    $concept =(object) ['name' => 'TRANSPORTE', 'pa' => $transport->additional_points];
 
                     $this->add_aditionals_point($concept, $transport, $transport->tax_base, $transport->igv, $transport->total);
                 }
@@ -395,6 +434,7 @@ class RoutingController extends Controller
             'points' => $concept->pa,
             'id_additional_service' => $service->id,
             'model_additional_service' => $service::class,
+            'additional_type' =>  ($service::class === 'App\Models\Freight') ? 'AD-FLETE' : 'AD-ADUANA',
             'state' => 'Pendiente'
         ]);
 

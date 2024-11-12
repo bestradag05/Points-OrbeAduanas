@@ -2,31 +2,33 @@
 
 @section('content_header')
     <div class="d-flex justify-content-between">
-        <h2>Seguros Pendientes</h2>
+        <h2>Puntos adicionales Pendientes</h2>
     </div>
 
 @stop
 @section('dinamic-content')
     <x-adminlte-datatable id="table1" :heads="$heads" hoverable>
-        @foreach ($insurances as $insurance)
+        @foreach ($additionals as $additional_point)
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>
-                    <a href="{{ url('/routing/'. $insurance->insurable->routing->id . '/detail') }}">
-                        {{ $insurance->insurable->nro_operation }}
+                    <a href="{{ url('/routing/'. $additional_point->additional->routing->id . '/detail') }}">
+                        {{ $additional_point->additional->nro_operation }}
                     </a>
                 </td>
-                <td><img src="{{ asset('fotos-de-usuarios/'.$insurance->insurable->routing->personal->img_url)}}" class="img-circle user-img-xs elevation-2" alt=""></td>
-                <td>{{ strtoupper($insurance->name_service) }}</td>
-                <td class="{{($insurance->state == 'Pendiente') ? 'text-warning' : ''}}">
-                    {{ $insurance->state }}
+                <td>{{ $additional_point->type_of_service }}</td>
+                <td>{{ $additional_point->amount }}</td>
+                <td>{{ $additional_point->igv }}</td>
+                <td>{{ $additional_point->total }}</td>
+                <td>{{ $additional_point->points }}</td>
+                <td>{{ $additional_point->additional_type}} </td>
+                <td class="{{($additional_point->state == 'Pendiente') ? 'text-warning' : ''}}">
+                    {{ $additional_point->state }}
                 </td>
 
                 <td>
-                    <a href="{{ url('/insurance/' . $insurance->id . '/edit') }}" class="btn btn-outline-success btn-sm"> 
-                        {{($insurance->state == 'Pendiente') ? 'Generar punto' : 'Modificar'}}
-                    </a>
-
+                     <a href="{{ url('/additionals/'.$additional_point->id.'/edit') }}" class="btn btn-outline-success btn-sm"> Generar punto </a>
+                    
                 </td>
             </tr>
         @endforeach

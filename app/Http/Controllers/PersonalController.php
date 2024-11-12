@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Document;
 use App\Models\Personal;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -16,14 +18,16 @@ class PersonalController extends Controller
      */
     public function index()
     {
-        $personals = Personal::all();
+        $personals = Personal::with('document')->get();
+
         $heads = [
             'ID',
-            'Nombre',
+            'Nombres',
             'Apellido',
             'Celular',
+            'Tipo de Documento',
+            'Numero de documento',
             'Email',
-            'DNI / Carnet Extranjeria / Pasaporte',
             'Imagen',
             'Acciones'
         ];
@@ -36,8 +40,11 @@ class PersonalController extends Controller
      */
     public function create()
     {
+
+        $documents = Document::all();
+
         //
-        return view("personal/register-personal");
+        return view("personal/register-personal", compact('documents'));
     }
 
     /**
@@ -47,48 +54,56 @@ class PersonalController extends Controller
     {
         // obtenemos y validamos el request enviado del formulario
 
-       $this->validateForm($request, null);
+        $this->validateForm($request, null);
 
-       if($request->hasFile('image')){
-           $nameImage =  $this->photoUser($request);
-       }
+        $nameImage = 'personals/user_default.png';
 
-       $personal = new Personal();
+        if ($request->hasFile('imagen')) {
+            $nameImage =  $this->photoUser($request);
+        }
 
-       if($request->email && $request->password){
+        //Consultamos si tiene usuario
 
-        $user = new User();
-        $user->email = $request->email;
-        $user->password = bcrypt($request->password);
-        $user->save();
-      
-       $personal->name = $request->name;
-       $personal->last_name = $request->last_name;
-       $personal->dni = $request->dni;
-       $personal->immigration_card = $request->immigration_card;
-       $personal->passport = $request->passport;
-       $personal->cellphone = $request->cellphone;
-       $personal->email = $request->email;
-       $personal->img_url = $nameImage;
-       $personal->id_user = $user->id;
-       $personal->save();
+        if ($request->password && $request->user) {
 
-       }else{
+            $exist_usuario = User::where("email", $request->user)->first();
 
-       $personal->name = $request->name;
-       $personal->last_name = $request->last_name;
-       $personal->dni = $request->dni;
-       $personal->immigration_card = $request->immigration_card;
-       $personal->passport = $request->passport;
-       $personal->cellphone = $request->cellphone;
-       $personal->img_url = $nameImage;
-       $personal->save();
+            if ($exist_usuario) {
+                return redirect()->back()->withErrors(['user' => 'El usuario ya esta asignado.'])->withInput();
+            }
 
-       }
+            $user = User::create([
+                'email' => $request->user,
+                'password' => $request->password,
+                'state' => 'Activo'
+            ]);
+        }
 
-       return view("personal/register-personal");
 
-       
+        $date_clean = preg_replace('/\(.*\)|[A-Z]{3}-\d{4}/', '', $request->birthdate);
+
+        // Formatear la fecha sin la hora
+        $request->birthdate = Carbon::parse($date_clean)->format("Y-m-d");
+
+
+        $personal = Personal::create([
+            'document_number' => $request->document_number,
+            'id_document' => $request->id_document,
+            'names' => $request->names,
+            'last_name' => $request->last_name,
+            'mother_last_name' => $request->mother_last_name,
+            'birthdate' => $request->birthdate,
+            'civil_status' => $request->civil_status,
+            'sexo' => $request->sexo,
+            'cellphone' => $request->cellphone,
+            'email' => $request->email,
+            "address" => $request->address,
+            'img_url'  => $nameImage,
+            'state'  => 'ACTIVO',
+            'id_user'  => (isset($user)) ? $user->id : null,
+        ]);
+
+        return redirect("personal");
     }
 
     /**
@@ -107,7 +122,9 @@ class PersonalController extends Controller
         // Se busca al usuario
 
         $personal = Personal::findOrFail($id);
-        return view('personal.edit-personal', compact('personal'));
+        $documents = Document::all();
+
+        return view('personal.edit-personal', compact('personal', 'documents'));
     }
 
     /**
@@ -115,37 +132,117 @@ class PersonalController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $requestData = $request->all();
 
-        // Ubicamos primero al personal
-        $personal = Personal::findOrFail($id);
-        // Validamos que los campos esten completos
         $this->validateForm($request, $id);
-        // Editamos el nombre de la imagen
 
-        if($request->hasFile('image')){
-            $nameImage =  $this->photoUser($request);
-            $requestData['img_url'] = $nameImage;
+        $is_personal = Personal::where("id", "<>", $id)->where("document_number", $request->document_number)->first();
+        $exist_email = Personal::where("id", "<>", $id)->where("email", $request->email)->first();
+
+        if ($is_personal) {
+
+            return redirect()->back()->withErrors(['document_number' => 'Ya existe este personal con este numero de identificacion.'])->withInput();
         }
 
-        if($requestData['email'] != "" && $requestData['password'] != ""){
+        if ($exist_email) {
 
-
-            $user = User::where('email', $requestData['email'])->first();
-            
-            $user['email'] = $requestData['email'];
-            $user['password'] = bcrypt($requestData['password']);
-
-            $user->save();
-
-
-        }else{
-            $personal->update($requestData);
+            return redirect()->back()->withErrors(['email' => 'Este email ya esta registrado para otro personal.'])->withInput();
         }
 
-       
 
-        return view("personal/edit-personal", compact('personal'));
+        $personal = Personal::findOrFail($id);
+
+
+
+        // si el usuario no existe pero se manda almenos el password o el user, se valida hasta que se manden ambos o ninguno
+        if (!$personal->user && ($request->user || $request->password)) {
+            $this->createUser($personal, $request);
+        } else if ($personal->user && ($request->user || $request->password)) {
+            $this->updateUser($personal, $request);
+        }
+
+        $date_clean = preg_replace('/\(.*\)|[A-Z]{3}-\d{4}/', '', $request->birthdate);
+
+        $dateFormat =  Carbon::parse($date_clean)->format("Y-m-d");
+
+        $request->merge(["birthdate" => $dateFormat]);
+
+
+        if ($request->hasFile("imagen")) {
+            if ($personal->img_url) {
+                Storage::delete($personal->img_url);
+            }
+
+            $path = $request->file('imagen')->store('personals');
+
+            $request->request->add(["img_url" => $path]);
+        }
+
+
+        $personal->update($request->all());
+
+
+        return redirect("personal");
+    }
+
+
+    public function createUser($personal, $request)
+    {
+
+        // Si el personal no tiene usuario, lo creamos
+        if (!$personal->user && $request->user && $request->password) {
+
+            $exist_usuario = User::where("email", $request->user)->first();
+
+            if ($exist_usuario) {
+                return redirect()->back()->withErrors(['user' => 'El usuario ya esta asignado.'])->withInput();
+            }
+
+            $this->validate($request, [
+                'password' => 'required|string|min:6|confirmed', // Asegúrate de tener un campo de confirmación de contraseña
+            ]);
+
+            $user = User::create([
+                'email' => $request->user,
+                'password' => bcrypt($request->password), // Asegúrate de cifrar la contraseña
+                'state' => 'Activo'
+            ]);
+
+            // Asignamos el usuario al personal
+            $personal->user()->associate($user);
+            $personal->save();
+        }
+    }
+
+    public function updateUser($personal, $request)
+    {
+
+        // Verificar si el campo 'user' (correo) fue modificado
+        if ($request->has('user') && $request->user !== $personal->user->email) {
+            $exist_usuario = User::where("id", "<>", $personal->id_user)
+                ->where("email", $request->user)
+                ->first();
+
+            if ($exist_usuario) {
+                return redirect()->back()->withErrors(['user' => 'Este correo ya esta asignado a otro usuario.'])->withInput();
+            }
+
+            // Actualizar el usuario solo si el correo ha cambiado
+            $user = $personal->user;
+            $user->update(['email' => $request->user]);
+        }
+
+
+        // Verificar si se está actualizando la contraseña
+        if ($request->has('password') && !empty($request->password)) {
+            // Si se va a cambiar la contraseña, puedes validarla y luego actualizar
+            // Ejemplo de validación de la contraseña (puedes agregar reglas según sea necesario)
+            $this->validate($request, [
+                'password' => 'required|string|min:6|confirmed', // Asegúrate de tener un campo de confirmación de contraseña
+            ]);
+
+            $user = $personal->user;
+            $user->update(['password' => bcrypt($request->password)]);
+        }
     }
 
     /**
@@ -154,38 +251,43 @@ class PersonalController extends Controller
     public function destroy(string $id)
     {
         //
-        
+
     }
 
 
-    public function validateForm($request, $id){
+    public function validateForm($request, $id)
+    {
+
+        $document = Document::find($request->id_document);
+        $digits = $document ? $document->number_digits : null;
+
         $request->validate([
-            'name' => 'required|string',
+            'names' => 'required|string',
             'last_name' => 'required|string',
+            'mother_last_name' => 'required|string',
+            'birthdate' => 'nullable',
+            'civil_status' => 'nullable',
+            'sexo' => 'nullable',
             'cellphone' => 'required|string',
             'email' => 'nullable|email',
-            'dni' => 'nullable|numeric|digits:8|unique:personal,dni,' . $id,
-            'immigration_card' => 'nullable|numeric|unique:personal,immigration_card,' . $id,
-            'passport' => 'nullable|numeric|max:20|unique:personal,passport,' . $id,
-            'img_url' => 'nullable|string'
-            
+            'address' => 'nullable',
+            'id_document' => 'required',
+            'document_number' => [
+                'nullable',
+                'numeric',
+                'unique:personal,document_number,' . $id,
+                $digits ? 'digits:' . $digits : 'nullable' // Agrega la regla de dígitos si existe
+            ],
+            'img_url' => 'nullable|string',
+
         ]);
-    
     }
 
-    public function photoUser( $request ){
-        
-        $imagen = $request->file('image');
+    public function photoUser($request)
+    {
 
-        if($request->dni){
-            $nameImage = $request->dni . '.' . $imagen->getClientOriginalExtension();
-        }else if($request->immigration_card){
-            $nameImage = $request->immigration_card . '.' . $imagen->getClientOriginalExtension();
-        }else if ($request->passport){
-            $nameImage = $request->passport . '.' . $imagen->getClientOriginalExtension();
-        }
-       
-        Storage::disk('avatars')->put( $nameImage, file_get_contents($request->file('image')->getPathName()) );
-        return $nameImage;
+        $path = Storage::putFile("personals", $request->file("imagen"));
+
+        return $path;
     }
 }

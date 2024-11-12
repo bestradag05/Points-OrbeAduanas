@@ -23,6 +23,7 @@ class AdditionalPoints extends Model
         'points',
         'id_additional_service',
         'model_additional_service',
+        'additional_type',
         'state',
     ];
 

@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\Concepts;
 use App\Models\Customer;
+use App\Models\Document;
 use App\Models\Incoterms;
 use App\Models\Modality;
 use App\Models\Personal;
@@ -48,37 +49,50 @@ class DatabaseSeeder extends Seeder
 
         $user = User::create([
             'email' => 'admin@orbeaduanas.com',
-            'password' => bcrypt('admin')
+            'password' => bcrypt('admin'),
+            'state' => 'Activo'
         ]);
 
         $user->assignRole($role);
         $user->givePermissionTo([$listar_rol, $register_rol, $edit_rol, $dete_rol]);
 
 
+        $document = Document::create([
+            'name' => 'DNI',
+            'number_digits' => 8,
+            'state' => 'Activo'
+        ]);
+
         Personal::create([
-            'name' => 'admin',
-            'last_name' => 'administrador',
-            'cellphone' => '966523654',
+            'document_number' => '73184116',
+            'names' => 'Bryan David',
+            'last_name' => 'Estrada',
+            'mother_last_name' => 'Gomez',
+            'cellphone' => '977834697',
             'email' => 'admin@orbeaduanas.com',
-            'dni' => '75214554',
-            'img_url' => 'user_default.png',
+            'address' => 'Av Revolucion Calle Q - Villa el Salvador',
+            'img_url' =>  null,
+            'state' => 'Activo',
+            'sexo' => 'Masculino',
+            'civil_status' => 'Soltero',
+            'id_document' => $document->id,
             'id_user' => 1
         ]);
 
-        $contador = 0;
+/*         $contador = 1;
 
         do {
             User::create([
-                'email' => Str::random(5) . '@orbeaduanas.com',
+                'email' => 'prueba'.$contador. '@orbeaduanas.com',
                 'password' => Hash::make('admin')
             ]);
 
 
             Personal::create([
-                'name' => Str::random(5),
-                'last_name' => Str::random(5),
+                'name' => 'prueba'.$contador,
+                'last_name' => 'prueba'.$contador,
                 'cellphone' => Str::random(5),
-                'email' => Str::random(5) . 'orbeaduanas.com',
+                'email' => 'prueba'.$contador. '@orbeaduanas.com',
                 'dni' => Str::random(5),
                 'img_url' => 'user_default.png',
                 'id_user' =>  $contador + 1
@@ -87,7 +101,7 @@ class DatabaseSeeder extends Seeder
 
             $contador++;
         } while ($contador <= 10);
-
+ */
 
 
 
@@ -194,9 +208,7 @@ class DatabaseSeeder extends Seeder
 
         TypeService::create(['name' => 'Aduanas']);
         TypeService::create(['name' => 'Flete']);
-        TypeService::create(['name' => 'Seguro']);
         TypeService::create(['name' => 'Transporte']);
-        TypeService::create(['name' => 'Adicionales']);
 
         /* TypeInsurance */
 
@@ -210,9 +222,7 @@ class DatabaseSeeder extends Seeder
 
 
         /* Proceso para el routing */
-        User::create(['email' => 'liquidador@orbeaduanas.com', 'password' => bcrypt('password')]);
-        Personal::create(['name' => 'Anderson', 'last_name' => 'moron', 'cellphone' => '977234697', 'email' => 'liquidador@orbeaduanas.com', 'dni' => '73184116', 'immigration_card' => '', 'passport' => '', 'img_url' => '73184116.png', 'id_user' => 2]);
-        Customer::create(['ruc' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'id_user' => 2]);
+        Customer::create(['ruc' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'id_user' => 1]);
         Supplier::create(['type_id' => 'RUC', 'number_id' => '20554630740', 'name_businessname' => 'HENAN XINGSHENGDA', 'addres' => 'North section of renmin road, changge city', 'contact_name' => 'Asten Zho', 'contact_number' => '944653246', 'contact_email' => 'asten@hnidel.com', 'type_suppliers' => 'Venta']);
         Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU - CALLAO', 'destination' => 'CHINA - SHANGAI', 'freight_value' => '2500', 'load_value' => '2700', 'insurance_value' => '25', 'id_personal' => 1, 'id_customer' => 1, 'id_type_shipment' => 8, 'lcl_fcl' => 'LCL', 'id_type_load' => 1, 'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'commodity' => 'CILINDRO']);
 

@@ -14,19 +14,15 @@
         @foreach ($personals as $personal)
             <tr>
                 <td>{{ $personal->id }}</td>
-                <td>{{ $personal->name }}</td>
+                <td>{{ $personal->names }}</td>
                 <td>{{ $personal->last_name }}</td>
                 <td>{{ $personal->cellphone }}</td>
+                <td>{{ $personal->document->name }}</td>
+                <td>{{ $personal->document_number }}</td>
                 <td>{{ $personal->email }}</td>
-                @if ($personal->dni)
-                <td>{{ $personal->dni }}</td>
-                @elseif($personal->immigration_card)
-                <td>{{ $personal->immigration_card }}</td>
-                @elseif($personal->passport)
-                <td>{{ $personal->passport }}</td>
-                @endif
+                
                 <td>
-                    <img src="{{ asset('fotos-de-usuarios/'.$personal->img_url) }}" class="img-circle elevation-2" width="50px" height="50px" alt="User Image">
+                    <img src="{{ asset('storage/'.$personal->img_url) }}" class="img-circle elevation-2" width="50px" height="50px" alt="User Image">
                 </td>
                 <td>
                      <a href="{{ url('/personal/'. $personal->id . '/edit') }}"> <i class="fa-solid fa-pen-to-square"></i> </a>

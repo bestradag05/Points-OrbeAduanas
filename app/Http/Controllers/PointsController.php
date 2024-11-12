@@ -53,17 +53,17 @@ class PointsController extends Controller
             ->get();
 
 
-        $startDate = $request->startDate ? Carbon::parse($request->startDate)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();;
-        $endDate = $request->endDate ? Carbon::parse($request->endDate)->endOfDay() : Carbon::now()->endOfMonth()->endOfDay();;
+        $startDate = $request->startDate ? Carbon::parse($request->startDate)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+        $endDate = $request->endDate ? Carbon::parse($request->endDate)->endOfDay() : Carbon::now()->endOfMonth()->endOfDay();
 
 
         $personalPoints = $personals->map(function ($personal) use ($startDate, $endDate) {
 
             // Ahora que tenemos los personales, obtenemos los routing y comenzamos a filtrar
             $filteredRouting = $personal->routing->filter(function ($route) use ($startDate, $endDate) {
-        
+
                 $points = 0;
-        
+
                 // Verificar si el routing tiene un custom con insurance dentro de las fechas
                 if ($route->custom && $route->custom->insurance) {
                     $insuranceDate = $route->custom->insurance->created_at;
@@ -71,7 +71,7 @@ class PointsController extends Controller
                         $points++; // Suma 1 punto si el custom tiene un insurance válido
                     }
                 }
-        
+
                 // Verificar si el routing tiene un freight con insurance dentro de las fechas
                 if ($route->freight && $route->freight->insurance) {
                     $insuranceDate = $route->freight->insurance->created_at;
@@ -79,15 +79,15 @@ class PointsController extends Controller
                         $points++; // Suma 1 punto si el freight tiene un insurance válido
                     }
                 }
-        
+
                 // Solo incluimos el routing si tiene al menos 1 punto
                 return $points > 0;
             });
-        
+
             // Sumar los puntos para todos los routing filtrados
             $count = $filteredRouting->reduce(function ($carry, $route) use ($startDate, $endDate) {
                 $points = 0;
-        
+
                 // Sumar puntos si el custom tiene un insurance en las fechas indicadas
                 if ($route->custom && $route->custom->insurance) {
                     $insuranceDate = $route->custom->insurance->created_at;
@@ -95,7 +95,7 @@ class PointsController extends Controller
                         $points++;
                     }
                 }
-        
+
                 // Sumar puntos si el freight tiene un insurance en las fechas indicadas
                 if ($route->freight && $route->freight->insurance) {
                     $insuranceDate = $route->freight->insurance->created_at;
@@ -103,11 +103,11 @@ class PointsController extends Controller
                         $points++;
                     }
                 }
-        
+
                 // Agregar los puntos de este routing al total
                 return $carry + $points;
             }, 0);
-        
+
             // Retornar el personal con el número total de puntos
             return [
                 'personal' => $personal,
@@ -116,16 +116,119 @@ class PointsController extends Controller
         });
 
 
-         // Ordenamos del mayor al menor
-         $personalPoints = $personalPoints->sortByDesc('puntos')->values();
+        // Ordenamos del mayor al menor
+        $personalPoints = $personalPoints->sortByDesc('puntos')->values();
 
 
-         //verificamos que sea una solicitud ajax para reenviar como json la informacion
-         if ($request->type) {
-             return response()->json($personalPoints);
-         }
- 
-         return view('points/points-insurance');
+        //verificamos que sea una solicitud ajax para reenviar como json la informacion
+        if ($request->type) {
+            return response()->json($personalPoints);
+        }
+
+        return view('points/points-insurance');
+    }
+
+
+
+    public function getPointAdditional(Request $request)
+    {
+
+        $personals = Personal::whereHas('user.roles', function ($query) {
+            $query->where('name', 'Asesor Comercial');
+        })
+            ->whereHas('routing.custom.additional_point', function ($query) {
+                $query->where('state', 'Generado')->where('model_additional_service', Custom::class);
+            })
+            ->orWhereHas('routing.freight.additional_point', function ($query) {
+                $query->where('state', 'Generado')->where('model_additional_service', Freight::class);
+            })
+            ->with([
+                'routing.custom.additional_point' => function ($query) {
+                    $query->where('state', 'Generado')->where('model_additional_service', Custom::class);
+                },
+                'routing.freight.additional_point' => function ($query) {
+                    $query->where('state', 'Generado')->where('model_additional_service', Freight::class);
+                }
+            ])
+            ->get();
+
+        $startDate = $request->startDate ? Carbon::parse($request->startDate)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
+        $endDate = $request->endDate ? Carbon::parse($request->endDate)->endOfDay() : Carbon::now()->endOfMonth()->endOfDay();
+
+        $personalPoints = $personals->map(function ($personal) use ($startDate, $endDate) {
+
+            $customPointsTotal = 0;
+            $freightPointsTotal = 0;
+            $transportPointsTotal = 0;
+
+            // Ahora que tenemos los personales, obtenemos los routing y comenzamos a filtrar
+            $personal->routing->filter(function ($route) use ($startDate, $endDate, &$customPointsTotal, &$freightPointsTotal, &$transportPointsTotal) {
+
+                // Verificar si el routing tiene un custom con puntos adicionales dentro de las fechas
+                if ($route->custom && $route->custom->additional_point) {
+
+                    $validCustomPoints = $route->custom->additional_point->filter(function ($additionalPoint) use ($startDate, $endDate) {
+                        return $additionalPoint->created_at >= $startDate && $additionalPoint->created_at <= $endDate;
+                    });
+
+                    // Sumar los puntos del campo `points` en `custom`
+                    $customPointsTotal += $validCustomPoints->sum('points');
+                    $hasValidPoints = $validCustomPoints->isNotEmpty(); // Marcar si hay puntos válidos
+
+                }
+
+                // Verificar si el routing tiene un freight con adicionales dentro de las fechas
+                if ($route->freight && $route->freight->additional_point) {
+                    $validCustomPoints = $route->freight->additional_point->filter(function ($additionalPoint) use ($startDate, $endDate) {
+                        return $additionalPoint->created_at >= $startDate && $additionalPoint->created_at <= $endDate;
+                    });
+
+                    // Sumar los puntos del campo `points` en `freight`
+                    $freightPointsTotal += $validCustomPoints->sum('points');
+                    $hasValidPoints = $validCustomPoints->isNotEmpty(); // Marcar si hay puntos válidos
+                }
+
+                // Verificar si el routing tiene un transport con adicionales dentro de las fechas
+                if ($route->transport && $route->transport->additional_point) {
+                    $validCustomPoints = $route->transport->additional_point->filter(function ($additionalPoint) use ($startDate, $endDate) {
+                        return $additionalPoint->created_at >= $startDate && $additionalPoint->created_at <= $endDate;
+                    });
+
+                    // Sumar los puntos del campo `points` en `transport`
+                    $transportPointsTotal += $validCustomPoints->sum('points');
+                    $hasValidPoints = $validCustomPoints->isNotEmpty(); // Marcar si hay puntos válidos
+                }
+
+                // Solo incluimos el routing si tiene al menos 1 punto
+                return $hasValidPoints; // Incluir el routing solo si tiene puntos válidos
+            });
+
+            $puntosTotal = $customPointsTotal + $freightPointsTotal + $transportPointsTotal;
+
+            return [
+                'personal' => $personal,
+                'puntosAduanas' => $customPointsTotal,
+                'puntosFlete' => $freightPointsTotal,
+                'puntosTransporte' => $transportPointsTotal,
+                'puntos' => $puntosTotal
+            ];
+        });
+
+
+
+        $personalPoints = $personalPoints->sortByDesc('pointsTotal')->values();
+
+
+           //verificamos que sea una solicitud ajax para reenviar como json la informacion
+           if ($request->type) {
+            return response()->json($personalPoints);
+        }
+
+
+
+        return view('points/points-additional');
+
+
     }
 
 

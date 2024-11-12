@@ -21,12 +21,7 @@
                 <td>{{ $additional_point->igv }}</td>
                 <td>{{ $additional_point->total }}</td>
                 <td>{{ $additional_point->points }}</td>
-                @if($additional_point->model_additional_service === 'App\Models\Custom')
-                <td> Aduanas </td>
-                @else
-                <td> Flete </td>
-                @endif
-               
+                <td>{{ $additional_point->additional_type}} </td>
                 <td class="{{($additional_point->state == 'Pendiente') ? 'text-warning' : ''}}">
                     {{ $additional_point->state }}
                 </td>

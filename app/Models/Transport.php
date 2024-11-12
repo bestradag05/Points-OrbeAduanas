@@ -21,7 +21,7 @@ class Transport extends Model
 
     public function additional_point()
     {
-        return $this->morphOne(AdditionalPoints::class, 'additional', 'model_additional_service', 'id_additional_service');
+        return $this->morphMany(AdditionalPoints::class, 'additional', 'model_additional_service', 'id_additional_service');
     }
     
 

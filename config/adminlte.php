@@ -422,8 +422,14 @@ return [
             'icon' => 'fas fa-fw fa-copy',
             'submenu' => [
                 [
-                    'text' => 'Puntos pendientes',
-                    'url' => 'additionals/pending',
+                    'text' => 'Puntos pendientes - Aduanas',
+                    'url' => 'additionals/pending/custom',
+                    'icon'  => 'fa-solid fa-bell-exclamation',
+                    'active' => ['additionals', 'additionals*', 'regex:@^content/[0-9]+$@'],
+                ],
+                [
+                    'text' => 'Puntos pendientes - Flete',
+                    'url' => 'additionals/pending/freight',
                     'icon'  => 'fa-solid fa-bell-exclamation',
                     'active' => ['additionals', 'additionals*', 'regex:@^content/[0-9]+$@'],
                 ],
@@ -468,6 +474,12 @@ return [
                     'url'  => 'points/insurance',
                     'icon' => 'fa-solid fa-check-double',
                     'active' => ['points/insurance', 'points/insurance*', 'regex:@^content/[0-9]+$@'],
+                ],
+                [
+                    'text' => 'Puntos Adicionales',
+                    'url'  => 'points/additionals',
+                    'icon' => 'fa-solid fa-check-double',
+                    'active' => ['points/additionals', 'points/additionals*', 'regex:@^content/[0-9]+$@'],
                 ]
             ]
         ],

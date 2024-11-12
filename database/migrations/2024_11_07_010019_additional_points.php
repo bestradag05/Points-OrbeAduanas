@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('points')->nullable();
             $table->unsignedBigInteger('id_additional_service');
             $table->string('model_additional_service');
+            $table->string('additional_type');
             $table->string('state')->nullable();
             $table->timestamps();
         });

@@ -1,8 +1,11 @@
 @extends('home')
 
 @section('content_header')
-    <div class="">
-        <h2>Users</h2>
+    <div class="d-flex justify-content-between">
+        <h2>Usuarios</h2>
+       {{--  <div>
+            <a href="{{ 'users/create' }}" class="btn btn-primary"> Agregar </a>
+        </div> --}}
     </div>
 
 @stop
