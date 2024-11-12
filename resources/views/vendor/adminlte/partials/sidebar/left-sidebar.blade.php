@@ -10,14 +10,14 @@
         <div class="image">
 
             @if(auth()->user()->personal) 
-                <img src="{{ asset('fotos-de-usuarios/'. auth()->user()->personal->img_url ) }}" class="img-circle elevation-2" alt="User Image">
+                <img src="{{ asset('storage/'. auth()->user()->personal->img_url ) }}" class="img-circle elevation-2" alt="User Image">
             @else
-                <img src="{{ asset('fotos-de-usuarios/user_default.png')}}" class="img-circle elevation-2" alt="User Image">
+                <img src="{{ asset('storage/user_default.png')}}" class="img-circle elevation-2" alt="User Image">
             @endif
             
         </div>
         <div class="info">
-            <a href="#" class="d-block text-uppercase">{{ (auth()->user()->personal) ? auth()->user()->personal->name : 'admin' }}</a>
+            <a href="#" class="d-block text-uppercase">{{ (auth()->user()->personal) ? auth()->user()->personal->names : 'admin' }}</a>
         </div>
     </div>
     {{-- Sidebar menu --}}

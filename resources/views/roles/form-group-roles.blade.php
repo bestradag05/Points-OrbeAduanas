@@ -12,7 +12,7 @@
             <option />
             @foreach ($personals as $personal)
                 @if(!$personal->user->hasRole($rol->name))
-                    <option value="{{ $personal->user->id }}">{{ $personal->name . ' ' . $personal->last_name }}</option>
+                    <option value="{{ $personal->user->id }}">{{ $personal->names . ' ' . $personal->last_name }}</option>
                 @endif
             @endforeach
         </x-adminlte-select2>
@@ -33,7 +33,7 @@
                     <td> {{ $loop->iteration }}</td>
                     <td> {{ $userHasRole->personal->name . ' ' . $userHasRole->personal->last_name }}
                     </td>
-                    <td><img src="{{ asset('fotos-de-usuarios/' . $userHasRole->personal->img_url) }}"
+                    <td><img src="{{ asset('storage/' . $userHasRole->personal->img_url) }}"
                             class="img-circle elevation-2" width="50px" height="50px" alt="User Image"></td>
                     <td>
                         <form action="{{ url('/roles/grupos/' . $rol->id) }}" class="form-delete" method="POST"
