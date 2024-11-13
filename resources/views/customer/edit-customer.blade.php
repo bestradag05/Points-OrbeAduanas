@@ -4,7 +4,7 @@
     <div class="d-flex justify-content-between">
         <h2>Actualizar un Cliente</h2>
         <div>
-            <button class="btn btn-primary"> Atras </button>
+            <a href="{{ url('/customer') }}" class="btn btn-primary"> Atras </a>
         </div>
     </div>
 

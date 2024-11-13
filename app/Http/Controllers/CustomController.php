@@ -78,6 +78,7 @@ class CustomController extends Controller
      */
     public function store(Request $request)
     {
+
         $this->validateForm($request, null);
 
         Custom::create([

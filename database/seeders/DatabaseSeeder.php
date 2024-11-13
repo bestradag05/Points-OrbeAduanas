@@ -32,20 +32,76 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+      
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+       
+        Permission::create(['name' => 'users.create', 'alias' => 'Crear usuarios', 'guard_name' => 'web']);
+        Permission::create(['name' => 'users.update', 'alias' => 'Actualizar usuarios', 'guard_name' => 'web']);
+        Permission::create(['name' => 'users.delete', 'alias' => 'Eliminar usuarios', 'guard_name' => 'web']);
+        Permission::create(['name' => 'users.list', 'alias' => 'Listar usuarios', 'guard_name' => 'web']);
+        Permission::create(['name' => 'users.createGroup', 'alias' => 'Crear Grupos', 'guard_name' => 'web']);
+        Permission::create(['name' => 'users.updateGroup', 'alias' => 'Actualizar Grupos', 'guard_name' => 'web']);
+        Permission::create(['name' => 'users.deleteGroup', 'alias' => 'Eliminar Grupos', 'guard_name' => 'web']);
+        Permission::create(['name' => 'users.listGroup', 'alias' => 'Listar Grupos', 'guard_name' => 'web']);
 
 
-        //Crear un rol de Super-Admin
-        $role = Role::create(['guard_name' => 'web','name' => 'Super-Admin']);
-        $register_rol = Permission::create(['guard_name' => 'api','name' => 'register_rol']);
-        $listar_rol= Permission::create(['guard_name' => 'api','name' => 'list_rol']);
-        $edit_rol = Permission::create(['guard_name' => 'api','name' => 'edit_rol']);
-        $dete_rol = Permission::create(['guard_name' => 'api','name' => 'delete_rol']);
+        Permission::create(['name' => 'personal.create', 'alias' => 'Crear personal', 'guard_name' => 'web']);
+        Permission::create(['name' => 'personal.update', 'alias' => 'Actualizar personal', 'guard_name' => 'web']);
+        Permission::create(['name' => 'personal.delete', 'alias' => 'Eliminar personal', 'guard_name' => 'web']);
+        Permission::create(['name' => 'personal.list', 'alias' => 'Listar personal', 'guard_name' => 'web']);
+
+        Permission::create(['name' => 'liquidacion.list', 'alias' => 'Listar liquidacion', 'guard_name' => 'web']);
+        Permission::create(['name' => 'liquidacion.generate', 'alias' => 'Generar puntos', 'guard_name' => 'web']);
+
+
+        Permission::create(['name' => 'operaciones.list', 'alias' => 'Listar operaciones', 'guard_name' => 'web']);
+        Permission::create(['name' => 'operaciones.generate', 'alias' => 'Generar puntos', 'guard_name' => 'web']);
+       
+        
+        Permission::create(['name' => 'transporte.list', 'alias' => 'Listar transporte', 'guard_name' => 'web']);
+        Permission::create(['name' => 'transporte.generate', 'alias' => 'Generar puntos', 'guard_name' => 'web']);
+       
+    
+
+        Permission::create(['name' => 'additional.list', 'alias' => 'Listar Adicionales', 'guard_name' => 'web']);
+        Permission::create(['name' => 'additional.custom', 'alias' => 'Adicional de Aduanas', 'guard_name' => 'web']);
+        Permission::create(['name' => 'additional.freight', 'alias' => 'Adicional de Flete', 'guard_name' => 'web']);
+        Permission::create(['name' => 'additional.generate', 'alias' => 'Generar puntos', 'guard_name' => 'web']);
+
+        
+
+        Permission::create(['name' => 'points.list', 'alias' => 'Listar Puntos', 'guard_name' => 'web']);
+   
+
+        Permission::create(['name' => 'customer.create', 'alias' => 'Crear Clientes', 'guard_name' => 'web']);
+        Permission::create(['name' => 'customer.update', 'alias' => 'Actualizar Clientes', 'guard_name' => 'web']);
+        Permission::create(['name' => 'customer.delete', 'alias' => 'Eliminar Clientes', 'guard_name' => 'web']);
+        Permission::create(['name' => 'customer.list', 'alias' => 'Listar Clientes', 'guard_name' => 'web']);
+
+        Permission::create(['name' => 'type_shipment.create', 'alias' => 'Crear Tipo de embarque', 'guard_name' => 'web']);
+        Permission::create(['name' => 'type_shipment.update', 'alias' => 'Actualizar Tipo de embarque', 'guard_name' => 'web']);
+        Permission::create(['name' => 'type_shipment.delete', 'alias' => 'Eliminar Tipo de embarque', 'guard_name' => 'web']);
+        Permission::create(['name' => 'type_shipment.list', 'alias' => 'Listar Tipo de embarque', 'guard_name' => 'web']);
+        
+        Permission::create(['name' => 'modality.create', 'alias' => 'Crear modalidad', 'guard_name' => 'web']);
+        Permission::create(['name' => 'modality.update', 'alias' => 'Actualizar modalidad', 'guard_name' => 'web']);
+        Permission::create(['name' => 'modality.delete', 'alias' => 'Eliminar modalidad', 'guard_name' => 'web']);
+        Permission::create(['name' => 'modality.list', 'alias' => 'Listar modalidad', 'guard_name' => 'web']);
+
+        Permission::create(['name' => 'routing.create', 'alias' => 'Crear Routing', 'guard_name' => 'web']);
+        Permission::create(['name' => 'routing.update', 'alias' => 'Actualizar Routing', 'guard_name' => 'web']);
+        Permission::create(['name' => 'routing.delete', 'alias' => 'Eliminar Routing', 'guard_name' => 'web']);
+        Permission::create(['name' => 'routing.list', 'alias' => 'Listar Routing', 'guard_name' => 'web']);
+
+
+        Permission::create(['name' => 'concept.create', 'alias' => 'Crear concepto', 'guard_name' => 'web']);
+        Permission::create(['name' => 'concept.update', 'alias' => 'Actualizar concepto', 'guard_name' => 'web']);
+        Permission::create(['name' => 'concept.delete', 'alias' => 'Eliminar concepto', 'guard_name' => 'web']);
+        Permission::create(['name' => 'concept.list', 'alias' => 'Listar concepto', 'guard_name' => 'web']);
+
+         //Crear un rol de Super-Admin
+         $role = Role::create(['guard_name' => 'web','name' => 'Super-Admin']);
+
 
         $user = User::create([
             'email' => 'admin@orbeaduanas.com',
@@ -54,7 +110,11 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $user->assignRole($role);
-        $user->givePermissionTo([$listar_rol, $register_rol, $edit_rol, $dete_rol]);
+
+        $permissions = Permission::all();
+    
+        $role->givePermissionTo($permissions);
+       
 
 
         $document = Document::create([
@@ -64,6 +124,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Personal::create([
+            'id' => '99',
             'document_number' => '73184116',
             'names' => 'Bryan David',
             'last_name' => 'Estrada',
@@ -76,70 +137,11 @@ class DatabaseSeeder extends Seeder
             'sexo' => 'Masculino',
             'civil_status' => 'Soltero',
             'id_document' => $document->id,
-            'id_user' => 1
+            'id_user' => $user->id
         ]);
 
-/*         $contador = 1;
 
-        do {
-            User::create([
-                'email' => 'prueba'.$contador. '@orbeaduanas.com',
-                'password' => Hash::make('admin')
-            ]);
-
-
-            Personal::create([
-                'name' => 'prueba'.$contador,
-                'last_name' => 'prueba'.$contador,
-                'cellphone' => Str::random(5),
-                'email' => 'prueba'.$contador. '@orbeaduanas.com',
-                'dni' => Str::random(5),
-                'img_url' => 'user_default.png',
-                'id_user' =>  $contador + 1
-            ]);
-
-
-            $contador++;
-        } while ($contador <= 10);
- */
-
-
-
-
-
-        Permission::create(['name' => 'users.create', 'alias' => 'Crear usuarios', 'guard_name' => 'web']);
-        Permission::create(['name' => 'users.update', 'alias' => 'Actualizar usuarios', 'guard_name' => 'web']);
-        Permission::create(['name' => 'users.delete', 'alias' => 'Eliminar usuarios', 'guard_name' => 'web']);
-        Permission::create(['name' => 'users.list', 'alias' => 'Listar usuarios', 'guard_name' => 'web']);
-        Permission::create(['name' => 'users.createGroup', 'alias' => 'Crear Grupos', 'guard_name' => 'web']);
-        Permission::create(['name' => 'users.updateGroup', 'alias' => 'Actualizar Grupos', 'guard_name' => 'web']);
-        Permission::create(['name' => 'users.deleteGroup', 'alias' => 'Eliminar Grupos', 'guard_name' => 'web']);
-        Permission::create(['name' => 'users.listGroup', 'alias' => 'Listar Grupos', 'guard_name' => 'web']);
-
-        Permission::create(['name' => 'personal.create', 'alias' => 'Crear personal', 'guard_name' => 'web']);
-        Permission::create(['name' => 'personal.update', 'alias' => 'Actualizar personal', 'guard_name' => 'web']);
-        Permission::create(['name' => 'personal.delete', 'alias' => 'Eliminar personal', 'guard_name' => 'web']);
-        Permission::create(['name' => 'personal.list', 'alias' => 'Listar personal', 'guard_name' => 'web']);
-
-        Permission::create(['name' => 'liquidacion.create', 'alias' => 'Crear liquidacion', 'guard_name' => 'web']);
-        Permission::create(['name' => 'liquidacion.update', 'alias' => 'Actualizar liquidacion', 'guard_name' => 'web']);
-        Permission::create(['name' => 'liquidacion.delete', 'alias' => 'Eliminar liquidacion', 'guard_name' => 'web']);
-        Permission::create(['name' => 'liquidacion.list', 'alias' => 'Listar liquidacion', 'guard_name' => 'web']);
-
-        Permission::create(['name' => 'operaciones.create', 'alias' => 'Crear operaciones', 'guard_name' => 'web']);
-        Permission::create(['name' => 'operaciones.update', 'alias' => 'Actualizar operaciones', 'guard_name' => 'web']);
-        Permission::create(['name' => 'operaciones.delete', 'alias' => 'Eliminar operaciones', 'guard_name' => 'web']);
-        Permission::create(['name' => 'operaciones.list', 'alias' => 'Listar operaciones', 'guard_name' => 'web']);
-
-        Permission::create(['name' => 'transporte.create', 'alias' => 'Crear transporte', 'guard_name' => 'web']);
-        Permission::create(['name' => 'transporte.update', 'alias' => 'Actualizar transporte', 'guard_name' => 'web']);
-        Permission::create(['name' => 'transporte.delete', 'alias' => 'Eliminar transporte', 'guard_name' => 'web']);
-        Permission::create(['name' => 'transporte.list', 'alias' => 'Listar transporte', 'guard_name' => 'web']);
-
-        Permission::create(['name' => 'admin.create', 'alias' => 'Crear admin', 'guard_name' => 'web']);
-        Permission::create(['name' => 'admin.update', 'alias' => 'Actualizar admin', 'guard_name' => 'web']);
-        Permission::create(['name' => 'admin.delete', 'alias' => 'Eliminar admin', 'guard_name' => 'web']);
-        Permission::create(['name' => 'admin.list', 'alias' => 'Listar admin', 'guard_name' => 'web']);
+        
 
 
         /*  Regime */
@@ -222,10 +224,10 @@ class DatabaseSeeder extends Seeder
 
 
         /* Proceso para el routing */
-        Customer::create(['ruc' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'id_user' => 1]);
+     /*    Customer::create(['ruc' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'id_user' => 1]);
         Supplier::create(['type_id' => 'RUC', 'number_id' => '20554630740', 'name_businessname' => 'HENAN XINGSHENGDA', 'addres' => 'North section of renmin road, changge city', 'contact_name' => 'Asten Zho', 'contact_number' => '944653246', 'contact_email' => 'asten@hnidel.com', 'type_suppliers' => 'Venta']);
         Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU - CALLAO', 'destination' => 'CHINA - SHANGAI', 'freight_value' => '2500', 'load_value' => '2700', 'insurance_value' => '25', 'id_personal' => 1, 'id_customer' => 1, 'id_type_shipment' => 8, 'lcl_fcl' => 'LCL', 'id_type_load' => 1, 'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'commodity' => 'CILINDRO']);
-
+ */
 
         Concepts::create(['name' => 'COMISION DE ADUANA', 'id_type_shipment' => 8, 'id_type_service' => 1]);
         Concepts::create(['name' => 'GASTOS OPERATIVOS', 'id_type_shipment' => 8, 'id_type_service' => 1]);

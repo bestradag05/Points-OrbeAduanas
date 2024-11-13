@@ -33,6 +33,11 @@ class Personal extends Model
         return $this->belongsTo(User::class, 'id_user', 'id');
     }
 
+    public function customer()
+    {
+        return $this->hasMany(Customer::class, 'id_personal');
+    }
+
     public function document()
     {
         return $this->belongsTo(Document::class, 'id_document', 'id');

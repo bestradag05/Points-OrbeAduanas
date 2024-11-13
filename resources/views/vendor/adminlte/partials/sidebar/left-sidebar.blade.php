@@ -9,10 +9,10 @@
     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
 
-            @if(auth()->user()->personal) 
+            @if(auth()->user()->personal->img_url !== null) 
                 <img src="{{ asset('storage/'. auth()->user()->personal->img_url ) }}" class="img-circle elevation-2" alt="User Image">
             @else
-                <img src="{{ asset('storage/user_default.png')}}" class="img-circle elevation-2" alt="User Image">
+                <img src="{{ asset('storage/personals/user_default.png')}}" class="img-circle elevation-2" alt="User Image">
             @endif
             
         </div>

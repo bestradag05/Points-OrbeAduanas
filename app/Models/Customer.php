@@ -12,18 +12,13 @@ class Customer extends Model
 
     protected $table = 'customer';
 
-    protected $fillable = ['ruc', 'name_businessname', 'contact_name', 'contact_number', 'contact_email','id_user'];
+    protected $fillable = ['ruc', 'name_businessname', 'contact_name', 'contact_number', 'contact_email', 'state', 'id_personal'];
 
 
-     // Relación uno a uno inversa con el modelo Personal
-     public function user()
+
+    public function personal()
     {
-        return $this->belongsTo(User::class, 'id_user', 'id');
-    }
-
-    public function userCustomer()
-    {
-        return $this->hasOneThrough(Personal::class, User::class, 'id', 'id');
+        return $this->belongsTo(Personal::class, 'id_personal');
     }
 
 }

@@ -63,6 +63,7 @@ Route::middleware('auth')->group(function () {
     Route::get('roles/grupos/remove-all-permissions/{id_role}/{modulo}', [PermissionsController::class, 'removeAllPermissions']);
 
     Route::resource('concepts', ConceptsController::class);
+    Route::get('/obtener-datos-ruc/{ruc}', [CustomerController::class, 'obtenerDatosRuc']);
     Route::resource('customer', CustomerController::class);
     Route::resource('type_shipment', TypeShipmentController::class);
     Route::resource('modality', ModalityController::class);

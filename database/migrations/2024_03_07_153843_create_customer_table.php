@@ -18,10 +18,11 @@ return new class extends Migration
             $table->string('contact_name');
             $table->string('contact_number');
             $table->string('contact_email');
-            $table->unsignedBigInteger('id_user');
+            $table->string('state')->nullable();
+            $table->unsignedBigInteger('id_personal');
             $table->timestamps();
 
-            $table->foreign('id_user')->references('id')->on('users');
+            $table->foreign('id_personal')->references('id')->on('personal');
         });
     }
 

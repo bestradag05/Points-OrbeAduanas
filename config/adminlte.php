@@ -323,18 +323,21 @@ return [
         [
             'text' => 'Grupos y usuarios',
             'icon' => 'fa-solid fa-people-group',
+            'can' => 'users.listGroup',
             'submenu' => [
                 [
                     'text' => 'Usuarios',
                     'url'  => 'users',
                     'icon'  => 'fa-solid fa-user-tie',
                     'active' => ['users', 'users*', 'regex:@^content/[0-9]+$@'],
+                    'can' => 'users.list',
                 ],
                 [
                     'text' => 'Grupo',
                     'url'  => 'roles',
                     'icon' => 'fas fa-fw fa-users',
                     'active' => ['roles', 'roles*', 'regex:@^content/[0-9]+$@'],
+                    'can' => 'users.listGroup',
                 ]
             ]
         ],
@@ -342,17 +345,20 @@ return [
             'text' => 'Personal',
             'url'  => 'personal',
             'icon' => 'fas fa-fw fa-users',
-            'active' => ['personal', 'personal*', 'regex:@^content/[0-9]+$@']
+            'active' => ['personal', 'personal*', 'regex:@^content/[0-9]+$@'],
+            'can' => 'personal.list'
         ],
         [
             'text' => 'Conceptos',
             'url'  => 'concepts',
             'icon' => 'fas fa-fw fa-copy',
-            'active' => ['concepts', 'concepts*', 'regex:@^content/[0-9]+$@']
+            'active' => ['concepts', 'concepts*', 'regex:@^content/[0-9]+$@'],
+            'can' => 'concept.list'
         ],
         [
             'text' => 'Liquidacion',
             'icon' => 'fas fa-fw fa-laptop',
+            'can' => 'liquidacion.list',
             'submenu' => [
                 [
                     'text' => 'Puntos pendientes',
@@ -371,6 +377,7 @@ return [
         [
             'text' => 'Operaciones',
             'icon' => 'fas fa-fw fa-user-tie',
+            'can' => 'operaciones.list',
             'submenu' => [
                 [
                     'text' => 'Puntos pendientes - Flete',
@@ -402,6 +409,7 @@ return [
         [
             'text' => 'Transporte',
             'icon' => 'fas fa-fw fa-truck-moving',
+            'can' => 'transporte.list',
             'submenu' => [
                 [
                     'text' => 'Puntos pendientes',
@@ -420,30 +428,35 @@ return [
         [
             'text' => 'Adicionales',
             'icon' => 'fas fa-fw fa-copy',
+            'can' => 'additional.list',
             'submenu' => [
                 [
                     'text' => 'Puntos pendientes - Aduanas',
                     'url' => 'additionals/pending/custom',
                     'icon'  => 'fa-solid fa-bell-exclamation',
                     'active' => ['additionals', 'additionals*', 'regex:@^content/[0-9]+$@'],
+                    'can' => 'additional.custom'
                 ],
                 [
                     'text' => 'Puntos pendientes - Flete',
                     'url' => 'additionals/pending/freight',
                     'icon'  => 'fa-solid fa-bell-exclamation',
                     'active' => ['additionals', 'additionals*', 'regex:@^content/[0-9]+$@'],
+                    'can' => 'additional.freight'
                 ],
                 [
                     'text' => 'Todos los puntos',
                     'url'  => 'additionals',
                     'icon' => 'fa-solid fa-check-double',
                     'active' => ['additionals', 'additionals*', 'regex:@^content/[0-9]+$@'],
+                    'can' => 'additional.list'
                 ]
             ]
         ],
         [
             'text' => 'Puntos',
             'icon' => 'fas fa-fw fa-copy',
+            'can' => 'points.list',
             'submenu' => [
                 [
                     'text' => 'Detalle por vendedor',
@@ -487,25 +500,29 @@ return [
             'text' => 'Clientes',
             'url'  => 'customer',
             'icon' => 'fa-regular fa-users-between-lines',
-            'active' => ['customer', 'customer*', 'regex:@^content/[0-9]+$@']
+            'active' => ['customer', 'customer*', 'regex:@^content/[0-9]+$@'],
+            'can' => 'customer.list',
         ],
         [
             'text' => 'Tipo de embarque',
             'url'  => 'type_shipment',
             'icon' => 'fa-sharp fa-solid fa-container-storage',
-            'active' => ['type_shipment', 'type_shipment*', 'regex:@^content/[0-9]+$@']
+            'active' => ['type_shipment', 'type_shipment*', 'regex:@^content/[0-9]+$@'],
+            'can' => 'type_shipment.list',
         ],
         [
             'text' => 'Modalidad',
             'url'  => 'modality',
             'icon' => 'fa-duotone fa-box-taped',
-            'active' => ['modality', 'modality*', 'regex:@^content/[0-9]+$@']
+            'active' => ['modality', 'modality*', 'regex:@^content/[0-9]+$@'],
+            'can' => 'modality.list'
         ],
         [
             'text' => 'Routing',
             'url'  => 'routing',
             'icon' => 'fa-solid fa-file-circle-plus',
-            'active' => ['routing', 'routing*', 'regex:@^content/[0-9]+$@']
+            'active' => ['routing', 'routing*', 'regex:@^content/[0-9]+$@'],
+            'can' => 'routing.list'
         ]
         /*,
          [

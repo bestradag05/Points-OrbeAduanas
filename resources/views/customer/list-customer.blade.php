@@ -19,7 +19,8 @@
                 <td>{{ $customer->contact_name }}</td>
                 <td>{{ $customer->contact_number }}</td>
                 <td>{{ $customer->contact_email }}</td>
-                <td>{{ $customer->userCustomer->name . ' ' . $customer->userCustomer->last_name}}</td>
+                <td>{{ $customer->personal->names}}</td>
+                <td>{{ $customer->state}}</td>
                 <td>
                      <a href="{{ url('/customer/'. $customer->id . '/edit') }}"> <i class="fa-solid fa-pen-to-square"></i> </a>
                      <form action="{{ url('/customer/'.$customer->id) }}" class="form-delete" method="POST" style="display: inline;" data-confirm-delete="true">

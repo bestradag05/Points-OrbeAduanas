@@ -1,5 +1,7 @@
 <!--Card Contend de usuarios -->
 
+
+
 <form action="{{ url('/roles/grupos/' . $rol) }}" method="POST" class="row justify-content-around">
     @csrf
     <div class="col-6">
@@ -10,8 +12,10 @@
                 </div>
             </x-slot>
             <option />
+
             @foreach ($personals as $personal)
-                @if(!$personal->user->hasRole($rol->name))
+          
+                @if($personal->user && !$personal->user->hasRole($rol->name))
                     <option value="{{ $personal->user->id }}">{{ $personal->names . ' ' . $personal->last_name }}</option>
                 @endif
             @endforeach

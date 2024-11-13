@@ -28,6 +28,7 @@ class PersonalController extends Controller
             'Tipo de Documento',
             'Numero de documento',
             'Email',
+            'Estado',
             'Imagen',
             'Acciones'
         ];
@@ -250,7 +251,10 @@ class PersonalController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $personal = Personal::find($id);
+        $personal->update(['state' => 'CESADO']);
+
+        return redirect('personal')->with('eliminar', 'ok');
 
     }
 
