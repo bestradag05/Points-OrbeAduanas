@@ -31,10 +31,22 @@ class RoutingController extends Controller
      */
     public function index()
     {
-        // Listamos los routing
 
-        $routings = Routing::all();
-        $routings->load('type_shipment', 'personal');
+          // Obtener el ID del personal del usuario autenticado
+          $personalId = Auth::user()->personal->id;
+
+          // Verificar si el usuario es un Super-Admin
+          if (Auth::user()->hasRole('Super-Admin')) {
+              // Si es Super-Admin, obtener todos los routing
+              $routings = Routing::with('type_shipment', 'personal')->get();
+          } else {
+              // Si no es Super-Admin, solo obtener los clientes que pertenecen al personal del usuario autenticado
+              $routings = Routing::with('type_shipment', 'personal')
+                  ->where('id_personal', $personalId)
+                  ->get();
+          }
+
+        
 
         $heads = [
             '#',
@@ -62,7 +74,22 @@ class RoutingController extends Controller
         $type_shipments = TypeShipment::all();
         $modalitys = Modality::all();
         $regimes = Regime::all();
-        $customers = Customer::all();
+        
+        //Listamos los customer solo del usuario autenticado
+        $personalId = Auth::user()->personal->id;
+
+        // Verificar si el usuario es un Super-Admin
+        if (Auth::user()->hasRole('Super-Admin')) {
+            // Si es Super-Admin, obtener todos los clientes
+            $customers = Customer::with('personal')->get();
+        } else {
+            // Si no es Super-Admin, solo obtener los clientes que pertenecen al personal del usuario autenticado
+            $customers = Customer::with('personal')
+                ->where('id_personal', $personalId)
+                ->get();
+        }
+
+
         $incoterms = Incoterms::all();
         $suppliers = Supplier::all();
         $type_services = TypeService::all();

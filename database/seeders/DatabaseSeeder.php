@@ -123,7 +123,7 @@ class DatabaseSeeder extends Seeder
             'state' => 'Activo'
         ]);
 
-        Personal::create([
+        $personal = Personal::create([
             'id' => '99',
             'document_number' => '73184116',
             'names' => 'Bryan David',
@@ -224,10 +224,10 @@ class DatabaseSeeder extends Seeder
 
 
         /* Proceso para el routing */
-     /*    Customer::create(['ruc' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'id_user' => 1]);
+        $customer = Customer::create(['ruc' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'id_personal' => $personal->id]);
         Supplier::create(['type_id' => 'RUC', 'number_id' => '20554630740', 'name_businessname' => 'HENAN XINGSHENGDA', 'addres' => 'North section of renmin road, changge city', 'contact_name' => 'Asten Zho', 'contact_number' => '944653246', 'contact_email' => 'asten@hnidel.com', 'type_suppliers' => 'Venta']);
-        Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU - CALLAO', 'destination' => 'CHINA - SHANGAI', 'freight_value' => '2500', 'load_value' => '2700', 'insurance_value' => '25', 'id_personal' => 1, 'id_customer' => 1, 'id_type_shipment' => 8, 'lcl_fcl' => 'LCL', 'id_type_load' => 1, 'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'commodity' => 'CILINDRO']);
- */
+        Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU - CALLAO', 'destination' => 'CHINA - SHANGAI', 'freight_value' => '2500', 'load_value' => '2700', 'insurance_value' => '25', 'id_personal' => $personal->id, 'id_customer' => $customer->id, 'id_type_shipment' => 8, 'lcl_fcl' => 'LCL', 'id_type_load' => 1, 'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'commodity' => 'CILINDRO']);
+
 
         Concepts::create(['name' => 'COMISION DE ADUANA', 'id_type_shipment' => 8, 'id_type_service' => 1]);
         Concepts::create(['name' => 'GASTOS OPERATIVOS', 'id_type_shipment' => 8, 'id_type_service' => 1]);

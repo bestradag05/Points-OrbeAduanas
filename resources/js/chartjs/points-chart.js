@@ -51,7 +51,7 @@ function getPointsFreight(startDate = null, endDate = null) {
             actualizarDataTable(response.data);
 
             response.data.map(({ personal, puntos }) => {
-                personals.push(personal.name);
+                personals.push(personal.names);
                 points.push(puntos);
             });
 
@@ -130,10 +130,19 @@ function actualizarDataTable(data) {
 
     // Añadir las nuevas filas
     data.forEach(function(personalPoint, index) {
+
+        let img  = null;
+
+        if(personalPoint.personal.img_url === null){
+            img = 'user_default.png';
+        }else{
+            img = personalPoint.personal.img_url;
+        }
+
         table.row.add([
             index + 1,
-            `<img src="/fotos-de-usuarios/${personalPoint.personal.img_url}" width="50px" />`,
-            `${personalPoint.personal.name} ${personalPoint.personal.last_name}`,
+            `<img src="/storage/personals/${img}" width="50px" />`,
+            `${personalPoint.personal.names} ${personalPoint.personal.last_name}`,
             `<span class="${personalPoint.puntos < 15 ? 'text-secondary' : 'text-success'}">${personalPoint.puntos}</span>`
         ]);
     });

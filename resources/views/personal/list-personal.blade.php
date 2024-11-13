@@ -23,13 +23,8 @@
                 <td>{{ $personal->state }}</td>
 
                 <td>
-                    @if ($personal->img_url !== null)
-                        <img src="{{ asset('storage/' . $personal->img_url) }}" class="img-circle elevation-2" width="50px"
-                            height="50px" alt="User Image">
-                    @else
-                        <img src="{{ asset('storage/personals/user_default.png') }}" class="img-circle elevation-2"
-                            alt="User Image" height="50px" alt="User Image">
-                    @endif
+
+                    <img src="{{ asset('storage/' . ($personal->img_url !== null ? $personal->img_url : 'personals/user_default.png')) }}" class="img-circle elevation-2" width="50px" height="50px" alt="User Image">
 
                 </td>
                 <td>

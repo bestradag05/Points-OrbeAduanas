@@ -57,7 +57,7 @@ class PersonalController extends Controller
 
         $this->validateForm($request, null);
 
-        $nameImage = 'personals/user_default.png';
+        $nameImage = null;
 
         if ($request->hasFile('imagen')) {
             $nameImage =  $this->photoUser($request);
@@ -289,6 +289,10 @@ class PersonalController extends Controller
 
     public function photoUser($request)
     {
+
+        if (!Storage::exists('personals')) {
+            Storage::makeDirectory('personals');
+        }
 
         $path = Storage::putFile("personals", $request->file("imagen"));
 
