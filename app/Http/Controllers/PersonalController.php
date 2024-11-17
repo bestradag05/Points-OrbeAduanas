@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Document;
 use App\Models\Personal;
+use App\Models\PersonalDocument;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -123,7 +124,7 @@ class PersonalController extends Controller
         // Se busca al usuario
 
         $personal = Personal::findOrFail($id);
-        $documents = Document::all();
+        $documents = PersonalDocument::all();
 
         return view('personal.edit-personal', compact('personal', 'documents'));
     }
@@ -262,7 +263,7 @@ class PersonalController extends Controller
     public function validateForm($request, $id)
     {
 
-        $document = Document::find($request->id_document);
+        $document = PersonalDocument::find($request->id_document);
         $digits = $document ? $document->number_digits : null;
 
         $request->validate([

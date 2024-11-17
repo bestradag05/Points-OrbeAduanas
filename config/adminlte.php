@@ -342,11 +342,25 @@ return [
             ]
         ],
         [
-            'text' => 'Personal',
-            'url'  => 'personal',
+            'text' => 'Personal y Documento',
             'icon' => 'fas fa-fw fa-users',
-            'active' => ['personal', 'personal*', 'regex:@^content/[0-9]+$@'],
-            'can' => 'personal.list'
+            'can' => 'personal.list',
+            'submenu' => [
+                [
+                    'text' => 'Personal',
+                    'url'  => 'personal',
+                    'icon'  => 'fa-solid fa-user-tie',
+                    'active' => ['personal'],
+                    
+                ],
+                [
+                    'text' => 'Tipo de Documentos',
+                    'url'  => 'personal_document',
+                    'icon' => 'fas fa-fw fa-users',
+                    'active' => ['personal_document'],
+                    
+                ]
+            ]
         ],
         [
             'text' => 'Conceptos',
@@ -364,13 +378,13 @@ return [
                     'text' => 'Puntos pendientes',
                     'url' => 'custom/pending',
                     'icon'  => 'fa-solid fa-bell-exclamation',
-                    'active' => ['custom', 'custom*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['custom'],
                 ],
                 [
                     'text' => 'Todos los puntos',
                     'url'  => 'custom',
                     'icon' => 'fa-solid fa-check-double',
-                    'active' => ['custom', 'custom*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['custom'],
                 ]
             ]
         ],
@@ -497,11 +511,32 @@ return [
             ]
         ],
         [
-            'text' => 'Clientes',
-            'url'  => 'customer',
+            'text' => 'Clientes y Proveedores',
             'icon' => 'fa-regular fa-users-between-lines',
-            'active' => ['customer', 'customer*', 'regex:@^content/[0-9]+$@'],
             'can' => 'customer.list',
+            'submenu' => [
+                [
+                    'text' => 'Clientes',
+                    'url'  => 'customers',
+                    'icon'  => 'fa-solid fa-user-tie',
+                    'active' => ['customers'],
+                    
+                ],
+                [
+                    'text' => 'Proveedores',
+                    'url'  => 'suppliers',
+                    'icon'  => 'fa-solid fa-user-tie',
+                    'active' => ['suppliers'],
+                    
+                ],
+                [
+                    'text' => 'Tipo de Documentos',
+                    'url'  => 'customer_supplier_document',
+                    'icon' => 'fas fa-fw fa-users',
+                    'active' => ['customer_supplier_document'],
+                    
+                ]
+            ]
         ],
         [
             'text' => 'Tipo de embarque',

@@ -6,10 +6,10 @@ namespace Database\Seeders;
 
 use App\Models\Concepts;
 use App\Models\Customer;
-use App\Models\Document;
 use App\Models\Incoterms;
 use App\Models\Modality;
 use App\Models\Personal;
+use App\Models\PersonalDocument;
 use App\Models\Regime;
 use App\Models\Routing;
 use App\Models\Shipper;
@@ -20,9 +20,7 @@ use App\Models\TypeService;
 use App\Models\TypeShipment;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
-use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
@@ -117,7 +115,7 @@ class DatabaseSeeder extends Seeder
        
 
 
-        $document = Document::create([
+        $document = PersonalDocument::create([
             'name' => 'DNI',
             'number_digits' => 8,
             'state' => 'Activo'

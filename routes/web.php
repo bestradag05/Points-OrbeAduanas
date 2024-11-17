@@ -4,6 +4,8 @@ use App\Http\Controllers\AdditionalPointsController;
 use App\Http\Controllers\ConceptsController;
 use App\Http\Controllers\CustomController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerSupplierDocumentController;
+use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\FreightController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
@@ -12,9 +14,11 @@ use App\Http\Controllers\LiquidacionController;
 use App\Http\Controllers\ModalityController;
 use App\Http\Controllers\PermissionsController;
 use App\Http\Controllers\PersonalController;
+use App\Http\Controllers\PersonalDocumentController;
 use App\Http\Controllers\PointsController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\RoutingController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TransportController;
 use App\Http\Controllers\TypeShipmentController;
 use App\Http\Controllers\UserController;
@@ -50,6 +54,8 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('users', UserController::class);
     Route::resource('personal', PersonalController::class);
+    Route::resource('personal_document', PersonalDocumentController::class);
+    Route::resource('customer_supplier_document', CustomerSupplierDocumentController::class);
     Route::resource('roles', RolesController::class);
     Route::get('roles/grupos/{id}', [RolesController::class, 'templateRoles']);
     Route::post('roles/grupos/{rol}', [RolesController::class, 'addPersonGroup']);
@@ -65,6 +71,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('concepts', ConceptsController::class);
     Route::get('/obtener-datos-ruc/{ruc}', [CustomerController::class, 'obtenerDatosRuc']);
     Route::resource('customer', CustomerController::class);
+    Route::resource('suppliers', SupplierController::class);
     Route::resource('type_shipment', TypeShipmentController::class);
     Route::resource('modality', ModalityController::class);
 

@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Document extends Model
+class PersonalDocument extends Model
 {
     use HasFactory;
 
-    protected $table = 'documents';
+    protected $table = 'personal_documents';
 
     protected $fillable = ['name', 'number_digits', 'state'];
+
 }

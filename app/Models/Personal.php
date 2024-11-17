@@ -40,7 +40,7 @@ class Personal extends Model
 
     public function document()
     {
-        return $this->belongsTo(Document::class, 'id_document', 'id');
+        return $this->belongsTo(PersonalDocument::class, 'id_document', 'id');
     }
 
     public function routing(){

@@ -30,7 +30,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('id_user')->references('id')->on('users');
-            $table->foreign('id_document')->references('id')->on('documents');
+            $table->foreign('id_document')->references('id')->on('personal_documents');
         });
     }
 

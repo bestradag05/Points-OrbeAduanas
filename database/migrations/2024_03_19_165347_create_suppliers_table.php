@@ -13,15 +13,17 @@ return new class extends Migration
     {
         Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
-            $table->string('type_id');
-            $table->string('number_id');
+            $table->string('document_number')->unique();
             $table->string('name_businessname');
             $table->string('addres');
             $table->string('contact_name');
             $table->string('contact_number');
             $table->string('contact_email');
-            $table->string('type_suppliers');
+            $table->unsignedBigInteger('id_document')->nullable();
             $table->timestamps();
+
+            $table->foreign('id_document')->references('id')->on('customer_supplier_document');
+
         });
     }
 
