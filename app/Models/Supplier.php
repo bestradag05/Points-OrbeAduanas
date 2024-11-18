@@ -11,5 +11,5 @@ class Supplier extends Model
 
     protected $table = 'suppliers';
 
-    protected $fillable = ['type_id', 'number_id', 'name_businessname', 'addres', 'contact_name', 'contact_number', 'contact_email', 'type_suppliers'];
+    protected $fillable = ['document_number','name_businessname','address','contact_name','contact_number','contact_email','state','id_document'];
 }

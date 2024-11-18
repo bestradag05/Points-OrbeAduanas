@@ -4,7 +4,7 @@
     <div class="d-flex justify-content-between">
         <h2>Proveedores</h2>
         <div>
-            <a href="{{ 'supplier/create' }}" class="btn btn-primary"> Agregar </a>
+            <a href="{{ 'suppliers/create' }}" class="btn btn-primary"> Agregar </a>
         </div>
     </div>
 
@@ -14,15 +14,15 @@
         @foreach ($suppliers as $supplier)
             <tr>
                 <td>{{ $loop->iteration }}</td>
-                <td>{{ $supplier->number_id }}</td>
+                <td>{{ $supplier->document_number }}</td>
                 <td>{{ $supplier->name_businessname }}</td>
                 <td>{{ $supplier->contact_name }}</td>
                 <td>{{ $supplier->contact_number }}</td>
                 <td>{{ $supplier->contact_email }}</td>
                 <td>{{ $supplier->state}}</td>
                 <td>
-                     <a href="{{ url('/supplier/'. $supplier->id . '/edit') }}"> <i class="fa-solid fa-pen-to-square"></i> </a>
-                     <form action="{{ url('/supplier/'.$supplier->id) }}" class="form-delete" method="POST" style="display: inline;" data-confirm-delete="true">
+                     <a href="{{ url('/suppliers/'. $supplier->id . '/edit') }}"> <i class="fa-solid fa-pen-to-square"></i> </a>
+                     <form action="{{ url('/suppliers/'.$supplier->id) }}" class="form-delete" method="POST" style="display: inline;" data-confirm-delete="true">
                         {{ method_field('DELETE') }}
                         @csrf
                         <button  type="submit" style="border: none; background: none; padding: 0; margin: 0; cursor: pointer;"> <i class="fa-solid fa-trash text-primary"></i> </button>

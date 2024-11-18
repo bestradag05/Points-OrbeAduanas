@@ -15,14 +15,15 @@ return new class extends Migration
             $table->id();
             $table->string('document_number')->unique();
             $table->string('name_businessname');
-            $table->string('addres');
+            $table->string('address');
             $table->string('contact_name');
             $table->string('contact_number');
             $table->string('contact_email');
+            $table->string('state');
             $table->unsignedBigInteger('id_document')->nullable();
             $table->timestamps();
 
-            $table->foreign('id_document')->references('id')->on('customer_supplier_document');
+            $table->foreign('id_document')->references('id')->on('customer_supplier_documents');
 
         });
     }
