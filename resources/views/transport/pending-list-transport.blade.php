@@ -16,20 +16,23 @@
                         {{ $transport->nro_operation }}
                     </a>
                 </td>
-                <td><img src="{{ asset('fotos-de-usuarios/' . $transport->routing->personal->img_url) }}"
-                        class="img-circle user-img-xs elevation-2" alt=""></td>
+                <td>{{$transport->routing->personal->names}}</td>
                 <td>{{ $transport->origin }}</td>
                 <td>{{ $transport->destination }}</td>
                 <td class="{{ $transport->state == 'Pendiente' ? 'text-warning' : '' }}">
                     {{ $transport->state }}
                 </td>
 
+                @can('transporte.generate')
                 <td>
                     <a href="{{ url('/transport/' . $transport->id . '/edit') }}" class="btn btn-outline-success btn-sm">
                         Generar punto
                     </a>
 
                 </td>
+                @else
+                <td></td>
+                @endcan
             </tr>
         @endforeach
     </x-adminlte-datatable>

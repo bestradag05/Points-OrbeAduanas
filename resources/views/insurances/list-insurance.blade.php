@@ -16,18 +16,22 @@
                         {{ $insurance->insurable->nro_operation }}
                     </a>
                 </td>
-                <td><img src="{{ asset('fotos-de-usuarios/'.$insurance->insurable->routing->personal->img_url)}}" class="img-circle user-img-xs elevation-2" alt=""></td>
+                <td>{{$insurance->insurable->routing->personal->names}}</td>
                 <td>{{ strtoupper($insurance->name_service) }}</td>
                 <td class="{{($insurance->state == 'Pendiente') ? 'text-warning' : ''}}">
                     {{ $insurance->state }}
                 </td>
 
+                @can('operaciones.generate')
                 <td>
                     <a href="{{ url('/insurance/' . $insurance->id . '/edit') }}" class="btn btn-outline-success btn-sm"> 
                         {{($insurance->state == 'Pendiente') ? 'Generar punto' : 'Modificar'}}
                     </a>
 
                 </td>
+                @else
+                <td></td>
+                @endcan
             </tr>
         @endforeach
     </x-adminlte-datatable>

@@ -9,6 +9,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\FreightController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\IncotermsController;
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\LiquidacionController;
 use App\Http\Controllers\ModalityController;
@@ -20,9 +21,11 @@ use App\Http\Controllers\RolesController;
 use App\Http\Controllers\RoutingController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\TransportController;
+use App\Http\Controllers\TypeInsuranceController;
+use App\Http\Controllers\TypeLoadController;
 use App\Http\Controllers\TypeShipmentController;
 use App\Http\Controllers\UserController;
-
+use App\Models\TypeInsurance;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,6 +76,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('customer', CustomerController::class);
     Route::resource('suppliers', SupplierController::class);
     Route::resource('type_shipment', TypeShipmentController::class);
+    Route::resource('type_load', TypeLoadController::class);
+    Route::resource('type_insurance', TypeInsuranceController::class);
+    Route::resource('incoterms', IncotermsController::class);
     Route::resource('modality', ModalityController::class);
 
     Route::resource('routing', RoutingController::class);

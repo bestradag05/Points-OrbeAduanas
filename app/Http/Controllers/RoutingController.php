@@ -261,7 +261,7 @@ class RoutingController extends Controller
 
     public function storeRoutingService(Request $request)
     {
-        /* dd($request->all()); */
+/*         dd($request->all()); */
         $routing = Routing::where('nro_operation', $request->nro_operation)->first();
 
         $type_services = TypeService::find($request->typeService);
@@ -424,7 +424,7 @@ class RoutingController extends Controller
 
                     'origin' => $request->origin,
                     'destination' => $request->destination,
-                    'transport_value' => $request->transport_value,
+                    'transport_value' => $this->parseDouble($request->transport_value),
                     'added_value' => $request->transport_added,
                     'tax_base' => $tax_base,
                     'igv' => $igv,

@@ -19,7 +19,7 @@ class FreightController extends Controller
         $heads = [
             '#',
             'N° Operacion',
-            'Asesor',
+            'Asesor Comercial',
             'Utilidad a Orbe',
             'Estado',
             'Acciones'
@@ -39,7 +39,7 @@ class FreightController extends Controller
         $heads = [
             '#',
             'N° Operacion',
-            'Asesor',
+            'Asesor Comercial',
             'Utilidad a Orbe',
             'Estado',
             'Acciones'

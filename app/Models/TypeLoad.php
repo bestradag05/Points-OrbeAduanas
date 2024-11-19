@@ -11,5 +11,5 @@ class TypeLoad extends Model
 
     protected $table = 'type_load';
 
-    protected $fillable = ['name'. 'description'];
+    protected $fillable = ['name', 'description', 'state'];
 }

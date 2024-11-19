@@ -2,30 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Incoterms;
+use App\Models\TypeLoad;
 use Illuminate\Http\Request;
 
-class IncotermsController extends Controller
+class TypeLoadController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        // Listamos los incoterms
-
-        $incoterms = Incoterms::all();
-
-        $heads = [
-            '#',
-            'Code',
-            'Nombre',
-            'Descripcion',
-            'Acciones'
-        ];
-
-
-        return view("incoterms/list-incoterm", compact("incoterms", "heads"));
+        $type_loads = TypeLoad::all();
+        
+         $heads = [
+             '#',
+             'Nombre',
+             'Descripcion',
+             'Estado',
+             'Acciones'
+         ];
+         
+ 
+         return view("type_load/list-type_load", compact("type_loads", "heads"));
     }
 
     /**
@@ -33,9 +31,7 @@ class IncotermsController extends Controller
      */
     public function create()
     {
-        //
-
-        return view("incoterms/register-incoterm");
+        return view('type_load.register-type_load');
     }
 
     /**
@@ -43,20 +39,17 @@ class IncotermsController extends Controller
      */
     public function store(Request $request)
     {
-        //Registramos el incoterm
-
+        //
         $this->validateForm($request, null);
 
 
-        Incoterms::create([
-            'code' => $request->code,
+        TypeLoad::create([
             'name' => $request->name,
             'description' => $request->description,
             'state' => 'Activo'
         ]);
 
-
-       return redirect('incoterms');
+        return redirect('type_load');
     }
 
     /**
@@ -72,10 +65,9 @@ class IncotermsController extends Controller
      */
     public function edit(string $id)
     {
-        $incoterm = Incoterms::findorFail($id);
+        $type_load = TypeLoad::findOrFail($id);
 
-        return view("incoterms/edit-incoterm", compact('incoterm'));
-        
+        return view('type_load.edit-type_load', compact('type_load'));
     }
 
     /**
@@ -85,15 +77,15 @@ class IncotermsController extends Controller
     {
         //
 
-        $this->validateForm($request, $id);
+        $this->validateForm($request, null);
 
-        $incoterms = Incoterms::findorFail($id);
+        $type_load = TypeLoad::find($id);
+ 
+         $type_load->fill($request->all());
+         $type_load->save();
+         
+         return redirect('type_load');
 
-
-        $incoterms->fill($request->all());
-        $incoterms->save();
-
-        return redirect('incoterms');
 
     }
 
@@ -102,21 +94,18 @@ class IncotermsController extends Controller
      */
     public function destroy(string $id)
     {
-        $incoterm = Incoterms::find($id);
-        $incoterm->update(['state' => 'Inactivo']);
+        $type_load = TypeLoad::find($id);
+        $type_load->update(['state' => 'Inactivo']);
 
-        return redirect('incoterms')->with('eliminar', 'ok');
+        return redirect('type_load')->with('eliminar', 'ok');
     }
-
 
     public function validateForm($request, $id){
         $request->validate([
-            'code' => 'required|string|unique:incoterms,code,' . $id,
-            'name' => 'required|string',
+            'name' => 'required|string|unique:type_load,name,' . $id,
             'description' => 'nullable|string'
         ]);
     
     }
-
 
 }

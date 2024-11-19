@@ -18,20 +18,24 @@
                         {{ $freight->nro_operation }}
                     </a>
                 </td>
-                <td><img src="{{ asset('fotos-de-usuarios/' . $freight->routing->personal->img_url) }}"
-                        class="img-circle user-img-xs elevation-2" alt=""></td>
+                <td>{{$freight->routing->personal->names}}</td>
 
                 <td>{{ $freight->value_utility }}</td>
 
                 <td class="{{ $freight->state == 'Pendiente' ? 'text-warning' : 'text-success' }}">{{ $freight->state }}
                 </td>
 
+                @can('operaciones.generate')
                 <td>
                     <a href="{{ url('/freight/' . $freight->id . '/edit') }}" class="btn btn-outline-success btn-sm">
                         {{ $freight->state == 'Pendiente' ? 'Generar punto' : 'Modificar' }}
                     </a>
 
                 </td>
+                @else
+                <td></td>
+                @endcan
+
             </tr>
         @endforeach
     </x-adminlte-datatable>

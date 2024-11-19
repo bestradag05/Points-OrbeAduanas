@@ -11,7 +11,7 @@ class TypeInsurance extends Model
 
     protected $table = 'type_insurance';
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'state'];
 
 
     public function insurances()

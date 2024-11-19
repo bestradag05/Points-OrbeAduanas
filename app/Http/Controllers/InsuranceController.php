@@ -18,7 +18,7 @@ class InsuranceController extends Controller
         $heads = [
             '#',
             'N° Operacion',
-            'Asesor',
+            'Asesor Comercial',
             'Aduana/Flete',
             'Estado',
             'Acciones'
@@ -104,7 +104,7 @@ class InsuranceController extends Controller
         $heads = [
             '#',
             'N° Operacion',
-            'Asesor',
+            'Asesor Comercial',
             'Aduana/Flete',
             'Estado',
             'Acciones'

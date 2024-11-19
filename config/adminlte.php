@@ -385,7 +385,15 @@ return [
                     'url'  => 'custom',
                     'icon' => 'fa-solid fa-check-double',
                     'active' => ['custom'],
-                ]
+                ],
+                [
+                    'text' => 'Modalidad',
+                    'url'  => 'modality',
+                    'icon' => 'fa-duotone fa-box-taped',
+                    'active' => ['modality', 'modality*', 'regex:@^content/[0-9]+$@'],
+                    'can' => 'modality.list'
+                ],
+
             ]
         ],
         [
@@ -397,25 +405,32 @@ return [
                     'text' => 'Puntos pendientes - Flete',
                     'url' => 'freight/pending',
                     'icon'  => 'fa-solid fa-bell-exclamation',
-                    'active' => ['freight', 'freight*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['freight/pending'],
                 ],
                 [
                     'text' => 'Todos los puntos - Flete',
                     'url'  => 'freight',
                     'icon' => 'fa-solid fa-check-double',
-                    'active' => ['freight', 'freight*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['freight'],
                 ],
                 [
                     'text' => 'Puntos pendientes - Seguro',
                     'url'  => 'insurance/pending',
                     'icon' => 'fa-solid fa-check-double',
-                    'active' => ['insurance', 'insurance*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['insurance/pending'],
                 ],
                 [
                     'text' => 'Todos los puntos - Seguro',
                     'url'  => 'insurance',
                     'icon' => 'fa-solid fa-check-double',
-                    'active' => ['insurance', 'insurance*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['insurance'],
+                ],
+                [
+                    'text' => 'Tipo de Seguro',
+                    'url'  => 'type_insurance',
+                    'icon' => 'fa-solid fa-check-double',
+                    'active' => ['type_insurance', 'type_insurance*', 'regex:@^content/[0-9]+$@'],
+                    'can' => 'operaciones.type_insurance',
                 ]
             ]
 
@@ -429,13 +444,13 @@ return [
                     'text' => 'Puntos pendientes',
                     'url' => 'transport/pending',
                     'icon'  => 'fa-solid fa-bell-exclamation',
-                    'active' => ['transport', 'transport*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['transport/pending'],
                 ],
                 [
                     'text' => 'Todos los puntos',
                     'url'  => 'transport',
                     'icon' => 'fa-solid fa-check-double',
-                    'active' => ['transport', 'transport*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['transport'],
                 ]
             ]
         ],
@@ -546,12 +561,20 @@ return [
             'can' => 'type_shipment.list',
         ],
         [
-            'text' => 'Modalidad',
-            'url'  => 'modality',
-            'icon' => 'fa-duotone fa-box-taped',
-            'active' => ['modality', 'modality*', 'regex:@^content/[0-9]+$@'],
-            'can' => 'modality.list'
+            'text' => 'Tipo de carga',
+            'url'  => 'type_load',
+            'icon' => 'fa-sharp fa-solid fa-container-storage',
+            'active' => ['type_load', 'type_load*', 'regex:@^content/[0-9]+$@'],
+            'can' => 'type_load.list',
         ],
+        [
+            'text' => 'Incoterms',
+            'url'  => 'incoterms',
+            'icon' => 'fa-sharp fa-solid fa-container-storage',
+            'active' => ['incoterms', 'incoterms*', 'regex:@^content/[0-9]+$@'],
+            'can' => 'incoterms.list',
+        ],
+       
         [
             'text' => 'Routing',
             'url'  => 'routing',

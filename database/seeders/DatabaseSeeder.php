@@ -49,15 +49,21 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'personal.delete', 'alias' => 'Eliminar personal', 'guard_name' => 'web']);
         Permission::create(['name' => 'personal.list', 'alias' => 'Listar personal', 'guard_name' => 'web']);
 
-        Permission::create(['name' => 'liquidacion.list', 'alias' => 'Listar liquidacion', 'guard_name' => 'web']);
+        Permission::create(['name' => 'incoterms.create', 'alias' => 'Crear incoterm', 'guard_name' => 'web']);
+        Permission::create(['name' => 'incoterms.update', 'alias' => 'Actualizar incoterm', 'guard_name' => 'web']);
+        Permission::create(['name' => 'incoterms.delete', 'alias' => 'Eliminar incoterm', 'guard_name' => 'web']);
+        Permission::create(['name' => 'incoterms.list', 'alias' => 'Listar incoterm', 'guard_name' => 'web']);
+
+        Permission::create(['name' => 'liquidacion.list', 'alias' => 'Listar puntos', 'guard_name' => 'web']);
         Permission::create(['name' => 'liquidacion.generate', 'alias' => 'Generar puntos', 'guard_name' => 'web']);
 
 
-        Permission::create(['name' => 'operaciones.list', 'alias' => 'Listar operaciones', 'guard_name' => 'web']);
+        Permission::create(['name' => 'operaciones.list', 'alias' => 'Listar puntos', 'guard_name' => 'web']);
         Permission::create(['name' => 'operaciones.generate', 'alias' => 'Generar puntos', 'guard_name' => 'web']);
+        Permission::create(['name' => 'operaciones.type_insurance', 'alias' => 'Tipo de Seguro', 'guard_name' => 'web']);
        
         
-        Permission::create(['name' => 'transporte.list', 'alias' => 'Listar transporte', 'guard_name' => 'web']);
+        Permission::create(['name' => 'transporte.list', 'alias' => 'Listar puntos', 'guard_name' => 'web']);
         Permission::create(['name' => 'transporte.generate', 'alias' => 'Generar puntos', 'guard_name' => 'web']);
        
     
@@ -110,11 +116,6 @@ class DatabaseSeeder extends Seeder
 
         $user->assignRole($role);
 
-        $permissions = Permission::all();
-    
-        $role->givePermissionTo($permissions);
-       
-
 
         $document = PersonalDocument::create([
             'name' => 'DNI',
@@ -147,8 +148,6 @@ class DatabaseSeeder extends Seeder
             'id_user' => $user->id
         ]);
 
-
-        
 
 
         /*  Regime */
@@ -190,24 +189,24 @@ class DatabaseSeeder extends Seeder
 
         /* Type load */
 
-        TypeLoad::create(['name' => 'Carga general', 'description' => 'Carga general']);
-        TypeLoad::create(['name' => 'Carga a granel', 'description' => 'Carga a granel']);
-        TypeLoad::create(['name' => 'Carga peligrosa', 'description' => 'Carga peligrosa']);
-        TypeLoad::create(['name' => 'Carga perecedera', 'description' => 'Carga perecedera']);
-        TypeLoad::create(['name' => 'Carga fragil', 'description' => 'Carga fragil']);
+        TypeLoad::create(['name' => 'Carga general', 'description' => 'Carga general', 'state' => 'Activo']);
+        TypeLoad::create(['name' => 'Carga a granel', 'description' => 'Carga a granel', 'state' => 'Activo']);
+        TypeLoad::create(['name' => 'Carga peligrosa', 'description' => 'Carga peligrosa', 'state' => 'Activo']);
+        TypeLoad::create(['name' => 'Carga perecedera', 'description' => 'Carga perecedera', 'state' => 'Activo']);
+        TypeLoad::create(['name' => 'Carga fragil', 'description' => 'Carga fragil', 'state' => 'Activo']);
 
         /*  incoterms */
-        Incoterms::create(['code' => 'EXW', 'name' => 'Ex Works']);
-        Incoterms::create(['code' => 'FCA', 'name' => 'Free Carrier']);
-        Incoterms::create(['code' => 'CPT', 'name' => 'Carriage Paid To']);
-        Incoterms::create(['code' => 'CIP', 'name' => 'Carriage and Insurance Paid To']);
-        Incoterms::create(['code' => 'DAP', 'name' => 'Delivered At Place']);
-        Incoterms::create(['code' => 'DPU', 'name' => 'Delivered at Place Unloaded']);
-        Incoterms::create(['code' => 'DDP', 'name' => 'Delivered Duty Paid']);
-        Incoterms::create(['code' => 'FAS', 'name' => 'Free Alongside Ship']);
-        Incoterms::create(['code' => 'FOB', 'name' => 'Free On Board']);
-        Incoterms::create(['code' => 'CFR', 'name' => 'Cost and Freight']);
-        Incoterms::create(['code' => 'CIF', 'name' => 'Cost, Insurance and Freight']);
+        Incoterms::create(['code' => 'EXW', 'name' => 'Ex Works', 'state' => 'Activo']);
+        Incoterms::create(['code' => 'FCA', 'name' => 'Free Carrier', 'state' => 'Activo']);
+        Incoterms::create(['code' => 'CPT', 'name' => 'Carriage Paid To', 'state' => 'Activo']);
+        Incoterms::create(['code' => 'CIP', 'name' => 'Carriage and Insurance Paid To', 'state' => 'Activo']);
+        Incoterms::create(['code' => 'DAP', 'name' => 'Delivered At Place', 'state' => 'Activo']);
+        Incoterms::create(['code' => 'DPU', 'name' => 'Delivered at Place Unloaded', 'state' => 'Activo']);
+        Incoterms::create(['code' => 'DDP', 'name' => 'Delivered Duty Paid', 'state' => 'Activo']);
+        Incoterms::create(['code' => 'FAS', 'name' => 'Free Alongside Ship', 'state' => 'Activo']);
+        Incoterms::create(['code' => 'FOB', 'name' => 'Free On Board', 'state' => 'Activo']);
+        Incoterms::create(['code' => 'CFR', 'name' => 'Cost and Freight', 'state' => 'Activo']);
+        Incoterms::create(['code' => 'CIF', 'name' => 'Cost, Insurance and Freight', 'state' => 'Activo']);
 
         /*  modality */
         Modality::create(['name' => 'ANTICIPADO']);
@@ -222,8 +221,8 @@ class DatabaseSeeder extends Seeder
         /* TypeInsurance */
 
         
-        TypeInsurance::create(['name' => 'Seguro A']);
-        TypeInsurance::create(['name' => 'Seguro B']);
+        TypeInsurance::create(['name' => 'Seguro A' , 'state' => 'Activo']);
+        TypeInsurance::create(['name' => 'Seguro B' , 'state' => 'Activo']);
         
         $this->call(CountrySeeder::class);
         $this->call(StatesCountrySeeder::class);

@@ -19,6 +19,7 @@ class TypeShipmentController extends Controller
          $heads = [
              '#',
              'Code',
+             'Nombre',
              'Descripcion',
              'Acciones'
          ];
@@ -97,7 +98,7 @@ class TypeShipmentController extends Controller
     public function destroy(string $id)
     {
         $type_shipment = TypeShipment::find($id);
-        $type_shipment->delete();
+        $type_shipment->update(['state' => 'Inactivo']);
 
         return redirect('type_shipment')->with('eliminar', 'ok');
     }

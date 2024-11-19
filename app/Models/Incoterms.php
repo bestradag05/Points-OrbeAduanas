@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Incoterms extends Model
 {
     use HasFactory;
+
+    protected $table = 'incoterms';
+
+    protected $fillable = ['code', 'name', 'description', 'state'];
+
+    
+
 }

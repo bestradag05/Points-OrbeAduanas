@@ -16,16 +16,20 @@
                         {{ $custom->nro_operation }}
                     </a>
                 </td>
-                <td><img src="{{ asset('fotos-de-usuarios/'.$custom->routing->personal->img_url)}}" class="img-circle user-img-xs elevation-2" alt=""></td>
+                <td>{{$custom->routing->personal->names}}</td>
                 <td>{{ $custom->modality->name }}</td>
                 <td class="{{($custom->state == 'Pendiente') ? 'text-warning' : ''}}">
                     {{ $custom->state }}
                 </td>
 
+                @can('liquidacion.generate')
                 <td>
                      <a href="{{ url('/custom/'.$custom->id.'/edit') }}" class="btn btn-outline-success btn-sm"> Generar punto </a>
                     
                 </td>
+                @else
+                    <td></td>
+                @endcan
             </tr>
         @endforeach
     </x-adminlte-datatable>
