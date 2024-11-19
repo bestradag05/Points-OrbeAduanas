@@ -12,7 +12,7 @@ class Customer extends Model
 
     protected $table = 'customer';
 
-    protected $fillable = ['ruc', 'name_businessname', 'contact_name', 'contact_number', 'contact_email', 'state', 'id_personal'];
+    protected $fillable = ['document_number','name_businessname','address','contact_name','contact_number','contact_email','state','id_document','id_personal'];
 
 
 

@@ -43,7 +43,7 @@ class PersonalController extends Controller
     public function create()
     {
 
-        $documents = Document::all();
+        $documents = PersonalDocument::all();
 
         //
         return view("personal/register-personal", compact('documents'));

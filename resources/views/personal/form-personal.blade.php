@@ -55,7 +55,9 @@
             <select name="id_document" id="id_document" class="form-control">
                 <option value="" disabled selected> -- Seleccione --</option>
                 @foreach ($documents as $document)
-                    <option value="{{ $document->id }}" {{ $document->id ? 'selected' : old('id_document') }}>
+                    <option value="{{ $document->id }}" 
+                        {{ (isset($personal->id_document) && $personal->id_document == $document->id) || old('id_document') == $document->id ? 'selected' : '' }}
+                        >
                         {{ $document->name }}
                     </option>
                 @endforeach

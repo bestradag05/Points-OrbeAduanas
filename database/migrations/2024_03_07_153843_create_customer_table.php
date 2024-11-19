@@ -13,15 +13,18 @@ return new class extends Migration
     {
         Schema::create('customer', function (Blueprint $table) {
             $table->id();
-            $table->string('ruc')->unique();
-            $table->string('name_businessname')->unique();
+            $table->string('document_number')->unique();
+            $table->string('name_businessname');
+            $table->string('address');
             $table->string('contact_name');
             $table->string('contact_number');
             $table->string('contact_email');
-            $table->string('state')->nullable();
+            $table->string('state');
+            $table->unsignedBigInteger('id_document')->nullable();
             $table->unsignedBigInteger('id_personal');
             $table->timestamps();
 
+            $table->foreign('id_document')->references('id')->on('customer_supplier_documents');
             $table->foreign('id_personal')->references('id')->on('personal');
         });
     }

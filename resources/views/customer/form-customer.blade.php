@@ -1,17 +1,34 @@
 <div class="row">
 
+
     <div class="col-6">
-        <label for="name_businessname">RUC</label>
+
+        <x-adminlte-select2 name="id_document" label="Tipo de documento" igroup-size="md"
+            data-placeholder="Seleccione una opcion...">
+            <option />
+            @foreach ($documents as $document)
+                <option value="{{$document->id}}" 
+                    {{ (isset($customer->id_document) && $customer->id_document == $document->id) || old('id_document') == $document->id ? 'selected' : '' }}
+                    >
+                    {{ $document->name }}
+                </option>
+            @endforeach
+        </x-adminlte-select2>
+
+    </div>
+
+    <div class="col-6">
+        <label for="document_number">Numero de documento</label>
         <div class="input-group">
             <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-search"></i></span>
             </div>
-            <input type="text" class="form-control" id="ruc" name="ruc" placeholder="Ingrese su ruc"
-                onchange="searchCustomer(this)" value="{{ isset($customer->ruc) ? $customer->ruc : old('ruc') }}">
+            <input type="text" class="form-control" id="document_number" name="document_number" placeholder="Ingrese su numero de documento"
+                onchange="searchsupplier(this)" value="{{ isset($customer->document_number) ? $customer->document_number : old('document_number') }}">
 
         </div>
 
-        @error('ruc')
+        @error('document_number')
             <div class="text-danger">{{ $message }}</div>
         @enderror
 
@@ -25,6 +42,21 @@
                 placeholder="Ingrese su razon social o nombre"
                 value="{{ isset($customer->name_businessname) ? $customer->name_businessname : old('name_businessname') }}">
             @error('name_businessname')
+                <div class="text-danger">{{ $message }}</div>
+            @enderror
+        </div>
+
+    </div>
+
+
+    <div class="col-6">
+
+        <div class="form-group">
+            <label for="address">Direccion</label>
+            <input type="text" class="form-control" id="address" name="address"
+                placeholder="Ingrese su razon social o nombre"
+                value="{{ isset($customer->address) ? $customer->address : old('address') }}">
+            @error('address')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
@@ -83,7 +115,7 @@
 
 @push('scripts')
     <script>
-        function searchCustomer(event) {
+        function searchsupplier(event) {
 
             const name_businessname = document.getElementById('name_businessname');
 

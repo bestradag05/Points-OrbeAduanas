@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\CustomerSupplierDocument;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -53,7 +54,9 @@ class CustomerController extends Controller
     {
         // Redireccion al formulario para crear cliente
 
-        return view("customer/register-customer");
+        $documents = CustomerSupplierDocument::all();
+
+        return view("customer/register-customer", compact('documents'));
     }
 
     /**
@@ -67,8 +70,10 @@ class CustomerController extends Controller
 
 
         Customer::create([
-            'ruc' => $request->ruc,
+            'id_document' => $request->id_document,
+            'document_number' => $request->document_number,
             'name_businessname' => $request->name_businessname,
+            'address' => $request->address,
             'contact_name' => $request->contact_name,
             'contact_number' => $request->contact_number,
             'contact_email' => $request->contact_email,
@@ -115,8 +120,9 @@ class CustomerController extends Controller
         // Redireccion al form de edit
 
         $customer = Customer::find($id);
+        $documents = CustomerSupplierDocument::all();
 
-        return view("customer/edit-customer", compact('customer'));
+        return view("customer/edit-customer", compact('customer', 'documents'));
     }
 
     /**
@@ -151,11 +157,22 @@ class CustomerController extends Controller
 
     public function validateForm($request, $id)
     {
+        $document = CustomerSupplierDocument::find($request->id_document);
+        $digits = $document ? $document->number_digits : null;
+
+
         $request->validate([
-            'ruc' => 'required|numeric|digits:11|unique:customer,ruc,' . $id,
+            'id_document' => 'required|string',
+            'document_number' => [
+                'required',
+                'numeric',
+                'unique:customer,document_number,' . $id,
+                $digits ? 'digits:' . $digits : 'nullable'
+            ],
             'name_businessname' => 'required|string|unique:customer,name_businessname,' . $id,
+            'address' => 'required|string',
             'contact_name' => 'required|string',
-            'contact_number' => 'required|string|digits:9',
+            'contact_number' => 'required|string',
             'contact_email' => 'required|email',
         ]);
     }

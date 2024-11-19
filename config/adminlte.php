@@ -517,9 +517,9 @@ return [
             'submenu' => [
                 [
                     'text' => 'Clientes',
-                    'url'  => 'customers',
+                    'url'  => 'customer',
                     'icon'  => 'fa-solid fa-user-tie',
-                    'active' => ['customers'],
+                    'active' => ['customer'],
                     
                 ],
                 [

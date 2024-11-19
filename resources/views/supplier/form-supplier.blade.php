@@ -7,7 +7,8 @@
             data-placeholder="Seleccione una opcion...">
             <option />
             @foreach ($documents as $document)
-                <option value="{{$document->id}}" {{ $document->id ? 'selected' : old('id_document') }}>
+                <option value="{{ $document->id }}"
+                    {{ (isset($supplier->id_document) && $supplier->id_document == $document->id) || old('id_document') == $document->id ? 'selected' : '' }}>
                     {{ $document->name }}
                 </option>
             @endforeach
@@ -21,8 +22,9 @@
             <div class="input-group-prepend">
                 <span class="input-group-text"><i class="fas fa-search"></i></span>
             </div>
-            <input type="text" class="form-control" id="document_number" name="document_number" placeholder="Ingrese su numero de documento"
-                onchange="searchsupplier(this)" value="{{ isset($supplier->document_number) ? $supplier->document_number : old('document_number') }}">
+            <input type="text" class="form-control" id="document_number" name="document_number"
+                placeholder="Ingrese su numero de documento" onchange="searchsupplier(this)"
+                value="{{ isset($supplier->document_number) ? $supplier->document_number : old('document_number') }}">
 
         </div>
 
@@ -128,13 +130,13 @@
                     // Manejar los datos de la respuesta
 
                     name_businessname.value = data.lista[0].apenomdenunciado;
-                    name_businessname.readOnly  = true;
-                   
+                    name_businessname.readOnly = true;
+
                 })
                 .catch(error => {
                     // Manejar cualquier error
                     console.error('Hubo un problema con la solicitud fetch:', error);
-            
+
                     name_businessname.value = '';
                     name_businessname.readOnly = false;
                 });
