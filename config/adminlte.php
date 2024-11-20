@@ -478,7 +478,7 @@ return [
                     'url'  => 'additionals',
                     'icon' => 'fa-solid fa-check-double',
                     'active' => ['additionals', 'additionals*', 'regex:@^content/[0-9]+$@'],
-                    'can' => 'additional.list'
+                    'can' => 'additional.listAll'
                 ]
             ]
         ],

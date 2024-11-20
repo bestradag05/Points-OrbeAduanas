@@ -134,14 +134,14 @@ function actualizarDataTable(data) {
         let img  = null;
 
         if(personalPoint.personal.img_url === null){
-            img = 'user_default.png';
+            img = 'personals/user_default.png';
         }else{
             img = personalPoint.personal.img_url;
         }
 
         table.row.add([
             index + 1,
-            `<img src="/storage/personals/${img}" width="50px" />`,
+            `<img src="/storage/${img}" width="50px" />`,
             `${personalPoint.personal.names} ${personalPoint.personal.last_name}`,
             `<span class="${personalPoint.puntos < 15 ? 'text-secondary' : 'text-success'}">${personalPoint.puntos}</span>`
         ]);

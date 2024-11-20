@@ -35,22 +35,20 @@ class PointsController extends Controller
     {
         $personals = Personal::whereHas('user.roles', function ($query) {
             $query->where('name', 'Asesor Comercial');
-        })
-            ->whereHas('routing.custom.insurance', function ($query) {
-                $query->where('state', 'Generado')->where('model_insurable_service', Custom::class);
-            })
-            ->orWhereHas('routing.freight.insurance', function ($query) {
-                $query->where('state', 'Generado')->where('model_insurable_service', Freight::class);
-            })
-            ->with([
+        })->where(function ($query) {
+            $query->whereHas('routing.custom.insurance', function ($subQuery) {
+                $subQuery->where('state', 'Generado')->where('model_insurable_service', Custom::class);
+            })->orWhereHas('routing.freight.insurance', function ($subQuery) {
+                $subQuery->where('state', 'Generado')->where('model_insurable_service', Freight::class);
+            });
+        })->with([
                 'routing.custom.insurance' => function ($query) {
                     $query->where('state', 'Generado')->where('model_insurable_service', Custom::class);
                 },
                 'routing.freight.insurance' => function ($query) {
                     $query->where('state', 'Generado')->where('model_insurable_service', Freight::class);
                 }
-            ])
-            ->get();
+            ])->get();
 
 
         $startDate = $request->startDate ? Carbon::parse($request->startDate)->startOfDay() : Carbon::now()->startOfMonth()->startOfDay();
@@ -215,20 +213,19 @@ class PointsController extends Controller
         });
 
 
+        dd($personalPoints);
 
         $personalPoints = $personalPoints->sortByDesc('pointsTotal')->values();
 
 
-           //verificamos que sea una solicitud ajax para reenviar como json la informacion
-           if ($request->type) {
+        //verificamos que sea una solicitud ajax para reenviar como json la informacion
+        if ($request->type) {
             return response()->json($personalPoints);
         }
 
 
 
         return view('points/points-additional');
-
-
     }
 
 

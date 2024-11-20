@@ -69,6 +69,7 @@ class DatabaseSeeder extends Seeder
     
 
         Permission::create(['name' => 'additional.list', 'alias' => 'Listar Adicionales', 'guard_name' => 'web']);
+        Permission::create(['name' => 'additional.listAll', 'alias' => 'Listar todos los adicionales', 'guard_name' => 'web']);
         Permission::create(['name' => 'additional.custom', 'alias' => 'Adicional de Aduanas', 'guard_name' => 'web']);
         Permission::create(['name' => 'additional.freight', 'alias' => 'Adicional de Flete', 'guard_name' => 'web']);
         Permission::create(['name' => 'additional.generate', 'alias' => 'Generar puntos', 'guard_name' => 'web']);
