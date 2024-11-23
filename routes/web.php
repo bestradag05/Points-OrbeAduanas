@@ -49,7 +49,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 
 Route::middleware('auth')->group(function () {
-    
+
     Route::get('/home', function () {
         return view('home');
     })->name('home');
@@ -97,7 +97,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('transport/pending', [TransportController::class, 'getTransportPending']);
     Route::resource('transport', TransportController::class);
-    
+
     Route::get('insurance/pending', [InsuranceController::class, 'getInsurancePending']);
     Route::resource('insurance', InsuranceController::class);
 
@@ -111,6 +111,21 @@ Route::middleware('auth')->group(function () {
     Route::get('points/transport', [PointsController::class, 'getPointTransport']);
     Route::get('points/insurance', [PointsController::class, 'getPointInsurance']);
     Route::get('points/additionals', [PointsController::class, 'getPointAdditional']);
+
+    /* Reportes */
+
+    Route::get('points/export/customs/{type}', [PointsController::class, 'exportCustom']);
+    Route::get('points/export/customs/{type}', [PointsController::class, 'exportCustom']);
+
+    Route::get('points/export/freight/{type}', [PointsController::class, 'exportFreight']);
+    Route::get('points/export/freight/{type}', [PointsController::class, 'exportFreight']);
+
+    Route::get('points/export/transport/{type}', [PointsController::class, 'exportTransport']);
+    Route::get('points/export/transport/{type}', [PointsController::class, 'exportTransport']);
+
+    Route::get('points/export/insurance/{type}', [PointsController::class, 'exportInsurance']);
+    Route::get('points/export/insurance/{type}', [PointsController::class, 'exportInsurance']);
+
+    Route::get('points/export/additionals/{type}', [PointsController::class, 'exportAdditional']);
+    Route::get('points/export/additionals/{type}', [PointsController::class, 'exportAdditional']);
 });
-
-

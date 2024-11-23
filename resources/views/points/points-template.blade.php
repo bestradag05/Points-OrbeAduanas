@@ -27,7 +27,7 @@
                         'maxYear' => "js:parseInt(moment().format('YYYY'),10)",
                         'locale' => [
                             'format' => 'DD/MM/YYYY',
-                            "separator" => " - ",
+                            'separator' => ' - ',
                             'applyLabel' => 'Aplicar',
                             'cancelLabel' => 'Cancelar',
                             'fromLabel' => 'Desde',
@@ -69,13 +69,20 @@
             </div>
 
             <div class="col-4 row justify-content-center">
-                <div class="mx-2 "><a href="" class="text-indigo" ><i class="fa-sharp fa-xl fa-solid fa-file-pdf"></i></a></div>
-                <div class="mx-2"><a href="" class="text-indigo"> <i class="fa-sharp fa-xl fa-solid fa-file-excel"></i></a></div>
+                {{-- {{ url('/points/export/'.$chart .'/pdf') }} --}}
+                {{-- {{ url('/points/export/'.$chart.'/excel') }} --}}
+                <div class="mx-2 "><a href="#" id="pdf" class="text-indigo"><i
+                            class="fa-sharp fa-xl fa-solid fa-file-pdf"></i></a></div>
+                <div class="mx-2">
+                    <a href="#" id="excel" class="text-indigo"> 
+                        <i class="fa-sharp fa-xl fa-solid fa-file-excel"></i>
+                    </a>
+                </div>
             </div>
 
 
             <div class="col-8 my-5 ">
-                <canvas  id="{{ $chart }}"></canvas>
+                <canvas id="{{ $chart }}"></canvas>
             </div>
 
 
@@ -101,3 +108,5 @@
 
 
 @stop
+
+

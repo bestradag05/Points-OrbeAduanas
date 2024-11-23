@@ -25,6 +25,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_additional_service');
             $table->string('model_additional_service');
             $table->string('additional_type');
+            $table->string('administrator')->nullable();
             $table->string('state')->nullable();
             $table->timestamps();
         });

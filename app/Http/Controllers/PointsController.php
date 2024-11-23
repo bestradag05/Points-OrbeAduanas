@@ -2,12 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\AdditionalExport;
+use App\Exports\CustomsExport;
+use App\Exports\FreightExport;
+use App\Exports\InsuranceExport;
+use App\Exports\TransportExport;
+use App\Models\AdditionalPoints;
 use App\Models\Custom;
 use App\Models\Freight;
 use App\Models\Insurance;
 use App\Models\Personal;
+use App\Models\Transport;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PointsController extends Controller
 {
@@ -140,13 +149,20 @@ class PointsController extends Controller
             ->orWhereHas('routing.freight.additional_point', function ($query) {
                 $query->where('state', 'Generado')->where('model_additional_service', Freight::class);
             })
+            ->orWhereHas('routing.transport.additional_point', function ($query) {
+                $query->where('state', 'Generado')->where('model_additional_service', Transport::class);
+            })
             ->with([
                 'routing.custom.additional_point' => function ($query) {
                     $query->where('state', 'Generado')->where('model_additional_service', Custom::class);
                 },
                 'routing.freight.additional_point' => function ($query) {
                     $query->where('state', 'Generado')->where('model_additional_service', Freight::class);
+                },
+                'routing.transport.additional_point' => function ($query) {
+                    $query->where('state', 'Generado')->where('model_additional_service', Transport::class);
                 }
+                
             ])
             ->get();
 
@@ -212,8 +228,6 @@ class PointsController extends Controller
             ];
         });
 
-
-        dd($personalPoints);
 
         $personalPoints = $personalPoints->sortByDesc('pointsTotal')->values();
 
@@ -317,4 +331,130 @@ class PointsController extends Controller
             })->get();
         }
     }
+
+
+
+    public function exportCustom(Request $request, $type)
+    {
+
+        if ($type === 'excel') {
+
+            return Excel::download(new CustomsExport($request->startDate, $request->endDate), 'customs.xlsx');
+
+        } else if ($type === 'pdf') {
+
+            $customs = Custom::whereBetween('date_register', [$request->startDate, $request->endDate])
+            ->where('state', 'Generado') // Ajusta "estado" al nombre correcto de tu columna
+            ->get();
+
+
+            // Genera el PDF
+            $pdf = Pdf::loadView('points.exports.custom.custom-export', compact('customs'));
+
+            // Opcional: Configura el tamaño de página y orientación
+            $pdf->setPaper('A4', 'landscape');
+
+            // Descarga el PDF
+            return $pdf->stream('customs.pdf');
+        }
+    }
+
+    public function exportFreight(Request $request, $type)
+    {
+
+        if ($type === 'excel') {
+
+            return Excel::download(new FreightExport($request->startDate, $request->endDate), 'freight.xlsx');
+
+        } else if ($type === 'pdf') {
+
+            $freights = Freight::whereBetween('date_register', [$request->startDate, $request->endDate])
+            ->where('state', 'Generado') // Ajusta "estado" al nombre correcto de tu columna
+            ->get();
+
+            // Genera el PDF
+            $pdf = Pdf::loadView('points.exports.freight.freight-export', compact('freights'));
+
+            // Opcional: Configura el tamaño de página y orientación
+            $pdf->setPaper('A4', 'landscape');
+
+            // Descarga el PDF
+            return $pdf->stream('freight.pdf');
+        }
+    }
+
+
+    public function exportTransport(Request $request, $type)
+    {
+
+        if ($type === 'excel') {
+
+            return Excel::download(new TransportExport($request->startDate, $request->endDate), 'transport.xlsx');
+
+        } else if ($type === 'pdf') {
+
+            $transports = Transport::whereBetween('date_register', [$request->startDate, $request->endDate])
+            ->where('state', 'Generado') // Ajusta "estado" al nombre correcto de tu columna
+            ->get();
+
+            // Genera el PDF
+            $pdf = Pdf::loadView('points.exports.transport.transport-export', compact('transports'));
+
+            // Opcional: Configura el tamaño de página y orientación
+            $pdf->setPaper('A4', 'landscape');
+
+            // Descarga el PDF
+            return $pdf->stream('transport.pdf');
+        }
+    }
+
+    public function exportInsurance(Request $request, $type)
+    {
+
+        if ($type === 'excel') {
+
+            return Excel::download(new InsuranceExport($request->startDate, $request->endDate), 'insurance.xlsx');
+
+        } else if ($type === 'pdf') {
+
+            $insurances = Insurance::whereBetween('date', [$request->startDate, $request->endDate])
+            ->where('state', 'Generado') // Ajusta "estado" al nombre correcto de tu columna
+            ->get();
+
+            // Genera el PDF
+            $pdf = Pdf::loadView('points.exports.insurance.insurance-export', compact('insurances'));
+
+            // Opcional: Configura el tamaño de página y orientación
+            $pdf->setPaper('A4', 'landscape');
+
+            // Descarga el PDF
+            return $pdf->stream('insurance.pdf');
+        }
+    }
+
+    public function exportAdditional(Request $request,$type)
+    {
+
+        if ($type === 'excel') {
+
+            return Excel::download(new AdditionalExport($request->startDate, $request->endDate), 'additional.xlsx');
+
+        } else if ($type === 'pdf') {
+
+            $additionals = AdditionalPoints::whereBetween('date_register', [$request->startDate, $request->endDate])
+            ->where('state', 'Generado') // Ajusta "estado" al nombre correcto de tu columna
+            ->get();
+
+            // Genera el PDF
+            $pdf = Pdf::loadView('points.exports.additional.additional-export', compact('additionals'));
+
+            // Opcional: Configura el tamaño de página y orientación
+            $pdf->setPaper('A4', 'landscape');
+
+            // Descarga el PDF
+            return $pdf->stream('additional.pdf');
+        }
+    }
+
+
 }

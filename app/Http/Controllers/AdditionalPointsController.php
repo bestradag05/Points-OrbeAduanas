@@ -122,6 +122,7 @@ class AdditionalPointsController extends Controller
 
         if ($additional->additional_type === 'AD-FLETE') {
             $additional->update([
+                'administrator' => auth()->user()->personal->names,
                 'state' => 'Generado'
             ]);
 

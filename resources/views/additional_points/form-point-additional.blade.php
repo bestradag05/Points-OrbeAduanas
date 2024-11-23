@@ -1,6 +1,8 @@
 <div class="row">
     {{-- Placeholder, sm size, and prepend icon --}}
 
+    <input type="hidden" name="administrator" value="{{auth()->user()->personal->names}}">
+
     <div class="col-6">
 
         @php

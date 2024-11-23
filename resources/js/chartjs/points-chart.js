@@ -150,3 +150,34 @@ function actualizarDataTable(data) {
     // Renderiza nuevamente la tabla
     table.draw();
 }
+
+
+
+$('#pdf').on('click', () => {
+
+    const service = document
+    .querySelector("canvas").id;
+
+    let date_range = $("#points_date_range").val();
+    let date_split = date_range.split(" - ");
+
+    let startDate = moment(date_split[0], "DD/MM/YYYY").format("YYYY-MM-DD");
+    let endDate = moment(date_split[1], "DD/MM/YYYY").format("YYYY-MM-DD");
+
+
+    window.open(`/points/export/${service}/pdf?startDate=${startDate}&endDate=${endDate}`, '_blank');
+
+});
+
+$('#excel').on('click', () => {
+    const service = document.querySelector("canvas").id;
+
+    let date_range = $("#points_date_range").val();
+    let date_split = date_range.split(" - ");
+
+    let startDate = moment(date_split[0], "DD/MM/YYYY").format("YYYY-MM-DD");
+    let endDate = moment(date_split[1], "DD/MM/YYYY").format("YYYY-MM-DD");
+
+    // Llamar al servidor para exportar a Excel con los parámetros
+    window.location.href = `/points/export/${service}/excel?startDate=${startDate}&endDate=${endDate}`;
+});
