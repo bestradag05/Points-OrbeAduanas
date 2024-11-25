@@ -118,6 +118,7 @@ class RoutingController extends Controller
     {
         // Creamos un routing
 
+
         $this->validateForm($request, null);
 
         Routing::create([
@@ -136,7 +137,9 @@ class RoutingController extends Controller
             'nro_package' => $request->nro_package,
             'pounds' => $request->pounds,
             'kilograms' => $this->parseDouble($request->kilograms),
-            'meassurement' => $this->parseDouble($request->meassurement),
+            'volumen' => $request->volumen != null ?  $this->parseDouble($request->volumen) : null,
+            'kilogram_volumen' => $request->kilogram_volumen != null ? $this->parseDouble($request->kilogram_volumen) : null,
+            'lcl_fcl' => $request->lcl_fcl,
             'hs_code' => $request->hs_code,
             'nro_operation' => $request->nro_operation,
             'observation' => $request->observation,
@@ -499,6 +502,9 @@ class RoutingController extends Controller
 
     public function validateForm($request, $id)
     {
+
+        /* dd($request->all()); */
+
         $request->validate([
             'nro_operation' => 'required|string|unique:routing,nro_operation,' . $id,
             'origin' => 'required|string',
@@ -515,10 +521,14 @@ class RoutingController extends Controller
             'nro_package' => 'nullable',
             'pounds' => 'nullable',
             'kilograms' => 'required',
-            'meassurement' => 'required',
+            'volumen' => 'required_if:type_shipment_name,Marítima',
+            'kilogram_volumen' => 'required_if:type_shipment_name,Aérea',
+            'lcl_fcl' => 'required_if:type_shipment_name,Marítima',
             'hs_code' => 'nullable',
             'observation' => 'nullable'
         ]);
+
+        
     }
 
     public function getLCLFCL(Request $request)

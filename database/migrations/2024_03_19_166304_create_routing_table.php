@@ -31,7 +31,8 @@ return new class extends Migration
             $table->string('nro_package')->nullable();
             $table->decimal('pounds', 8, 2)->nullable();
             $table->decimal('kilograms', 8, 2)->nullable();
-            $table->decimal('meassurement', 8, 2)->nullable();
+            $table->decimal('volumen', 8, 2)->nullable();
+            $table->decimal('kilogram_volumen', 8, 2)->nullable();
             $table->string('hs_code')->nullable();
             $table->string('observation')->nullable();
             $table->string('concepts')->nullable();

@@ -37,8 +37,9 @@
                     <td> {{ $loop->iteration }}</td>
                     <td> {{ $userHasRole->personal->name . ' ' . $userHasRole->personal->last_name }}
                     </td>
-                    <td><img src="{{ asset('storage/' . $userHasRole->personal->img_url) }}"
-                            class="img-circle elevation-2" width="50px" height="50px" alt="User Image"></td>
+                    <td>
+                            <img src="{{ asset('storage/' . ($userHasRole->personal->img_url !== null ? $userHasRole->personal->img_url : 'personals/user_default.png')) }}" class="img-circle elevation-2" width="50px" height="50px" alt="User Image">
+                        </td>
                     <td>
                         <form action="{{ url('/roles/grupos/' . $rol->id) }}" class="form-delete" method="POST"
                             style="display: inline;" data-confirm-delete="true">

@@ -107,16 +107,18 @@
                   </x-adminlte-select2>
 
               </div>
-              <div class="col-4 d-none align-items-center ">
+              <div id="contenedor_radio_lcl_fcl" class="col-4 d-none align-items-center">
                   <div class="form-check d-inline">
-                      <input type="radio" id="radioLclFcl" name="lcl_fcl">
-                      <label for="radioLclFcl">
+                      <input type="radio" id="radioLclFcl" name="lcl_fcl" value="LCL"
+                          {{ old('lcl_fcl') === 'LCL' ? 'checked' : '' }} class="form-check-input @error('lcl_fcl') is-invalid @enderror">
+                      <label for="radioLclFcl" class="form-check-label">
                           LCL
                       </label>
                   </div>
                   <div class="form-check d-inline">
-                      <input type="radio" id="radioLclFcl" name="lcl_fcl">
-                      <label for="radioLclFcl">
+                      <input type="radio" id="radioLclFcl" name="lcl_fcl" value="FCL"
+                          {{ old('lcl_fcl') === 'FCL' ? 'checked' : '' }} class="form-check-input @error('lcl_fcl') is-invalid @enderror">
+                      <label for="radioLclFcl" class="form-check-label">
                           FCL
                       </label>
                   </div>
@@ -216,7 +218,7 @@
                   <div class="col-sm-8">
                       <input type="text" class="form-control CurrencyInput" id="pounds" name="pounds"
                           data-type="currency" placeholder="Ingrese el nro de paquetes.."
-                          value="{{ isset($routing) ? $routing->pounds : '' }}">
+                          value="{{ isset($routing) ? $routing->pounds : '' }}" @readonly(true)>
                       @error('pounds')
                           <div class="text-danger">{{ $message }}</div>
                       @enderror
@@ -242,20 +244,38 @@
           </div>
 
           <div class="col-4">
-              <div class="form-group row">
-                  <label for="meassurement" class="col-sm-4 col-form-label">Medicion: </label>
+              <div id="contenedor_volumen" class="form-group row  d-none">
+                  <label for="volumen" class="col-sm-4 col-form-label">Volumen: </label>
                   <div class="col-sm-8">
-                      <input type="text"
-                          class="form-control CurrencyInput @error('meassurement') is-invalid @enderror"
-                          id="meassurement" name="meassurement" data-type="currency"
+                      {{-- Volumen --}}
+                      <input type="text" class="form-control CurrencyInput @error('volumen') is-invalid @enderror"
+                          id="volumen" name="volumen" data-type="currency"
                           placeholder="Ingrese el nro de paquetes.."
-                          value="{{ isset($routing->meassurement) ? $routing->meassurement : old('meassurement') }}">
-                      @error('meassurement')
-                          <span class="invalid-feedback d-block" role="alert">
-                              <strong>{{ $message }}</strong>
-                          </span>
-                      @enderror
+                          value="{{ isset($routing->volumen) ? $routing->volumen : old('volumen') }}">
                   </div>
+
+                  @error('volumen')
+                      <span class="invalid-feedback d-block" role="alert">
+                          <strong>{{ $message }}</strong>
+                      </span>
+                  @enderror
+              </div>
+              <div id="contenedor_kg_vol" class="form-group row d-none">
+                  <label for="volumen" class="col-sm-4 col-form-label">Kg/vol: </label>
+                  <div class="col-sm-8">
+                      {{-- Kilogramo volumen --}}
+
+                      <input type="text"
+                          class="form-control CurrencyInput @error('kilogram_volumen') is-invalid @enderror"
+                          id="kilogram_volumen" name="kilogram_volumen" data-type="currency"
+                          placeholder="Ingrese el nro de paquetes.."
+                          value="{{ isset($routing->kilogram_volumen) ? $routing->kilogram_volumen : old('kilogram_volumen') }}">
+                  </div>
+                  @error('kilogram_volumen')
+                      <span class="invalid-feedback d-block" role="alert">
+                          <strong>{{ $message }}</strong>
+                      </span>
+                  @enderror
               </div>
           </div>
       </div>
@@ -284,6 +304,8 @@
           </div>
       </div>
 
+      <input type="hidden" id="type_shipment_name" name="type_shipment_name">
+
 
 
       <button class="btn btn-secondary mt-5" onclick="stepper.previous()">Anterior</button>
@@ -293,6 +315,28 @@
 
   @push('scripts')
       <script>
+          document.addEventListener('DOMContentLoaded', function() {
+              // Obtener los valores de los campos del formulario (puedes personalizar esto para tu caso)
+              let volumenValue = document.getElementById('volumen');
+              let kilogramoVolumenValue = document.getElementById('kilogram_volumen');
+              let lcl_fcl = document.getElementById('radioLclFcl');
+
+              // Mostrar/ocultar los campos según los valores
+              if (volumenValue.value !== '' || volumenValue.classList.contains('is-invalid')) {
+                  document.getElementById('contenedor_volumen').classList.remove('d-none');
+              }
+
+              if (kilogramoVolumenValue.value !== '' || kilogramoVolumenValue.classList.contains('is-invalid')) {
+                  document.getElementById('contenedor_kg_vol').classList.remove('d-none');
+              }
+
+              if (lcl_fcl.checked === true || lcl_fcl.classList.contains('is-invalid')) {
+                $('#lclfcl_content').children().first().removeClass('col-12').addClass('col-8');
+                $('#lclfcl_content').children().last().removeClass('d-none').addClass('d-flex');
+                  document.getElementById('contenedor_radio_lcl_fcl').classList.remove('d-none');
+              }
+          })
+
           $('#id_type_shipment').on('change', (e) => {
 
               var idShipment = $(e.target).find("option:selected").val();
@@ -306,14 +350,35 @@
                   dataType: "JSON",
                   success: function(respu) {
                       if (respu.description === "Marítima") {
+
+                          $('#type_shipment_name').val(respu.description);
+
                           $('#lclfcl_content').children().first().removeClass('col-12').addClass('col-8');
                           $('#lclfcl_content').children().last().removeClass('d-none').addClass('d-flex');
 
+                          $('#contenedor_volumen').removeClass('d-none');
+                          $('#contenedor_kg_vol').addClass('d-none');
+
+                          $('#contenedor_volumen').find('input').val("");
+                          $('#contenedor_kg_vol').find('input').val("");
+
+
 
                       } else {
+
+
+                          $('#type_shipment_name').val(respu.description);
+
                           $('#lclfcl_content').children().first().removeClass('col-8').addClass('col-12');
                           $('#lclfcl_content').children().last().removeClass('d-flex').addClass('d-none');
                           $('input[name="lcl_fcl"]').prop('checked', false);
+
+                          $('#contenedor_volumen').addClass('d-none');
+                          $('#contenedor_kg_vol').removeClass('d-none');
+
+                          $('#contenedor_kg_vol').find('input').val("");
+                          $('#contenedor_volumen').find('input').val("");
+
                       }
                   }
               });
@@ -321,13 +386,30 @@
 
           });
 
+          $('#kilograms').on('change', (e) => {
+
+              let kilogramsVal = $(e.target).val();
+              let numberValue = parseFloat(kilogramsVal);
+
+              if (!kilogramsVal || isNaN(numberValue)) {
+
+                  $('#pounds').val(0);
+
+              } else {
+
+                  $('#pounds').val(numberValue * 2.21);
+
+              }
+
+
+          });
+
 
           $('select').on('select2:open', function(e) {
-            var searchField = $(this).data('select2').dropdown.$search || $(this).data('select2').selection.$search;
-            if (searchField) {
-                searchField[0].focus();
-            }
-        });
-
+              var searchField = $(this).data('select2').dropdown.$search || $(this).data('select2').selection.$search;
+              if (searchField) {
+                  searchField[0].focus();
+              }
+          });
       </script>
   @endpush
