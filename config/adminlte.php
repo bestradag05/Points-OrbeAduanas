@@ -451,6 +451,12 @@ return [
                     'url'  => 'transport',
                     'icon' => 'fa-solid fa-check-double',
                     'active' => ['transport'],
+                ],
+                [
+                    'text' => 'Cotizaciones',
+                    'url'  => 'quote/transport',
+                    'icon' => 'fa-solid fa-check-double',
+                    'active' => ['quote/transport'],
                 ]
             ]
         ],

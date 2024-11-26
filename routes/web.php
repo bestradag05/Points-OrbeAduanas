@@ -17,6 +17,7 @@ use App\Http\Controllers\PermissionsController;
 use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\PersonalDocumentController;
 use App\Http\Controllers\PointsController;
+use App\Http\Controllers\QuoteTransportController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\RoutingController;
 use App\Http\Controllers\SupplierController;
@@ -25,6 +26,7 @@ use App\Http\Controllers\TypeInsuranceController;
 use App\Http\Controllers\TypeLoadController;
 use App\Http\Controllers\TypeShipmentController;
 use App\Http\Controllers\UserController;
+use App\Models\Transport;
 use App\Models\TypeInsurance;
 use Illuminate\Support\Facades\Auth;
 
@@ -112,6 +114,11 @@ Route::middleware('auth')->group(function () {
     Route::get('points/transport', [PointsController::class, 'getPointTransport']);
     Route::get('points/insurance', [PointsController::class, 'getPointInsurance']);
     Route::get('points/additionals', [PointsController::class, 'getPointAdditional']);
+
+    /* Cotizaciones Transporte */
+
+    Route::resource('quote/transport', QuoteTransportController::class);
+
 
     /* Reportes */
 
