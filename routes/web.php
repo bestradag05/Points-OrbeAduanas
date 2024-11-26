@@ -26,6 +26,7 @@ use App\Http\Controllers\TypeLoadController;
 use App\Http\Controllers\TypeShipmentController;
 use App\Http\Controllers\UserController;
 use App\Models\TypeInsurance;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------

@@ -549,6 +549,7 @@ return [
                     'url'  => 'customer_supplier_document',
                     'icon' => 'fas fa-fw fa-users',
                     'active' => ['customer_supplier_document'],
+                    'can' => ['type_document_customer']
                     
                 ]
             ]
