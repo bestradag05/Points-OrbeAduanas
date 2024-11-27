@@ -20,6 +20,7 @@ class QuoteTransportController extends Controller
     public function create()
     {
         //
+        return view('transport.quote.register-quote');
     }
 
     /**

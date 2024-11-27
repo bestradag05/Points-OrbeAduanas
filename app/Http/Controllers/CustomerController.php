@@ -33,7 +33,8 @@ class CustomerController extends Controller
 
         $heads = [
             '#',
-            'Ruc',
+            'Tipo de Documento',
+            'Numero de Documento',
             'Razon Social / Nombre',
             'Nombre de Contacto',
             'Numero de Contacto',

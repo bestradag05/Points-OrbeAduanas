@@ -453,6 +453,12 @@ return [
                     'active' => ['transport'],
                 ],
                 [
+                    'text' => 'Generar una cotizacion',
+                    'url'  => 'quote/transport/create',
+                    'icon' => 'fa-solid fa-check-double',
+                    'active' => ['quote/transport/create']
+                ],
+                [
                     'text' => 'Cotizaciones',
                     'url'  => 'quote/transport',
                     'icon' => 'fa-solid fa-check-double',

@@ -21,4 +21,9 @@ class Customer extends Model
         return $this->belongsTo(Personal::class, 'id_personal');
     }
 
+    public function document()
+    {
+        return $this->belongsTo(CustomerSupplierDocument::class, 'id_document', 'id');
+    }
+
 }
