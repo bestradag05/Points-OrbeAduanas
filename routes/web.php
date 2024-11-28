@@ -118,6 +118,7 @@ Route::middleware('auth')->group(function () {
     /* Cotizaciones Transporte */
 
     Route::resource('quote/transport', QuoteTransportController::class);
+    Route::get('quote/search-routing/{nro_operation}', [QuoteTransportController::class, 'searchRouting']);
 
 
     /* Reportes */

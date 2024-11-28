@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Routing;
 use Illuminate\Http\Request;
 
 class QuoteTransportController extends Controller
@@ -20,8 +21,32 @@ class QuoteTransportController extends Controller
     public function create()
     {
         //
-        return view('transport.quote.register-quote');
+        return view('transport.quote.register-quote')->with('showModal', true);
     }
+
+
+    public function searchRouting($nro_operation)
+    {
+
+        $routing = Routing::where('nro_operation', $nro_operation)
+        ->with('customer','type_load')
+        ->get();
+
+        if ($routing->isEmpty()) {
+            // Retornar una respuesta de error JSON
+            return response()->json([
+                'success' => false,
+                'message' => 'No se encontro ninguna operación con ese numero.'
+            ], 404); // Código de estado 404 (No encontrado)
+        }
+
+        // Retornar los datos encontrados
+        return response()->json([
+            'success' => true,
+            'data' => $routing
+        ]);
+    }
+
 
     /**
      * Store a newly created resource in storage.
