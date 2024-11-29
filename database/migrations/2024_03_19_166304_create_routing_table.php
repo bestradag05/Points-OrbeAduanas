@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('nro_operation')->unique();
             $table->string('origin');
             $table->string('destination');
-            $table->decimal('freight_value', 8,2)->nullable();
             $table->decimal('load_value', 8, 2);
             $table->decimal('insurance_value', 8, 2)->nullable();
             $table->unsignedBigInteger('id_personal');
@@ -29,6 +28,7 @@ return new class extends Migration
             $table->string('lcl_fcl')->nullable();
             $table->string('commodity');
             $table->string('nro_package')->nullable();
+            $table->string('packaging_type')->nullable();
             $table->decimal('pounds', 8, 2)->nullable();
             $table->decimal('kilograms', 8, 2)->nullable();
             $table->decimal('volumen', 8, 2)->nullable();

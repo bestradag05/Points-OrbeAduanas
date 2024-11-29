@@ -110,14 +110,16 @@
               <div id="contenedor_radio_lcl_fcl" class="col-4 d-none align-items-center">
                   <div class="form-check d-inline">
                       <input type="radio" id="radioLclFcl" name="lcl_fcl" value="LCL"
-                          {{ old('lcl_fcl') === 'LCL' ? 'checked' : '' }} class="form-check-input @error('lcl_fcl') is-invalid @enderror">
+                          {{ old('lcl_fcl') === 'LCL' ? 'checked' : '' }}
+                          class="form-check-input @error('lcl_fcl') is-invalid @enderror">
                       <label for="radioLclFcl" class="form-check-label">
                           LCL
                       </label>
                   </div>
                   <div class="form-check d-inline">
                       <input type="radio" id="radioLclFcl" name="lcl_fcl" value="FCL"
-                          {{ old('lcl_fcl') === 'FCL' ? 'checked' : '' }} class="form-check-input @error('lcl_fcl') is-invalid @enderror">
+                          {{ old('lcl_fcl') === 'FCL' ? 'checked' : '' }}
+                          class="form-check-input @error('lcl_fcl') is-invalid @enderror">
                       <label for="radioLclFcl" class="form-check-label">
                           FCL
                       </label>
@@ -181,7 +183,6 @@
   </div>
   <div id="test-l-2" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepper1trigger2">
 
-
       <div class="form-group row">
           <label for="commodity" class="col-sm-2 col-form-label">Producto</label>
           <div class="col-sm-10">
@@ -196,17 +197,72 @@
           </div>
       </div>
 
-      <div class="form-group row">
-          <label for="nro_package" class="col-sm-2 col-form-label">N° Paquetes</label>
-          <div class="col-sm-10">
-              <input type="number" min="0" step="1" class="form-control" id="nro_package"
-                  name="nro_package" placeholder="Ingrese el nro de paquetes.." oninput="validarInputNumber(this)"
-                  value="{{ isset($routing) ? $routing->nro_package : '' }}">
-              @error('nro_package')
-                  <div class="text-danger">{{ $message }}</div>
-              @enderror
+      <div class="row">
+
+          <div class="col-6">
+              <div class="form-group row">
+                  <label for="nro_package" class="col-sm-4 col-form-label">N° Paquetes</label>
+                  <div class="col-sm-8">
+                      <input type="number" min="0" step="1"
+                          class="form-control @error('commodity') is-invalid @enderror" id="nro_package"
+                          name="nro_package" placeholder="Ingrese el nro de paquetes.."
+                          oninput="validarInputNumber(this)" onchange="cleanMeasures()"
+                          value="{{ isset($routing) ? $routing->nro_package : '' }}">
+                      @error('nro_package')
+                          <span class="invalid-feedback d-block" role="alert">
+                              <strong>{{ $message }}</strong>
+                          </span>
+                      @enderror
+                  </div>
+              </div>
+
+          </div>
+
+          <div class="col-6">
+              <div class="form-group row">
+                  <label for="packaging_type" class="col-sm-4 col-form-label">Tipo de embalaje</label>
+                  <div class="col-sm-8">
+                      <input type="text" min="0" step="1"
+                          class="form-control @error('commodity') is-invalid @enderror" id="packaging_type"
+                          name="packaging_type" placeholder="Ingrese el tipo de embalaje.."
+                          value="{{ isset($routing) ? $routing->packaging_type : '' }}">
+                      @error('packaging_type')
+                          <span class="invalid-feedback d-block" role="alert">
+                              <strong>{{ $message }}</strong>
+                          </span>
+                      @enderror
+                  </div>
+              </div>
+          </div>
+          <div class="col-12">
+
+              <div class="row">
+                  <div class="col-4">
+                      <input type="number" class="form-control" id="amount_package" name="amount_package"
+                          placeholder="Ingresa la cantidad">
+                  </div>
+                  <div class="col-4">
+                      <button id="addRow" class="btn btn-indigo btn-sm"><i class="fa fa-plus"></i>Agregar</button>
+                  </div>
+
+              </div>
+
+              <table id="measures" class="table table-bordered" style="width:100%">
+                  <thead>
+                      <tr>
+                          <th>Cantidad</th>
+                          <th>Ancho (cm)</th>
+                          <th>Largo (cm)</th>
+                          <th>Alto (cm)</th>
+                          <th>Eliminar</th>
+                      </tr>
+                  </thead>
+
+              </table>
+
           </div>
       </div>
+
 
       <div class="row">
           <label for="total_gross_weight" class="w-100">Total peso bruto</label>
@@ -316,6 +372,7 @@
   @push('scripts')
       <script>
           document.addEventListener('DOMContentLoaded', function() {
+
               // Obtener los valores de los campos del formulario (puedes personalizar esto para tu caso)
               let volumenValue = document.getElementById('volumen');
               let kilogramoVolumenValue = document.getElementById('kilogram_volumen');
@@ -331,8 +388,8 @@
               }
 
               if (lcl_fcl.checked === true || lcl_fcl.classList.contains('is-invalid')) {
-                $('#lclfcl_content').children().first().removeClass('col-12').addClass('col-8');
-                $('#lclfcl_content').children().last().removeClass('d-none').addClass('d-flex');
+                  $('#lclfcl_content').children().first().removeClass('col-12').addClass('col-8');
+                  $('#lclfcl_content').children().last().removeClass('d-none').addClass('d-flex');
                   document.getElementById('contenedor_radio_lcl_fcl').classList.remove('d-none');
               }
           })
@@ -411,5 +468,96 @@
                   searchField[0].focus();
               }
           });
+
+
+          //Tabla de medidas
+
+
+          //Inicializamos la tabla de medidas
+
+          const table = new DataTable('#measures', {
+              paging: false, // Desactiva la paginación
+              searching: false, // Oculta el cuadro de búsqueda
+              info: false, // Oculta la información del estado de la tabla
+              lengthChange: false, // Oculta el selector de cantidad de registros por página
+              language: { // Traducciones al español
+                  emptyTable: "No hay medidas registradas"
+              }
+          });
+          let counter = 1;
+
+          // Función para agregar una fila editable
+          let rowIndex = 1; //
+          let currentPackage = 0;
+          document.getElementById('addRow').addEventListener('click', () => {
+
+              const nro_package = parseInt($('#nro_package').val());
+              const amount_package = parseInt($('#amount_package').val());
+
+
+              if (isNaN(amount_package) || amount_package <= 0) {
+                  $('#amount_package').addClass('is-invalid');
+                  return;
+              } else {
+                  if (isNaN(nro_package) || amount_package > nro_package) {
+                      alert('El numero de paquetes / bultos no puede ser menor que la cantidad ingresada');
+                      return;
+                  }
+
+                  currentPackage += amount_package;
+
+
+                  if (currentPackage > nro_package) {
+                      alert(
+                          'No se puede agregar otra fila, por que segun los registros ya completaste el numero de bultos'
+                      );
+                      currentPackage -= amount_package;
+                      return;
+                  }
+
+                  const newRow = table.row.add([
+
+                      // Campo para Cantidad
+                      `<input type="number" class="form-control" readonly id="amount-${rowIndex}" name="amount-${rowIndex}" value="${amount_package}" placeholder="Cantidad" min="0" step="1">`,
+
+                      // Campo para Ancho
+                      `<input type="number" class="form-control" id="width-${rowIndex}" name="width-${rowIndex}" placeholder="Ancho" min="0" step="0.0001">`,
+
+                      // Campo para Largo
+                      `<input type="number" class="form-control" id="length-${rowIndex}" name="length-${rowIndex}" placeholder="Largo" min="0" step="0.0001">`,
+
+                      // Campo para Alto
+                      `<input type="number" class="form-control" id="height-${rowIndex}" name="height-${rowIndex}" placeholder="Alto" min="0" step="0.0001">`,
+
+                      `<button type="button" class="btn btn-danger btn-sm" id="delete-${rowIndex}" onclick="deleteRow('row-${rowIndex}', ${amount_package})"><i class="fa fa-trash"></i></button>`
+                  ]).draw().node();
+                  newRow.id = `row-${rowIndex}`;
+                  rowIndex++
+
+                  // Opcional: Enfocar el primer campo de la nueva fila
+                  newRow.querySelector('input').focus();
+
+              }
+
+          });
+
+
+          function deleteRow(rowId, amount) {
+              // Reducir el paquete actual
+              currentPackage -= parseInt(amount);
+
+              // Eliminar la fila del DataTable
+              const row = document.getElementById(rowId);
+              table.row($(row).closest('tr')).remove().draw();
+          }
+
+          function cleanMeasures() {
+              table.clear().draw();
+
+              // Restablecer variables relacionadas
+              currentPackage = 0;
+              rowIndex = 1;
+
+          }
       </script>
   @endpush

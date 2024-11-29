@@ -9,7 +9,8 @@
                 <div class="form-group row">
                     <label for="customer" class="col-sm-2 col-form-label">Cliente</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="customer" name="customer" placeholder="Ingresa el cliente">
+                        <input type="text" class="form-control" id="customer" name="customer"
+                            placeholder="Ingresa el cliente">
                     </div>
                 </div>
                 <div class="form-group row">
@@ -42,10 +43,17 @@
                 </div>
                 <div class="form-group row">
                     <label for="max_attention_hour" class="col-sm-2 col-form-label">Hora maxima de entrega</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="max_attention_hour" name="max_attention_hour"
-                            placeholder="Ingresa la hora maxima de recojo del cliente">
-                    </div>
+                    @php
+                        $config = ['format' => 'LT'];
+                    @endphp
+                    <x-adminlte-input-date name="max_attention_hour" :config="$config" placeholder="Ingrese la hora maxima de entrega">
+                        <x-slot name="prependSlot">
+                            <div class="input-group-text bg-gradient-indigo">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </x-slot>
+                    </x-adminlte-input-date>
+
                 </div>
                 <div class="form-group row">
                     <label for="gang" class="col-sm-2 col-form-label">Cuadrilla</label>
@@ -103,7 +111,7 @@
                         <div class="form-check d-inline">
                             <input type="radio" id="radioStackable" name="stackable" value="SI"
                                 class="form-check-input">
-                            <labe   l for="radioStackable" class="form-check-label">
+                            <labe l for="radioStackable" class="form-check-label">
                                 SI
                             </labe>
                         </div>
@@ -125,7 +133,7 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label for="total weight" class="col-sm-2 col-form-label">Peso total</label>
+                    <label for="total_weight" class="col-sm-2 col-form-label">Peso total</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="total_weight" name="total_weight"
                             placeholder="Ingresa la hora maxima de recojo del cliente">
