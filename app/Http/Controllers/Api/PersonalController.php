@@ -109,7 +109,7 @@ class PersonalController extends Controller
         // Eliminar la parte de la zona horaria (GMT-0500 y entre paréntesis)
         $date_clean = preg_replace('/\(.*\)|[A-Z]{3}-\d{4}/', '', $request->birthdate);
 
-        $request->birthdate =  Carbon::parse($date_clean)->format("Y-m-d h:i:s");
+        $request->birthdate =  Carbon::parse($date_clean)->format("Y-m-d");
 
         if ($request->hasFile("img_url")) {
             
