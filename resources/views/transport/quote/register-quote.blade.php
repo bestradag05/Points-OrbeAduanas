@@ -10,7 +10,7 @@
 
 @stop
 @section('dinamic-content')
-    <form action="/quote" method="post" enctype="multipart/form-data">
+    <form action="/quote/transport" method="post" enctype="multipart/form-data">
         @csrf
         @include ('transport.quote.form-quote', ['formMode' => 'create'])
     </form>
@@ -23,10 +23,10 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="        modalQuoteTransportLabel">Operacion</h5>
+                    <h5 class="modal-title" id="modalQuoteTransportLabel">Operacion</h5>
                 </div>
                 <div class="modal-body">
-                    <input type="text" class="form-control" name="nro_operation" id="nro_operation"
+                    <input type="text" class="form-control" name="modal_nro_operation" id="modal_nro_operation"
                         placeholder="Ingrese su numero de operacion">
 
                     <span id="error_nro_operation" class="invalid-feedback d-none" role="alert">
@@ -61,15 +61,15 @@
 
             $('#searchRouting').on('click', () => {
 
-                const nro_operation = $('#nro_operation').val().trim();
+                const nro_operation = $('#modal_nro_operation').val().trim();
 
                 if (nro_operation === '') {
 
-                    $('#nro_operation').addClass('is-invalid');
+                    $('#modal_nro_operation').addClass('is-invalid');
                     $('#error_nro_operation').removeClass('d-block').addClass('d-none');
 
                 } else {
-                    $('#nro_operation').removeClass('is-invalid');
+                    $('#modal_nro_operation').removeClass('is-invalid');
 
                     // Realizar solicitud AJAX
                     $.ajax({
@@ -77,8 +77,9 @@
                         type: 'GET',
                         success: function(response) {
                             // Manejo de la respuesta exitosa
-
+                          
                             loadInfoRouting(response.data[0]);
+                            
 
                         },
                         error: function(xhr, status, error) {
@@ -89,7 +90,7 @@
                             // Mostrar el mensaje de error al usuario
                             $('#error_nro_operation').removeClass('d-none').addClass('d-block');
                             $('#texto_nro_operation').text(errorMessage);
-                            $('#nro_operation').addClass('is-invalid');
+                            $('#modal_nro_operation').addClass('is-invalid');
 
                         }
                     });
@@ -103,6 +104,20 @@
 
 
             function loadInfoRouting(data) {
+                
+                $('#title_quote span').text(data.lcl_fcl);
+
+
+                if(data.lcl_fcl === 'LCL'){
+
+                    $('.lcl_quote').removeClass('d-none');
+                    $('.fcl_quote').addClass('d-none');
+
+
+                }else{
+                    $('.lcl_quote').addClass('d-none');
+                    $('.fcl_quote').removeClass('d-none');
+                }
 
                 $('#customer').val(data.customer.name_businessname).prop('readonly', true);
                 $('#contact_name').val(data.customer.contact_name);
@@ -113,6 +128,10 @@
                 $('#cubage_kgv').val(data.volumen).prop('readonly', true);
                 $('#total_weight').val(data.kilograms).prop('readonly', true);
                 $('#packages').val(data.nro_package).prop('readonly', true);
+                $('#measures').val(data.measures);
+                //Campos Hidden
+                $('#nro_operation').val(data.nro_operation);
+                $('#lcl_fcl').val(data.lcl_fcl);
 
                 //load Table measures
                 populateTable(JSON.parse(data.measures));
@@ -137,9 +156,7 @@
 
 
             function populateTable(data) {
-                const tableBody = document.getElementById('measures').getElementsByTagName('tbody')[0];
-
-                console.log(data);
+                const tableBody = document.getElementById('table_measures').getElementsByTagName('tbody')[0];
 
                 // Limpiar la tabla antes de agregar nuevos datos
                 tableBody.innerHTML = '';

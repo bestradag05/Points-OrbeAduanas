@@ -53,7 +53,11 @@ class QuoteTransportController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
+        $this->validateForm($request, null);
+
+        return "ok";
+
     }
 
     /**
@@ -87,4 +91,41 @@ class QuoteTransportController extends Controller
     {
         //
     }
+
+    public function validateForm($request, $id)
+    {
+
+        /* dd($request->all()); */
+
+        $request->validate([
+            'nro_operation' => 'required|string|unique:quote_transport,nro_operation,' . $id,
+            'customer' => 'required|string',
+            'pick_up_lcl' => 'required_if:lcl_fcl,LCL',
+            'pick_up_fcl' => 'required_if:lcl_fcl,FCL',
+            'delivery' => 'required|string',
+            'container_return' => 'required_if:lcl_fcl,FCL',
+            'contact_name' => 'required|string',
+            'contract_phone' => 'required|string',
+            'max_attention_hour' => 'required|string',
+            'gang' => 'required|string',
+            'customer_detail' => 'nullable',
+            'load_type' => 'required|string',
+            'commodity' => 'required|string',
+            'guard' => 'required_if:lcl_fcl,FCL',
+            'container_type' => 'required_if:lcl_fcl,FCL',
+            'ton_kilogram' => 'required_if:lcl_fcl,FCL',
+            'packaging_type' => 'required|string',
+            'stackable' => 'required|string',
+            'cubage_kgv' => 'required_if:lcl_fcl,LCL',
+            'total_weight' => 'required_if:lcl_fcl,LCL',
+            'packages' => 'required|string',
+            'cargo_detail' => 'nullable',
+            'measures' => 'required',
+            'lcl_fcl' => 'required',
+        ]);
+
+        
+    }
+
+
 }
