@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('origin');
             $table->string('destination');
             $table->decimal('load_value', 8, 2);
-            $table->decimal('insurance_value', 8, 2)->nullable();
             $table->unsignedBigInteger('id_personal');
             $table->unsignedBigInteger('id_customer');
             $table->unsignedBigInteger('id_type_shipment');
@@ -33,9 +32,9 @@ return new class extends Migration
             $table->decimal('kilograms', 8, 2)->nullable();
             $table->decimal('volumen', 8, 2)->nullable();
             $table->decimal('kilogram_volumen', 8, 2)->nullable();
+            $table->string('measures')->nullable();
             $table->string('hs_code')->nullable();
             $table->string('observation')->nullable();
-            $table->string('concepts')->nullable();
             $table->timestamps();
 
 

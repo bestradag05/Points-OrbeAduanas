@@ -109,11 +109,13 @@
                 $('#contact_phone').val(data.customer.contact_number);
                 $('#load_type').val(data.type_load.name).prop('readonly', true);
                 $('#commodity').val(data.commodity).prop('readonly', true);
-                //aqui falta el tipo de embalaje
-                /* $('#customer').val(data.customer.name_businessname); */
+                $('#packaging_type').val(data.packaging_type).prop('readonly', true);
                 $('#cubage_kgv').val(data.volumen).prop('readonly', true);
                 $('#total_weight').val(data.kilograms).prop('readonly', true);
                 $('#packages').val(data.nro_package).prop('readonly', true);
+
+                //load Table measures
+                populateTable(JSON.parse(data.measures));
 
 
                 // Cerrar el modal utilizando la instancia nativa de Bootstrap
@@ -131,6 +133,41 @@
 
 
             }
+
+
+
+            function populateTable(data) {
+                const tableBody = document.getElementById('measures').getElementsByTagName('tbody')[0];
+
+                console.log(data);
+
+                // Limpiar la tabla antes de agregar nuevos datos
+                tableBody.innerHTML = '';
+
+                // Iterar sobre los datos y agregar una fila por cada objeto
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        const item = data[key]; // Accede al objeto de cada clave
+
+                        // Crear una nueva fila
+                        let row = tableBody.insertRow();
+
+                        // Insertar celdas en la fila y agregar los valores
+                        let cellAmount = row.insertCell(0);
+                        cellAmount.textContent = item.amount;
+
+                        let cellHeight = row.insertCell(1);
+                        cellHeight.textContent = item.height;
+
+                        let cellLength = row.insertCell(2);
+                        cellLength.textContent = item.length;
+
+                        let cellWidth = row.insertCell(3);
+                        cellWidth.textContent = item.width;
+                    }
+                }
+
+                }
         </script>
     @endif
 @endpush

@@ -135,11 +135,13 @@ class RoutingController extends Controller
             'wr_loading' => $request->wr_loading,
             'commodity' => $request->commodity,
             'nro_package' => $request->nro_package,
+            'packaging_type' => $request->packaging_type,
             'pounds' => $request->pounds,
             'kilograms' => $this->parseDouble($request->kilograms),
             'volumen' => $request->volumen != null ?  $this->parseDouble($request->volumen) : null,
             'kilogram_volumen' => $request->kilogram_volumen != null ? $this->parseDouble($request->kilogram_volumen) : null,
             'lcl_fcl' => $request->lcl_fcl,
+            'measures' => $request->value_measures,
             'hs_code' => $request->hs_code,
             'nro_operation' => $request->nro_operation,
             'observation' => $request->observation,
@@ -526,6 +528,7 @@ class RoutingController extends Controller
             'kilogram_volumen' => 'required_if:type_shipment_name,Aérea',
             'lcl_fcl' => 'required_if:type_shipment_name,Marítima',
             'hs_code' => 'nullable',
+            'value_measures' => 'required',
             'observation' => 'nullable'
         ]);
 

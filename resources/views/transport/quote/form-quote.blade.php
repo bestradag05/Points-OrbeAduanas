@@ -46,7 +46,8 @@
                     @php
                         $config = ['format' => 'LT'];
                     @endphp
-                    <x-adminlte-input-date name="max_attention_hour" :config="$config" placeholder="Ingrese la hora maxima de entrega">
+                    <x-adminlte-input-date name="max_attention_hour" :config="$config"
+                        placeholder="Ingrese la hora maxima de entrega">
                         <x-slot name="prependSlot">
                             <div class="input-group-text bg-gradient-indigo">
                                 <i class="fas fa-clock"></i>
@@ -146,6 +147,33 @@
                             placeholder="Ingresa si tendra valor de cuadrilla">
                     </div>
                 </div>
+            </div>
+
+        </div>
+
+
+        <div class="col-12">
+
+            <div class="head-quote mb-2">
+                <h5 class="text-center text-uppercase bg-indigo p-2">Medidas</h5>
+            </div>
+            <div class="body-detail-product p-2">
+
+                <table id="measures" class="table table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Cantidad</th>
+                            <th>Ancho (cm)</th>
+                            <th>Largo (cm)</th>
+                            <th>Alto (cm)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Las filas de la tabla se llenarán dinámicamente -->
+                    </tbody>
+
+                </table>
+
             </div>
 
         </div>

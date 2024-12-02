@@ -236,12 +236,25 @@
           </div>
           <div class="col-12">
 
-              <div class="row">
-                  <div class="col-4">
-                      <input type="number" class="form-control" id="amount_package" name="amount_package"
-                          placeholder="Ingresa la cantidad">
+              <div id="div_measures" class="row justify-content-center">
+
+                  <div class="col-2">
+                      <input type="number" class="form-control" step="1" id="amount_package"
+                          name="amount_package" placeholder="Ingresa la cantidad">
                   </div>
-                  <div class="col-4">
+                  <div class="col-2">
+                      <input type="number" class="form-control" step="0.0001" id="width" name="width"
+                          placeholder="Ancho(cm)">
+                  </div>
+                  <div class="col-2">
+                      <input type="number" class="form-control" step="0.0001" id="length" name="length"
+                          placeholder="Largo(cm)">
+                  </div>
+                  <div class="col-2">
+                      <input type="number" class="form-control" step="0.0001" id="height" name="height"
+                          placeholder="Alto(cm)">
+                  </div>
+                  <div class="col-2">
                       <button id="addRow" class="btn btn-indigo btn-sm"><i class="fa fa-plus"></i>Agregar</button>
                   </div>
 
@@ -259,6 +272,12 @@
                   </thead>
 
               </table>
+              <input id="value_measures" type="hidden" name="value_measures" />
+              @error('value_measures')
+                  <span class="invalid-feedback d-block" role="alert">
+                      <strong>{{ $message }}</strong>
+                  </span>
+              @enderror
 
           </div>
       </div>
@@ -273,7 +292,7 @@
                   <label for="pounds" class="col-sm-4 col-form-label">Libras: </label>
                   <div class="col-sm-8">
                       <input type="text" class="form-control CurrencyInput" id="pounds" name="pounds"
-                          data-type="currency" placeholder="Ingrese el nro de paquetes.."
+                          data-type="currency" placeholder="Ingrese las libras"
                           value="{{ isset($routing) ? $routing->pounds : '' }}" @readonly(true)>
                       @error('pounds')
                           <div class="text-danger">{{ $message }}</div>
@@ -446,7 +465,8 @@
           $('#kilograms').on('change', (e) => {
 
               let kilogramsVal = $(e.target).val();
-              let numberValue = parseFloat(kilogramsVal);
+              let kilograms = kilogramsVal.replace(/,/g, '');
+              let numberValue = parseFloat(kilograms);
 
               if (!kilogramsVal || isNaN(numberValue)) {
 
@@ -489,10 +509,37 @@
           // Función para agregar una fila editable
           let rowIndex = 1; //
           let currentPackage = 0;
+          let arrayMeasures = {};
           document.getElementById('addRow').addEventListener('click', () => {
+
+              var measures = document.getElementById("div_measures");
+              const inputs = measures.querySelectorAll('input');
+
+              let isValid = true;
+              inputs.forEach(input => {
+
+                  if (input.value.trim() === '' || input.value <= 0) {
+                      isValid = false;
+                      input.classList.add('is-invalid');
+                      return;
+                  } else {
+                      input.classList.remove('is-invalid');
+                      return;
+                  }
+
+              });
+
+              if (!isValid) {
+                  return;
+              }
 
               const nro_package = parseInt($('#nro_package').val());
               const amount_package = parseInt($('#amount_package').val());
+              const width = inputs[1].value;
+              const length = inputs[2].value;
+              const height = inputs[3].value;
+
+
 
 
               if (isNaN(amount_package) || amount_package <= 0) {
@@ -521,17 +568,28 @@
                       `<input type="number" class="form-control" readonly id="amount-${rowIndex}" name="amount-${rowIndex}" value="${amount_package}" placeholder="Cantidad" min="0" step="1">`,
 
                       // Campo para Ancho
-                      `<input type="number" class="form-control" id="width-${rowIndex}" name="width-${rowIndex}" placeholder="Ancho" min="0" step="0.0001">`,
+                      `<input type="number" class="form-control" readonly id="width-${rowIndex}" name="width-${rowIndex}" value="${width}" placeholder="Ancho" min="0" step="0.0001">`,
 
                       // Campo para Largo
-                      `<input type="number" class="form-control" id="length-${rowIndex}" name="length-${rowIndex}" placeholder="Largo" min="0" step="0.0001">`,
+                      `<input type="number" class="form-control" readonly id="length-${rowIndex}" name="length-${rowIndex}" value="${length}" placeholder="Largo" min="0" step="0.0001">`,
 
                       // Campo para Alto
-                      `<input type="number" class="form-control" id="height-${rowIndex}" name="height-${rowIndex}" placeholder="Alto" min="0" step="0.0001">`,
+                      `<input type="number" class="form-control" readonly id="height-${rowIndex}" name="height-${rowIndex}" value="${height}" placeholder="Alto" min="0" step="0.0001">`,
 
-                      `<button type="button" class="btn btn-danger btn-sm" id="delete-${rowIndex}" onclick="deleteRow('row-${rowIndex}', ${amount_package})"><i class="fa fa-trash"></i></button>`
+                      `<button type="button" class="btn btn-danger btn-sm" id="delete-${rowIndex}" onclick="deleteRow('row-${rowIndex}', ${amount_package}, ${rowIndex})"><i class="fa fa-trash"></i></button>`
                   ]).draw().node();
                   newRow.id = `row-${rowIndex}`;
+
+                  arrayMeasures[rowIndex] = { // Usamos rowIndex como clave
+                      amount: amount_package,
+                      width,
+                      length,
+                      height
+                  };
+
+
+                  $('#value_measures').val(JSON.stringify(arrayMeasures));
+
                   rowIndex++
 
                   // Opcional: Enfocar el primer campo de la nueva fila
@@ -542,17 +600,22 @@
           });
 
 
-          function deleteRow(rowId, amount) {
+          function deleteRow(rowId, amount, index) {
               // Reducir el paquete actual
               currentPackage -= parseInt(amount);
-
               // Eliminar la fila del DataTable
               const row = document.getElementById(rowId);
               table.row($(row).closest('tr')).remove().draw();
+              delete arrayMeasures[index];
+              $('#value_measures').val(JSON.stringify(arrayMeasures));
+
           }
 
           function cleanMeasures() {
               table.clear().draw();
+
+              arrayMeasures = {};
+              $('#value_measures').val("");
 
               // Restablecer variables relacionadas
               currentPackage = 0;
