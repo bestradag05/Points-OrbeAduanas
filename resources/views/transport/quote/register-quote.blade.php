@@ -77,9 +77,9 @@
                         type: 'GET',
                         success: function(response) {
                             // Manejo de la respuesta exitosa
-                          
+
                             loadInfoRouting(response.data[0]);
-                            
+
 
                         },
                         error: function(xhr, status, error) {
@@ -104,17 +104,17 @@
 
 
             function loadInfoRouting(data) {
-                
+
                 $('#title_quote span').text(data.lcl_fcl);
 
 
-                if(data.lcl_fcl === 'LCL'){
+                if (data.lcl_fcl === 'LCL') {
 
                     $('.lcl_quote').removeClass('d-none');
                     $('.fcl_quote').addClass('d-none');
 
 
-                }else{
+                } else {
                     $('.lcl_quote').addClass('d-none');
                     $('.fcl_quote').removeClass('d-none');
                 }
@@ -184,7 +184,134 @@
                     }
                 }
 
+            }
+        </script>
+    @else
+        <script>
+            // Cerrar el modal utilizando la instancia nativa de Bootstrap
+            $('#modalQuoteTransport').hide();
+
+            // Eliminar manualmente el backdrop si persiste
+            const modalBackdrop = document.querySelector('.modal-backdrop');
+            if (modalBackdrop) {
+                modalBackdrop.remove();
+            }
+
+            // Eliminar la clase `modal-open` del body para restaurar el scroll
+            document.body.classList.remove('modal-open');
+            document.body.style.paddingRight = ''
+
+
+            const nro_operation = $('#nro_operation').val();
+
+
+            // Realizar solicitud AJAX
+            $.ajax({
+                url: `/quote/search-routing/${nro_operation}`, // Cambia esto por la URL de tu servidor
+                type: 'GET',
+                success: function(response) {
+                    // Manejo de la respuesta exitosa
+
+                    loadInfoRouting(response.data[0]);
+
+
+                },
+                error: function(xhr, status, error) {
+                    // Manejo del error
+                    var errorMessage = xhr.responseJSON ? xhr.responseJSON.message :
+                        'Ocurrió un error inesperado.';
+
+                    // Mostrar el mensaje de error al usuario
+                    $('#error_nro_operation').removeClass('d-none').addClass('d-block');
+                    $('#texto_nro_operation').text(errorMessage);
+                    $('#modal_nro_operation').addClass('is-invalid');
+
                 }
+            });
+
+
+            function loadInfoRouting(data) {
+
+                $('#title_quote span').text(data.lcl_fcl);
+
+
+                if (data.lcl_fcl === 'LCL') {
+
+                    $('.lcl_quote').removeClass('d-none');
+                    $('.fcl_quote').addClass('d-none');
+
+
+                } else {
+                    $('.lcl_quote').addClass('d-none');
+                    $('.fcl_quote').removeClass('d-none');
+                }
+
+                $('#customer').val(data.customer.name_businessname).prop('readonly', true);
+                $('#contact_name').val(data.customer.contact_name);
+                $('#contact_phone').val(data.customer.contact_number);
+                $('#load_type').val(data.type_load.name).prop('readonly', true);
+                $('#commodity').val(data.commodity).prop('readonly', true);
+                $('#packaging_type').val(data.packaging_type).prop('readonly', true);
+                $('#cubage_kgv').val(data.volumen).prop('readonly', true);
+                $('#total_weight').val(data.kilograms).prop('readonly', true);
+                $('#packages').val(data.nro_package).prop('readonly', true);
+                $('#measures').val(data.measures);
+                //Campos Hidden
+                $('#nro_operation').val(data.nro_operation);
+                $('#lcl_fcl').val(data.lcl_fcl);
+
+                //load Table measures
+                populateTable(JSON.parse(data.measures));
+
+
+                // Cerrar el modal utilizando la instancia nativa de Bootstrap
+                $('#modalQuoteTransport').hide();
+
+                // Eliminar manualmente el backdrop si persiste
+                const modalBackdrop = document.querySelector('.modal-backdrop');
+                if (modalBackdrop) {
+                    modalBackdrop.remove();
+                }
+
+                // Eliminar la clase `modal-open` del body para restaurar el scroll
+                document.body.classList.remove('modal-open');
+                document.body.style.paddingRight = ''
+
+
+            }
+
+
+
+            function populateTable(data) {
+                const tableBody = document.getElementById('table_measures').getElementsByTagName('tbody')[0];
+
+                // Limpiar la tabla antes de agregar nuevos datos
+                tableBody.innerHTML = '';
+
+                // Iterar sobre los datos y agregar una fila por cada objeto
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        const item = data[key]; // Accede al objeto de cada clave
+
+                        // Crear una nueva fila
+                        let row = tableBody.insertRow();
+
+                        // Insertar celdas en la fila y agregar los valores
+                        let cellAmount = row.insertCell(0);
+                        cellAmount.textContent = item.amount;
+
+                        let cellHeight = row.insertCell(1);
+                        cellHeight.textContent = item.height;
+
+                        let cellLength = row.insertCell(2);
+                        cellLength.textContent = item.length;
+
+                        let cellWidth = row.insertCell(3);
+                        cellWidth.textContent = item.width;
+                    }
+                }
+
+            }
         </script>
     @endif
 @endpush

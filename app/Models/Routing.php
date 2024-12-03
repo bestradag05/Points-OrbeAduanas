@@ -72,5 +72,10 @@ class Routing extends Model
         return $this->hasOne(Transport::class, 'nro_operation', 'nro_operation');
     }
 
+    public function quote_transport()
+    {
+        return $this->hasMany(QuoteTransport::class, 'nro_operation', 'nro_operation'); // 'routing_id' es la clave foránea en la tabla cotizaciones
+    }
+
 
 }

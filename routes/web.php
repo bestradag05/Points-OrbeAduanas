@@ -117,7 +117,9 @@ Route::middleware('auth')->group(function () {
 
     /* Cotizaciones Transporte */
 
-    Route::resource('quote/transport', QuoteTransportController::class);
+    Route::resource('quote/transport', QuoteTransportController::class)->names([
+        'create' => 'quote.transport.create',
+    ]);
     Route::get('quote/search-routing/{nro_operation}', [QuoteTransportController::class, 'searchRouting']);
 
 

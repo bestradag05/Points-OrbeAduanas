@@ -10,30 +10,33 @@
 
 
     <x-adminlte-datatable id="table1" :heads="$heads" hoverable>
-        @foreach ($transports as $quotes)
+        @foreach ($quotes as $quote)
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>
-                    <a href="{{ url('/routing/' . $quotes->routing->id . '/detail') }}">
-                        {{ $quotes->nro_operation }}
-                    </a>
+                    {{ $quote->routing->customer->name_businessname }}
                 </td>
-                <td>{{$quotes->routing->personal->names}}</td>
-                <td>{{ $quotes->origin }}</td>
-                <td>{{ $quotes->destination }}</td>
-                <td class="{{ $quotes->state == 'Pendiente' ? 'text-warning' : 'text-success' }}">{{ $quotes->state }}
+                <td>{{ $quote->pick_up }}</td>
+                <td>{{ $quote->delivery }}</td>
+                <td>{{ $quote->contact_name }}</td>
+                <td>{{ $quote->contact_phone }}</td>
+                <td>{{ $quote->max_attention_hour }}</td>
+                <td>{{ $quote->lcl_fcl }}</td>
+                <td>{{ $quote->commodity }}</td>
+                <td>{{ $quote->cubage_kgv  }}</td>
+                <td>{{ $quote->ton_kilogram  }}</td>
+                <td>{{ $quote->total_weight }}</td>
+                <td class="{{ $quote->state == 'Pendiente' ? 'text-warning' : 'text-success' }}">{{ $quote->state }}
                 </td>
 
-                @can('quotese.generate')
+
                 <td>
-                    <a href="{{ url('/quotes/' . $quotes->id . '/edit') }}" class="btn btn-outline-success btn-sm">
-                        {{ $quotes->state == 'Pendiente' ? 'Generar punto' : 'Modificar' }}
+                    <a href="{{ url('/quote/' . $quote->id . '/edit') }}" class="btn btn-outline-success btn-sm">
+                        {{ $quote->state == 'Pendiente' ? 'Generar punto' : 'Modificar' }}
                     </a>
 
                 </td>
-                @else
-                <td></td>
-                @endcan
+
             </tr>
         @endforeach
     </x-adminlte-datatable>
