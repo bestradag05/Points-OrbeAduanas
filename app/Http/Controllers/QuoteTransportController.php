@@ -97,6 +97,7 @@ class QuoteTransportController extends Controller
 
         if ($validator->fails()) {
             // Redirigir con el valor deseado para showModal
+            /* dd($validator->errors()->all()); */
             return redirect()->route('quote.transport.create')
                 ->withErrors($validator)
                 ->withInput()
@@ -133,7 +134,7 @@ class QuoteTransportController extends Controller
         ]);
 
 
-        return "Ok";
+        return redirect('quote/transport');
     }
 
     /**
@@ -141,7 +142,12 @@ class QuoteTransportController extends Controller
      */
     public function show(string $id)
     {
-        //
+        //Ver el detalle de la cotizacion
+
+        $quote= QuoteTransport::findOrFail($id);
+
+        return view('transport/quote/detail-quote', compact('quote'));
+
     }
 
     /**
@@ -160,6 +166,18 @@ class QuoteTransportController extends Controller
         //
     }
 
+
+    public function costTransport(Request $request, string $id){
+
+        $quote = QuoteTransport::findOrFail($id);
+        $quote->update([
+            'cost_transport' => $request->modal_transport_cost,
+            'state' => 'Respondido'
+        ]);
+
+        return redirect('quote/transport');
+    }
+
     /**
      * Remove the specified resource from storage.
      */
@@ -173,8 +191,8 @@ class QuoteTransportController extends Controller
 
         /* dd($request->all()); */
 
-        return $validator = Validator::make($request->all(), [
-            'nro_operation' => 'required|string|unique:quote_transport,nro_operation,' . $id,
+        return Validator::make($request->all(), [
+            'nro_operation' => 'required|string',
             'customer' => 'required|string',
             'pick_up_lcl' => 'required_if:lcl_fcl,LCL',
             'pick_up_fcl' => 'required_if:lcl_fcl,FCL',
@@ -191,7 +209,7 @@ class QuoteTransportController extends Controller
             'container_type' => 'required_if:lcl_fcl,FCL',
             'ton_kilogram' => 'required_if:lcl_fcl,FCL',
             'packaging_type' => 'required|string',
-            'stackable' => 'required|string',
+            'stackable' => 'required_if:lcl_fcl,LCL',
             'cubage_kgv' => 'required_if:lcl_fcl,LCL',
             'total_weight' => 'required_if:lcl_fcl,LCL',
             'packages' => 'required|string',

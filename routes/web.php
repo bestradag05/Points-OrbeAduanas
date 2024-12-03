@@ -121,6 +121,7 @@ Route::middleware('auth')->group(function () {
         'create' => 'quote.transport.create',
     ]);
     Route::get('quote/search-routing/{nro_operation}', [QuoteTransportController::class, 'searchRouting']);
+    Route::patch('quote/transport/cost/{id}', [QuoteTransportController::class, 'costTransport']);
 
 
     /* Reportes */

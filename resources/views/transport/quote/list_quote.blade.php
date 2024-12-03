@@ -31,8 +31,8 @@
 
 
                 <td>
-                    <a href="{{ url('/quote/' . $quote->id . '/edit') }}" class="btn btn-outline-success btn-sm">
-                        {{ $quote->state == 'Pendiente' ? 'Generar punto' : 'Modificar' }}
+                    <a href="{{ url('/quote/transport/'. $quote->id) }}" class="btn btn-outline-success btn-sm">
+                        Detalle
                     </a>
 
                 </td>

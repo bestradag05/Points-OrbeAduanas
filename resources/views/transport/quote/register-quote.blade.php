@@ -105,16 +105,16 @@
 
             function loadInfoRouting(data) {
 
-                $('#title_quote span').text(data.lcl_fcl);
 
-
-                if (data.lcl_fcl === 'LCL') {
+                if (data.lcl_fcl === 'LCL' || data.lcl_fcl === null) {
+                    $('#title_quote span').text('LCL');
 
                     $('.lcl_quote').removeClass('d-none');
                     $('.fcl_quote').addClass('d-none');
 
 
                 } else {
+                    $('#title_quote span').text('FCL');
                     $('.lcl_quote').addClass('d-none');
                     $('.fcl_quote').removeClass('d-none');
                 }
@@ -125,13 +125,19 @@
                 $('#load_type').val(data.type_load.name).prop('readonly', true);
                 $('#commodity').val(data.commodity).prop('readonly', true);
                 $('#packaging_type').val(data.packaging_type).prop('readonly', true);
-                $('#cubage_kgv').val(data.volumen).prop('readonly', true);
+                $('#cubage_kgv').val(data.kilogram_volumen).prop('readonly', true);
+                $('#ton_kilogram').val(data.volumen).prop('readonly', true);
                 $('#total_weight').val(data.kilograms).prop('readonly', true);
                 $('#packages').val(data.nro_package).prop('readonly', true);
                 $('#measures').val(data.measures);
                 //Campos Hidden
                 $('#nro_operation').val(data.nro_operation);
-                $('#lcl_fcl').val(data.lcl_fcl);
+                if(data.lcl_fcl != null){
+                    
+                    $('#lcl_fcl').val(data.lcl_fcl);
+                }else{
+                    $('#lcl_fcl').val('LCL');
+                }
 
                 //load Table measures
                 populateTable(JSON.parse(data.measures));
@@ -235,13 +241,15 @@
                 $('#title_quote span').text(data.lcl_fcl);
 
 
-                if (data.lcl_fcl === 'LCL') {
+                if (data.lcl_fcl === 'LCL' || data.lcl_fcl === null) {
+                    $('#title_quote span').text('LCL');
 
                     $('.lcl_quote').removeClass('d-none');
                     $('.fcl_quote').addClass('d-none');
 
 
                 } else {
+                    $('#title_quote span').text('FCL');
                     $('.lcl_quote').addClass('d-none');
                     $('.fcl_quote').removeClass('d-none');
                 }
@@ -252,13 +260,19 @@
                 $('#load_type').val(data.type_load.name).prop('readonly', true);
                 $('#commodity').val(data.commodity).prop('readonly', true);
                 $('#packaging_type').val(data.packaging_type).prop('readonly', true);
-                $('#cubage_kgv').val(data.volumen).prop('readonly', true);
+                $('#cubage_kgv').val(data.kilogram_volumen).prop('readonly', true);
+                $('#ton_kilogram').val(data.volumen).prop('readonly', true);
                 $('#total_weight').val(data.kilograms).prop('readonly', true);
                 $('#packages').val(data.nro_package).prop('readonly', true);
                 $('#measures').val(data.measures);
                 //Campos Hidden
                 $('#nro_operation').val(data.nro_operation);
-                $('#lcl_fcl').val(data.lcl_fcl);
+                if(data.lcl_fcl != null){
+                    
+                    $('#lcl_fcl').val(data.lcl_fcl);
+                }else{
+                    $('#lcl_fcl').val('LCL');
+                }
 
                 //load Table measures
                 populateTable(JSON.parse(data.measures));

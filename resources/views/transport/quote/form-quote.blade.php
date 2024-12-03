@@ -172,7 +172,7 @@
                     <label for="customer_detail" class="col-sm-2 col-form-label">Detalles</label>
                     <div class="col-sm-10">
                         <textarea class="form-control @error('customer_detail') is-invalid @enderror" id="customer_detail"
-                            name="customer_detail" placeholder="Ingresa un detalle o alguna observacion" value="{{ isset($quote->customer_detail) ? $quote->customer_detail : '' }}" ></textarea>
+                            name="customer_detail" placeholder="Ingresa un detalle o alguna observacion" value="{{ isset($quote->customer_detail) ? $quote->customer_detail : old('customer_detail') }}" ></textarea>
                     </div>
                 </div>
             </div>
@@ -320,7 +320,7 @@
                     <label for="cargo_detail" class="col-sm-2 col-form-label">Detalles</label>
                     <div class="col-sm-10">
                         <textarea class="form-control @error('cargo_detail') is-invalid @enderror" id="cargo_detail" name="cargo_detail"
-                            placeholder="Ingresa un detalle o alguna observacion" value="{{ isset($quote->cargo_detail) ? $quote->cargo_detail : '' }}"></textarea>
+                            placeholder="Ingresa un detalle o alguna observacion" value="{{ isset($quote->cargo_detail) ? $quote->cargo_detail : old('cargo_detail') }}"></textarea>
                     </div>
                 </div>
             </div>
