@@ -463,6 +463,12 @@ return [
                     'url'  => 'quote/transport',
                     'icon' => 'fa-solid fa-check-double',
                     'active' => ['quote/transport'],
+                ],
+                [
+                    'text' => 'Mis Cotizaciones',
+                    'url'  => 'quote/transport/personal',
+                    'icon' => 'fa-solid fa-check-double',
+                    'active' => ['quote/transport/personal'],
                 ]
             ]
         ],

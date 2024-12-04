@@ -22,10 +22,10 @@
                 <td>{{ $quote->contact_phone }}</td>
                 <td>{{ $quote->max_attention_hour }}</td>
                 <td>{{ $quote->lcl_fcl }}</td>
-                <td>{{ $quote->commodity }}</td>
                 <td>{{ $quote->cubage_kgv  }}</td>
                 <td>{{ $quote->ton_kilogram  }}</td>
                 <td>{{ $quote->total_weight }}</td>
+                <td>{{ $quote->routing->personal->names }}</td>
                 <td class="{{ $quote->state == 'Pendiente' ? 'text-warning' : 'text-success' }}">{{ $quote->state }}
                 </td>
 

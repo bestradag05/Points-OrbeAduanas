@@ -105,7 +105,7 @@
 
             function loadInfoRouting(data) {
 
-
+                console.log(data);
                 if (data.lcl_fcl === 'LCL' || data.lcl_fcl === null) {
                     $('#title_quote span').text('LCL');
 
@@ -125,7 +125,15 @@
                 $('#load_type').val(data.type_load.name).prop('readonly', true);
                 $('#commodity').val(data.commodity).prop('readonly', true);
                 $('#packaging_type').val(data.packaging_type).prop('readonly', true);
-                $('#cubage_kgv').val(data.kilogram_volumen).prop('readonly', true);
+
+                if(data.type_shipment.description === "Marítima" && data.lcl_fcl === 'LCL'){
+                    $('#cubage_kgv').val(data.volumen + ' m3').prop('readonly', true);
+                }
+
+                if(data.type_shipment.description === "Aérea" && data.lcl_fcl === null){
+                    $('#cubage_kgv').val(data.kilogram_volumen + ' KGV').prop('readonly', true);
+                }
+               
                 $('#ton_kilogram').val(data.volumen).prop('readonly', true);
                 $('#total_weight').val(data.kilograms).prop('readonly', true);
                 $('#packages').val(data.nro_package).prop('readonly', true);
@@ -260,7 +268,13 @@
                 $('#load_type').val(data.type_load.name).prop('readonly', true);
                 $('#commodity').val(data.commodity).prop('readonly', true);
                 $('#packaging_type').val(data.packaging_type).prop('readonly', true);
-                $('#cubage_kgv').val(data.kilogram_volumen).prop('readonly', true);
+                if(data.type_shipment.description === "Marítima" && data.lcl_fcl === 'LCL'){
+                    $('#cubage_kgv').val(data.volumen + ' m3').prop('readonly', true);
+                }
+
+                if(data.type_shipment.description === "Aérea" && data.lcl_fcl === 'LCL'){
+                    $('#cubage_kgv').val(data.kilogram_volumen+' KGV').prop('readonly', true);
+                }
                 $('#ton_kilogram').val(data.volumen).prop('readonly', true);
                 $('#total_weight').val(data.kilograms).prop('readonly', true);
                 $('#packages').val(data.nro_package).prop('readonly', true);

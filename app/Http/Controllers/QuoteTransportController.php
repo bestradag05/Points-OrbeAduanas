@@ -16,8 +16,31 @@ class QuoteTransportController extends Controller
      */
     public function index()
     {
-        //
+        
+        $quotes = QuoteTransport::with('routing')->get();
 
+        $heads = [
+            '#',
+            'Cliente',
+            'Recojo',
+            'Entrega',
+            'Nombre del contacto',
+            'Numero del contacto',
+            'Hora maxima de atencion',
+            'LCL / FCL',
+            'Cubicaje-KGV',
+            'Tonelada-KG',
+            'Peso Total',
+            'Asesor',
+            'Estado',
+            'Acciones'
+        ];
+
+        return view('transport/quote/list_quote', compact('quotes', 'heads'));
+    }
+
+    public function getQuoteTransportPersonal()
+    {
         // Obtener el ID del personal del usuario autenticado
         $personalId = Auth::user()->personal->id;
 
@@ -43,7 +66,6 @@ class QuoteTransportController extends Controller
             'Numero del contacto',
             'Hora maxima de atencion',
             'LCL / FCL',
-            'Producto',
             'Cubicaje-KGV',
             'Tonelada-KG',
             'Peso Total',
@@ -51,7 +73,7 @@ class QuoteTransportController extends Controller
             'Acciones'
         ];
 
-        return view('transport/quote/list_quote', compact('quotes', 'heads'));
+        return view('transport/quote/list-quote-personal', compact('quotes', 'heads'));
     }
 
     /**
@@ -68,7 +90,7 @@ class QuoteTransportController extends Controller
     {
 
         $routing = Routing::where('nro_operation', $nro_operation)
-            ->with('customer', 'type_load')
+            ->with('customer', 'type_load', 'type_shipment')
             ->get();
 
         if ($routing->isEmpty()) {
@@ -171,6 +193,7 @@ class QuoteTransportController extends Controller
 
         $quote = QuoteTransport::findOrFail($id);
         $quote->update([
+            'response_date' => Carbon::now(),
             'cost_transport' => $request->modal_transport_cost,
             'state' => 'Respondido'
         ]);

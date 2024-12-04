@@ -116,12 +116,14 @@ Route::middleware('auth')->group(function () {
     Route::get('points/additionals', [PointsController::class, 'getPointAdditional']);
 
     /* Cotizaciones Transporte */
+    Route::get('quote/transport/personal', [QuoteTransportController::class, 'getQuoteTransportPersonal']);
 
     Route::resource('quote/transport', QuoteTransportController::class)->names([
         'create' => 'quote.transport.create',
     ]);
     Route::get('quote/search-routing/{nro_operation}', [QuoteTransportController::class, 'searchRouting']);
     Route::patch('quote/transport/cost/{id}', [QuoteTransportController::class, 'costTransport']);
+  
 
 
     /* Reportes */
