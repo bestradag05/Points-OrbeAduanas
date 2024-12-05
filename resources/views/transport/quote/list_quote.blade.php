@@ -16,8 +16,6 @@
                 <td>
                     {{ $quote->routing->customer->name_businessname }}
                 </td>
-                <td>{{ $quote->pick_up }}</td>
-                <td>{{ $quote->delivery }}</td>
                 <td>{{ $quote->contact_name }}</td>
                 <td>{{ $quote->contact_phone }}</td>
                 <td>{{ $quote->max_attention_hour }}</td>
@@ -31,16 +29,14 @@
 
 
                 <td>
-                    <a href="{{ url('/quote/transport/'. $quote->id) }}" class="btn btn-outline-success btn-sm">
+                    <a href="{{ url('/quote/transport/'. $quote->id) }}" class="btn btn-outline-success btn-sm mb-2 ">
                         Detalle
                     </a>
-
                 </td>
 
             </tr>
         @endforeach
     </x-adminlte-datatable>
-
 
 @stop
 

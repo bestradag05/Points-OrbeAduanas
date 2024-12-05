@@ -7,11 +7,19 @@
     <div class="container">
 
         <div class="row">
-            <div class="col-12 my-5 text-center {{$quote->state != 'Pendiente' ? 'd-none' : ''}}">
-                <button class="btn btn-indigo mx-2" data-toggle="modal" data-target="#modalQuoteResponse"> <i
-                        class="fa-regular fa-check-double"></i> Dar respuesta</button>
-                <button class="btn btn-secondary mx-2"><i class="fa-sharp-duotone fa-regular fa-xmark"></i> Dar
+            <div class="col-12 my-4 text-center">
+                <button class="btn btn-indigo mx-2 {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}" data-toggle="modal"
+                    data-target="#modalQuoteResponse"> <i class="fa-regular fa-check-double"></i> Dar respuesta</button>
+                <button class="btn btn-secondary mx-2 {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}"><i
+                        class="fa-sharp-duotone fa-regular fa-xmark"></i> Dar
                     observaciones</button>
+
+                <button class="btn btn-secondary mx-2 {{ $quote->state != 'Reajuste' ? 'd-none' : '' }}" data-toggle="modal"
+                    data-target="#modalQuoteReajust"><i class="fa-solid fa-money-check-dollar-pen"></i> Reajustar </button>
+
+                <a href="{{ url('/quote/transport/cost/keep/' . $quote->id) }}" class="btn btn-danger mx-2 {{ $quote->state != 'Reajuste' ? 'd-none' : '' }}" ><i class="fa-solid fa-hand-holding-dollar"></i> Mantener precio </a>
+
+
             </div>
             <div class="col-12">
 
@@ -435,6 +443,73 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modalQuoteReajust" tabindex="-1" aria-labelledby="modalQuoteReajustLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action={{ url('/quote/transport/cost/responsereajust/' . $quote->id) }} id="sendTransportReajust"
+                    method="POST" enctype="multipart/form-data">
+                    {{ method_field('PATCH') }}
+                    {{ csrf_field() }}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalQuoteReajustLabel">REAJUSTE DE PRECIO DE FLETE DE TRANSPORTE</h5>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="form-group row">
+                            <label for="pounds" class="col-sm-4 col-form-label">Observacion : </label>
+                            <div class="col-sm-8">
+                                <textarea type="text" class="form-control" name="readjustment_reason" id="readjustment_reason"
+                                    @readonly(true)>{{ isset($quote->readjustment_reason) ? $quote->readjustment_reason : '' }}</textarea>
+
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="pounds" class="col-sm-4 col-form-label">Costo de transporte: </label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                    name="modal_transport_old_cost" id="modal_transport_old_cost"
+                                    placeholder="Ingrese costo de flete de transporte.."
+                                    value="{{ isset($quote->cost_transport) ? $quote->cost_transport : '' }}"
+                                    @readonly(true)>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="pounds" class="col-sm-4 col-form-label">Costo reajustado: </label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                    name="modal_transport_readjustment_cost" id="modal_transport_readjustment_cost"
+                                    placeholder="Ingrese costo de flete de transporte..">
+
+                                <span id="required_reajust_transport_cost" class="invalid-feedback d-none"
+                                    role="alert">
+                                    <strong id="texto_reajust_transport_cost">Complete el campo de costo de
+                                        reajuste</strong>
+                                </span>
+
+                                <span id="value_reajust_transport_cost" class="invalid-feedback d-none" role="alert">
+                                    <strong id="texto_reajust_transport_cost">El costo de reajuste no puede ser mayor o
+                                        igual que el costo actual</strong>
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="submit" class="btn btn-primary">Enviar costo</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 
 @stop
 
@@ -456,6 +531,51 @@
 
                 e.target.submit();
             }
+
+        });
+
+
+        $('#sendTransportReajust').on('submit', (e) => {
+
+            e.preventDefault();
+
+            let currentCost = $('#modal_transport_readjustment_cost').val();
+            let oldCost = $('#modal_transport_old_cost').val();
+
+
+
+            if (currentCost === '') {
+
+                $('#modal_transport_readjustment_cost').addClass('is-invalid');
+                $('#required_reajust_transport_cost').removeClass('d-none').addClass('d-block');
+
+
+
+            } else {
+
+                $('#modal_transport_readjustment_cost').removeClass('is-invalid');
+                $('#required_reajust_transport_cost').removeClass('d-block').addClass('d-none');
+
+                let parseCurrentCost = parseFloat(currentCost.replace(/,/g, ''));
+                let parseOldCost = parseFloat(oldCost.replace(/,/g, ''));
+
+
+                if (parseCurrentCost >= parseOldCost) {
+
+                    $('#modal_transport_readjustment_cost').addClass('is-invalid');
+                    $('#value_reajust_transport_cost').removeClass('d-none').addClass('d-block');
+
+                } else {
+                    $('#modal_transport_readjustment_cost').removeClass('is-invalid');
+                    $('#value_reajust_transport_cost').removeClass('d-block').addClass('d-none');
+
+                    e.target.submit();
+
+                }
+
+            }
+
+
 
         });
     </script>

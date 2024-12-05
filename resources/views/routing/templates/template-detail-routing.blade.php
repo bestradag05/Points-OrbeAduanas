@@ -191,13 +191,6 @@
             $(`#${container.id}`).find('#typeService').val(typeService);
             element.value = '';
 
-            //Si es que el modal se abre desde la cotizacion:
-
-            if ({{ isset($cost_transport) }}) {
-
-                $('#transport_value').val("{{ $cost_transport }}").prop('readonly', true);
-            }
-
         }
 
 
@@ -596,6 +589,7 @@
 
     @if ($cost_transport && $cost_transport != '')
         <script>
+            console.log("ingreso aqui");
             var typeServices = @json($type_services);
             const selectElement = document.getElementById('type_service');
 
@@ -612,6 +606,8 @@
 
 
             $('#transport_value').val("{{ $cost_transport }}").prop('readonly', true);
+            $('#origin').val("{{ $origin }}").prop('readonly', true);
+            $('#destination').val("{{ $destination }}").prop('readonly', true);
 
 
             value_insurance = parseFloat({{ $cost_transport }});

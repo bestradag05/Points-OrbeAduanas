@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('commodity');
             $table->string('nro_package')->nullable();
             $table->string('packaging_type')->nullable();
+            $table->string('container_type')->nullable();
             $table->decimal('pounds', 8, 2)->nullable();
             $table->decimal('kilograms', 8, 2)->nullable();
             $table->decimal('volumen', 8, 2)->nullable();

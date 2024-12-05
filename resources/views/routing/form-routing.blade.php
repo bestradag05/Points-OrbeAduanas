@@ -109,7 +109,7 @@
               </div>
               <div id="contenedor_radio_lcl_fcl" class="col-4 d-none align-items-center">
                   <div class="form-check d-inline">
-                      <input type="radio" id="radioLclFcl" name="lcl_fcl" value="LCL"
+                      <input type="radio" id="radioLcl" name="lcl_fcl" value="LCL"
                           {{ old('lcl_fcl') === 'LCL' ? 'checked' : '' }}
                           class="form-check-input @error('lcl_fcl') is-invalid @enderror">
                       <label for="radioLclFcl" class="form-check-label">
@@ -117,7 +117,7 @@
                       </label>
                   </div>
                   <div class="form-check d-inline">
-                      <input type="radio" id="radioLclFcl" name="lcl_fcl" value="FCL"
+                      <input type="radio" id="radioFcl" name="lcl_fcl" value="FCL"
                           {{ old('lcl_fcl') === 'FCL' ? 'checked' : '' }}
                           class="form-check-input @error('lcl_fcl') is-invalid @enderror">
                       <label for="radioLclFcl" class="form-check-label">
@@ -204,7 +204,7 @@
                   <label for="nro_package" class="col-sm-4 col-form-label">N° Paquetes</label>
                   <div class="col-sm-8">
                       <input type="number" min="0" step="1"
-                          class="form-control @error('commodity') is-invalid @enderror" id="nro_package"
+                          class="form-control @error('nro_package') is-invalid @enderror" id="nro_package"
                           name="nro_package" placeholder="Ingrese el nro de paquetes.."
                           oninput="validarInputNumber(this)" onchange="cleanMeasures()"
                           value="{{ isset($routing) ? $routing->nro_package : '' }}">
@@ -223,10 +223,27 @@
                   <label for="packaging_type" class="col-sm-4 col-form-label">Tipo de embalaje</label>
                   <div class="col-sm-8">
                       <input type="text" min="0" step="1"
-                          class="form-control @error('commodity') is-invalid @enderror" id="packaging_type"
+                          class="form-control @error('packaging_type') is-invalid @enderror" id="packaging_type"
                           name="packaging_type" placeholder="Ingrese el tipo de embalaje.."
                           value="{{ isset($routing) ? $routing->packaging_type : '' }}">
                       @error('packaging_type')
+                          <span class="invalid-feedback d-block" role="alert">
+                              <strong>{{ $message }}</strong>
+                          </span>
+                      @enderror
+                  </div>
+              </div>
+          </div>
+
+          <div class="col-4 d-none" id="containerTypeWrapper">
+              <div class="form-group row">
+                  <label for="container_type" class="col-sm-4 col-form-label">Tipo de contenedor</label>
+                  <div class="col-sm-8">
+                      <input type="text" min="0" step="1"
+                          class="form-control @error('container_type') is-invalid @enderror" id="container_type"
+                          name="container_type" placeholder="Ingrese el tipo de contenedor.."
+                          value="{{ isset($routing) ? $routing->container_type : old('container_type') }}">
+                      @error('container_type')
                           <span class="invalid-feedback d-block" role="alert">
                               <strong>{{ $message }}</strong>
                           </span>
@@ -243,16 +260,16 @@
                           name="amount_package" placeholder="Ingresa la cantidad">
                   </div>
                   <div class="col-2">
-                      <input type="number" class="form-control" step="0.0001" id="width" name="width"
-                          placeholder="Ancho(cm)">
+                      <input type="text" class="form-control CurrencyInput" data-type="currency" id="width"
+                          name="width" placeholder="Ancho(cm)">
                   </div>
                   <div class="col-2">
-                      <input type="number" class="form-control" step="0.0001" id="length" name="length"
-                          placeholder="Largo(cm)">
+                      <input type="text" class="form-control CurrencyInput" data-type="currency" id="length"
+                          name="length" placeholder="Largo(cm)">
                   </div>
                   <div class="col-2">
-                      <input type="number" class="form-control" step="0.0001" id="height" name="height"
-                          placeholder="Alto(cm)">
+                      <input type="text" class="form-control CurrencyInput" data-type="currency" id="height"
+                          name="height" placeholder="Alto(cm)">
                   </div>
                   <div class="col-2">
                       <button id="addRow" class="btn btn-indigo btn-sm"><i class="fa fa-plus"></i>Agregar</button>
@@ -395,7 +412,8 @@
               // Obtener los valores de los campos del formulario (puedes personalizar esto para tu caso)
               let volumenValue = document.getElementById('volumen');
               let kilogramoVolumenValue = document.getElementById('kilogram_volumen');
-              let lcl_fcl = document.getElementById('radioLclFcl');
+              let lcl_fcl = document.getElementsByName('lcl_fcl');
+              let container_type = document.getElementById('container_type');
 
               // Mostrar/ocultar los campos según los valores
               if (volumenValue.value !== '' || volumenValue.classList.contains('is-invalid')) {
@@ -404,9 +422,38 @@
 
               if (kilogramoVolumenValue.value !== '' || kilogramoVolumenValue.classList.contains('is-invalid')) {
                   document.getElementById('contenedor_kg_vol').classList.remove('d-none');
+
               }
 
-              if (lcl_fcl.checked === true || lcl_fcl.classList.contains('is-invalid')) {
+              if (container_type.value !== '' || container_type.classList.contains('is-invalid')) {
+                  document.getElementById('containerTypeWrapper').classList.remove('d-none');
+
+                  const parentElement = document.getElementById('containerTypeWrapper').closest('.row');
+
+                  if (parentElement) {
+                      const firstChild = parentElement.children[0]; // Primer hijo
+                      const secondChild = parentElement.children[1]; // Segundo hijo
+
+                      // Añade la clase 'col-6' a los dos primeros hijos
+                      if (firstChild) {
+                          firstChild.classList.add('col-4');
+                          firstChild.classList.remove('col-6');
+                      }
+                      if (secondChild) {
+
+                          secondChild.classList.add('col-4');
+                          secondChild.classList.remove('col-6')
+
+                      }
+                  }
+
+              }
+
+              let isChecked = Array.from(lcl_fcl).some(radio => radio.checked);
+              let hasInvalidClass = Array.from(lcl_fcl).some(radio => radio.classList.contains('is-invalid'));
+
+
+              if (isChecked || hasInvalidClass) {
                   $('#lclfcl_content').children().first().removeClass('col-12').addClass('col-8');
                   $('#lclfcl_content').children().last().removeClass('d-none').addClass('d-flex');
                   document.getElementById('contenedor_radio_lcl_fcl').classList.remove('d-none');
@@ -455,6 +502,30 @@
                           $('#contenedor_kg_vol').find('input').val("");
                           $('#contenedor_volumen').find('input').val("");
 
+                          $('#containerTypeWrapper').find('input').val("");
+                          $('#containerTypeWrapper').addClass('d-none');
+
+                          const parentElement = document.getElementById('containerTypeWrapper').closest(
+                              '.row');
+
+                          if (parentElement) {
+                              const firstChild = parentElement.children[0]; // Primer hijo
+                              const secondChild = parentElement.children[1]; // Segundo hijo
+
+                              // Añade la clase 'col-6' a los dos primeros hijos
+                              if (firstChild) {
+                                  firstChild.classList.add('col-6');
+                                  firstChild.classList.remove('col-4');
+                              }
+                              if (secondChild) {
+
+                                  secondChild.classList.add('col-6');
+                                  secondChild.classList.remove('col-4')
+
+                              }
+                          }
+
+
                       }
                   }
               });
@@ -480,17 +551,6 @@
 
 
           });
-
-
-          $('select').on('select2:open', function(e) {
-              var searchField = $(this).data('select2').dropdown.$search || $(this).data('select2').selection.$search;
-              if (searchField) {
-                  searchField[0].focus();
-              }
-          });
-
-
-          //Tabla de medidas
 
 
           //Inicializamos la tabla de medidas
@@ -565,16 +625,16 @@
                   const newRow = table.row.add([
 
                       // Campo para Cantidad
-                      `<input type="number" class="form-control" readonly id="amount-${rowIndex}" name="amount-${rowIndex}" value="${amount_package}" placeholder="Cantidad" min="0" step="1">`,
+                      `<input type="number" class="form-control"  readonly id="amount-${rowIndex}" name="amount-${rowIndex}" value="${amount_package}" placeholder="Cantidad" min="0" step="1">`,
 
                       // Campo para Ancho
-                      `<input type="number" class="form-control" readonly id="width-${rowIndex}" name="width-${rowIndex}" value="${width}" placeholder="Ancho" min="0" step="0.0001">`,
+                      `<input type="number" class="form-control"  readonly id="width-${rowIndex}" name="width-${rowIndex}" value="${width}" placeholder="Ancho" min="0" step="0.0001">`,
 
                       // Campo para Largo
-                      `<input type="number" class="form-control" readonly id="length-${rowIndex}" name="length-${rowIndex}" value="${length}" placeholder="Largo" min="0" step="0.0001">`,
+                      `<input type="number" class="form-control"  readonly id="length-${rowIndex}" name="length-${rowIndex}" value="${length}" placeholder="Largo" min="0" step="0.0001">`,
 
                       // Campo para Alto
-                      `<input type="number" class="form-control" readonly id="height-${rowIndex}" name="height-${rowIndex}" value="${height}" placeholder="Alto" min="0" step="0.0001">`,
+                      `<input type="number" class="form-control"  readonly id="height-${rowIndex}" name="height-${rowIndex}" value="${height}" placeholder="Alto" min="0" step="0.0001">`,
 
                       `<button type="button" class="btn btn-danger btn-sm" id="delete-${rowIndex}" onclick="deleteRow('row-${rowIndex}', ${amount_package}, ${rowIndex})"><i class="fa fa-trash"></i></button>`
                   ]).draw().node();
@@ -622,5 +682,59 @@
               rowIndex = 1;
 
           }
+
+
+          document.querySelectorAll('input[name="lcl_fcl"]').forEach(radio => {
+              radio.addEventListener('change', function() {
+                  const containerTypeWrapper = document.getElementById('containerTypeWrapper');
+
+                  // Si el valor es FCL, mostrar el campo
+                  if (this.value === 'FCL') {
+                      containerTypeWrapper.classList.remove('d-none');
+
+                      const parentElement = containerTypeWrapper.closest('.row');
+                      if (parentElement) {
+                          const firstChild = parentElement.children[0]; // Primer hijo
+                          const secondChild = parentElement.children[1]; // Segundo hijo
+
+                          // Añade la clase 'col-6' a los dos primeros hijos
+                          if (firstChild) {
+                              firstChild.classList.add('col-4');
+                              firstChild.classList.remove('col-6');
+                          }
+                          if (secondChild) {
+
+                              secondChild.classList.add('col-4');
+                              secondChild.classList.remove('col-6')
+
+                          }
+                      }
+
+                  } else {
+                      // Si no es FCL, ocultar el campo
+                      containerTypeWrapper.classList.add('d-none');
+                      $('#containerTypeWrapper').find('input').val('');
+
+                      const parentElement = containerTypeWrapper.closest('.row');
+                      if (parentElement) {
+                          const firstChild = parentElement.children[0]; // Primer hijo
+                          const secondChild = parentElement.children[1]; // Segundo hijo
+
+                          // Añade la clase 'col-6' a los dos primeros hijos
+                          if (firstChild) {
+                              firstChild.classList.add('col-6');
+                              firstChild.classList.remove('col-4');
+                          }
+                          if (secondChild) {
+
+                              secondChild.classList.add('col-6');
+                              secondChild.classList.remove('col-4')
+
+                          }
+                      }
+
+                  }
+              });
+          });
       </script>
   @endpush

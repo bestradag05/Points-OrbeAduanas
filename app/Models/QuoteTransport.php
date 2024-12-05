@@ -36,6 +36,7 @@ class QuoteTransport extends Model
         'measures',
         'nro_operation',
         'lcl_fcl',
+        'old_cost_transport',
         'cost_transport',
         'readjustment_reason',
         'state'

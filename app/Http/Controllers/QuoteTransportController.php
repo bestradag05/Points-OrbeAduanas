@@ -22,8 +22,6 @@ class QuoteTransportController extends Controller
         $heads = [
             '#',
             'Cliente',
-            'Recojo',
-            'Entrega',
             'Nombre del contacto',
             'Numero del contacto',
             'Hora maxima de atencion',
@@ -155,7 +153,7 @@ class QuoteTransportController extends Controller
         ]);
 
 
-        return redirect('quote/transport');
+        return redirect('quote/transport/personal');
     }
 
     /**
@@ -213,13 +211,24 @@ class QuoteTransportController extends Controller
 
             return redirect()->route('routing.detail', [
                 'id_routing' => $quote->routing->id,
-                'cost_transport' => $quote->cost_transport
+                'cost_transport' => $quote->cost_transport,
+                'origin' => $quote->pick_up,
+                'destination' => $quote->delivery
             ]);
         } else if ($action === 'reajust') {
 
             $quote->update([
-                'readjustment_reason' => $request->reason_rejection,
+                'readjustment_reason' => $request->readjustment_reason,
                 'state' => 'Reajuste'
+            ]);
+
+            return redirect('quote/transport/personal');
+        } else if ($action === 'responsereajust') {
+
+            $quote->update([
+                'old_cost_transport' => $request->modal_transport_old_cost,
+                'cost_transport' => $request->modal_transport_readjustment_cost,
+                'state' => 'Respondido'
             ]);
 
             return redirect('quote/transport');
@@ -237,6 +246,19 @@ class QuoteTransportController extends Controller
         ]);
 
         return $quote;
+
+    }
+
+    public function keepQuoteTransport(string $id)
+    {
+
+        $quote = QuoteTransport::findOrFail($id);
+
+        $quote->update([
+            'state' => 'Respondido'
+        ]);
+
+        return redirect('quote/transport');
 
     }
 

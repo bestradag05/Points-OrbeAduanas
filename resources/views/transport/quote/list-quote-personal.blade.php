@@ -31,7 +31,7 @@
                 @if ($quote->state === 'Respondido')
                     <td>
                         <button data-toggle="modal" data-target="#modalQuoteTransportPersonal"
-                            data-cost="{{ $quote->cost_transport }}" data-id="{{ $quote->id }}"
+                            data-cost="{{ $quote->cost_transport }}" data-old="{{ $quote->old_cost_transport }}" data-id="{{ $quote->id }}"
                             class="btn btn-outline-success btn-sm">
                             Ver costo
                         </button>
@@ -58,9 +58,24 @@
                         <h5 class="modal-title" id="modalQuoteTransportPersonalLabel">PRECIO DE FLETE DE TRANSPORTE</h5>
                     </div>
                     <div class="modal-body">
-                        <input type="text" class="form-control CurrencyInput" data-type="currency"
-                            name="modal_transport_cost" id="modal_transport_cost" @readonly(true)
-                            placeholder="Ingrese costo de flete de transporte..">
+
+                        <div id="container_old_cost" class="form-group row d-none">
+                            <label for="pounds" class="col-sm-4 col-form-label">Costo antiguo: </label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                    name="old_modal_transport_cost" id="old_modal_transport_cost" @readonly(true)
+                                    placeholder="Ingrese costo de flete de transporte..">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="pounds" class="col-sm-4 col-form-label">Costo transporte: </label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                    name="modal_transport_cost" id="modal_transport_cost" @readonly(true)
+                                    placeholder="Ingrese costo de flete de transporte..">
+                            </div>
+                        </div>
 
                     </div>
                     <div class="modal-footer justify-content-center">
@@ -118,13 +133,21 @@
         $('#modalQuoteTransportPersonal').on('show.bs.modal', function(event) {
 
             var button = $(event.relatedTarget); // Botón que disparó el modal
-            console.log(button);
-            var cost = button.data('cost'); // Extrae el valor del atributo data-cost
+            var cost = button.data('cost'); 
+            var costOld = button.data('old');
             currentQuoteId = button.data('id');
+            console.log(costOld);
 
             // Aquí puedes usar el valor (por ejemplo, actualizar un elemento en el modal)
             var modal = $(this);
             modal.find('.modal-body #modal_transport_cost').val('$ ' + cost);
+
+            if(costOld !== "" ){
+                $('#container_old_cost').removeClass('d-none');
+                modal.find('.modal-body #old_modal_transport_cost').val('$ ' + costOld);
+            }
+
+            
             modal.find('form').attr('action', '/quote/transport/cost/accept/' + currentQuoteId);
         });
 

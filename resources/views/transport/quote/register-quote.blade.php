@@ -128,6 +128,10 @@
                     $('#cubage_kgv').val(data.volumen + ' m3').prop('readonly', true);
                 }
 
+                if(data.type_shipment.description === "Marítima" && data.lcl_fcl === 'FCL'){
+                    $('#container_type').val(data.container_type).prop('readonly', true);
+                }
+
                 if(data.type_shipment.description === "Aérea" && data.lcl_fcl === null){
                     $('#cubage_kgv').val(data.kilogram_volumen + ' KGV').prop('readonly', true);
                 }

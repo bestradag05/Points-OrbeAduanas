@@ -125,6 +125,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('quote/transport/cost/{id}', [QuoteTransportController::class, 'costTransport']);
     Route::patch('quote/transport/cost/{action}/{id}', [QuoteTransportController::class, 'handleTransportAction']);
     Route::get('quote/transport/cost/reject/{id}', [QuoteTransportController::class, 'rejectQuoteTransport']);
+    Route::get('quote/transport/cost/keep/{id}', [QuoteTransportController::class, 'keepQuoteTransport']);
   
 
 

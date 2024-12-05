@@ -136,6 +136,7 @@ class RoutingController extends Controller
             'commodity' => $request->commodity,
             'nro_package' => $request->nro_package,
             'packaging_type' => $request->packaging_type,
+            'container_type' => $request->container_type,
             'pounds' => $request->pounds,
             'kilograms' => $this->parseDouble($request->kilograms),
             'volumen' => $request->volumen != null ?  $this->parseDouble($request->volumen) : null,
@@ -250,10 +251,11 @@ class RoutingController extends Controller
         //Si es que la obtencion del detalle viene desde la cotizacion de transporte:
 
         $cost_transport = request('cost_transport', "");
+        $origin = request('origin', "");
+        $destination = request('destination', "");
 
 
-
-        return view('routing/detail-routing', compact('routing', 'type_services', 'services', 'concepts', 'modalitys', 'tab', 'stateCountrys', 'type_insurace', 'cost_transport'));
+        return view('routing/detail-routing', compact('routing', 'type_services', 'services', 'concepts', 'modalitys', 'tab', 'stateCountrys', 'type_insurace', 'cost_transport', 'origin', 'destination'));
     }
 
 
@@ -514,13 +516,13 @@ class RoutingController extends Controller
             'commodity' => 'required',
             'nro_package' => 'required',
             'packaging_type' => 'required',
+            'container_type' => 'required_if:lcl_fcl,FCL',
             'pounds' => 'nullable',
             'kilograms' => 'required',
             'volumen' => 'required_if:type_shipment_name,Marítima',
             'kilogram_volumen' => 'required_if:type_shipment_name,Aérea',
             'lcl_fcl' => 'required_if:type_shipment_name,Marítima',
             'hs_code' => 'nullable',
-            'value_measures' => 'required',
             'observation' => 'nullable'
         ]);
     }

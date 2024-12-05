@@ -13,7 +13,7 @@ class Routing extends Model
     protected $table = 'routing';
 
     protected $fillable = ['nro_operation', 'origin', 'destination', 'load_value', 'id_personal', 'id_customer',
-                           'id_type_shipment', 'lcl_fcl', 'id_type_load', 'id_modality', 'id_regime', 'id_incoterms', 'id_supplier', 'commodity', 'nro_package', 'packaging_type', 'pounds', 'kilograms', 
+                           'id_type_shipment', 'lcl_fcl', 'id_type_load', 'id_modality', 'id_regime', 'id_incoterms', 'id_supplier', 'commodity', 'nro_package', 'packaging_type', 'container_type', 'pounds', 'kilograms', 
                             'volumen', 'kilogram_volumen', 'measures', 'hs_code', 'observation'];
 
     protected $casts = [
