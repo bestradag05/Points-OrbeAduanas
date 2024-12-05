@@ -190,6 +190,14 @@
             typeService = element.value;
             $(`#${container.id}`).find('#typeService').val(typeService);
             element.value = '';
+
+            //Si es que el modal se abre desde la cotizacion:
+
+            if ({{ isset($cost_transport) }}) {
+
+                $('#transport_value').val("{{ $cost_transport }}").prop('readonly', true);
+            }
+
         }
 
 
@@ -219,6 +227,7 @@
 
         function updateInsuranceAddedTotal(element) {
 
+
             if (element.value === '') {
                 valuea_added_insurance = 0;
             } else {
@@ -228,6 +237,34 @@
 
             //Cada que actualicemos el insurance_add borramos los puntos para poder volver a generar un maximo.
             $(`#${container.id} #insurance_points`).val("");
+            console.log(container.id);
+
+            calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, container.id);
+        }
+
+        function updateTransportTotal(element) {
+
+            if (element.value === '') {
+                value_insurance = 0;
+            } else {
+                value_insurance = parseFloat(element.value.replace(/,/g, ''));
+            }
+
+            calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, container.id);
+        }
+
+        function updateTransportAddedTotal(element) {
+
+
+            if (element.value === '') {
+                valuea_added_insurance = 0;
+            } else {
+                valuea_added_insurance = parseFloat(element.value.replace(/,/g, ''));
+            }
+
+
+            //Cada que actualicemos el insurance_add borramos los puntos para poder volver a generar un maximo.
+            $(`#${container.id} #additional_points`).val("");
 
             calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, container.id);
         }
@@ -460,7 +497,6 @@
             let form = $(`#${container.id}`).find('form');
             const inputs = form.find('input, select').not('.formConcepts  input, .formConcepts select, input.d-none');
 
-
             inputs.each(function(index, input) {
 
                 if (!$(this).hasClass('d-none')) {
@@ -479,8 +515,10 @@
 
             });
 
-
             var camposInvalidos = form.find('.is-invalid').length;
+
+
+            console.log(form);
 
             if (camposInvalidos == 0) {
 
@@ -496,6 +534,8 @@
 
             let form = $('#form_insurance');
             const inputs = form.find('input, select').not('');
+
+
 
             inputs.each(function(index, input) {
 
@@ -551,4 +591,33 @@
             formInsurance.reset();
         })
     </script>
+
+
+
+    @if ($cost_transport && $cost_transport != '')
+        <script>
+            var typeServices = @json($type_services);
+            const selectElement = document.getElementById('type_service');
+
+            typeServices.forEach(typeService => {
+
+                if (typeService.name === 'Transporte') {
+                    selectElement.value = typeService.id;
+                }
+
+            });
+
+            const event = new Event('change');
+            selectElement.dispatchEvent(event);
+
+
+            $('#transport_value').val("{{ $cost_transport }}").prop('readonly', true);
+
+
+            value_insurance = parseFloat({{ $cost_transport }});
+
+            calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, container.id);
+        </script>
+    @endif
+
 @endpush

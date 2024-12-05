@@ -65,6 +65,10 @@ class DatabaseSeeder extends Seeder
         
         Permission::create(['name' => 'transporte.list', 'alias' => 'Listar puntos', 'guard_name' => 'web']);
         Permission::create(['name' => 'transporte.generate', 'alias' => 'Generar puntos', 'guard_name' => 'web']);
+        Permission::create(['name' => 'transporte.quote.list', 'alias' => 'Todas las cotizaciones', 'guard_name' => 'web']);
+        Permission::create(['name' => 'transporte.quote.list.personal', 'alias' => 'Cotizacion por personal', 'guard_name' => 'web']);
+        Permission::create(['name' => 'transporte.quote.generate', 'alias' => 'Generar Cotizaciones', 'guard_name' => 'web']);
+
        
     
 

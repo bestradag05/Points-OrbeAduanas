@@ -359,7 +359,7 @@
           <label for="hs_code" class="col-sm-2 col-form-label">H.S. Code</label>
           <div class="col-sm-10">
               <input type="number" min="0" step="1" class="form-control" id="hs_code"
-                  name="hs_code" placeholder="Ingrese el nro de paquetes.." oninput="validarInputNumber(this)"
+                  name="hs_code" placeholder="Ingrese el hs code.." oninput="validarInputNumber(this)"
                   value="{{ isset($routing) ? $routing->hs_code : '' }}">
               @error('hs_code')
                   <div class="text-danger">{{ $message }}</div>

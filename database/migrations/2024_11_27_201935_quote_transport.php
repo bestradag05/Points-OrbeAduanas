@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('max_attention_hour')->nullable();
             $table->string('gang')->nullable();
             $table->string('guard')->nullable();
-            $table->string('customer_detail')->nullable();
+            $table->text('customer_detail')->nullable();
             $table->string('commodity')->nullable();
             $table->string('packaging_type')->nullable();
             $table->string('load_type')->nullable();
@@ -33,12 +33,13 @@ return new class extends Migration
             $table->string('cubage_kgv')->nullable();
             $table->string('total_weight')->nullable();
             $table->string('packages')->nullable();
-            $table->string('cargo_detail')->nullable();
+            $table->text('cargo_detail')->nullable();
             $table->string('measures')->nullable();
             $table->string('nro_operation');
             $table->string('lcl_fcl');
+            $table->text('readjustment_reason')->nullable();
             $table->decimal('cost_transport', 8, 2)->nullable();
-            $table->enum('state', ['Pendiente', 'Respondido', 'Aceptada', 'Rechazada'])->default('pendiente');
+            $table->enum('state', ['Pendiente', 'Respondido', 'Aceptada', 'Reajuste', 'Rechazada'])->default('pendiente');
             $table->timestamps();
 
 

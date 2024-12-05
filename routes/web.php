@@ -85,7 +85,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('modality', ModalityController::class);
 
     Route::resource('routing', RoutingController::class);
-    Route::get('routing/{id_routing}/detail', [RoutingController::class, 'getTemplateDetailRouting']);
+    Route::get('routing/{id_routing}/detail', [RoutingController::class, 'getTemplateDetailRouting'])->name('routing.detail');;
     Route::get('routing/{id_routing}/documents', [RoutingController::class, 'getTemplateDocumentsRouting']);
     Route::post('routing_service', [RoutingController::class, 'storeRoutingService']);
     Route::post('routing_insurance', [RoutingController::class, 'storeInsuranceService']);
@@ -123,6 +123,8 @@ Route::middleware('auth')->group(function () {
     ]);
     Route::get('quote/search-routing/{nro_operation}', [QuoteTransportController::class, 'searchRouting']);
     Route::patch('quote/transport/cost/{id}', [QuoteTransportController::class, 'costTransport']);
+    Route::patch('quote/transport/cost/{action}/{id}', [QuoteTransportController::class, 'handleTransportAction']);
+    Route::get('quote/transport/cost/reject/{id}', [QuoteTransportController::class, 'rejectQuoteTransport']);
   
 
 

@@ -104,17 +104,15 @@
 
 
             function loadInfoRouting(data) {
-
-                console.log(data);
                 if (data.lcl_fcl === 'LCL' || data.lcl_fcl === null) {
                     $('#title_quote span').text('LCL');
 
                     $('.lcl_quote').removeClass('d-none');
-                    $('.fcl_quote').addClass('d-none');
+                    $('.fcl_quote').addClass('d-none'); 
 
 
                 } else {
-                    $('#title_quote span').text('FCL');
+                    $('#title_quote span').text('FCL'); 
                     $('.lcl_quote').addClass('d-none');
                     $('.fcl_quote').removeClass('d-none');
                 }

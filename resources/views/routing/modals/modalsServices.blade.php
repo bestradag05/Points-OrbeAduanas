@@ -411,7 +411,7 @@
                                         </span>
                                     </div>
                                     <input type="text" class="form-control CurrencyInput" id="transport_value"
-                                        name="transport_value" onchange="updateInsuranceTotal(this)" data-type="currency"
+                                        name="transport_value" onchange="updateTransportTotal(this)" data-type="currency"
                                         placeholder="Ingrese valor del flete">
 
                                     @error('transport_value')
@@ -435,7 +435,7 @@
                                     <input type="text" class="form-control CurrencyInput"
                                         id="transport_added" name="transport_added" data-type="currency"
                                          placeholder="Ingrese valor de la carga"
-                                        onchange="updateInsuranceAddedTotal(this)">
+                                        onchange="updateTransportAddedTotal(this)">
                                         
                                 </div>
 

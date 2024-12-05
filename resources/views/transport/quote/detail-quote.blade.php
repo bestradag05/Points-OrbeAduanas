@@ -7,7 +7,7 @@
     <div class="container">
 
         <div class="row">
-            <div class="col-12 my-5 text-center">
+            <div class="col-12 my-5 text-center {{$quote->state != 'Pendiente' ? 'd-none' : ''}}">
                 <button class="btn btn-indigo mx-2" data-toggle="modal" data-target="#modalQuoteResponse"> <i
                         class="fa-regular fa-check-double"></i> Dar respuesta</button>
                 <button class="btn btn-secondary mx-2"><i class="fa-sharp-duotone fa-regular fa-xmark"></i> Dar

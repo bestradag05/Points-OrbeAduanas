@@ -16,7 +16,7 @@ class QuoteTransportController extends Controller
      */
     public function index()
     {
-        
+
         $quotes = QuoteTransport::with('routing')->get();
 
         $heads = [
@@ -50,9 +50,9 @@ class QuoteTransportController extends Controller
             $quotes = QuoteTransport::with('routing')->get();
         } else {
             // Si no es Super-Admin, solo obtener los clientes que pertenecen al personal del usuario autenticado
-            $quotes = QuoteTransport::with('routing')
-                ->where('routing.id_personal', $personalId)
-                ->get();
+            $quotes = QuoteTransport::whereHas('routing', function ($query) use ($personalId) {
+                $query->where('id_personal', $personalId);
+            })->with('routing')->get();
         }
 
 
@@ -151,7 +151,6 @@ class QuoteTransportController extends Controller
             'measures' => $request->measures,
             'nro_operation' => $request->nro_operation,
             'lcl_fcl' => $request->lcl_fcl,
-            'state' => 'Pendiente'
 
         ]);
 
@@ -166,10 +165,9 @@ class QuoteTransportController extends Controller
     {
         //Ver el detalle de la cotizacion
 
-        $quote= QuoteTransport::findOrFail($id);
+        $quote = QuoteTransport::findOrFail($id);
 
         return view('transport/quote/detail-quote', compact('quote'));
-
     }
 
     /**
@@ -189,7 +187,8 @@ class QuoteTransportController extends Controller
     }
 
 
-    public function costTransport(Request $request, string $id){
+    public function costTransport(Request $request, string $id)
+    {
 
         $quote = QuoteTransport::findOrFail($id);
         $quote->update([
@@ -199,6 +198,46 @@ class QuoteTransportController extends Controller
         ]);
 
         return redirect('quote/transport');
+    }
+
+    public function handleTransportAction(Request $request, string $action, string $id)
+    {
+
+        $quote = QuoteTransport::findOrFail($id);
+
+        if ($action === 'accept') {
+
+            $quote->update([
+                'state' => 'Aceptada'
+            ]);
+
+            return redirect()->route('routing.detail', [
+                'id_routing' => $quote->routing->id,
+                'cost_transport' => $quote->cost_transport
+            ]);
+        } else if ($action === 'reajust') {
+
+            $quote->update([
+                'readjustment_reason' => $request->reason_rejection,
+                'state' => 'Reajuste'
+            ]);
+
+            return redirect('quote/transport');
+        }
+    }
+
+
+    public function rejectQuoteTransport(string $id)
+    {
+
+        $quote = QuoteTransport::findOrFail($id);
+
+        $quote->update([
+            'state' => 'Rechazada'
+        ]);
+
+        return $quote;
+
     }
 
     /**
