@@ -55,6 +55,7 @@ class RoutingController extends Controller
             'Destino',
             'Tipo de embarque',
             'Asesor Comercial',
+            'Estado',
             'Acciones'
         ];
 
@@ -242,7 +243,10 @@ class RoutingController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $routing = Routing::find($id);
+    
+        $routing->update(['state' => 'Inactivo']);
+        return redirect('routing')->with('eliminar', 'ok');
     }
 
 

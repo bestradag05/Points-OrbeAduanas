@@ -23,6 +23,7 @@
                 <td class="text-uppercase">{{ $routing->destination }}</td>
                 <td>{{ $routing->type_shipment->description }}</td>
                 <td>{{ $routing->personal->names }}</td>
+                <td class="{{ $routing->state == 'Activo' ? 'text-success' : 'text-danger' }}">{{ $routing->state }}</td>
         
                 <td>
                      <a href="{{ url('/routing/'. $routing->id . '/edit') }}"> <i class="fa-solid fa-pen-to-square"></i> </a>

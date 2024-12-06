@@ -340,6 +340,16 @@
                             >{{ isset($quote->cargo_detail) ? $quote->cargo_detail : old('cargo_detail') }}</textarea>
                     </div>
                 </div>
+
+                <div class="form-group row">
+                    <label for="cargo_detail" class="col-sm-2 col-form-label">D</label>
+                    <div class="col-sm-10">
+                        <textarea class="form-control @error('cargo_detail') is-invalid @enderror" id="cargo_detail" name="cargo_detail"
+                            placeholder="Ingresa un detalle o alguna observacion"
+                            >{{ isset($quote->cargo_detail) ? $quote->cargo_detail : old('cargo_detail') }}</textarea>
+                    </div>
+                </div>
+
             </div>
 
         </div>
