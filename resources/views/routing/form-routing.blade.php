@@ -3,7 +3,7 @@
           <label for="nro_operation">N° de operacion</label>
           <input type="text" class="form-control" id="nro_operation" name="nro_operation"
               placeholder="Ingrese el numero de operacion" @readonly(true)
-              value="{{ isset($nro_operation) ? $nro_operation : '' }}">
+              value="{{ isset($routing->nro_operation) ? $routing->nro_operation : $nro_operation  }}">
           @error('nro_operation')
               <div class="text-danger">{{ $message }}</div>
           @enderror
@@ -110,7 +110,7 @@
               <div id="contenedor_radio_lcl_fcl" class="col-4 d-none align-items-center">
                   <div class="form-check d-inline">
                       <input type="radio" id="radioLcl" name="lcl_fcl" value="LCL"
-                          {{ old('lcl_fcl') === 'LCL' ? 'checked' : '' }}
+                          {{ (isset($routing->lcl_fcl) && $routing->lcl_fcl === 'LCL') || old('lcl_fcl') === 'LCL' ? 'checked' : '' }}
                           class="form-check-input @error('lcl_fcl') is-invalid @enderror">
                       <label for="radioLclFcl" class="form-check-label">
                           LCL
@@ -118,7 +118,7 @@
                   </div>
                   <div class="form-check d-inline">
                       <input type="radio" id="radioFcl" name="lcl_fcl" value="FCL"
-                          {{ old('lcl_fcl') === 'FCL' ? 'checked' : '' }}
+                          {{ (isset($routing->lcl_fcl) && $routing->lcl_fcl === 'FCL') || old('lcl_fcl') === 'FCL' ? 'checked' : '' }}
                           class="form-check-input @error('lcl_fcl') is-invalid @enderror">
                       <label for="radioLclFcl" class="form-check-label">
                           FCL
@@ -172,7 +172,8 @@
                   <label for="inputEmail3" class="col-sm-2 col-form-label">WR Loading:</label>
                   <div class="col-sm-6">
                       <input type="text" class="form-control" id="wr_loading" name="wr_loading"
-                          placeholder="Ingrese su WR...">
+                          placeholder="Ingrese su WR..."
+                          value="{{ isset($routing->wr_loading) ? $routing->wr_loading : old('wr_loading') }}">
                   </div>
               </div>
           </div>
@@ -287,6 +288,23 @@
                           <th>Eliminar</th>
                       </tr>
                   </thead>
+                  {{--  @if (isset($routing->measures))
+                  <tbody>
+
+                    @foreach (json_decode($routing->measures) as $measure)
+                    <tr>
+                        <td>{{$measure->amount}}</td>
+                        <td>{{$measure->width}}</td>
+                        <td>{{$measure->length}}</td>
+                        <td>{{$measure->height}}</td>
+                        <td></td>
+                    </tr>
+                        
+                    @endforeach
+
+                  </tbody>
+
+                  @endif --}}
 
               </table>
               <input id="value_measures" type="hidden" name="value_measures" />
@@ -319,12 +337,12 @@
           </div>
 
           <div class="col-4">
-              <div class="form-group row">
-                  <label for="kilograms" class="col-sm-4 col-form-label">Kilogramos: </label>
+              <div id="contenedor_weight" class="form-group row d-none">
+                  <label for="kilograms" class="col-sm-4 col-form-label">Peso Total : </label>
                   <div class="col-sm-8">
                       <input type="text"
                           class="form-control CurrencyInput @error('kilograms') is-invalid @enderror" id="kilograms"
-                          name="kilograms" data-type="currency" placeholder="Ingrese el nro de paquetes.."
+                          name="kilograms" data-type="currency" placeholder="Ingrese el peso.."
                           value="{{ isset($routing->kilograms) ? $routing->kilograms : old('kilograms') }}">
                       @error('kilograms')
                           <span class="invalid-feedback d-block" role="alert">
@@ -333,7 +351,24 @@
                       @enderror
                   </div>
               </div>
+
+              <div id="contenedor_tons" class="form-group row d-none">
+                  <label for="tons" class="col-sm-4 col-form-label">Toneladas : </label>
+                  <div class="col-sm-8">
+                      <input type="text" class="form-control CurrencyInput @error('tons') is-invalid @enderror"
+                          id="tons" name="tons" data-type="currency"
+                          placeholder="Ingrese el nro de paquetes.."
+                          value="{{ isset($routing->tons) ? $routing->tons : old('tons') }}">
+                  </div>
+                  @error('tons')
+                      <span class="invalid-feedback d-block" role="alert">
+                          <strong>{{ $message }}</strong>
+                      </span>
+                  @enderror
+              </div>
+
           </div>
+
 
           <div class="col-4">
               <div id="contenedor_volumen" class="form-group row  d-none">
@@ -369,6 +404,7 @@
                       </span>
                   @enderror
               </div>
+
           </div>
       </div>
       <hr class="w-100">
@@ -387,9 +423,7 @@
       <div class="form-group row">
           <label for="observation" class="col-sm-2 col-form-label">Observacion</label>
           <div class="col-sm-10">
-              <textarea name="observation" id="observation" class="form-control" cols="30" rows="5">
-
-          </textarea>
+              <textarea name="observation" id="observation" class="form-control" cols="30" rows="5">{{ isset($routing->observation) ? $routing->observation : old('observation') }}</textarea>
               @error('observation')
                   <div class="text-danger">{{ $message }}</div>
               @enderror
@@ -407,11 +441,16 @@
 
   @push('scripts')
       <script>
+          const dataMeasures = @json(isset($routing->measures) ? $routing->measures : '');
           document.addEventListener('DOMContentLoaded', function() {
+
+
 
               // Obtener los valores de los campos del formulario (puedes personalizar esto para tu caso)
               let volumenValue = document.getElementById('volumen');
               let kilogramoVolumenValue = document.getElementById('kilogram_volumen');
+              let toneladasValue = document.getElementById('tons');
+              let totalWeight = document.getElementById('kilograms');
               let lcl_fcl = document.getElementsByName('lcl_fcl');
               let container_type = document.getElementById('container_type');
 
@@ -422,6 +461,16 @@
 
               if (kilogramoVolumenValue.value !== '' || kilogramoVolumenValue.classList.contains('is-invalid')) {
                   document.getElementById('contenedor_kg_vol').classList.remove('d-none');
+
+              }
+
+              if (totalWeight.value !== '' || totalWeight.classList.contains('is-invalid')) {
+                  document.getElementById('contenedor_weight').classList.remove('d-none');
+
+              }
+
+              if (toneladasValue.value !== '' || toneladasValue.classList.contains('is-invalid')) {
+                  document.getElementById('contenedor_tons').classList.remove('d-none');
 
               }
 
@@ -487,6 +536,7 @@
 
 
 
+
                       } else {
 
 
@@ -524,6 +574,12 @@
 
                               }
                           }
+
+
+                          $('#contenedor_tons').find('input').val("");
+                          $('#contenedor_tons').addClass('d-none');
+                          $('#contenedor_weight').removeClass('d-none');
+
 
 
                       }
@@ -570,6 +626,40 @@
           let rowIndex = 1; //
           let currentPackage = 0;
           let arrayMeasures = {};
+
+
+          if (dataMeasures != "") {
+
+              const measuresObject = JSON.parse(dataMeasures);
+
+              Object.entries(measuresObject).forEach(([key, item], index) => {
+
+                  const newRow = table.row.add([
+                      `<input type="number" class="form-control" readonly id="amount-${index}" name="amount-${index}" value="${item.amount}" placeholder="Cantidad" min="0" step="1">`,
+                      `<input type="number" class="form-control" readonly id="width-${index}" name="width-${index}" value="${item.width}" placeholder="Ancho" min="0" step="0.0001">`,
+                      `<input type="number" class="form-control" readonly id="length-${index}" name="length-${index}" value="${item.length}" placeholder="Largo" min="0" step="0.0001">`,
+                      `<input type="number" class="form-control" readonly id="height-${index}" name="height-${index}" value="${item.height}" placeholder="Alto" min="0" step="0.0001">`,
+                      `<button type="button" class="btn btn-danger btn-sm" id="delete-${index}" onclick="deleteRow('row-${index}', ${item.amount}, ${index})"><i class="fa fa-trash"></i></button>`
+                  ]).draw().node();
+                  newRow.id = `row-${index}`;
+
+                  // Guardamos las medidas en el objeto `arrayMeasures`
+                  arrayMeasures[index] = {
+                      amount: item.amount,
+                      width: item.width,
+                      length: item.length,
+                      height: item.height
+                  };
+
+                  currentPackage += item.amount; // Sumar al total de paquetes ya cargados
+              });
+
+              $('#value_measures').val(JSON.stringify(arrayMeasures));
+
+          }
+
+
+
           document.getElementById('addRow').addEventListener('click', () => {
 
               var measures = document.getElementById("div_measures");
@@ -607,7 +697,9 @@
                   return;
               } else {
                   if (isNaN(nro_package) || amount_package > nro_package) {
-                      alert('El numero de paquetes / bultos no puede ser menor que la cantidad ingresada');
+                      alert(
+                          'El numero de paquetes / bultos no puede ser menor que la cantidad ingresada'
+                      );
                       return;
                   }
 
@@ -687,10 +779,14 @@
           document.querySelectorAll('input[name="lcl_fcl"]').forEach(radio => {
               radio.addEventListener('change', function() {
                   const containerTypeWrapper = document.getElementById('containerTypeWrapper');
+                  const contenedor_tons = document.getElementById('contenedor_tons');
+                  const contenedor_weight = document.getElementById('contenedor_weight');
 
                   // Si el valor es FCL, mostrar el campo
                   if (this.value === 'FCL') {
                       containerTypeWrapper.classList.remove('d-none');
+                      contenedor_tons.classList.remove('d-none');
+                      contenedor_weight.classList.add('d-none');
 
                       const parentElement = containerTypeWrapper.closest('.row');
                       if (parentElement) {
@@ -713,6 +809,9 @@
                   } else {
                       // Si no es FCL, ocultar el campo
                       containerTypeWrapper.classList.add('d-none');
+                      contenedor_tons.classList.add('d-none');
+                      contenedor_weight.classList.remove('d-none');
+
                       $('#containerTypeWrapper').find('input').val('');
 
                       const parentElement = containerTypeWrapper.closest('.row');
@@ -736,5 +835,76 @@
                   }
               });
           });
+      </script>
+
+
+      {{-- Stepper --}}
+
+
+      <script>
+          document.addEventListener("DOMContentLoaded", (event) => {
+
+              var form = document.getElementById('formRouting');
+
+              if (form.querySelectorAll(".is-invalid").length > 0) {
+
+                  var invalidInputs = form.querySelectorAll(".is-invalid");
+                  if (form.querySelectorAll(".is-invalid")) {
+                      // Encuentra el contenedor del paso que contiene el campo de entrada inválido
+                      var stepContainer = invalidInputs[0].parentNode.parentNode.closest('.bs-stepper-pane')
+                      /*  console.log(invalidInputs[0].parentNode.parentNode.closest('.bs-stepper-pane')); */
+
+                      // Encuentra el índice del paso correspondiente
+                      var stepIndex = Array.from(stepContainer.parentElement.children).indexOf(stepContainer);
+
+                      // Cambia el stepper al paso correspondiente
+                      stepper.to(stepIndex);
+
+                      // Enfoca el primer campo de entrada inválido
+                      invalidInputs[0].focus();
+                  }
+
+
+              }
+          });
+
+
+          var stepper1Node = document.querySelector('#stepper');
+          var stepper = new Stepper(document.querySelector('#stepper'));
+
+
+          function submitForm() {
+              var form = document.getElementById('formRouting');
+
+
+              if (form.checkValidity()) {
+                  // Aquí puedes enviar el formulario si la validación pasa
+                  form.submit();
+              } else {
+
+
+                  var invalidInputs = form.querySelectorAll(":invalid");
+                  if (form.querySelectorAll("invalid")) {
+                      // Encuentra el contenedor del paso que contiene el campo de entrada inválido
+                      var stepContainer = invalidInputs[0].closest('.content');
+
+                      // Encuentra el índice del paso correspondiente
+                      var stepIndex = Array.from(stepContainer.parentElement.children).indexOf(stepContainer);
+
+                      // Cambia el stepper al paso correspondiente
+                      stepper.to(stepIndex);
+
+                      // Enfoca el primer campo de entrada inválido
+                      invalidInputs[0].focus();
+                  }
+              }
+          }
+
+
+          function validarInputNumber(input) {
+              if (input.value < 0) {
+                  input.value = '';
+              }
+          }
       </script>
   @endpush

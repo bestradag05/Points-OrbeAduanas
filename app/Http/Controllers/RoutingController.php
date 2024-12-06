@@ -118,7 +118,6 @@ class RoutingController extends Controller
     {
         // Creamos un routing
 
-
         $this->validateForm($request, null);
 
         Routing::create([
@@ -138,9 +137,10 @@ class RoutingController extends Controller
             'packaging_type' => $request->packaging_type,
             'container_type' => $request->container_type,
             'pounds' => $request->pounds,
-            'kilograms' => $this->parseDouble($request->kilograms),
+            'kilograms' => $request->kilogram != null ? $this->parseDouble($request->kilograms) : null,
             'volumen' => $request->volumen != null ?  $this->parseDouble($request->volumen) : null,
             'kilogram_volumen' => $request->kilogram_volumen != null ? $this->parseDouble($request->kilogram_volumen) : null,
+            'tons' => $request->tons,
             'lcl_fcl' => $request->lcl_fcl,
             'measures' => $request->value_measures,
             'hs_code' => $request->hs_code,
@@ -176,7 +176,46 @@ class RoutingController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $routing = Routing::findOrFail($id);
+        $stateCountrys = StateCountry::all()->load('country');
+
+        $type_shipments = TypeShipment::all();
+        $modalitys = Modality::all();
+        $regimes = Regime::all();
+
+        //Listamos los customer solo del usuario autenticado
+        $personalId = Auth::user()->personal->id;
+
+        // Verificar si el usuario es un Super-Admin
+        if (Auth::user()->hasRole('Super-Admin')) {
+            // Si es Super-Admin, obtener todos los clientes
+            $customers = Customer::with('personal')->get();
+        } else {
+            // Si no es Super-Admin, solo obtener los clientes que pertenecen al personal del usuario autenticado
+            $customers = Customer::with('personal')
+                ->where('id_personal', $personalId)
+                ->get();
+        }
+
+
+        $incoterms = Incoterms::all();
+        $suppliers = Supplier::all();
+        $type_services = TypeService::all();
+        $type_loads = TypeLoad::all();
+
+
+        return view('routing/edit-routing', compact(
+            'routing',
+            'stateCountrys',
+            'customers',
+            'type_shipments',
+            'modalitys',
+            'regimes',
+            'incoterms',
+            'suppliers',
+            'type_services',
+            'type_loads'
+        ));
     }
 
     /**
@@ -184,7 +223,18 @@ class RoutingController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+       /*  dd($request->all()); */
+        $this->validateForm($request, $id);
+
+        $routing = Routing::findOrFail($id);
+
+        $request->merge(["measures" =>  $request->value_measures]);
+
+
+        $routing->update($request->all());
+
+        return redirect('routing');
+
     }
 
     /**
@@ -204,7 +254,7 @@ class RoutingController extends Controller
 
         // Si no hay registros, empieza desde 1
         if (!$lastCode) {
-            $codigo = $prefix . $year . '-1';
+            $codigo = $prefix . $year . '1';
         } else {
             // Extraer el número y aumentarlo
             $number = (int) substr($lastCode->nro_operation, 7);
@@ -518,9 +568,10 @@ class RoutingController extends Controller
             'packaging_type' => 'required',
             'container_type' => 'required_if:lcl_fcl,FCL',
             'pounds' => 'nullable',
-            'kilograms' => 'required',
+            'kilograms' => 'required_unless:lcl_fcl,FCL',
             'volumen' => 'required_if:type_shipment_name,Marítima',
             'kilogram_volumen' => 'required_if:type_shipment_name,Aérea',
+            'tons' => 'required_if:lcl_fcl,FCL',
             'lcl_fcl' => 'required_if:type_shipment_name,Marítima',
             'hs_code' => 'nullable',
             'observation' => 'nullable'

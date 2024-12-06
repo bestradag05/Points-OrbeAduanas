@@ -24,7 +24,7 @@
                     <div class="col-sm-10">
                         <input type="text" class="form-control @error('pick_up_lcl') is-invalid @enderror"
                             id="pick_up_lcl" name="pick_up_lcl" placeholder="Ingrese la direccion de recojo"
-                            value="{{ isset($quote->pick_up_lcl) ? $quote->pick_up_lcl : old('pick_up_lcl') }}">
+                            value="{{ (isset($quote->pick_up) && $quote->lcl_fcl === 'LCL') ? $quote->pick_up : old('pick_up_lcl') }}">
                         @error('pick_up_lcl')
                             <span class="invalid-feedback d-block" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -39,7 +39,7 @@
                     <div class="col-sm-10">
                         <input type="text" class="form-control @error('pick_up_fcl') is-invalid @enderror"
                             id="pick_up_fcl" name="pick_up_fcl" placeholder="Ingrese la direccion de recojo"
-                            value="{{ isset($quote->pick_up_fcl) ? $quote->pick_up_fcl : old('pick_up_fcl') }}">
+                            value="{{ (isset($quote->pick_up) && $quote->lcl_fcl === 'FCL') ? $quote->pick_up : old('pick_up_fcl') }}">
                         @error('pick_up_fcl')
                             <span class="invalid-feedback d-block" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -125,7 +125,7 @@
                         <div class="form-check d-inline">
                             <input type="radio" id="radioLclFcl" name="gang" value="SI"
                                 class="form-check-input @error('gang') is-invalid @enderror"
-                                {{ old('gang') === 'SI' ? 'checked' : '' }}>
+                                {{ ((isset($quote->gang) && $quote->gang === 'SI' ) || old('gang') === 'SI') ? 'checked' : '' }}>
                             <label for="radioLclFcl" class="form-check-label">
                                 SI
                             </label>
@@ -133,7 +133,7 @@
                         <div class="form-check d-inline">
                             <input type="radio" id="radioLclFcl" name="gang" value="NO"
                                 class="form-check-input @error('gang') is-invalid @enderror"
-                                {{ old('gang') === 'NO' ? 'checked' : '' }}>
+                                {{ ((isset($quote->gang) && $quote->gang === 'NO') || old('gang') === 'NO') ? 'checked' : '' }}>
                             <label for="radioLclFcl" class="form-check-label">
                                 NO
                             </label>
@@ -153,7 +153,7 @@
                         <div class="form-check d-inline">
                             <input type="radio" id="radioGuard" name="guard" value="SI"
                                 class="form-check-input @error('guard') is-invalid @enderror"
-                                {{ old('guard') === 'SI' ? 'checked' : '' }}>
+                                {{ ((isset($quote->guard) && $quote->guard === 'SI') ||old('guard') === 'SI') ? 'checked' : '' }}>
                             <label for="radioGuard" class="form-check-label">
                                 SI
                             </label>
@@ -161,7 +161,7 @@
                         <div class="form-check d-inline">
                             <input type="radio" id="radioGuard" name="guard" value="NO"
                                 class="form-check-input @error('guard') is-invalid @enderror"
-                                {{ old('guard') === 'NO' ? 'checked' : '' }}>
+                                {{ ((isset($quote->guard) && $quote->guard === 'NO') || old('guard') === 'NO') ? 'checked' : '' }}>
                             <label for="radioGuard" class="form-check-label">
                                 NO
                             </label>
@@ -224,7 +224,7 @@
                     <div class="col-sm-10">
                         <input type="text" class="form-control @error('container_type') is-invalid @enderror"
                             id="container_type" name="container_type" placeholder="Ingrese el tipo de contenedor"
-                            value="{{ isset($quote->container_type) ? $quote->container_type : old('container_type') }}">
+                            value="{{ isset($quote->container_type) ? $quote->container_type : old('container_type') }}" @readonly(true)>
 
 
                         @error('container_type')
@@ -270,7 +270,7 @@
                         <div class="form-check d-inline">
                             <input type="radio" id="radioStackable" name="stackable" value="SI"
                                 class="form-check-input @error('stackable') is-invalid @enderror"
-                                {{ old('stackable') === 'SI' ? 'checked' : '' }}>
+                                {{((isset($quote->stackable) && $quote->stackable === 'SI') || old('stackable') === 'SI') ? 'checked' : '' }}>
                             <label for="radioStackable" class="form-check-label">
                                 SI
                             </label>
@@ -278,7 +278,7 @@
                         <div class="form-check d-inline">
                             <input type="radio" id="radioStackable" name="stackable" value="NO"
                                 class="form-check-input  @error('stackable') is-invalid @enderror"
-                                {{ old('stackable') === 'NO' ? 'checked' : '' }}>
+                                {{((isset($quote->stackable) && $quote->stackable === 'NO') || old('stackable') === 'NO') ? 'checked' : '' }}>
                             <label for="radioStackable" class="form-check-label">
                                 NO
                             </label>
@@ -383,3 +383,309 @@
 <div class="container text-center mt-5">
     <input class="btn btn-primary" type="submit" value="{{ $formMode === 'edit' ? 'Actualizar' : 'Guardar' }}">
 </div>
+
+
+@push('scripts')
+    @if ($showModal ?? false)
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var myModal = new bootstrap.Modal(document.getElementById('modalQuoteTransport'), {
+                    backdrop: 'static', // Evita cierre al hacer clic fuera
+                    keyboard: false // Evita cierre con la tecla ESC
+                });
+                myModal.show();
+
+            });
+
+
+            $('#searchRouting').on('click', () => {
+
+                const nro_operation = $('#modal_nro_operation').val().trim();
+
+                if (nro_operation === '') {
+
+                    $('#modal_nro_operation').addClass('is-invalid');
+                    $('#error_nro_operation').removeClass('d-block').addClass('d-none');
+
+                } else {
+                    $('#modal_nro_operation').removeClass('is-invalid');
+
+                    // Realizar solicitud AJAX
+                    $.ajax({
+                        url: `/quote/search-routing/${nro_operation}`, // Cambia esto por la URL de tu servidor
+                        type: 'GET',
+                        success: function(response) {
+                            // Manejo de la respuesta exitosa
+
+                            loadInfoRouting(response.data[0]);
+
+
+                        },
+                        error: function(xhr, status, error) {
+                            // Manejo del error
+                            var errorMessage = xhr.responseJSON ? xhr.responseJSON.message :
+                                'Ocurrió un error inesperado.';
+
+                            // Mostrar el mensaje de error al usuario
+                            $('#error_nro_operation').removeClass('d-none').addClass('d-block');
+                            $('#texto_nro_operation').text(errorMessage);
+                            $('#modal_nro_operation').addClass('is-invalid');
+
+                        }
+                    });
+
+                }
+
+
+
+            });
+
+
+
+            function loadInfoRouting(data) {
+                if (data.lcl_fcl === 'LCL' || data.lcl_fcl === null) {
+                    $('#title_quote span').text('LCL');
+
+                    $('.lcl_quote').removeClass('d-none');
+                    $('.fcl_quote').addClass('d-none'); 
+
+
+                } else {
+                    $('#title_quote span').text('FCL'); 
+                    $('.lcl_quote').addClass('d-none');
+                    $('.fcl_quote').removeClass('d-none');
+                }
+
+                $('#customer').val(data.customer.name_businessname).prop('readonly', true);
+                $('#contact_name').val(data.customer.contact_name);
+                $('#contact_phone').val(data.customer.contact_number);
+                $('#load_type').val(data.type_load.name).prop('readonly', true);
+                $('#commodity').val(data.commodity).prop('readonly', true);
+                $('#packaging_type').val(data.packaging_type).prop('readonly', true);
+
+                if(data.type_shipment.description === "Marítima" && data.lcl_fcl === 'LCL'){
+                    $('#cubage_kgv').val(data.volumen + ' m3').prop('readonly', true);
+                }
+
+                if(data.type_shipment.description === "Marítima" && data.lcl_fcl === 'FCL'){
+                    $('#container_type').val(data.container_type).prop('readonly', true);
+                }
+
+                if(data.type_shipment.description === "Aérea" && data.lcl_fcl === null){
+                    $('#cubage_kgv').val(data.kilogram_volumen + ' KGV').prop('readonly', true);
+                }
+               
+                if(data.type_shipment.description === "Marítima" && data.lcl_fcl === 'FCL'){
+                    $('#ton_kilogram').val(data.tons + " T").prop('readonly', true);
+                }
+                $('#total_weight').val(data.kilograms).prop('readonly', true);
+                $('#packages').val(data.nro_package).prop('readonly', true);
+                $('#measures').val(data.measures);
+                //Campos Hidden
+                $('#nro_operation').val(data.nro_operation);
+                if(data.lcl_fcl != null){
+                    
+                    $('#lcl_fcl').val(data.lcl_fcl);
+                }else{
+                    $('#lcl_fcl').val('LCL');
+                }
+
+                //load Table measures
+                populateTable(JSON.parse(data.measures));
+
+
+                // Cerrar el modal utilizando la instancia nativa de Bootstrap
+                $('#modalQuoteTransport').hide();
+
+                // Eliminar manualmente el backdrop si persiste
+                const modalBackdrop = document.querySelector('.modal-backdrop');
+                if (modalBackdrop) {
+                    modalBackdrop.remove();
+                }
+
+                // Eliminar la clase `modal-open` del body para restaurar el scroll
+                document.body.classList.remove('modal-open');
+                document.body.style.paddingRight = ''
+
+
+            }
+
+
+
+            function populateTable(data) {
+                const tableBody = document.getElementById('table_measures').getElementsByTagName('tbody')[0];
+
+                // Limpiar la tabla antes de agregar nuevos datos
+                tableBody.innerHTML = '';
+
+                // Iterar sobre los datos y agregar una fila por cada objeto
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        const item = data[key]; // Accede al objeto de cada clave
+
+                        // Crear una nueva fila
+                        let row = tableBody.insertRow();
+
+                        // Insertar celdas en la fila y agregar los valores
+                        let cellAmount = row.insertCell(0);
+                        cellAmount.textContent = item.amount;
+
+                        let cellHeight = row.insertCell(1);
+                        cellHeight.textContent = item.height;
+
+                        let cellLength = row.insertCell(2);
+                        cellLength.textContent = item.length;
+
+                        let cellWidth = row.insertCell(3);
+                        cellWidth.textContent = item.width;
+                    }
+                }
+
+            }
+        </script>
+    @else
+        <script>
+            // Cerrar el modal utilizando la instancia nativa de Bootstrap
+            $('#modalQuoteTransport').hide();
+
+            // Eliminar manualmente el backdrop si persiste
+            const modalBackdrop = document.querySelector('.modal-backdrop');
+            if (modalBackdrop) {
+                modalBackdrop.remove();
+            }
+
+            // Eliminar la clase `modal-open` del body para restaurar el scroll
+            document.body.classList.remove('modal-open');
+            document.body.style.paddingRight = ''
+
+
+            const nro_operation = $('#nro_operation').val();
+
+
+            // Realizar solicitud AJAX
+            $.ajax({
+                url: `/quote/search-routing/${nro_operation}`, // Cambia esto por la URL de tu servidor
+                type: 'GET',
+                success: function(response) {
+                    // Manejo de la respuesta exitosa
+
+                    loadInfoRouting(response.data[0]);
+
+
+                },
+                error: function(xhr, status, error) {
+                    // Manejo del error
+                    var errorMessage = xhr.responseJSON ? xhr.responseJSON.message :
+                        'Ocurrió un error inesperado.';
+
+                    // Mostrar el mensaje de error al usuario
+                    $('#error_nro_operation').removeClass('d-none').addClass('d-block');
+                    $('#texto_nro_operation').text(errorMessage);
+                    $('#modal_nro_operation').addClass('is-invalid');
+
+                }
+            });
+
+
+            function loadInfoRouting(data) {
+
+                $('#title_quote span').text(data.lcl_fcl);
+
+
+                if (data.lcl_fcl === 'LCL' || data.lcl_fcl === null) {
+                    $('#title_quote span').text('LCL');
+
+                    $('.lcl_quote').removeClass('d-none');
+                    $('.fcl_quote').addClass('d-none');
+
+
+                } else {
+                    $('#title_quote span').text('FCL');
+                    $('.lcl_quote').addClass('d-none');
+                    $('.fcl_quote').removeClass('d-none');
+                }
+
+                $('#customer').val(data.customer.name_businessname).prop('readonly', true);
+                $('#contact_name').val(data.customer.contact_name);
+                $('#contact_phone').val(data.customer.contact_number);
+                $('#load_type').val(data.type_load.name).prop('readonly', true);
+                $('#commodity').val(data.commodity).prop('readonly', true);
+                $('#packaging_type').val(data.packaging_type).prop('readonly', true);
+                if(data.type_shipment.description === "Marítima" && data.lcl_fcl === 'LCL'){
+                    $('#cubage_kgv').val(data.volumen + ' m3').prop('readonly', true);
+                }
+
+                if(data.type_shipment.description === "Aérea" && data.lcl_fcl === 'LCL'){
+                    $('#cubage_kgv').val(data.kilogram_volumen+' KGV').prop('readonly', true);
+                }
+
+                if(data.type_shipment.description === "Marítima" && data.lcl_fcl === 'FCL'){
+                    $('#ton_kilogram').val(data.tons + " T").prop('readonly', true);
+                }
+                $('#total_weight').val(data.kilograms).prop('readonly', true);
+                $('#packages').val(data.nro_package).prop('readonly', true);
+                $('#measures').val(data.measures);
+                //Campos Hidden
+                $('#nro_operation').val(data.nro_operation);
+                if(data.lcl_fcl != null){
+                    
+                    $('#lcl_fcl').val(data.lcl_fcl);
+                }else{
+                    $('#lcl_fcl').val('LCL');
+                }
+
+                //load Table measures
+                populateTable(JSON.parse(data.measures));
+
+
+                // Cerrar el modal utilizando la instancia nativa de Bootstrap
+                $('#modalQuoteTransport').hide();
+
+                // Eliminar manualmente el backdrop si persiste
+                const modalBackdrop = document.querySelector('.modal-backdrop');
+                if (modalBackdrop) {
+                    modalBackdrop.remove();
+                }
+
+                // Eliminar la clase `modal-open` del body para restaurar el scroll
+                document.body.classList.remove('modal-open');
+                document.body.style.paddingRight = ''
+
+
+            }
+
+
+
+            function populateTable(data) {
+                const tableBody = document.getElementById('table_measures').getElementsByTagName('tbody')[0];
+
+                // Limpiar la tabla antes de agregar nuevos datos
+                tableBody.innerHTML = '';
+
+                // Iterar sobre los datos y agregar una fila por cada objeto
+                for (const key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        const item = data[key]; // Accede al objeto de cada clave
+
+                        // Crear una nueva fila
+                        let row = tableBody.insertRow();
+
+                        // Insertar celdas en la fila y agregar los valores
+                        let cellAmount = row.insertCell(0);
+                        cellAmount.textContent = item.amount;
+
+                        let cellHeight = row.insertCell(1);
+                        cellHeight.textContent = item.height;
+
+                        let cellLength = row.insertCell(2);
+                        cellLength.textContent = item.length;
+
+                        let cellWidth = row.insertCell(3);
+                        cellWidth.textContent = item.width;
+                    }
+                }
+
+            }
+        </script>
+    @endif
+@endpush

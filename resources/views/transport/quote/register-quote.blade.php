@@ -45,7 +45,7 @@
 @stop
 
 
-
+{{-- 
 @push('scripts')
     @if ($showModal ?? false)
         <script>
@@ -345,3 +345,4 @@
         </script>
     @endif
 @endpush
+ --}}

@@ -174,6 +174,10 @@ class QuoteTransportController extends Controller
     public function edit(string $id)
     {
         //
+        $quote = QuoteTransport::findOrFail($id);
+        $showModal = false;
+
+        return view('transport.quote.edit-quote', compact('quote'))->with('showModal', $showModal);
     }
 
     /**
@@ -182,6 +186,17 @@ class QuoteTransportController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        /* dd($request->all()); */
+
+        $quote = QuoteTransport::findOrFail($id);
+
+        $request->merge(["pick_up" =>  $request->pick_up_lcl != null ? $request->pick_up_lcl : $request->pick_up_fcl]);
+
+
+        $quote->update($request->all());
+
+        return redirect('quote/transport/personal');
+
     }
 
 
@@ -232,6 +247,14 @@ class QuoteTransportController extends Controller
             ]);
 
             return redirect('quote/transport');
+        } else if ($action === 'observation') {
+
+            $quote->update([
+                'observations' => $request->observations,
+                'state' => 'Observado'
+            ]);
+
+            return redirect('quote/transport');
         }
     }
 
@@ -246,7 +269,6 @@ class QuoteTransportController extends Controller
         ]);
 
         return $quote;
-
     }
 
     public function keepQuoteTransport(string $id)
@@ -259,7 +281,6 @@ class QuoteTransportController extends Controller
         ]);
 
         return redirect('quote/transport');
-
     }
 
     /**

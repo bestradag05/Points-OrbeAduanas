@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nro_operation')->unique();
             $table->string('origin');
             $table->string('destination');
+            $table->string('wr_loading')->nullable();
             $table->decimal('load_value', 8, 2);
             $table->unsignedBigInteger('id_personal');
             $table->unsignedBigInteger('id_customer');
@@ -33,9 +34,11 @@ return new class extends Migration
             $table->decimal('kilograms', 8, 2)->nullable();
             $table->decimal('volumen', 8, 2)->nullable();
             $table->decimal('kilogram_volumen', 8, 2)->nullable();
+            $table->decimal('tons', 8, 2)->nullable();
             $table->string('measures')->nullable();
             $table->string('hs_code')->nullable();
             $table->string('observation')->nullable();
+            $table->enum('state', ['Activo', 'Inactivo'])->default('Activo');
             $table->timestamps();
 
 

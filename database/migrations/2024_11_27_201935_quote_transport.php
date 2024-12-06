@@ -38,9 +38,10 @@ return new class extends Migration
             $table->string('nro_operation');
             $table->string('lcl_fcl');
             $table->text('readjustment_reason')->nullable();
+            $table->text('observations')->nullable();
             $table->decimal('old_cost_transport', 8, 2)->nullable();
             $table->decimal('cost_transport', 8, 2)->nullable();
-            $table->enum('state', ['Pendiente', 'Respondido', 'Aceptada', 'Reajuste', 'Rechazada'])->default('pendiente');
+            $table->enum('state', ['Pendiente', 'Respondido', 'Aceptada', 'Reajuste', 'Observado', 'Rechazada'])->default('pendiente');
             $table->timestamps();
 
 

@@ -28,18 +28,24 @@
                 <td class="{{ $quote->state == 'Pendiente' ? 'text-warning' : 'text-success' }}">{{ $quote->state }}
                 </td>
 
-                @if ($quote->state === 'Respondido')
-                    <td>
-                        <button data-toggle="modal" data-target="#modalQuoteTransportPersonal"
-                            data-cost="{{ $quote->cost_transport }}" data-old="{{ $quote->old_cost_transport }}" data-id="{{ $quote->id }}"
-                            class="btn btn-outline-success btn-sm">
-                            Ver costo
-                        </button>
+                <td style="width: 200px;" class="row">
+                    <a href="{{ url('/quote/transport/' . $quote->id) }}" class="btn btn-outline-indigo btn-sm mx-1 ">
+                        Detalle
+                    </a>
+                    <button data-toggle="modal" data-target="#modalQuoteTransportPersonal"
+                        data-cost="{{ $quote->cost_transport }}" data-old="{{ $quote->old_cost_transport }}"
+                        data-id="{{ $quote->id }}"
+                        class="btn btn-outline-success btn-sm {{ $quote->state === 'Respondido' ? '' : 'd-none' }}">
+                        Ver costo
+                    </button>
 
-                    </td>
-                @else
-                    <td></td>
-                @endif
+                    <a href="{{ url('/quote/transport/' . $quote->id .'/edit') }}" class="btn btn-outline-indigo btn-sm mx-1 {{( $quote->state === 'Pendiente' || $quote->state === 'Observado') ? '' : 'd-none' }} ">
+                        <i class="fa-sharp fa-solid fa-pen-to-square"></i>
+                    </a>
+
+
+                </td>
+
 
 
             </tr>
@@ -47,8 +53,8 @@
     </x-adminlte-datatable>
 
 
-    <div class="modal fade" id="modalQuoteTransportPersonal" tabindex="-1" aria-labelledby="modalQuoteTransportPersonalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="modalQuoteTransportPersonal" tabindex="-1"
+        aria-labelledby="modalQuoteTransportPersonalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <form action="" id="formQuoteTransportPersonalAccept" method="POST" enctype="multipart/form-data">
@@ -133,7 +139,7 @@
         $('#modalQuoteTransportPersonal').on('show.bs.modal', function(event) {
 
             var button = $(event.relatedTarget); // Botón que disparó el modal
-            var cost = button.data('cost'); 
+            var cost = button.data('cost');
             var costOld = button.data('old');
             currentQuoteId = button.data('id');
             console.log(costOld);
@@ -142,12 +148,12 @@
             var modal = $(this);
             modal.find('.modal-body #modal_transport_cost').val('$ ' + cost);
 
-            if(costOld !== "" ){
+            if (costOld !== "") {
                 $('#container_old_cost').removeClass('d-none');
                 modal.find('.modal-body #old_modal_transport_cost').val('$ ' + costOld);
             }
 
-            
+
             modal.find('form').attr('action', '/quote/transport/cost/accept/' + currentQuoteId);
         });
 

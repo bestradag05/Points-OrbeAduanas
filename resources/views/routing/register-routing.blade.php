@@ -55,7 +55,7 @@
 @stop
 
 
-@push('scripts')
+{{-- @push('scripts')
 <script>
     document.addEventListener("DOMContentLoaded", (event) => {
 
@@ -122,4 +122,4 @@
         }
     }
 </script>
-@endpush
+@endpush --}}

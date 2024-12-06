@@ -39,6 +39,7 @@ class QuoteTransport extends Model
         'old_cost_transport',
         'cost_transport',
         'readjustment_reason',
+        'observations',
         'state'
     ];
 

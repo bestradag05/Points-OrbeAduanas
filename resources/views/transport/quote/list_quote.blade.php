@@ -29,7 +29,7 @@
 
 
                 <td>
-                    <a href="{{ url('/quote/transport/'. $quote->id) }}" class="btn btn-outline-success btn-sm mb-2 ">
+                    <a href="{{ url('/quote/transport/'. $quote->id) }}" class="btn btn-outline-indigo btn-sm mb-2 ">
                         Detalle
                     </a>
                 </td>

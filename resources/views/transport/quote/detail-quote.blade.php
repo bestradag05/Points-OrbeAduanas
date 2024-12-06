@@ -10,14 +10,18 @@
             <div class="col-12 my-4 text-center">
                 <button class="btn btn-indigo mx-2 {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}" data-toggle="modal"
                     data-target="#modalQuoteResponse"> <i class="fa-regular fa-check-double"></i> Dar respuesta</button>
-                <button class="btn btn-secondary mx-2 {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}"><i
+
+                <button class="btn btn-secondary mx-2 {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}"
+                    data-toggle="modal" data-target="#modalQuoteObservation"><i
                         class="fa-sharp-duotone fa-regular fa-xmark"></i> Dar
                     observaciones</button>
 
                 <button class="btn btn-secondary mx-2 {{ $quote->state != 'Reajuste' ? 'd-none' : '' }}" data-toggle="modal"
                     data-target="#modalQuoteReajust"><i class="fa-solid fa-money-check-dollar-pen"></i> Reajustar </button>
 
-                <a href="{{ url('/quote/transport/cost/keep/' . $quote->id) }}" class="btn btn-danger mx-2 {{ $quote->state != 'Reajuste' ? 'd-none' : '' }}" ><i class="fa-solid fa-hand-holding-dollar"></i> Mantener precio </a>
+                <a href="{{ url('/quote/transport/cost/keep/' . $quote->id) }}"
+                    class="btn btn-danger mx-2 {{ $quote->state != 'Reajuste' ? 'd-none' : '' }}"><i
+                        class="fa-solid fa-hand-holding-dollar"></i> Mantener precio </a>
 
 
             </div>
@@ -510,6 +514,72 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modalQuoteObservation" tabindex="-1" aria-labelledby="modalQuoteObservationLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action={{ url('/quote/transport/cost/observation/' . $quote->id) }} id="sendTransportObservation"
+                    method="POST" enctype="multipart/form-data">
+                    {{ method_field('PATCH') }}
+                    {{ csrf_field() }}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalQuoteObservationLabel">Observaciones de cotización
+                        </h5>
+                    </div>
+                    <div class="modal-body">
+
+
+                        <div class="form-group row flex-column">
+                            <label for="obse" class="col-sm-6 col-form-label">Observacion :</label>
+                            <div class="col-sm-12">
+                                <textarea type="text" class="form-control" name="observations" id="observations" rows="5"></textarea>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="submit" class="btn btn-primary">Enviar observaciones</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalQuoteObservationMessage" tabindex="-1"
+        aria-labelledby="modalQuoteObservationMessage" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action={{ url('/quote/transport/cost/observation/' . $quote->id) }} id="sendTransportObservation"
+                    method="POST" enctype="multipart/form-data">
+                    {{ method_field('PATCH') }}
+                    {{ csrf_field() }}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalQuoteObservationMessage">Observaciones de cotización
+                        </h5>
+                    </div>
+                    <div class="modal-body">
+
+
+                        <div class="form-group row flex-column">
+                            <label for="obse" class="col-sm-6 col-form-label">Observacion :</label>
+                            <div class="col-sm-12">
+                                <textarea type="text" class="form-control" name="observations" id="observations" rows="5"
+                                    @readonly(true)>{{ $quote->observations }}</textarea>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 
 @stop
 
@@ -575,8 +645,30 @@
 
             }
 
+        });
+
+        $('#sendTransportObservation').on('submit', (e) => {
+
+            e.preventDefault();
+
+            let observations = $('#observations').val().trim();
+
+
+            if (observations === "") {
+                $('#observations').addClass('is-invalid');
+            } else {
+                $('#modal_transport_readjustment_cost').removeClass('is-invalid');
+                e.target.submit();
+            }
+
 
 
         });
     </script>
+
+    @if ($quote->observations)
+        <script>
+            $('#modalQuoteObservationMessage').modal('show');
+        </script>
+    @endif
 @endpush
