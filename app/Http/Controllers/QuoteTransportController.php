@@ -7,6 +7,7 @@ use App\Models\Routing;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class QuoteTransportController extends Controller
@@ -88,6 +89,7 @@ class QuoteTransportController extends Controller
     {
 
         $routing = Routing::where('nro_operation', $nro_operation)
+            ->where('state', 'Activo')
             ->with('customer', 'type_load', 'type_shipment')
             ->get();
 
@@ -196,7 +198,6 @@ class QuoteTransportController extends Controller
         $quote->update($request->all());
 
         return redirect('quote/transport/personal');
-
     }
 
 
@@ -283,12 +284,45 @@ class QuoteTransportController extends Controller
         return redirect('quote/transport');
     }
 
+
+
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
         //
+    }
+
+
+    public function uploadFilesQuoteTransport(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $filename =  $file->getClientOriginalName();
+            $file->storeAs('uploads/temp', $filename, 'public'); // Guardar temporalmente
+
+            return response()->json(['success' => true, 'filename' => $filename]);
+        }
+
+        return response()->json(['success' => false], 400);
+    }
+
+    public function deleteFilesQuoteTransport(Request $request)
+    {
+    
+        $filename = $request->input('filename');
+        $filePath = "uploads/temp/{$filename}";
+
+
+       
+    
+        if (Storage::disk('public')->exists($filePath)) {
+            Storage::disk('public')->delete($filePath);
+            return response()->json(['success' => true]);
+        }
+    
+        return response()->json(['success' => false], 400);
     }
 
     public function validateForm($request, $id)

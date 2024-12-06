@@ -51,3 +51,24 @@
     background: #4609a8!important;
     color: white!important;
 }
+
+
+.dropzone .dz-remove {
+    background-color: #f44336;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Estilo para cuando se pasa el ratón sobre el ícono de eliminación */
+.dropzone .dz-remove:hover {
+    background-color: #d32f2f;
+}
+
+#myDropzone .dz-preview {
+    display: inline-block;
+    width: 23%; /* Ajusta el ancho de cada archivo para que quepan 4 por fila */
+    margin: 1%; /* Espaciado entre los archivos */
+    box-sizing: border-box;
+}

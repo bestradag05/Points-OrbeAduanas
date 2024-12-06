@@ -43,6 +43,7 @@ class RoutingController extends Controller
             // Si no es Super-Admin, solo obtener los clientes que pertenecen al personal del usuario autenticado
             $routings = Routing::with('type_shipment', 'personal')
                 ->where('id_personal', $personalId)
+                ->where('state', 'Activo')
                 ->get();
         }
 
