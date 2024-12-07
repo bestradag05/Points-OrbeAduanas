@@ -20,7 +20,7 @@
 
         <div class="col-12">
 
-            <form action="/quote/transport" method="post" enctype="multipart/form-data">
+            <form action="/quote/transport" id="storeQuote" method="post" enctype="multipart/form-data">
                 @csrf
                 @include ('transport.quote.form-quote', ['formMode' => 'create'])
             </form>
@@ -66,7 +66,8 @@
                     <h5 class="modal-title" id="modalQuoteTransportDocumentsLabel">Documentos de transporte</h5>
                 </div>
                 <div class="modal-body">
-                    <form action="/quote/transport/file-upload-documents" method="post" enctype="multipart/form-data" class="dropzone" id="myDropzone">
+                    <form action="/quote/transport/file-upload-documents" method="post" enctype="multipart/form-data"
+                        class="dropzone" id="myDropzone">
                         @csrf
                     </form>
                 </div>
@@ -78,63 +79,60 @@
     </div>
 
 
-
-
 @stop
-
-
 
 @push('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
     <script>
-          Dropzone.options.myDropzone = {
+        Dropzone.options.myDropzone = {
 
-                url: '/quote/transport/file-upload-documents', // Ruta para subir los archivos
-                maxFilesize: 2, // Tamaño máximo en MB
-                acceptedFiles: '.jpg,.jpeg,.png,.gif,.pdf', // Tipos permitidos
-                addRemoveLinks: true,
-                dictRemoveFile: "Remove", // Agregar opción para eliminar archivos
-                autoProcessQueue: true, // Subir automáticamente al añadir
-                
-                init: function() {
-                    let uploadedFiles = []; // Array para almacenar los nombres de archivos subidos
+            url: '/quote/transport/file-upload-documents', // Ruta para subir los archivos
+            maxFilesize: 2, // Tamaño máximo en MB
+            acceptedFiles: '.jpg,.jpeg,.png,.gif,.pdf', // Tipos permitidos
+            addRemoveLinks: true,
+            dictRemoveFile: "Remove", // Agregar opción para eliminar archivos
+            autoProcessQueue: true, // Subir automáticamente al añadir
 
-                    this.on('success', function(file, response) {
-                        // Agregar nombre del archivo subido a la lista
-                        uploadedFiles.push(response.filename);
+            init: function() {
+                let uploadedFiles = []; // Array para almacenar los nombres de archivos subidos
 
-                        // Crear un input oculto para cada archivo subido
-                        let input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'uploaded_files[]'; // Array para nombres de archivos
-                        input.value = response.filename;
-                        document.querySelector('form').appendChild(input);
-                    });
+                this.on('success', function(file, response) {
+                    uploadedFiles.push(response.filename);
 
-                    this.on('removedfile', function(file) {
-                        console.log(file);
-                        if (file) {
-                            axios.delete('/quote/transport/file-delete-documents', {
-                                data: {
-                                    filename: file.name
-                                }
-                            }).then(response => {
-                                console.log('Archivo eliminado:', response.data);
-                            }).catch(error => {
-                                console.error('Error al eliminar el archivo:', error);
-                            });
-                        }
-
-                        // Remover el archivo del DOM
-                        const previewElement = file.previewElement;
-                        if (previewElement) {
-                            previewElement.parentNode.removeChild(previewElement);
-                        }
-                    });
-                }
-            };
+                    // Crear un input oculto para cada archivo subido
+                    let input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'uploaded_files[]'; // Array para nombres de archivos
+                    input.value = response.filename;
+                    document.getElementById('storeQuote').appendChild(input);
 
 
+                });
 
+                this.on('removedfile', function(file) {
+                    console.log(file);
+                    if (file) {
+                        axios.delete('/quote/transport/file-delete-documents', {
+                            data: {
+                                filename: file.name
+                            }
+                        }).then(response => {
+                            console.log('Archivo eliminado:', response.data);
+                        }).catch(error => {
+                            console.error('Error al eliminar el archivo:', error);
+                        });
+                    }
+
+
+                    // Eliminar el input oculto asociado al archivo eliminado
+                    const hiddenInput = document.querySelector(`input[name="uploaded_files[]"][value="${file.name}"]`);
+                    if (hiddenInput) {
+                        hiddenInput.parentNode.removeChild(hiddenInput);
+                    }
+
+
+                });
+            }
+        };
     </script>
 @endpush

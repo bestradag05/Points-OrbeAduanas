@@ -114,6 +114,7 @@ class QuoteTransportController extends Controller
      */
     public function store(Request $request)
     {
+       
 
         $validator = $this->validateForm($request, null);
 
@@ -125,6 +126,7 @@ class QuoteTransportController extends Controller
                 ->withInput()
                 ->with('showModal', false);
         }
+
 
         QuoteTransport::create([
             'shipping_date' => Carbon::now(),
@@ -154,6 +156,28 @@ class QuoteTransportController extends Controller
 
         ]);
 
+
+        if($request->uploaded_files){
+
+            $nroOperationFolder = "documents/$request->nro_operation/quote_transport";
+            $tempFolder = "uploads/temp";
+    
+            if (!Storage::disk('public')->exists($nroOperationFolder)) {
+                Storage::disk('public')->makeDirectory($nroOperationFolder);
+            }
+    
+            foreach ($request->uploaded_files as $file) {
+                $tempFilePath = "{$tempFolder}/{$file}";
+                $newFilePath = "{$nroOperationFolder}/{$file}";
+    
+    
+                if (Storage::disk('public')->exists($tempFilePath)) {
+                    Storage::disk('public')->move($tempFilePath, $newFilePath);
+                }
+            }
+
+        }
+       
 
         return redirect('quote/transport/personal');
     }
@@ -310,18 +334,15 @@ class QuoteTransportController extends Controller
 
     public function deleteFilesQuoteTransport(Request $request)
     {
-    
+
         $filename = $request->input('filename');
         $filePath = "uploads/temp/{$filename}";
 
-
-       
-    
         if (Storage::disk('public')->exists($filePath)) {
             Storage::disk('public')->delete($filePath);
             return response()->json(['success' => true]);
         }
-    
+
         return response()->json(['success' => false], 400);
     }
 
