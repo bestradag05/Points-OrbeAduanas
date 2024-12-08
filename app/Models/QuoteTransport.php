@@ -49,4 +49,5 @@ class QuoteTransport extends Model
     {
         return $this->belongsTo(Routing::class, 'nro_operation', 'nro_operation');
     }
+
 }

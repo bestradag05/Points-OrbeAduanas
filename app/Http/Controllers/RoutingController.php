@@ -139,7 +139,7 @@ class RoutingController extends Controller
             'packaging_type' => $request->packaging_type,
             'container_type' => $request->container_type,
             'pounds' => $request->pounds,
-            'kilograms' => $request->kilogram != null ? $this->parseDouble($request->kilograms) : null,
+            'kilograms' => $request->kilograms != null ? $this->parseDouble($request->kilograms) : null,
             'volumen' => $request->volumen != null ?  $this->parseDouble($request->volumen) : null,
             'kilogram_volumen' => $request->kilogram_volumen != null ? $this->parseDouble($request->kilogram_volumen) : null,
             'tons' => $request->tons,

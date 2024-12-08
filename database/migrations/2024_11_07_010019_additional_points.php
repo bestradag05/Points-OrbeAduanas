@@ -22,6 +22,7 @@ return new class extends Migration
             $table->decimal('igv', 8, 2)->nullable();
             $table->decimal('total', 8, 2)->nullable();
             $table->string('points')->nullable();
+            //Relacion polimorfica para additonal_point y el servicio al que pertenece
             $table->unsignedBigInteger('id_additional_service');
             $table->string('model_additional_service');
             $table->string('additional_type');

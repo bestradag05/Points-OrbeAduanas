@@ -72,3 +72,10 @@
     margin: 1%; /* Espaciado entre los archivos */
     box-sizing: border-box;
 }
+
+
+.dz-preview .dz-image img {
+    object-fit: cover; /* Hace que la imagen se ajuste sin perder proporciones */
+    width: 100%;  /* Se ajusta al tamaño del contenedor */
+    height: 100%; /* Asegura que la altura sea proporcional */
+}

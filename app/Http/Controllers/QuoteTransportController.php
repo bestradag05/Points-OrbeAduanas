@@ -114,7 +114,7 @@ class QuoteTransportController extends Controller
      */
     public function store(Request $request)
     {
-       
+
 
         $validator = $this->validateForm($request, null);
 
@@ -157,27 +157,26 @@ class QuoteTransportController extends Controller
         ]);
 
 
-        if($request->uploaded_files){
+        if ($request->uploaded_files) {
 
             $nroOperationFolder = "documents/$request->nro_operation/quote_transport";
             $tempFolder = "uploads/temp";
-    
+
             if (!Storage::disk('public')->exists($nroOperationFolder)) {
                 Storage::disk('public')->makeDirectory($nroOperationFolder);
             }
-    
+
             foreach ($request->uploaded_files as $file) {
                 $tempFilePath = "{$tempFolder}/{$file}";
                 $newFilePath = "{$nroOperationFolder}/{$file}";
-    
-    
+
+
                 if (Storage::disk('public')->exists($tempFilePath)) {
                     Storage::disk('public')->move($tempFilePath, $newFilePath);
                 }
             }
-
         }
-       
+
 
         return redirect('quote/transport/personal');
     }
@@ -203,7 +202,17 @@ class QuoteTransportController extends Controller
         $quote = QuoteTransport::findOrFail($id);
         $showModal = false;
 
-        return view('transport.quote.edit-quote', compact('quote'))->with('showModal', $showModal);
+        $folderPath = "documents/{$quote->nro_operation}/quote_transport";
+        $files = collect(Storage::disk('public')->files($folderPath))->map(function ($file) {
+            return [
+                'name' => basename($file), // Nombre del archivo
+                'size' => Storage::disk('public')->size($file), // Tamaño del archivo
+                'url' => asset('storage/' . $file), // URL del archivo
+            ];
+        });
+
+
+        return view('transport.quote.edit-quote', compact('quote', 'files'))->with('showModal', $showModal);
     }
 
     /**
@@ -212,7 +221,6 @@ class QuoteTransportController extends Controller
     public function update(Request $request, string $id)
     {
         //
-        /* dd($request->all()); */
 
         $quote = QuoteTransport::findOrFail($id);
 
@@ -220,6 +228,42 @@ class QuoteTransportController extends Controller
 
 
         $quote->update($request->all());
+
+
+
+        if ($request->uploaded_files) {
+
+            $nroOperationFolder = "documents/$request->nro_operation/quote_transport";
+            $tempFolder = "uploads/temp";
+
+            if (!Storage::disk('public')->exists($nroOperationFolder)) {
+                Storage::disk('public')->makeDirectory($nroOperationFolder);
+            }
+
+            // Obtener los archivos existentes en la carpeta de destino
+            $existingFiles = Storage::disk('public')->files($nroOperationFolder);
+
+            foreach ($request->uploaded_files as $file) {
+                $tempFilePath = "{$tempFolder}/{$file}";
+                $newFilePath = "{$nroOperationFolder}/{$file}";
+
+
+                if (Storage::disk('public')->exists($tempFilePath)) {
+                    Storage::disk('public')->move($tempFilePath, $newFilePath);
+                }
+            }
+
+            // Eliminar archivos en $nroOperationFolder que no están en uploaded_files
+            foreach ($existingFiles as $existingFile) {
+                $fileName = basename($existingFile); // Obtener solo el nombre del archivo
+
+                // Si el archivo no está en uploaded_files, eliminarlo
+                if (!in_array($fileName, $request->uploaded_files)) {
+                    Storage::disk('public')->delete($existingFile);
+                }
+            }
+        }
+
 
         return redirect('quote/transport/personal');
     }

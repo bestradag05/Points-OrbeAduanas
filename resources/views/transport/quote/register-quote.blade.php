@@ -96,6 +96,18 @@
             init: function() {
                 let uploadedFiles = []; // Array para almacenar los nombres de archivos subidos
 
+
+                this.on('addedfile', function(file) {
+                    // Si el archivo es PDF, asigna una miniatura personalizada (imagen predeterminada)
+                    if (/\.pdf$/i.test(file.name)) {
+                        // Usamos la URL de la imagen predeterminada para los PDFs
+                        let pdfThumbnailUrl =
+                        'https://static.vecteezy.com/system/resources/previews/023/234/824/non_2x/pdf-icon-red-and-white-color-for-free-png.png'; // Cambia esto por la ruta de tu imagen predeterminada
+                        this.emit("thumbnail", file, pdfThumbnailUrl);
+                    }
+                });
+
+
                 this.on('success', function(file, response) {
                     uploadedFiles.push(response.filename);
 
@@ -125,7 +137,8 @@
 
 
                     // Eliminar el input oculto asociado al archivo eliminado
-                    const hiddenInput = document.querySelector(`input[name="uploaded_files[]"][value="${file.name}"]`);
+                    const hiddenInput = document.querySelector(
+                        `input[name="uploaded_files[]"][value="${file.name}"]`);
                     if (hiddenInput) {
                         hiddenInput.parentNode.removeChild(hiddenInput);
                     }
