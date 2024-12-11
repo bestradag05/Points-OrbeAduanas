@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('transport', function (Blueprint $table) {
             $table->id();
+            $table->string('nro_operation_transport')->unique();
             $table->date('date_register')->nullable();
             $table->string('invoice_number')->nullable();
             $table->string('nro_orden')->nullable();
@@ -28,12 +29,15 @@ return new class extends Migration
             $table->string('payment_state')->nullable();
             $table->date('payment_date')->nullable();
             $table->string('weight')->nullable();
+            $table->date('withdrawal_date')->nullable();
             $table->string('state')->nullable();
-            $table->unsignedBigInteger('id_supplier')->nullable();
             $table->string('nro_operation');
+            $table->unsignedBigInteger('id_supplier')->nullable();
+            $table->unsignedBigInteger('id_quote_transport')->nullable();
             $table->timestamps();
 
             $table->foreign('id_supplier')->references('id')->on('suppliers');
+            $table->foreign('id_quote_transport')->references('id')->on('quote_transport');
             $table->foreign('nro_operation')->references('nro_operation')->on('routing');
         });
     }

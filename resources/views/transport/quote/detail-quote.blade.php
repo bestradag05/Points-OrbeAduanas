@@ -8,6 +8,8 @@
 
         <div class="row">
             <div class="col-12 my-4 text-center">
+                @can('transporte.quote.response')
+
                 <button class="btn btn-indigo mx-2 {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}" data-toggle="modal"
                     data-target="#modalQuoteResponse"> <i class="fa-regular fa-check-double"></i> Dar respuesta</button>
 
@@ -16,6 +18,9 @@
                         class="fa-sharp-duotone fa-regular fa-xmark"></i> Dar
                     observaciones</button>
 
+                
+                @endcan
+
                 <button class="btn btn-secondary mx-2 {{ $quote->state != 'Reajuste' ? 'd-none' : '' }}" data-toggle="modal"
                     data-target="#modalQuoteReajust"><i class="fa-solid fa-money-check-dollar-pen"></i> Reajustar </button>
 
@@ -23,8 +28,22 @@
                     class="btn btn-danger mx-2 {{ $quote->state != 'Reajuste' ? 'd-none' : '' }}"><i
                         class="fa-solid fa-hand-holding-dollar"></i> Mantener precio </a>
 
-
             </div>
+
+            @if ($files->isNotEmpty())
+                <div class="col-12 mb-2 row">
+                    <h6 class="text-bold text-secondary ml-2">Documentos:</h6>
+                    @foreach ($files as $file)
+                        <div class="mx-2">
+                            <a href="{{ $file['url'] }}" class="mx-1" target="_blank">{{ $file['name'] }}</a>
+                            <i class="fas fa-file-archive"></i>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <p class="text-bold text-secondary ml-2">No hay archivos adjuntos disponibles para esta cotizacion.</p>
+            @endif
+
             <div class="col-12">
 
                 <div class="head-quote mb-2">
@@ -429,9 +448,30 @@
                         <h5 class="modal-title" id="modalQuoteResponseLabel">PRECIO DE FLETE DE TRANSPORTE</h5>
                     </div>
                     <div class="modal-body">
-                        <input type="text" class="form-control CurrencyInput" data-type="currency"
-                            name="modal_transport_cost" id="modal_transport_cost"
-                            placeholder="Ingrese costo de flete de transporte..">
+                        <div class="form-group row">
+                            <label for="pounds" class="col-sm-4 col-form-label">Costo transporte: </label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                    name="modal_transport_cost" id="modal_transport_cost"
+                                    placeholder="Ingrese costo de flete de transporte..">
+                            </div>
+                        </div>
+                        <div id="container_gang"
+                            class="form-group row {{ isset($quote->gang) && $quote->gang === 'SI' ? '' : 'd-none' }}">
+                            <label for="pounds" class="col-sm-4 col-form-label">Costo de Cuadrilla: </label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                    name="cost_gang" id="cost_gang" placeholder="Ingrese costo de cuadrilla..">
+                            </div>
+                        </div>
+                        <div id="container_guard"
+                            class="form-group row {{ isset($quote->guard) && $quote->guard === 'SI' ? '' : 'd-none' }}">
+                            <label for="pounds" class="col-sm-4 col-form-label">Costo de Resguardo: </label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                    name="cost_guard" id="cost_guard" placeholder="Ingrese costo de resguardo..">
+                            </div>
+                        </div>
 
                         <span id="error_transport_cost" class="invalid-feedback d-none" role="alert">
                             <strong id="texto_transport_cost"></strong>
@@ -589,6 +629,10 @@
 
             e.preventDefault();
 
+            const containerGangVisibility = !$('#container_gang').hasClass('d-none');
+            const containerGuardVisibility = !$('#container_guard').hasClass('d-none');
+
+
             const transport_cost = $('#modal_transport_cost').val().trim();
 
             if (transport_cost === '') {
@@ -596,11 +640,35 @@
                 $('#modal_transport_cost').addClass('is-invalid');
                 $('#error_transport_cost').removeClass('d-block').addClass('d-none');
 
-            } else {
-                $('#modal_transport_cost').removeClass('is-invalid');
+                return;
 
-                e.target.submit();
+            }else{
+                $('#modal_transport_cost').removeClass('is-invalid');
             }
+
+            if (containerGangVisibility) {
+                if ($('#container_gang').find('input').val().trim() === '') {
+                    $('#container_gang').find('input').addClass('is-invalid');
+
+                    return;
+                }else{
+                    $('#container_gang').find('input').removeClass('is-invalid');
+                }
+            }
+
+            if (containerGuardVisibility) {
+                if ($('#container_guard').find('input').val().trim() === '') {
+                    $('#container_guard').find('input').addClass('is-invalid');
+
+                    return;
+                }else{
+                    $('#container_guard').find('input').removeClass('is-invalid');
+                }
+            }
+           
+
+            e.target.submit();
+
 
         });
 

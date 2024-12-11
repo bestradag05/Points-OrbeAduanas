@@ -15,7 +15,7 @@
     <option />
     @foreach ($type_shipments as $type_shipment)
         <option value="{{ $type_shipment->id }}" {{ (isset($concept->id_type_shipment) && $concept->id_type_shipment == $type_shipment->id) || old('id_type_shipment') == $type_shipment->id ? 'selected' : '' }}>
-            {{ '( ' . $type_shipment->code . ' ) - ' . $type_shipment->description }}
+            {{ '( ' . $type_shipment->code . ' ) - ' . $type_shipment->name  }}
         </option>
     @endforeach
 

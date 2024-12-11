@@ -33,4 +33,9 @@ class Concepts extends Model
     {
         return $this->belongsToMany(Freight::class);
     }
+
+    public function transport()
+    {
+        return $this->belongsToMany(Transport::class);
+    }
 }

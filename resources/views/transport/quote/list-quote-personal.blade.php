@@ -13,34 +13,44 @@
         @foreach ($quotes as $quote)
             <tr>
                 <td>{{ $loop->iteration }}</td>
+                <td>{{ $quote->routing->nro_operation }}</td>
                 <td>
                     {{ $quote->routing->customer->name_businessname }}
                 </td>
                 <td>{{ $quote->pick_up }}</td>
                 <td>{{ $quote->delivery }}</td>
-                <td>{{ $quote->contact_name }}</td>
-                <td>{{ $quote->contact_phone }}</td>
                 <td>{{ $quote->max_attention_hour }}</td>
                 <td>{{ $quote->lcl_fcl }}</td>
                 <td>{{ $quote->cubage_kgv }}</td>
                 <td>{{ $quote->ton_kilogram }}</td>
                 <td>{{ $quote->total_weight }}</td>
+                <td class="text-indigo text-bold">
+                    {{ isset($quote->withdrawal_date) ? \Carbon\Carbon::parse($quote->withdrawal_date)->format('d/m/Y') : '-' }}
+                </td>
                 <td class="{{ $quote->state == 'Pendiente' ? 'text-warning' : 'text-success' }}">{{ $quote->state }}
                 </td>
 
-                <td style="width: 200px;" class="row">
+                <td style="{{ $quote->state === 'Pendiente' || $quote->state === 'Observado' || $quote->state === 'Respondido' ? 'width: 150px;' : '' }}"
+                    class="row">
                     <a href="{{ url('/quote/transport/' . $quote->id) }}" class="btn btn-outline-indigo btn-sm mx-1 ">
                         Detalle
                     </a>
                     <button data-toggle="modal" data-target="#modalQuoteTransportPersonal"
                         data-cost="{{ $quote->cost_transport }}" data-old="{{ $quote->old_cost_transport }}"
-                        data-id="{{ $quote->id }}"
+                        data-id="{{ $quote->id }}" data-gang="{{ $quote->cost_gang }}"
+                        data-guard="{{ $quote->cost_guard }}"
                         class="btn btn-outline-success btn-sm {{ $quote->state === 'Respondido' ? '' : 'd-none' }}">
                         Ver costo
                     </button>
 
-                    <a href="{{ url('/quote/transport/' . $quote->id .'/edit') }}" class="btn btn-outline-indigo btn-sm mx-1 {{( $quote->state === 'Pendiente' || $quote->state === 'Observado') ? '' : 'd-none' }} ">
+                    <a href="{{ url('/quote/transport/' . $quote->id . '/edit') }}"
+                        class="btn btn-outline-indigo btn-sm mx-1 {{ $quote->state === 'Pendiente' || $quote->state === 'Observado' ? '' : 'd-none' }} ">
                         <i class="fa-sharp fa-solid fa-pen-to-square"></i>
+                    </a>
+
+                    <a href="{{ url('/quote/transport/cost/accept/' . $quote->id) }}"
+                        class="btn btn-outline-success btn-sm {{ ($quote->state === 'Aceptada' && !$quote->transport()->exists()) ? '' : 'd-none' }}">
+                        Generar Transporte
                     </a>
 
 
@@ -83,6 +93,47 @@
                             </div>
                         </div>
 
+                        <div id="container_gang" class="form-group row d-none">
+                            <label for="gang" class="col-sm-4 col-form-label">Cuadrilla : </label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control CurrencyInput" data-type="currency" name="gang"
+                                    id="gang" @readonly(true) placeholder="Ingrese costo de cuadrilla..">
+                            </div>
+                        </div>
+
+                        <div id="container_guard" class="form-group row d-none">
+                            <label for="guard" class="col-sm-4 col-form-label">Reguardo: </label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control CurrencyInput" data-type="currency" name="guard"
+                                    id="guard" @readonly(true) placeholder="Ingrese costo de reguardo..">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="pounds" class="col-sm-4 col-form-label">Fecha de retiro: </label>
+                            <div class="col-sm-8">
+                                @php
+                                    $config = [
+                                        'format' => 'DD/MM/YYYY',
+                                        'dayViewHeaderFormat' => 'MMM YYYY',
+                                        'minDate' => "js:moment().startOf('month')",
+                                    ];
+                                @endphp
+                                <x-adminlte-input-date name="withdrawal_date" :config="$config"
+                                    placeholder="ingrese fecha de retiro...">
+                                    <x-slot name="appendSlot">
+                                        <div class="input-group-text bg-dark">
+                                            <i class="fas fa-calendar-day"></i>
+                                        </div>
+                                    </x-slot>
+                                </x-adminlte-input-date>
+
+                                <span id="error_withdrawal_date" class="invalid-feedback d-none" role="alert">
+                                    <strong id="texto_withdrawal_date">Debes completar la fecha de retiro para poder aceptar
+                                        el costo del transporte</strong>
+                                </span>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="modal-footer justify-content-center">
                         <button type="submit" class="btn btn-primary"><i class="fa-regular fa-check-double"></i> Aceptar
@@ -102,7 +153,8 @@
         aria-labelledby="modalReajustQuoteTransportPersonal" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form action="" id="formQuoteTransportPersonalReajust" method="POST" enctype="multipart/form-data">
+                <form action="" id="formQuoteTransportPersonalReajust" method="POST"
+                    enctype="multipart/form-data">
                     {{ method_field('PATCH') }}
                     {{ csrf_field() }}
                     <div class="modal-header">
@@ -139,10 +191,11 @@
         $('#modalQuoteTransportPersonal').on('show.bs.modal', function(event) {
 
             var button = $(event.relatedTarget); // Botón que disparó el modal
+            var currentQuoteId = button.data('id');
             var cost = button.data('cost');
             var costOld = button.data('old');
-            currentQuoteId = button.data('id');
-            console.log(costOld);
+            var gang = button.data('gang');
+            var guard = button.data('guard');
 
             // Aquí puedes usar el valor (por ejemplo, actualizar un elemento en el modal)
             var modal = $(this);
@@ -151,8 +204,26 @@
             if (costOld !== "") {
                 $('#container_old_cost').removeClass('d-none');
                 modal.find('.modal-body #old_modal_transport_cost').val('$ ' + costOld);
+            } else {
+                $('#container_old_cost').addClass('d-none');
+                modal.find('.modal-body #old_modal_transport_cost').val('');
             }
 
+            if (gang !== "") {
+                $('#container_gang').removeClass('d-none');
+                modal.find('.modal-body #gang').val('$ ' + gang);
+            } else {
+                $('#container_gang').addClass('d-none');
+                modal.find('.modal-body #gang').val('');
+            }
+
+            if (guard !== "") {
+                $('#container_guard').removeClass('d-none');
+                modal.find('.modal-body #guard').val('$ ' + guard);
+            } else {
+                $('#container_guard').addClass('d-none');
+                modal.find('.modal-body #guard').val('');
+            }
 
             modal.find('form').attr('action', '/quote/transport/cost/accept/' + currentQuoteId);
         });
@@ -206,15 +277,28 @@
 
             e.preventDefault();
 
-            Swal.fire({
-                title: "Acceptado",
-                text: "El costo del flete fue aceptado por lo cual debe completar la informacion del servicio de transporte en la siguiente pagina",
-                icon: "success"
-            }).then((result) => {
+            const withdrawal_date = $('#withdrawal_date').val().trim();
 
-                e.target.submit();
+            if (withdrawal_date === '') {
 
-            });
+                $('#withdrawal_date').addClass('is-invalid');
+                $('#error_withdrawal_date').addClass('d-none');
+
+            } else {
+                $('#withdrawal_date').removeClass('is-invalid');
+                $('#error_withdrawal_date').removeClass('d-none');
+
+
+                Swal.fire({
+                    title: "Acceptado",
+                    text: "El costo del flete fue aceptado por lo cual debe completar la informacion del servicio de transporte en la siguiente pagina",
+                    icon: "success"
+                }).then((result) => {
+
+                    e.target.submit();
+
+                });
+            }
 
         });
 

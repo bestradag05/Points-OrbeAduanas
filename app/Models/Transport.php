@@ -11,8 +11,46 @@ class Transport extends Model
 
     protected $table = 'transport';
 
-    protected $fillable = ['nro_orden', 'date_register', 'invoice_number', 'nro_dua', 'origin', 'destination', 'transport_value', 'added_value',  'tax_base', 'igv', 'total', 'additional_points', 'state', 'payment_state', 'payment_date',  'weight', 'nro_operation', 'id_supplier'];
+    protected $fillable = ['nro_operation_transport', 'nro_orden', 'date_register', 'invoice_number', 'nro_dua', 'origin', 'destination', 'transport_value', 'added_value',  'tax_base', 'igv', 'total', 'additional_points', 'payment_state', 'payment_date',  'weight', 'withdrawal_date', 'state', 'nro_operation', 'id_supplier', 'id_quote_transport'];
 
+
+    // Evento que se ejecuta antes de guardar el modelo
+    protected static function booted()
+    {
+        static::creating(function ($transport) {
+            // Si no tiene un número de operación, generarlo
+            if (empty($transport->nro_operation_transport)) {
+                $transport->nro_operation_transport = $transport->generateNroOperation();
+            }
+        });
+    }
+
+    // Método para generar el número de operación
+    public function generateNroOperation()
+    {
+        // Obtener el último registro
+        $lastCode = self::latest('id')->first();
+        $year = date('y');
+        $prefix = 'TRAN-';
+
+        // Si no hay registros, empieza desde 1
+        if (!$lastCode) {
+            return $prefix . $year . '1';
+        } else {
+            // Extraer el número y aumentarlo
+            $number = (int) substr($lastCode->nro_operation_transport, 7);
+            $number++;
+            return $prefix . $year . $number;
+        }
+    }
+
+
+    /* Relaciones */
+
+    public function concepts()
+    {
+        return $this->belongsToMany(Concepts::class, 'concepts_transport', 'id_transport', 'id_concepts')->withPivot('value_concept');;
+    }
 
     public function routing()
     {
@@ -23,6 +61,10 @@ class Transport extends Model
     {
         return $this->morphMany(AdditionalPoints::class, 'additional', 'model_additional_service', 'id_additional_service');
     }
-    
 
+
+    public function quoteTransports()
+    {
+        return $this->hasMany(QuoteTransport::class, 'id', 'id_quote_transport');
+    }
 }

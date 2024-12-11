@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Concepts;
 use App\Models\QuoteTransport;
 use App\Models\Routing;
 use Carbon\Carbon;
@@ -23,13 +24,12 @@ class QuoteTransportController extends Controller
         $heads = [
             '#',
             'Cliente',
-            'Nombre del contacto',
-            'Numero del contacto',
             'Hora maxima de atencion',
             'LCL / FCL',
             'Cubicaje-KGV',
             'Tonelada-KG',
             'Peso Total',
+            'Fecha de recojo',
             'Asesor',
             'Estado',
             'Acciones'
@@ -58,16 +58,16 @@ class QuoteTransportController extends Controller
 
         $heads = [
             '#',
+            'Nro Operacion',
             'Cliente',
             'Recojo',
             'Entrega',
-            'Nombre del contacto',
-            'Numero del contacto',
             'Hora maxima de atencion',
             'LCL / FCL',
             'Cubicaje-KGV',
             'Tonelada-KG',
             'Peso Total',
+            'Fecha de recojo',
             'Estado',
             'Acciones'
         ];
@@ -129,7 +129,7 @@ class QuoteTransportController extends Controller
 
 
         QuoteTransport::create([
-            'shipping_date' => Carbon::now(),
+            'shipping_date' => Carbon::now('America/Lima'),
             'response_date' => null,
             'pick_up' => ($request->lcl_fcl === 'LCL') ? $request->pick_up_lcl : $request->pick_up_fcl,
             'delivery' => $request->delivery,
@@ -190,7 +190,18 @@ class QuoteTransportController extends Controller
 
         $quote = QuoteTransport::findOrFail($id);
 
-        return view('transport/quote/detail-quote', compact('quote'));
+
+        $folderPath = "documents/{$quote->nro_operation}/quote_transport";
+        $files = collect(Storage::disk('public')->files($folderPath))->map(function ($file) {
+            return [
+                'name' => basename($file), // Nombre del archivo
+                'size' => Storage::disk('public')->size($file), // Tamaño del archivo
+                'url' => asset('storage/' . $file), // URL del archivo
+            ];
+        });
+
+
+        return view('transport/quote/detail-quote', compact('quote', 'files'));
     }
 
     /**
@@ -271,11 +282,13 @@ class QuoteTransportController extends Controller
 
     public function costTransport(Request $request, string $id)
     {
-
         $quote = QuoteTransport::findOrFail($id);
+
         $quote->update([
-            'response_date' => Carbon::now(),
+            'response_date' => Carbon::now('America/Lima'),
             'cost_transport' => $request->modal_transport_cost,
+            'cost_gang' => $request->cost_gang,
+            'cost_guard' => $request->cost_guard,
             'state' => 'Respondido'
         ]);
 
@@ -284,21 +297,51 @@ class QuoteTransportController extends Controller
 
     public function handleTransportAction(Request $request, string $action, string $id)
     {
-
-        $quote = QuoteTransport::findOrFail($id);
+        $quote = QuoteTransport::with('routing')->findOrFail($id);
 
         if ($action === 'accept') {
 
-            $quote->update([
-                'state' => 'Aceptada'
-            ]);
+            $withdrawal_date = Carbon::createFromFormat('d/m/Y', $request->withdrawal_date)->format('Y-m-d');
 
-            return redirect()->route('routing.detail', [
+            $params = [
                 'id_routing' => $quote->routing->id,
                 'cost_transport' => $quote->cost_transport,
                 'origin' => $quote->pick_up,
-                'destination' => $quote->delivery
+                'destination' => $quote->delivery,
+                'withdrawal_date' => $withdrawal_date,
+                'id_quote_transport' => $quote->id
+            ];
+
+
+            // Agregar cost_gang solo si no es null
+            if ($quote->cost_gang !== null) {
+                $concept = Concepts::where('name', 'CUADRILLA')
+                    ->where('id_type_shipment', $quote->routing->id_type_shipment)
+                    ->get()->first();
+
+                $params['id_gang_concept'] = $concept->id;
+                $params['cost_gang'] = $quote->cost_gang;
+            }
+
+            if ($quote->cost_guard !== null) {
+
+                $concept = Concepts::where('name', 'RESGUARDO')
+                    ->where('id_type_shipment', $quote->routing->id_type_shipment)
+                    ->get()->first();
+
+                $params['id_guard_concept'] = $concept->id;
+                $params['cost_guard'] = $quote->cost_guard;
+            }
+
+
+            $quote->update([
+                'withdrawal_date' => $withdrawal_date,
+                'state' => 'Aceptada'
             ]);
+
+
+            // Redirigir con los parámetros
+            return redirect()->route('routing.detail', $params);
         } else if ($action === 'reajust') {
 
             $quote->update([
@@ -325,6 +368,53 @@ class QuoteTransportController extends Controller
 
             return redirect('quote/transport');
         }
+    }
+
+
+    public function acceptQuoteTransport(string $id)
+    {
+
+        $quote = QuoteTransport::with('routing')->findOrFail($id);
+
+
+        $params = [
+            'id_routing' => $quote->routing->id,
+            'cost_transport' => $quote->cost_transport,
+            'origin' => $quote->pick_up,
+            'destination' => $quote->delivery,
+            'withdrawal_date' => $quote->withdrawal_date,
+            'id_quote_transport' => $quote->id
+        ];
+
+        // Agregar cost_gang solo si no es null
+        if ($quote->cost_gang !== null) {
+            $concept = Concepts::where('name', 'CUADRILLA')
+                ->where('id_type_shipment', $quote->routing->id_type_shipment)
+                ->get()->first();
+
+            $params['id_gang_concept'] = $concept->id;
+            $params['cost_gang'] = $quote->cost_gang;
+        }
+
+        if ($quote->cost_guard !== null) {
+
+            $concept = Concepts::where('name', 'RESGUARDO')
+                ->where('id_type_shipment', $quote->routing->id_type_shipment)
+                ->get()->first();
+
+            $params['id_guard_concept'] = $concept->id;
+            $params['cost_guard'] = $quote->cost_guard;
+        }
+
+
+        $quote->update([
+            'withdrawal_date' => $quote->withdrawal_date,
+            'state' => 'Aceptada'
+        ]);
+
+
+        // Redirigir con los parámetros
+        return redirect()->route('routing.detail', $params);
     }
 
 

@@ -438,21 +438,21 @@ return [
         [
             'text' => 'Transporte',
             'icon' => 'fas fa-fw fa-truck-moving',
-            'can' => 'transporte.quote.list.personal',
+            'can' => 'trasnporte.module',
             'submenu' => [
                 [
                     'text' => 'Puntos pendientes',
                     'url' => 'transport/pending',
                     'icon'  => 'fa-solid fa-bell-exclamation',
                     'active' => ['transport/pending'],
-                    'can' => 'transporte.list',
+                    'can' => 'transporte.list.points',
                 ],
                 [
                     'text' => 'Todos los puntos',
                     'url'  => 'transport',
                     'icon' => 'fa-solid fa-check-double',
                     'active' => ['transport'],
-                    'can' => 'transporte.list',
+                    'can' => 'transporte.list.points',
                 ],
                 [
                     'text' => 'Generar una cotizacion',
@@ -475,6 +475,13 @@ return [
                     'icon' => 'fa-solid fa-check-double',
                     'active' => ['quote/transport/personal'],
                     'can' => 'transporte.quote.list.personal'
+                ],
+                [
+                    'text' => 'Mis transportes',
+                    'url'  => 'transport/personal',
+                    'icon' => 'fa-solid fa-check-double',
+                    'active' => ['transport/personal'],
+                    'can' => 'transporte.list'
                 ]
             ]
         ],
@@ -509,7 +516,7 @@ return [
         [
             'text' => 'Puntos',
             'icon' => 'fas fa-fw fa-copy',
-            'can' => 'points.list',
+            'can' => 'points.module',
             'submenu' => [
                 [
                     'text' => 'Detalle por vendedor',

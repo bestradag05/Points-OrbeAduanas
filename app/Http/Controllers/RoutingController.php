@@ -20,6 +20,7 @@ use App\Models\TypeInsurance;
 use App\Models\TypeLoad;
 use App\Models\TypeService;
 use App\Models\TypeShipment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Ramsey\Uuid\Type\Integer;
@@ -225,7 +226,7 @@ class RoutingController extends Controller
      */
     public function update(Request $request, string $id)
     {
-       /*  dd($request->all()); */
+        /*  dd($request->all()); */
         $this->validateForm($request, $id);
 
         $routing = Routing::findOrFail($id);
@@ -236,7 +237,6 @@ class RoutingController extends Controller
         $routing->update($request->all());
 
         return redirect('routing');
-
     }
 
     /**
@@ -245,7 +245,7 @@ class RoutingController extends Controller
     public function destroy(string $id)
     {
         $routing = Routing::find($id);
-    
+
         $routing->update(['state' => 'Inactivo']);
         return redirect('routing')->with('eliminar', 'ok');
     }
@@ -303,14 +303,50 @@ class RoutingController extends Controller
 
         $tab = 'detail';
 
-        //Si es que la obtencion del detalle viene desde la cotizacion de transporte:
+        $data = [
+            'routing' => $routing,
+            'type_services' => $type_services,
+            'services' => $services,
+            'concepts' => $concepts,
+            'modalitys' => $modalitys,
+            'tab' => $tab,
+            'stateCountrys' => $stateCountrys,
+            'type_insurace' => $type_insurace,
+            'id_quote_transport' => request('id_quote_transport', null)
+        ];
+        
 
-        $cost_transport = request('cost_transport', "");
-        $origin = request('origin', "");
-        $destination = request('destination', "");
+
+        if ($withdrawal_date = request('withdrawal_date', null)) {
+            $data['withdrawal_date'] = $withdrawal_date;
+        }
+
+        if ($cost_transport = request('cost_transport', null)) {
+            $data['cost_transport'] = $cost_transport;
+        }
+
+        if ($origin = request('origin', null)) {
+            $data['origin'] = $origin;
+        }
+
+        if ($destination = request('destination', null)) {
+            $data['destination'] = $destination;
+        }
+
+        // Condicionalmente agregar cost_gang si está presente
+        if ($cost_gang = request('cost_gang', null)) {
+            $data['id_gang_concept'] = request('id_gang_concept', null);
+            $data['cost_gang'] = $cost_gang;
+        }
+
+        // Condicionalmente agregar cost_guard si está presente
+        if ($cost_guard = request('cost_guard', null)) {
+            $data['id_guard_concept'] = request('id_guard_concept', null);
+            $data['cost_guard'] = $cost_guard;
+        }
 
 
-        return view('routing/detail-routing', compact('routing', 'type_services', 'services', 'concepts', 'modalitys', 'tab', 'stateCountrys', 'type_insurace', 'cost_transport', 'origin', 'destination'));
+        return view('routing/detail-routing', $data);
     }
 
 
@@ -327,7 +363,7 @@ class RoutingController extends Controller
 
     public function storeRoutingService(Request $request)
     {
-        /*         dd($request->all()); */
+         /* dd($request->all()); */
         $routing = Routing::where('nro_operation', $request->nro_operation)->first();
 
         $type_services = TypeService::find($request->typeService);
@@ -474,7 +510,6 @@ class RoutingController extends Controller
                 $igv = $tax_base * 0.18;
                 $total = $tax_base * 1.18;
 
-                # Transporte...
                 $transport = Transport::create([
 
                     'origin' => $request->origin,
@@ -485,16 +520,42 @@ class RoutingController extends Controller
                     'igv' => $igv,
                     'total' => $total,
                     'additional_points' => $request->additional_points,
+                    'withdrawal_date' =>  $request->withdrawal_date,
                     'nro_operation' => $routing->nro_operation,
+                    'id_quote_transport' => $request->id_quote_transport,
                     'state' => 'Pendiente'
 
                 ]);
+
 
                 if ($transport->additional_points && $this->parseDouble($transport->additional_points) > 0) {
                     $concept = (object) ['name' => 'TRANSPORTE', 'pa' => $transport->additional_points];
 
                     $this->add_aditionals_point($concept, $transport, $transport->tax_base, $transport->igv, $transport->total);
                 }
+                //Relacionamos los conceptos que tendra este transporte
+
+                foreach (json_decode($request->concepts) as $concept) {
+
+                    $ne_amount = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
+                    $igv = $ne_amount * 0.18;
+                    $total = $ne_amount + $igv;
+
+                    $transport->concepts()->attach($concept->id, [
+                        'value_concept' => $concept->value,
+                        'added_value' => $concept->added,
+                        'net_amount' => round($ne_amount, 2),
+                        'igv' => round($igv),
+                        'total' => round($total),
+                        'additional_points' => isset($concept->pa)
+                    ]);
+
+                    //Verificamos si tienen puntos adicionales
+                    if (isset($concept->pa)) {
+                        $this->add_aditionals_point($concept, $transport, $ne_amount, $igv, $total);
+                    }
+                }
+
 
                 return redirect('/routing/' . $routing->id . '/detail');
 
@@ -520,6 +581,7 @@ class RoutingController extends Controller
             'additional_type' => ($service::class === 'App\Models\Freight') ? 'AD-FLETE' : 'AD-ADUANA',
             'state' => 'Pendiente'
         ]);
+
 
         $service->additional_point()->save($additional_point);
     }

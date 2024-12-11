@@ -21,7 +21,9 @@ class QuoteTransport extends Model
         'contact_name',
         'max_attention_hour',
         'gang',
+        'cost_gang',
         'guard',
+        'cost_guard',
         'customer_detail',
         'commodity',
         'packaging_type',
@@ -39,6 +41,7 @@ class QuoteTransport extends Model
         'old_cost_transport',
         'cost_transport',
         'readjustment_reason',
+        'withdrawal_date',
         'observations',
         'state'
     ];
@@ -48,6 +51,12 @@ class QuoteTransport extends Model
     public function routing()
     {
         return $this->belongsTo(Routing::class, 'nro_operation', 'nro_operation');
+    }
+
+
+    public function transport()
+    {
+        return $this->belongsTo(Transport::class, 'id', 'id_quote_transport');
     }
 
 }

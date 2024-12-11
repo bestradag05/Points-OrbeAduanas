@@ -163,7 +163,6 @@
         function enableInsurance(checkbox) {
 
             const contenedorInsurance = $(`#content_${checkbox.id}`);
-            console.log();
             if (checkbox.checked) {
                 contenedorInsurance.addClass('d-flex').removeClass('d-none');
                 contenedorInsurance.find("input").removeClass('d-none');
@@ -301,7 +300,7 @@
             }
         };
 
-        function updateTable(conceptsArray, idContent) {
+        function updateTable(conceptsArray, idContent, cost_transport = null) {
 
             let tbodyRouting = $(`#${idContent}`).find('tbody')[0];
 
@@ -334,9 +333,46 @@
                     let celdaValor = fila.insertCell(2);
                     celdaValor.textContent = item.value;
 
+
                     // Insertar el valor en la cuarta celda de la fila
+
                     let celdaAdded = fila.insertCell(3);
-                    celdaAdded.textContent = item.added;
+                    if (cost_transport) {
+                        // Si cost_transport existe, muestra un input editable
+                        let inputAdded = document.createElement('input');
+                        inputAdded.type = 'number';
+                        inputAdded.value = item.added;
+                        inputAdded.min = 0;
+                        inputAdded.classList.add('form-control');
+                        celdaAdded.appendChild(inputAdded);
+
+                        inputAdded.addEventListener('input', (e) => {
+                            let newValue = parseFloat(e.target.value) || 0;
+
+                            // Actualiza el valor en `conceptsArray`
+                            conceptsArray[clave].added = newValue;
+
+                            // Actualiza el máximo para `inputPA`
+                            let maxPoints = Math.floor(newValue / 45);
+                            inputPA.max = maxPoints;
+
+                            // Ajusta el valor actual de `pa` si excede el nuevo máximo
+                            if (conceptsArray[clave].pa > maxPoints) {
+                                conceptsArray[clave].pa = maxPoints;
+                                inputPA.value = maxPoints;
+                            }
+
+
+                            // Recalcula el total
+                            TotalConcepts = calculateTotal(conceptsArray);
+                            calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, container.id);
+
+                        });
+                    } else {
+                        // Si cost_transport no existe, muestra el valor como texto plano
+                        celdaAdded.textContent = item.added;
+                    }
+
 
 
                     let celdaPA = fila.insertCell(4);
@@ -350,8 +386,17 @@
                     inputPA.min = 0;
                     celdaPA.appendChild(inputPA);
 
-                    inputPA.addEventListener('keydown', (e) => {
-                        preventeDefaultAction(e);
+
+                    inputPA.addEventListener('input', (e) => {
+
+                        if (cost_transport) {
+
+                            conceptsArray[clave].pa = e.target.value
+
+                        } else {
+
+                            preventeDefaultAction(e);
+                        }
                     });
 
                     if (Math.floor(item.added / 45) === 0) {
@@ -368,22 +413,26 @@
 
 
 
+                    if (!cost_transport) {
 
-                    // Insertar un botón para eliminar la fila en la cuarta celda de la fila
-                    let celdaEliminar = fila.insertCell(5);
-                    let botonEliminar = document.createElement('a');
-                    botonEliminar.href = '#';
-                    botonEliminar.innerHTML = '<p class="text-danger">X</p>';
-                    botonEliminar.addEventListener('click', function() {
+                        // Insertar un botón para eliminar la fila en la cuarta celda de la fila
+                        let celdaEliminar = fila.insertCell(5);
+                        let botonEliminar = document.createElement('a');
+                        botonEliminar.href = '#';
+                        botonEliminar.innerHTML = '<p class="text-danger">X</p>';
+                        botonEliminar.addEventListener('click', function() {
 
-                        // Eliminar la fila correspondiente al hacer clic en el botón
-                        let fila = this.parentNode.parentNode;
-                        let indice = fila.rowIndex -
-                            1; // Restar 1 porque el índice de las filas en tbody comienza en 0
-                        delete conceptsArray[Object.keys(conceptsArray)[indice]];
-                        updateTable(conceptsArray, idContent);
-                    });
-                    celdaEliminar.appendChild(botonEliminar);
+                            // Eliminar la fila correspondiente al hacer clic en el botón
+                            let fila = this.parentNode.parentNode;
+                            let indice = fila.rowIndex -
+                                1; // Restar 1 porque el índice de las filas en tbody comienza en 0
+                            delete conceptsArray[Object.keys(conceptsArray)[indice]];
+                            updateTable(conceptsArray, idContent);
+                        });
+                        celdaEliminar.appendChild(botonEliminar);
+
+                    }
+
 
                     TotalConcepts += parseFloat(item.value) + parseFloat(item.added);
                 }
@@ -404,6 +453,12 @@
 
             inputTotal.val(total.toFixed(2));
 
+        }
+
+        function calculateTotal(conceptsArray) {
+            return Object.values(conceptsArray).reduce((acc, concept) => {
+                return acc + parseFloat(concept.value || 0) + parseFloat(concept.added || 0);
+            }, 0);
         }
 
         function formatValue(value) {
@@ -510,9 +565,6 @@
 
             var camposInvalidos = form.find('.is-invalid').length;
 
-
-            console.log(form);
-
             if (camposInvalidos == 0) {
 
                 let conceptops = JSON.stringify(conceptsArray);
@@ -583,13 +635,10 @@
             const formInsurance = $('#modalSeguro form')[0];
             formInsurance.reset();
         })
-    </script>
 
+        let cost_transport = @json($cost_transport ?? '');
 
-
-    @if ($cost_transport && $cost_transport != '')
-        <script>
-            console.log("ingreso aqui");
+        if (cost_transport && cost_transport != '') {
             var typeServices = @json($type_services);
             const selectElement = document.getElementById('type_service');
 
@@ -605,15 +654,57 @@
             selectElement.dispatchEvent(event);
 
 
-            $('#transport_value').val("{{ $cost_transport }}").prop('readonly', true);
-            $('#origin').val("{{ $origin }}").prop('readonly', true);
-            $('#destination').val("{{ $destination }}").prop('readonly', true);
+            $('#transport_value').val(cost_transport).prop('readonly', true);
+            $('#origin').val("{{ $origin ?? '' }}").prop('readonly', true);
+            $('#destination').val("{{ $destination ?? '' }}").prop('readonly', true);
+            $('#id_quote_transport').val('{{$id_quote_transport ?? ''}}')
+            $('#withdrawal_date').val('{{$withdrawal_date ?? ''}}').prop('readonly', true);
 
 
-            value_insurance = parseFloat({{ $cost_transport }});
+            let cost_gang = @json($cost_gang ?? null);
+            let cost_guard = @json($cost_guard ?? null);
+
+            @if (isset($cost_gang))
+
+                if (cost_gang && cost_gang != '') {
+                    let id_gang_concept = @json($id_gang_concept);
+
+                    conceptsArray[id_gang_concept] = {
+                        'id': id_gang_concept,
+                        'name': 'CUADRILLA',
+                        'value': formatValue("{{ $cost_gang }}"),
+                        'added': 0,
+                    }
+
+                    updateTable(conceptsArray, container.id, cost_transport);
+
+                }
+            @endif
+
+
+            @if (isset($cost_guard))
+
+                if (cost_guard && cost_guard != '') {
+                    let id_guard_concept = @json($id_guard_concept);
+
+                    conceptsArray[id_guard_concept] = {
+                        'id': id_guard_concept,
+                        'name': 'RESGUARDO',
+                        'value': formatValue("{{ $cost_gang }}"),
+                        'added': 0,
+                    }
+
+                    updateTable(conceptsArray, container.id, cost_guard);
+
+                }
+            @endif
+
+
+
+
+            value_insurance = parseFloat(cost_transport);
 
             calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, container.id);
-        </script>
-    @endif
-
+        }
+    </script>
 @endpush

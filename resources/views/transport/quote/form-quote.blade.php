@@ -608,9 +608,8 @@
                     $('.fcl_quote').removeClass('d-none');
                 }
 
+                console.log(data);
                 $('#customer').val(data.customer.name_businessname).prop('readonly', true);
-                $('#contact_name').val(data.customer.contact_name);
-                $('#contact_phone').val(data.customer.contact_number);
                 $('#load_type').val(data.type_load.name).prop('readonly', true);
                 $('#commodity').val(data.commodity).prop('readonly', true);
                 $('#packaging_type').val(data.packaging_type).prop('readonly', true);

@@ -2,7 +2,7 @@
 
 @section('content_header')
     <div class="d-flex justify-content-between">
-        <h2>Listado de cotizaciones transporte</h2>
+        <h2>Transportes</h2>
     </div>
 
 @stop
@@ -10,32 +10,25 @@
 
 
     <x-adminlte-datatable id="table1" :heads="$heads" hoverable>
-        @foreach ($quotes as $quote)
+        @foreach ($transports as $transport)
             <tr>
                 <td>{{ $loop->iteration }}</td>
+                <td>{{ $transport->nro_operation_transport }}</td>
                 <td>
-                    {{ $quote->routing->customer->name_businessname }}
-                </td>
-                <td>{{ $quote->max_attention_hour }}</td>
-                <td>{{ $quote->lcl_fcl }}</td>
-                <td>{{ $quote->cubage_kgv  }}</td>
-                <td>{{ $quote->ton_kilogram  }}</td>
-                <td>{{ $quote->total_weight }}</td>
-                <td class="text-indigo text-bold"> {{ isset($quote->withdrawal_date) ? \Carbon\Carbon::parse($quote->withdrawal_date)->format('d/m/Y') : '-' }}</td>
-                <td>{{ $quote->routing->personal->names }}</td>
-                <td class="{{ $quote->state == 'Pendiente' ? 'text-warning' : 'text-success' }}">{{ $quote->state }}
-                </td>
-
-
-                <td>
-                    <a href="{{ url('/quote/transport/'. $quote->id) }}" class="btn btn-outline-indigo btn-sm mb-2 ">
-                        Detalle
+                    <a href="{{ url('/routing/' . $transport->routing->id . '/detail') }}">
+                        {{ $transport->nro_operation }}
                     </a>
                 </td>
-
+                <td>{{ $transport->origin }}</td>
+                <td>{{ $transport->destination }}</td>
+                <td>{{ $transport->total }}</td>
+                <td>{{ \Carbon\Carbon::parse($transport->withdrawal_date)->format('d/m/Y') }}</td>
+                <td class="{{ $transport->state == 'Pendiente' ? 'text-warning' : 'text-success' }}">{{ $transport->state }}
+                </td>
             </tr>
         @endforeach
     </x-adminlte-datatable>
+
 
 @stop
 

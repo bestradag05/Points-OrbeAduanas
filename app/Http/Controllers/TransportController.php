@@ -6,6 +6,7 @@ use App\Models\Supplier;
 use App\Models\Transport;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TransportController extends Controller
 {
@@ -52,6 +53,36 @@ class TransportController extends Controller
 
 
         return view("transport/pending-list-transport", compact("transports", "heads"));
+    }
+
+
+    public function getTransportPersonal()
+    {
+        $personalId = Auth::user()->personal->id;
+
+        // Verificar si el usuario es un Super-Admin
+        if (Auth::user()->hasRole('Super-Admin')) {
+            // Si es Super-Admin, obtener todos los routing
+            $transports = Transport::with('quoteTransports')->get();
+        } else {
+            // Si no es Super-Admin, solo obtener los clientes que pertenecen al personal del usuario autenticado
+            $transports = Transport::whereHas('routing', function ($query) use ($personalId) {
+                $query->where('id_personal', $personalId);
+            })->with('quoteTransports')->get();
+        }
+
+        $heads = [
+            '#',
+            'N° De transporte',
+            'N° Operacion',
+            'Origen',
+            'Destino',
+            'Total de transporte',
+            'Fecha de retiro',
+            'Estado',
+        ];
+
+        return view("transport/list-transport-personal", compact("transports", "heads"));
     }
 
     /**

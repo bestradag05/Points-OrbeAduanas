@@ -99,6 +99,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('freight', FreightController::class);
 
     Route::get('transport/pending', [TransportController::class, 'getTransportPending']);
+    Route::get('transport/personal', [TransportController::class, 'getTransportPersonal']);
     Route::resource('transport', TransportController::class);
 
     Route::get('insurance/pending', [InsuranceController::class, 'getInsurancePending']);
@@ -128,6 +129,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('quote/transport/cost/{action}/{id}', [QuoteTransportController::class, 'handleTransportAction']);
     Route::get('quote/transport/cost/reject/{id}', [QuoteTransportController::class, 'rejectQuoteTransport']);
     Route::get('quote/transport/cost/keep/{id}', [QuoteTransportController::class, 'keepQuoteTransport']);
+    Route::get('quote/transport/cost/accept/{id}', [QuoteTransportController::class, 'acceptQuoteTransport']);
   
 
 
