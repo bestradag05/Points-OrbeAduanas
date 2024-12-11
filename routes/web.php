@@ -130,6 +130,7 @@ Route::middleware('auth')->group(function () {
     Route::get('quote/transport/cost/reject/{id}', [QuoteTransportController::class, 'rejectQuoteTransport']);
     Route::get('quote/transport/cost/keep/{id}', [QuoteTransportController::class, 'keepQuoteTransport']);
     Route::get('quote/transport/cost/accept/{id}', [QuoteTransportController::class, 'acceptQuoteTransport']);
+    Route::get('quote/transport/cost/corrected/{id}', [QuoteTransportController::class, 'correctedQuoteTransport']);
   
 
 

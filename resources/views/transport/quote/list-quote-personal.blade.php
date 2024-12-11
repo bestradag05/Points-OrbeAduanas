@@ -27,7 +27,7 @@
                 <td class="text-indigo text-bold">
                     {{ isset($quote->withdrawal_date) ? \Carbon\Carbon::parse($quote->withdrawal_date)->format('d/m/Y') : '-' }}
                 </td>
-                <td class="{{ $quote->state == 'Pendiente' ? 'text-warning' : 'text-success' }}">{{ $quote->state }}
+                <td class="status-{{strtolower($quote->state)}}">{{ $quote->state }}
                 </td>
 
                 <td style="{{ $quote->state === 'Pendiente' || $quote->state === 'Observado' || $quote->state === 'Respondido' ? 'width: 150px;' : '' }}"
@@ -45,12 +45,17 @@
 
                     <a href="{{ url('/quote/transport/' . $quote->id . '/edit') }}"
                         class="btn btn-outline-indigo btn-sm mx-1 {{ $quote->state === 'Pendiente' || $quote->state === 'Observado' ? '' : 'd-none' }} ">
-                        <i class="fa-sharp fa-solid fa-pen-to-square"></i>
+                        <i class="fas fa-edit"></i>
                     </a>
 
                     <a href="{{ url('/quote/transport/cost/accept/' . $quote->id) }}"
                         class="btn btn-outline-success btn-sm {{ ($quote->state === 'Aceptada' && !$quote->transport()->exists()) ? '' : 'd-none' }}">
                         Generar Transporte
+                    </a>
+
+                    <a href="{{ url('/quote/transport/cost/corrected/' . $quote->id) }}"
+                        class="btn btn-outline-success mt-1 btn-sm {{ ($quote->state === 'Observado') ? '' : 'd-none' }}">
+                        Corregido
                     </a>
 
 
@@ -191,11 +196,12 @@
         $('#modalQuoteTransportPersonal').on('show.bs.modal', function(event) {
 
             var button = $(event.relatedTarget); // Botón que disparó el modal
-            var currentQuoteId = button.data('id');
+            currentQuoteId = button.data('id');
             var cost = button.data('cost');
             var costOld = button.data('old');
             var gang = button.data('gang');
             var guard = button.data('guard');
+
 
             // Aquí puedes usar el valor (por ejemplo, actualizar un elemento en el modal)
             var modal = $(this);
@@ -230,7 +236,8 @@
 
         $('#buttonReajust').on('click', function(e) {
             // do something...
-
+        
+            console.log(currentQuoteId);
             $('#modalReajustQuoteTransportPersonal form').attr('action', '/quote/transport/cost/reajust/' +
                 currentQuoteId);
 

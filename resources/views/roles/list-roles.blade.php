@@ -19,7 +19,7 @@
                     @if ($rol->name === 'Super-Admin')
                         <p>
                             {{ $rol->name }}
-                            <i class="fa-solid fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
                         </p>
                     @else
                         <a href="{{ url('roles/grupos/' . $rol->id) }}">
@@ -38,8 +38,7 @@
                             {{ method_field('DELETE') }}
                             @csrf
                             <button type="submit"
-                                style="border: none; background: none; padding: 0; margin: 0; cursor: pointer;"> <i
-                                    class="fa-solid fa-trash text-primary"></i> </button>
+                                style="border: none; background: none; padding: 0; margin: 0; cursor: pointer;"> <i class="fas fa-trash text-primary"></i> </button>
                         </form>
 
                     </td>

@@ -3,7 +3,7 @@
           <label for="nro_operation">N° de operacion</label>
           <input type="text" class="form-control" id="nro_operation" name="nro_operation"
               placeholder="Ingrese el numero de operacion" @readonly(true)
-              value="{{ isset($routing->nro_operation) ? $routing->nro_operation : $nro_operation  }}">
+              value="{{ isset($routing->nro_operation) ? $routing->nro_operation : $nro_operation }}">
           @error('nro_operation')
               <div class="text-danger">{{ $message }}</div>
           @enderror
@@ -685,9 +685,9 @@
 
               const nro_package = parseInt($('#nro_package').val());
               const amount_package = parseInt($('#amount_package').val());
-              const width = inputs[1].value;
-              const length = inputs[2].value;
-              const height = inputs[3].value;
+              const width = inputs[1].value.replace(/,/g, '');;
+              const length = inputs[2].value.replace(/,/g, '');;
+              const height = inputs[3].value.replace(/,/g, '');;
 
 
 
@@ -747,9 +747,9 @@
                   // Opcional: Enfocar el primer campo de la nueva fila
                   newRow.querySelector('input').focus();
 
-              }
+                }
 
-          });
+            });
 
 
           function deleteRow(rowId, amount, index) {

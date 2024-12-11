@@ -31,12 +31,12 @@
                             @if ($rol->hasPermissionTo($permission->name))
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/removepermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-on fa-2xl"></i>
+                                    <i class="fas fa-toggle-on fa-lg"></i>
                                 </a>
                             @else
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/assignpermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-off fa-2xl"></i>
+                                    <i class="fas fa-toggle-off fa-lg"></i>
                                 </a>
                             @endif
 
@@ -65,12 +65,12 @@
                             @if ($rol->hasPermissionTo($permission->name))
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/removepermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-on fa-2xl"></i>
+                                    <i class="fas fa-toggle-on fa-lg"></i>
                                 </a>
                             @else
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/assignpermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-off fa-2xl"></i>
+                                    <i class="fas fa-toggle-off fa-lg"></i>
                                 </a>
                             @endif
                         </td>
@@ -98,12 +98,12 @@
                             @if ($rol->hasPermissionTo($permission->name))
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/removepermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-on fa-2xl"></i>
+                                    <i class="fas fa-toggle-on fa-lg"></i>
                                 </a>
                             @else
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/assignpermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-off fa-2xl"></i>
+                                    <i class="fas fa-toggle-off fa-lg"></i>
                                 </a>
                             @endif
                         </td>
@@ -131,12 +131,12 @@
                             @if ($rol->hasPermissionTo($permission->name))
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/removepermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-on fa-2xl"></i>
+                                    <i class="fas fa-toggle-on fa-lg"></i>
                                 </a>
                             @else
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/assignpermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-off fa-2xl"></i>
+                                    <i class="fas fa-toggle-off fa-lg"></i>
                                 </a>
                             @endif
 
@@ -164,12 +164,12 @@
                             @if ($rol->hasPermissionTo($permission->name))
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/removepermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-on fa-2xl"></i>
+                                    <i class="fas fa-toggle-on fa-lg"></i>
                                 </a>
                             @else
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/assignpermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-off fa-2xl"></i>
+                                    <i class="fas fa-toggle-off fa-lg"></i>
                                 </a>
                             @endif
                         </td>
@@ -196,12 +196,12 @@
                             @if ($rol->hasPermissionTo($permission->name))
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/removepermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-on fa-2xl"></i>
+                                    <i class="fas fa-toggle-on fa-lg"></i>
                                 </a>
                             @else
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/assignpermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-off fa-2xl"></i>
+                                    <i class="fas fa-toggle-off fa-lg"></i>
                                 </a>
                             @endif
 
@@ -230,12 +230,12 @@
                             @if ($rol->hasPermissionTo($permission->name))
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/removepermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-on fa-2xl"></i>
+                                    <i class="fas fa-toggle-on fa-lg"></i>
                                 </a>
                             @else
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/assignpermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-off fa-2xl"></i>
+                                    <i class="fas fa-toggle-off fa-lg"></i>
                                 </a>
                             @endif
 
@@ -264,12 +264,12 @@
                             @if ($rol->hasPermissionTo($permission->name))
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/removepermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-on fa-2xl"></i>
+                                    <i class="fas fa-toggle-on fa-lg"></i>
                                 </a>
                             @else
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/assignpermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-off fa-2xl"></i>
+                                    <i class="fas fa-toggle-off fa-lg"></i>
                                 </a>
                             @endif
 
@@ -298,12 +298,12 @@
                             @if ($rol->hasPermissionTo($permission->name))
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/removepermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-on fa-2xl"></i>
+                                    <i class="fas fa-toggle-on fa-lg"></i>
                                 </a>
                             @else
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/assignpermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-off fa-2xl"></i>
+                                    <i class="fas fa-toggle-off fa-lg"></i>
                                 </a>
                             @endif
 
@@ -331,12 +331,12 @@
                             @if ($rol->hasPermissionTo($permission->name))
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/removepermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-on fa-2xl"></i>
+                                    <i class="fas fa-toggle-on fa-lg"></i>
                                 </a>
                             @else
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/assignpermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-off fa-2xl"></i>
+                                    <i class="fas fa-toggle-off fa-lg"></i>
                                 </a>
                             @endif
 
@@ -364,12 +364,12 @@
                             @if ($rol->hasPermissionTo($permission->name))
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/removepermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-on fa-2xl"></i>
+                                    <i class="fas fa-toggle-on fa-lg"></i>
                                 </a>
                             @else
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/assignpermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-off fa-2xl"></i>
+                                    <i class="fas fa-toggle-off fa-lg"></i>
                                 </a>
                             @endif
 
@@ -397,12 +397,12 @@
                             @if ($rol->hasPermissionTo($permission->name))
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/removepermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-on fa-2xl"></i>
+                                    <i class="fas fa-toggle-on fa-lg"></i>
                                 </a>
                             @else
                                 <a class="reposition"
                                     href="{{ url('roles/grupos/assignpermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
-                                    <i class="fa-regular fa-toggle-large-off fa-2xl"></i>
+                                    <i class="fas fa-toggle-off fa-lg"></i>
                                 </a>
                             @endif
 

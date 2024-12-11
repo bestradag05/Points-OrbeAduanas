@@ -79,3 +79,23 @@
     width: 100%;  /* Se ajusta al tamaño del contenedor */
     height: 100%; /* Asegura que la altura sea proporcional */
 }
+
+
+.status-pendiente {
+    color: orange;
+}
+.status-respondido {
+    color: blue;
+}
+.status-aceptada {
+    color: green;
+}
+.status-reajuste {
+    color: rgb(5, 61, 165);
+}
+.status-observado {
+    color: purple;
+}
+.status-rechazada {
+    color: red;
+}

@@ -236,6 +236,7 @@ class QuoteTransportController extends Controller
         $quote = QuoteTransport::findOrFail($id);
 
         $request->merge(["pick_up" =>  $request->pick_up_lcl != null ? $request->pick_up_lcl : $request->pick_up_fcl]);
+        $request->merge(["state" =>  'Pendiente']);
 
 
         $quote->update($request->all());
@@ -415,6 +416,19 @@ class QuoteTransportController extends Controller
 
         // Redirigir con los parámetros
         return redirect()->route('routing.detail', $params);
+    }
+
+
+    public function correctedQuoteTransport(string $id)
+    {
+        $quote = QuoteTransport::findOrFail($id);
+
+        $quote->update([
+            'observations' => '',
+            'state' => 'Pendiente'
+        ]);
+
+        return redirect('quote/transport/personal');
     }
 
 
