@@ -175,6 +175,7 @@
 
                     </div>
                 </div>
+                
 
                 <div class="form-group row">
                     <label for="customer_detail" class="col-sm-2 col-form-label">Detalles</label>
@@ -608,7 +609,6 @@
                     $('.fcl_quote').removeClass('d-none');
                 }
 
-                console.log(data);
                 $('#customer').val(data.customer.name_businessname).prop('readonly', true);
                 $('#load_type').val(data.type_load.name).prop('readonly', true);
                 $('#commodity').val(data.commodity).prop('readonly', true);

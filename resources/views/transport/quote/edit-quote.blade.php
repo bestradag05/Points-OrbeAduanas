@@ -72,11 +72,21 @@
             autoProcessQueue: true, // Subir automáticamente al añadir
 
             init: function() {
-                let uploadedFiles = []; // Array para almacenar los nombres de archivos subidos
-
+                // Array para almacenar los nombres de archivos subidos
 
                 // Archivos existentes desde el servidor
                 let existingFiles = @json($files);
+
+                if (!existingFiles) {
+                    // Crear un input oculto para cada archivo existente
+                    let input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'uploaded_files[]'; // Array para nombres de archivos
+                    input.value = ''; // El nombre del archivo
+                    document.getElementById('storeQuoteEdit').appendChild(
+                        input); // Asume que el formulario tiene un div con id storeQuoteEdit
+                }
+
 
                 existingFiles.forEach(file => {
                     let mockFile = {
@@ -129,22 +139,35 @@
                     document.getElementById('storeQuoteEdit').appendChild(input);
 
 
+                    const hiddenInput = document.querySelector(
+                        `input[name="uploaded_files[]"][value=""]`);
+                    if (hiddenInput) {
+                        hiddenInput.parentNode.removeChild(hiddenInput);
+                    }
+
+
                 });
 
                 this.on('removedfile', function(file) {
 
                     if (file && file.temp === undefined) {
-                        axios.delete('/quote/transport/file-delete-documents', {
-                            data: {
-                                filename: file.name
-                            }
-                        }).then(response => {
-                            console.log('Archivo eliminado:', response.data);
-                        }).catch(error => {
-                            console.error('Error al eliminar el archivo:', error);
-                        });
-                    }
 
+                        axios.post('/quote/transport/file-delete-documents', {
+                                filename: file.name,
+
+                            }, {
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                        .getAttribute('content')
+                                }
+                            })
+                            .then(response => {
+                                console.log('Archivo eliminado:', response.data);
+                            })
+                            .catch(error => {
+                                console.error('Error al eliminar el archivo:', error);
+                            });
+                    }
 
                     // Eliminar el input oculto asociado al archivo eliminado
                     const hiddenInput = document.querySelector(
@@ -152,6 +175,14 @@
                     if (hiddenInput) {
                         hiddenInput.parentNode.removeChild(hiddenInput);
                     }
+
+                    // Crear un input oculto para cada archivo existente
+                    let input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'uploaded_files[]'; // Array para nombres de archivos
+                    input.value = ''; // El nombre del archivo
+                    document.getElementById('storeQuoteEdit').appendChild(
+                        input); // Asume que el formulario tiene un div con id storeQuoteEdit
 
 
                 });

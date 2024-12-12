@@ -231,16 +231,11 @@ class QuoteTransportController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
 
         $quote = QuoteTransport::findOrFail($id);
 
         $request->merge(["pick_up" =>  $request->pick_up_lcl != null ? $request->pick_up_lcl : $request->pick_up_fcl]);
         $request->merge(["state" =>  'Pendiente']);
-
-
-        $quote->update($request->all());
-
 
 
         if ($request->uploaded_files) {

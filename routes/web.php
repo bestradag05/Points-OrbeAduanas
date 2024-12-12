@@ -119,8 +119,8 @@ Route::middleware('auth')->group(function () {
     /* Cotizaciones Transporte */
     Route::get('quote/transport/personal', [QuoteTransportController::class, 'getQuoteTransportPersonal']);
     Route::post('quote/transport/file-upload-documents', [QuoteTransportController::class, 'uploadFilesQuoteTransport']);
-    Route::delete('quote/transport/file-delete-documents', [QuoteTransportController::class, 'deleteFilesQuoteTransport']);
-
+    Route::post('quote/transport/file-delete-documents', [QuoteTransportController::class, 'deleteFilesQuoteTransport']);
+    
     Route::resource('quote/transport', QuoteTransportController::class)->names([
         'create' => 'quote.transport.create',
     ]);

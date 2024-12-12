@@ -83,7 +83,7 @@ class DatabaseSeeder extends Seeder
 
         
 
-        Permission::create(['name' => 'points.list', 'alias' => 'Listar Puntos', 'guard_name' => 'web']);
+        Permission::create(['name' => 'points.module', 'alias' => 'Modulo de Puntos', 'guard_name' => 'web']);
    
 
         Permission::create(['name' => 'customer.create', 'alias' => 'Crear Clientes', 'guard_name' => 'web']);
