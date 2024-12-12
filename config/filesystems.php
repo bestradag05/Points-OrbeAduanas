@@ -77,6 +77,8 @@ return [
     'links' => [
         public_path('storage') => storage_path('app/public'),
         public_path('storage/personals') => storage_path('app/personals'), // Enlace personalizado
+        public_path('storage/uploads') => storage_path('app/public/uploads'), // Enlace personalizado
+        public_path('storage/documents') => storage_path('app/public/documents'), // Enlace personalizado
     ],
 
 ];
