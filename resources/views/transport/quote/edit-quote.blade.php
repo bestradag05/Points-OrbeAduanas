@@ -4,7 +4,7 @@
     <div class="d-flex justify-content-between">
         <h2>Cotizacion de transporte</h2>
         <div>
-            <a href="{{ url('/quote') }}" class="btn btn-primary"> Atras </a>
+            <a href="{{ url('/quote/transport/personal') }}" class="btn btn-primary"> Atras </a>
         </div>
     </div>
 

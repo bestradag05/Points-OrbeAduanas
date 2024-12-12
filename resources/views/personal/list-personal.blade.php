@@ -28,15 +28,14 @@
 
                 </td>
                 <td>
-                    <a href="{{ url('/personal/' . $personal->id . '/edit') }}"> <i class="fa-solid fa-pen-to-square"></i>
+                    <a href="{{ url('/personal/' . $personal->id . '/edit') }}"> <i class="fas fa-edit"></i>
                     </a>
                     <form action="{{ url('/personal/' . $personal->id) }}" class="form-delete" method="POST"
                         style="display: inline;" data-confirm-delete="true">
                         {{ method_field('DELETE') }}
                         @csrf
                         <button type="submit"
-                            style="border: none; background: none; padding: 0; margin: 0; cursor: pointer;"> <i
-                                class="fa-solid fa-trash text-primary"></i> </button>
+                            style="border: none; background: none; padding: 0; margin: 0; cursor: pointer;"> <i class="fas fa-trash text-primary"></i> </button>
                     </form>
                 </td>
             </tr>

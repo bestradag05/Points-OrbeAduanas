@@ -9,24 +9,20 @@
         <div class="row">
             <div class="col-12 my-4 text-center">
                 @can('transporte.quote.response')
+                    <button class="btn btn-indigo mx-2 {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}" data-toggle="modal"
+                        data-target="#modalQuoteResponse"><i class="fas fa-check-double"></i> Dar respuesta</button>
 
-                <button class="btn btn-indigo mx-2 {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}" data-toggle="modal"
-                    data-target="#modalQuoteResponse"> <i class="fa-regular fa-check-double"></i> Dar respuesta</button>
-
-                <button class="btn btn-secondary mx-2 {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}"
-                    data-toggle="modal" data-target="#modalQuoteObservation"><i
-                        class="fa-sharp-duotone fa-regular fa-xmark"></i> Dar
-                    observaciones</button>
-
-                
+                    <button class="btn btn-secondary mx-2 {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}"
+                        data-toggle="modal" data-target="#modalQuoteObservation"><i class="fas fa-eye"></i> Dar
+                        observaciones</button>
                 @endcan
 
                 <button class="btn btn-secondary mx-2 {{ $quote->state != 'Reajuste' ? 'd-none' : '' }}" data-toggle="modal"
-                    data-target="#modalQuoteReajust"><i class="fa-solid fa-money-check-dollar-pen"></i> Reajustar </button>
+                    data-target="#modalQuoteReajust"><i class="fas fa-money-check-alt"></i> Reajustar </button>
 
                 <a href="{{ url('/quote/transport/cost/keep/' . $quote->id) }}"
                     class="btn btn-danger mx-2 {{ $quote->state != 'Reajuste' ? 'd-none' : '' }}"><i
-                        class="fa-solid fa-hand-holding-dollar"></i> Mantener precio </a>
+                        class="fas fa-hand-holding-usd"></i> Mantener precio </a>
 
             </div>
 
@@ -642,7 +638,7 @@
 
                 return;
 
-            }else{
+            } else {
                 $('#modal_transport_cost').removeClass('is-invalid');
             }
 
@@ -651,7 +647,7 @@
                     $('#container_gang').find('input').addClass('is-invalid');
 
                     return;
-                }else{
+                } else {
                     $('#container_gang').find('input').removeClass('is-invalid');
                 }
             }
@@ -661,11 +657,11 @@
                     $('#container_guard').find('input').addClass('is-invalid');
 
                     return;
-                }else{
+                } else {
                     $('#container_guard').find('input').removeClass('is-invalid');
                 }
             }
-           
+
 
             e.target.submit();
 

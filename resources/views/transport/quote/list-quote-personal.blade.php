@@ -27,7 +27,7 @@
                 <td class="text-indigo text-bold">
                     {{ isset($quote->withdrawal_date) ? \Carbon\Carbon::parse($quote->withdrawal_date)->format('d/m/Y') : '-' }}
                 </td>
-                <td class="status-{{strtolower($quote->state)}}">{{ $quote->state }}
+                <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
                 </td>
 
                 <td style="{{ $quote->state === 'Pendiente' || $quote->state === 'Observado' || $quote->state === 'Respondido' ? 'width: 150px;' : '' }}"
@@ -49,12 +49,12 @@
                     </a>
 
                     <a href="{{ url('/quote/transport/cost/accept/' . $quote->id) }}"
-                        class="btn btn-outline-success btn-sm {{ ($quote->state === 'Aceptada' && !$quote->transport()->exists()) ? '' : 'd-none' }}">
+                        class="btn btn-outline-success btn-sm {{ $quote->state === 'Aceptada' && !$quote->transport()->exists() ? '' : 'd-none' }}">
                         Generar Transporte
                     </a>
 
                     <a href="{{ url('/quote/transport/cost/corrected/' . $quote->id) }}"
-                        class="btn btn-outline-success mt-1 btn-sm {{ ($quote->state === 'Observado') ? '' : 'd-none' }}">
+                        class="btn btn-outline-success mt-1 btn-sm {{ $quote->state === 'Observado' ? '' : 'd-none' }}">
                         Corregido
                     </a>
 
@@ -141,12 +141,12 @@
 
                     </div>
                     <div class="modal-footer justify-content-center">
-                        <button type="submit" class="btn btn-primary"><i class="fa-regular fa-check-double"></i> Aceptar
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-check-double"></i> Aceptar
                             Costo</button>
                         <button type="button" class="btn btn-secondary" id="buttonReajust" data-dismiss="modal"> <i
-                                class="fa-sharp-duotone fa-solid fa-pen-to-square"></i> Reajuste</button>
+                                class="far fa-edit"></i> Reajuste</button>
                         <button type="button" class="btn btn-danger" id="buttonReject" data-dismiss="modal"> <i
-                                class="fa-sharp-duotone fa-regular fa-xmark"></i> Rechazar</button>
+                                class="fas fa-times"></i> Rechazar</button>
                     </div>
                 </form>
             </div>
@@ -176,7 +176,7 @@
 
                     </div>
                     <div class="modal-footer justify-content-center">
-                        <button type="submit" class="btn btn-secondary"><i class="fa-regular fa-paper-plane"></i>
+                        <button type="submit" class="btn btn-secondary"><i class="fas fa-paper-plane"></i>
                             Enviar Motivo</button>
                     </div>
                 </form>
@@ -236,7 +236,7 @@
 
         $('#buttonReajust').on('click', function(e) {
             // do something...
-        
+
             console.log(currentQuoteId);
             $('#modalReajustQuoteTransportPersonal form').attr('action', '/quote/transport/cost/reajust/' +
                 currentQuoteId);
