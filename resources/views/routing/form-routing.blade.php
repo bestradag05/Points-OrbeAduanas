@@ -454,28 +454,36 @@
               let lcl_fcl = document.getElementsByName('lcl_fcl');
               let container_type = document.getElementById('container_type');
 
+              let lclfclSelected = Array.from(document.getElementsByName('lcl_fcl')).find(radio => radio.checked)?.value;
+
+              console.log(lclfclSelected);
+
               // Mostrar/ocultar los campos según los valores
               if (volumenValue.value !== '' || volumenValue.classList.contains('is-invalid')) {
-                  document.getElementById('contenedor_volumen').classList.remove('d-none');
+                  $('#contenedor_volumen').removeClass('d-none');
+                  $('#contenedor_kg_vol').addClass('d-none');
               }
 
               if (kilogramoVolumenValue.value !== '' || kilogramoVolumenValue.classList.contains('is-invalid')) {
-                  document.getElementById('contenedor_kg_vol').classList.remove('d-none');
-
+                  $('#contenedor_kg_vol').removeClass('d-none');
+                  $('#contenedor_volumen').addClass('d-none');
               }
 
               if (totalWeight.value !== '' || totalWeight.classList.contains('is-invalid')) {
-                  document.getElementById('contenedor_weight').classList.remove('d-none');
+                  $('#contenedor_weight').removeClass('d-none');
+                  $('#contenedor_tons').addClass('d-none');
 
               }
 
               if (toneladasValue.value !== '' || toneladasValue.classList.contains('is-invalid')) {
-                  document.getElementById('contenedor_tons').classList.remove('d-none');
+                  $('#contenedor_tons').removeClass('d-none');
+                  $('#contenedor_weight').addClass('d-none');
+
 
               }
 
               if (container_type.value !== '' || container_type.classList.contains('is-invalid')) {
-                  document.getElementById('containerTypeWrapper').classList.remove('d-none');
+                  $('#containerTypeWrapper').removeClass('d-none');
 
                   const parentElement = document.getElementById('containerTypeWrapper').closest('.row');
 

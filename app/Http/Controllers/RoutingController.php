@@ -226,10 +226,30 @@ class RoutingController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        /*  dd($request->all()); */
         $this->validateForm($request, $id);
 
         $routing = Routing::findOrFail($id);
+        $typeShipment = TypeShipment::findOrFail($request->id_type_shipment);
+
+        if ($typeShipment->description === 'Marítima') {
+
+            $request->merge(["kilogram_volumen" => null]);
+
+            if ($request->lcl_fcl === 'LCL') {
+
+                $request->merge(["tons" => null]);
+                $request->merge(["container_type" => null]);
+            } else {
+                $request->merge(["kilograms" => null]);
+            }
+        } else {
+
+            $request->merge(["volumen" => null]);
+            $request->merge(["tons" => null]);
+            $request->merge(["container_type" => null]);
+            $request->merge(["lcl_fcl" => null]);
+        }
+
 
         $request->merge(["measures" =>  $request->value_measures]);
 
@@ -314,7 +334,7 @@ class RoutingController extends Controller
             'type_insurace' => $type_insurace,
             'id_quote_transport' => request('id_quote_transport', null)
         ];
-        
+
 
 
         if ($withdrawal_date = request('withdrawal_date', null)) {
@@ -363,7 +383,7 @@ class RoutingController extends Controller
 
     public function storeRoutingService(Request $request)
     {
-         /* dd($request->all()); */
+        /* dd($request->all()); */
         $routing = Routing::where('nro_operation', $request->nro_operation)->first();
 
         $type_services = TypeService::find($request->typeService);

@@ -28,6 +28,7 @@ use App\Http\Controllers\TypeShipmentController;
 use App\Http\Controllers\UserController;
 use App\Models\Transport;
 use App\Models\TypeInsurance;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -43,6 +44,11 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return view('auth/login');
+});
+
+
+Route::get('/link', function(){
+    Artisan::call('storage:link');
 });
 
 Auth::routes();

@@ -23,11 +23,11 @@
                 <td>{{ $customer->personal->names}}</td>
                 <td>{{ $customer->state}}</td>
                 <td>
-                     <a href="{{ url('/customer/'. $customer->id . '/edit') }}"> <i class="fa-solid fa-pen-to-square"></i> </a>
+                     <a href="{{ url('/customer/'. $customer->id . '/edit') }}"> <i class="fas fa-edit"></i> </a>
                      <form action="{{ url('/customer/'.$customer->id) }}" class="form-delete" method="POST" style="display: inline;" data-confirm-delete="true">
                         {{ method_field('DELETE') }}
                         @csrf
-                        <button  type="submit" style="border: none; background: none; padding: 0; margin: 0; cursor: pointer;"> <i class="fa-solid fa-trash text-primary"></i> </button>
+                        <button  type="submit" style="border: none; background: none; padding: 0; margin: 0; cursor: pointer;"> <i class="fas fa-trash text-primary"></i> </button>
                     </form>
                     
                 </td>
