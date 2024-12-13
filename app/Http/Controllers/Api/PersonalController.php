@@ -76,6 +76,9 @@ class PersonalController extends Controller
      */
     public function store(Request $request)
     {
+        return response()->json([
+            $request->all() 
+        ]);
 
         $exist_personal = Personal::where("document_number", $request->document_number)->first();
 

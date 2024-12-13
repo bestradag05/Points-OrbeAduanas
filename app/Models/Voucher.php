@@ -15,6 +15,8 @@ class Voucher extends Model
             'ruc',
             'name_businessname',
             'serial_number',
+            'sub_total',
+            'igv',
             'total_amount',
             'type_of_receipt',
             'document_url',

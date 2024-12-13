@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('ruc');
             $table->string('name_businessname');
             $table->string('serial_number');
+            $table->decimal('sub_total', 8,2);
+            $table->decimal('igv', 8,2);
             $table->decimal('total_amount', 8,2);
             $table->string('type_of_receipt');
             $table->string('document_url');
