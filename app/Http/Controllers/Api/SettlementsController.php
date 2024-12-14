@@ -90,7 +90,6 @@ class SettlementsController extends Controller
             $voucher->save();
         }
 
-
         return response()->json([
             "message" => "Se creo una nueva liquidación",
         ], 200);
