@@ -43,6 +43,7 @@
 
     {{-- Extra Configured Plugins Stylesheets --}}
     @include('adminlte::plugins', ['type' => 'css'])
+   
 
     {{-- Livewire Styles --}}
     @if (config('adminlte.livewire'))
@@ -108,15 +109,22 @@
         @endif
     @endif
 
+    {{-- Alerta Global de notificaciones --}}
+
+{{-- Minimal with icon only --}}
+
 
     {{-- Custom Scripts --}}
     @yield('adminlte_js')
+    @vite(['resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bs-stepper/dist/js/bs-stepper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
     <script src="{{ asset('js/formatInputCurren.js') }}"></script>
-   
+
     @stack('scripts')
+
+ 
 
 
 </body>

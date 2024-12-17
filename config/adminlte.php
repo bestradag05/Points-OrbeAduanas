@@ -351,14 +351,14 @@ return [
                     'url'  => 'personal',
                     'icon'  => 'fa fa-user-circle',
                     'active' => ['personal'],
-                    
+
                 ],
                 [
                     'text' => 'Tipo de Documentos',
                     'url'  => 'personal_document',
                     'icon' => 'fas fa-id-card',
                     'active' => ['personal_document'],
-                    
+
                 ]
             ]
         ],
@@ -380,7 +380,7 @@ return [
                     'icon'  => 'fa fa-exclamation-circle',
                     'active' => ['custom'],
                 ],
-                
+
                 [
                     'text' => 'Todos los puntos',
                     'url'  => 'custom',
@@ -461,8 +461,8 @@ return [
                     'icon' => 'fas fa-file-invoice-dollar',
                     'active' => ['quote/transport/create'],
                     'can' => 'transporte.quote.generate'
-                    
-                   
+
+
                 ],
                 [
                     'text' => 'Cotizaciones',
@@ -520,7 +520,7 @@ return [
             'icon' => 'fas fa-plus-circle',
             'can' => 'points.list',
             'submenu' => [
-/*                 [
+                /*                 [
                     'text' => 'Detalle por vendedor',
                     'url'  => 'points/detail',
                     'icon' => 'fa-solid fa-check-double',
@@ -568,14 +568,14 @@ return [
                     'url'  => 'customer',
                     'icon'  => 'fas fa-user-plus',
                     'active' => ['customer'],
-                    
+
                 ],
                 [
                     'text' => 'Proveedores',
                     'url'  => 'suppliers',
                     'icon'  => 'fas fa-user-edit',
                     'active' => ['suppliers'],
-                    
+
                 ],
                 [
                     'text' => 'Tipo de Documentos',
@@ -583,7 +583,7 @@ return [
                     'icon' => 'fas fa-id-card',
                     'active' => ['customer_supplier_document'],
                     'can' => ['type_document_customer']
-                    
+
                 ]
             ]
         ],
@@ -608,7 +608,7 @@ return [
             'active' => ['incoterms', 'incoterms*', 'regex:@^content/[0-9]+$@'],
             'can' => 'incoterms.list',
         ],
-       
+
         [
             'text' => 'Routing',
             'url'  => 'routing',
@@ -765,6 +765,21 @@ return [
                     'type' => 'js',
                     'asset' => false,
                     'location' => '//cdn.jsdelivr.net/npm/sweetalert2@8',
+                ],
+            ],
+        ],
+        'Toastr' => [
+            'active' => true, // Habilita el plugin
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => false,
+                    'location' => '//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css',
+                ],
+                [
+                    'type' => 'js',
+                    'asset' => false,
+                    'location' => '//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js',
                 ],
             ],
         ],

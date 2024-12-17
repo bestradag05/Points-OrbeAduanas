@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\QuoteNotification;
 use App\Http\Controllers\AdditionalPointsController;
 use App\Http\Controllers\ConceptsController;
 use App\Http\Controllers\CustomController;
@@ -47,8 +48,15 @@ Route::get('/', function () {
 });
 
 
-Route::get('/link', function(){
+Route::get('/link', function () {
     Artisan::call('storage:link');
+});
+
+Route::get('/alert', function () {
+    $userId = auth()->user()->id;  // O cualquier otro ID de usuario al que le quieras enviar la notificación
+
+    // Emitir el evento pasando el mensaje y el ID del usuario
+    broadcast(new QuoteNotification("Tienes una cotización nueva por responder", $userId));
 });
 
 Auth::routes();
@@ -126,7 +134,7 @@ Route::middleware('auth')->group(function () {
     Route::get('quote/transport/personal', [QuoteTransportController::class, 'getQuoteTransportPersonal']);
     Route::post('quote/transport/file-upload-documents', [QuoteTransportController::class, 'uploadFilesQuoteTransport']);
     Route::post('quote/transport/file-delete-documents', [QuoteTransportController::class, 'deleteFilesQuoteTransport']);
-    
+
     Route::resource('quote/transport', QuoteTransportController::class)->names([
         'create' => 'quote.transport.create',
     ]);
@@ -137,7 +145,7 @@ Route::middleware('auth')->group(function () {
     Route::get('quote/transport/cost/keep/{id}', [QuoteTransportController::class, 'keepQuoteTransport']);
     Route::get('quote/transport/cost/accept/{id}', [QuoteTransportController::class, 'acceptQuoteTransport']);
     Route::get('quote/transport/cost/corrected/{id}', [QuoteTransportController::class, 'correctedQuoteTransport']);
-  
+
 
 
     /* Reportes */

@@ -11,7 +11,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Queue\SerializesModels;
 
-class QuoteNotification
+class QuoteNotification implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -19,34 +19,27 @@ class QuoteNotification
      * Create a new event instance.
      */
 
-     public $quote;
+    public $message;
+    public $userId;  // Añadimos la propiedad para almacenar el ID del usuario
 
-    /**
-     * Create a new notification instance.
-     */
-    public function __construct($quote)
+    // Constructor para pasar datos
+    public function __construct($message, $userId)
     {
-        $this->quote = $quote;
+        $this->message = $message;
+        $this->userId = $userId;
     }
 
-    public function via($notifiable)
+    // Canal por el cual se emitirá el mensaje
+    public function broadcastOn()
     {
-        return ['broadcast'];  // El canal que deseas usar
+        return new PrivateChannel('quote.' . $this->userId);
     }
 
-
-
-    /**
-     * Get the broadcastable representation of the notification.
-     */
-    public function toBroadcast($notifiable)
+    // Datos que se enviarán al frontend
+    public function broadcastWith()
     {
-        return new BroadcastMessage([
-            'quote_id' => $this->quote->id,  // Aquí accedes a la propiedad de la cotización
-            'message' => 'Nueva cotización disponible'
-        ]);
+        return [
+            'message' => $this->message,
+        ];
     }
-
-
-
 }

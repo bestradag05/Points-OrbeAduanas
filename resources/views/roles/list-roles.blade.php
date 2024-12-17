@@ -11,6 +11,7 @@
 
 @stop
 @section('dinamic-content')
+
     <x-adminlte-datatable id="tableRoles" :heads="$heads">
         @foreach ($roles as $rol)
             <tr>
@@ -42,6 +43,8 @@
                         </form>
 
                     </td>
+                @else
+                <td></td>
                 @endif
 
 

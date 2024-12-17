@@ -16,3 +16,22 @@
         </div>
     </div>
 @stop
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const userId = {{ auth()->user()->id }}; // Asegúrate de que esta variable se evalúe correctamente
+
+        // Suscripción al canal privado
+        Echo.private('quote.' + userId)
+            .listen('QuoteNotification', (event) => {
+                toastr.info(event.message, "Nuevo requerimiento!");
+            })
+            .subscribed(() => {
+                console.log('Usuario suscrito correctamente al canal quote.' + userId);
+            })
+            .error((error) => {
+                console.error('Error al intentar suscribirse al canal:', error);
+            });
+    });
+</script>

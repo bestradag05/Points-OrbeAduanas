@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\QuoteNotification;
 use App\Models\Concepts;
 use App\Models\QuoteTransport;
 use App\Models\Routing;
@@ -176,6 +177,9 @@ class QuoteTransportController extends Controller
                 }
             }
         }
+
+
+       /*  broadcast(new QuoteNotification("Tienes una cotizacion nueva por responder")); */
 
 
         return redirect('quote/transport/personal');
