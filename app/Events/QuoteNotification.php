@@ -20,19 +20,17 @@ class QuoteNotification implements ShouldBroadcast
      */
 
     public $message;
-    public $userId;  // Añadimos la propiedad para almacenar el ID del usuario
 
     // Constructor para pasar datos
-    public function __construct($message, $userId)
+    public function __construct($message)
     {
         $this->message = $message;
-        $this->userId = $userId;
     }
 
     // Canal por el cual se emitirá el mensaje
     public function broadcastOn()
     {
-        return new PrivateChannel('quote.' . $this->userId);
+        return new PrivateChannel('quote');
     }
 
     // Datos que se enviarán al frontend

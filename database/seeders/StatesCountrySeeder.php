@@ -12164,6 +12164,8 @@ class StatesCountrySeeder extends Seeder
                 'id_country'=>78,
                 'name'=>'Keelung'
                 ] );
+
+   
       
                 StateCountry::create( [
                 'id'=>1988,
@@ -12235,7 +12237,11 @@ class StatesCountrySeeder extends Seeder
                 'name'=>'Chongqing'
                 ] );
         
-        
+                StateCountry::create( [
+                    'id'=>2206,
+                    'id_country'=>35,
+                    'name'=>'Qingdao'
+                    ] );
                             
                 StateCountry::create( [
                 'id'=>1997,

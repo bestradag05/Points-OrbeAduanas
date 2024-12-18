@@ -20,15 +20,14 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const userId = {{ auth()->user()->id }}; // Asegúrate de que esta variable se evalúe correctamente
 
         // Suscripción al canal privado
-        Echo.private('quote.' + userId)
+        Echo.private('quote')
             .listen('QuoteNotification', (event) => {
                 toastr.info(event.message, "Nuevo requerimiento!");
             })
             .subscribed(() => {
-                console.log('Usuario suscrito correctamente al canal quote.' + userId);
+                console.log('Usuario suscrito correctamente al canal quote');
             })
             .error((error) => {
                 console.error('Error al intentar suscribirse al canal:', error);
