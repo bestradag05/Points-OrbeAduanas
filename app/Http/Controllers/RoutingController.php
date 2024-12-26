@@ -121,6 +121,7 @@ class RoutingController extends Controller
     {
         // Creamos un routing
 
+        /* dd($request->all()); */
         $this->validateForm($request, null);
 
         Routing::create([
@@ -143,7 +144,7 @@ class RoutingController extends Controller
             'kilograms' => $request->kilograms != null ? $this->parseDouble($request->kilograms) : null,
             'volumen' => $request->volumen != null ?  $this->parseDouble($request->volumen) : null,
             'kilogram_volumen' => $request->kilogram_volumen != null ? $this->parseDouble($request->kilogram_volumen) : null,
-            'tons' => $request->tons,
+            'tons' => $request->tons != null ?  $this->parseDouble($request->tons) : null,
             'lcl_fcl' => $request->lcl_fcl,
             'measures' => $request->value_measures,
             'hs_code' => $request->hs_code,
@@ -658,7 +659,7 @@ class RoutingController extends Controller
             'kilograms' => 'required_unless:lcl_fcl,FCL',
             'volumen' => 'required_if:type_shipment_name,Marítima',
             'kilogram_volumen' => 'required_if:type_shipment_name,Aérea',
-            'tons' => 'required_if:lcl_fcl,FCL',
+            'tons' => 'required_if:lcl_fcl,FCL|max:8',
             'lcl_fcl' => 'required_if:type_shipment_name,Marítima',
             'hs_code' => 'nullable',
             'observation' => 'nullable'

@@ -24,7 +24,7 @@
                     <div class="col-sm-10">
                         <input type="text" class="form-control @error('pick_up_lcl') is-invalid @enderror"
                             id="pick_up_lcl" name="pick_up_lcl" placeholder="Ingrese la direccion de recojo"
-                            value="{{ (isset($quote->pick_up) && $quote->lcl_fcl === 'LCL') ? $quote->pick_up : old('pick_up_lcl') }}">
+                            value="{{ isset($quote->pick_up) && $quote->lcl_fcl === 'LCL' ? $quote->pick_up : old('pick_up_lcl') }}">
                         @error('pick_up_lcl')
                             <span class="invalid-feedback d-block" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -39,7 +39,7 @@
                     <div class="col-sm-10">
                         <input type="text" class="form-control @error('pick_up_fcl') is-invalid @enderror"
                             id="pick_up_fcl" name="pick_up_fcl" placeholder="Ingrese la direccion de recojo"
-                            value="{{ (isset($quote->pick_up) && $quote->lcl_fcl === 'FCL') ? $quote->pick_up : old('pick_up_fcl') }}">
+                            value="{{ isset($quote->pick_up) && $quote->lcl_fcl === 'FCL' ? $quote->pick_up : old('pick_up_fcl') }}">
                         @error('pick_up_fcl')
                             <span class="invalid-feedback d-block" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -125,7 +125,7 @@
                         <div class="form-check d-inline">
                             <input type="radio" id="radioLclFcl" name="gang" value="SI"
                                 class="form-check-input @error('gang') is-invalid @enderror"
-                                {{ ((isset($quote->gang) && $quote->gang === 'SI' ) || old('gang') === 'SI') ? 'checked' : '' }}>
+                                {{ (isset($quote->gang) && $quote->gang === 'SI') || old('gang') === 'SI' ? 'checked' : '' }}>
                             <label for="radioLclFcl" class="form-check-label">
                                 SI
                             </label>
@@ -133,7 +133,7 @@
                         <div class="form-check d-inline">
                             <input type="radio" id="radioLclFcl" name="gang" value="NO"
                                 class="form-check-input @error('gang') is-invalid @enderror"
-                                {{ ((isset($quote->gang) && $quote->gang === 'NO') || old('gang') === 'NO') ? 'checked' : '' }}>
+                                {{ (isset($quote->gang) && $quote->gang === 'NO') || old('gang') === 'NO' ? 'checked' : '' }}>
                             <label for="radioLclFcl" class="form-check-label">
                                 NO
                             </label>
@@ -153,7 +153,7 @@
                         <div class="form-check d-inline">
                             <input type="radio" id="radioGuard" name="guard" value="SI"
                                 class="form-check-input @error('guard') is-invalid @enderror"
-                                {{ ((isset($quote->guard) && $quote->guard === 'SI') ||old('guard') === 'SI') ? 'checked' : '' }}>
+                                {{ (isset($quote->guard) && $quote->guard === 'SI') || old('guard') === 'SI' ? 'checked' : '' }}>
                             <label for="radioGuard" class="form-check-label">
                                 SI
                             </label>
@@ -161,7 +161,7 @@
                         <div class="form-check d-inline">
                             <input type="radio" id="radioGuard" name="guard" value="NO"
                                 class="form-check-input @error('guard') is-invalid @enderror"
-                                {{ ((isset($quote->guard) && $quote->guard === 'NO') || old('guard') === 'NO') ? 'checked' : '' }}>
+                                {{ (isset($quote->guard) && $quote->guard === 'NO') || old('guard') === 'NO' ? 'checked' : '' }}>
                             <label for="radioGuard" class="form-check-label">
                                 NO
                             </label>
@@ -175,7 +175,7 @@
 
                     </div>
                 </div>
-                
+
 
                 <div class="form-group row">
                     <label for="customer_detail" class="col-sm-2 col-form-label">Detalles</label>
@@ -225,7 +225,8 @@
                     <div class="col-sm-10">
                         <input type="text" class="form-control @error('container_type') is-invalid @enderror"
                             id="container_type" name="container_type" placeholder="Ingrese el tipo de contenedor"
-                            value="{{ isset($quote->container_type) ? $quote->container_type : old('container_type') }}" @readonly(true)>
+                            value="{{ isset($quote->container_type) ? $quote->container_type : old('container_type') }}"
+                            >
 
 
                         @error('container_type')
@@ -271,7 +272,7 @@
                         <div class="form-check d-inline">
                             <input type="radio" id="radioStackable" name="stackable" value="SI"
                                 class="form-check-input @error('stackable') is-invalid @enderror"
-                                {{((isset($quote->stackable) && $quote->stackable === 'SI') || old('stackable') === 'SI') ? 'checked' : '' }}>
+                                {{ (isset($quote->stackable) && $quote->stackable === 'SI') || old('stackable') === 'SI' ? 'checked' : '' }}>
                             <label for="radioStackable" class="form-check-label">
                                 SI
                             </label>
@@ -279,7 +280,7 @@
                         <div class="form-check d-inline">
                             <input type="radio" id="radioStackable" name="stackable" value="NO"
                                 class="form-check-input  @error('stackable') is-invalid @enderror"
-                                {{((isset($quote->stackable) && $quote->stackable === 'NO') || old('stackable') === 'NO') ? 'checked' : '' }}>
+                                {{ (isset($quote->stackable) && $quote->stackable === 'NO') || old('stackable') === 'NO' ? 'checked' : '' }}>
                             <label for="radioStackable" class="form-check-label">
                                 NO
                             </label>
@@ -337,11 +338,10 @@
                     <label for="cargo_detail" class="col-sm-2 col-form-label">Detalles</label>
                     <div class="col-sm-10">
                         <textarea class="form-control @error('cargo_detail') is-invalid @enderror" id="cargo_detail" name="cargo_detail"
-                            placeholder="Ingresa un detalle o alguna observacion"
-                            >{{ isset($quote->cargo_detail) ? $quote->cargo_detail : old('cargo_detail') }}</textarea>
+                            placeholder="Ingresa un detalle o alguna observacion">{{ isset($quote->cargo_detail) ? $quote->cargo_detail : old('cargo_detail') }}</textarea>
                     </div>
                 </div>
-                
+
             </div>
 
         </div>
@@ -378,7 +378,7 @@
 
         </div>
 
-        
+
 
 
     </div>
@@ -392,15 +392,7 @@
 @push('scripts')
     @if ($showModal ?? false)
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var myModal = new bootstrap.Modal(document.getElementById('modalQuoteTransport'), {
-                    backdrop: 'static', // Evita cierre al hacer clic fuera
-                    keyboard: false // Evita cierre con la tecla ESC
-                });
-                myModal.show();
-
-            });
-
+           
 
             $('#searchRouting').on('click', () => {
 
@@ -451,11 +443,11 @@
                     $('#title_quote span').text('LCL');
 
                     $('.lcl_quote').removeClass('d-none');
-                    $('.fcl_quote').addClass('d-none'); 
+                    $('.fcl_quote').addClass('d-none');
 
 
                 } else {
-                    $('#title_quote span').text('FCL'); 
+                    $('#title_quote span').text('FCL');
                     $('.lcl_quote').addClass('d-none');
                     $('.fcl_quote').removeClass('d-none');
                 }
@@ -467,19 +459,19 @@
                 $('#commodity').val(data.commodity).prop('readonly', true);
                 $('#packaging_type').val(data.packaging_type).prop('readonly', true);
 
-                if(data.type_shipment.description === "Marítima" && data.lcl_fcl === 'LCL'){
+                if (data.type_shipment.description === "Marítima" && data.lcl_fcl === 'LCL') {
                     $('#cubage_kgv').val(data.volumen + ' m3').prop('readonly', true);
                 }
 
-                if(data.type_shipment.description === "Marítima" && data.lcl_fcl === 'FCL'){
+                if (data.type_shipment.description === "Marítima" && data.lcl_fcl === 'FCL') {
                     $('#container_type').val(data.container_type).prop('readonly', true);
                 }
 
-                if(data.type_shipment.description === "Aérea" && data.lcl_fcl === null){
+                if (data.type_shipment.description === "Aérea" && data.lcl_fcl === null) {
                     $('#cubage_kgv').val(data.kilogram_volumen + ' KGV').prop('readonly', true);
                 }
-               
-                if(data.type_shipment.description === "Marítima" && data.lcl_fcl === 'FCL'){
+
+                if (data.type_shipment.description === "Marítima" && data.lcl_fcl === 'FCL') {
                     $('#ton_kilogram').val(data.tons + " T").prop('readonly', true);
                 }
                 $('#total_weight').val(data.kilograms).prop('readonly', true);
@@ -487,10 +479,10 @@
                 $('#measures').val(data.measures);
                 //Campos Hidden
                 $('#nro_operation').val(data.nro_operation);
-                if(data.lcl_fcl != null){
-                    
+                if (data.lcl_fcl != null) {
+
                     $('#lcl_fcl').val(data.lcl_fcl);
-                }else{
+                } else {
                     $('#lcl_fcl').val('LCL');
                 }
 
@@ -613,15 +605,15 @@
                 $('#load_type').val(data.type_load.name).prop('readonly', true);
                 $('#commodity').val(data.commodity).prop('readonly', true);
                 $('#packaging_type').val(data.packaging_type).prop('readonly', true);
-                if(data.type_shipment.description === "Marítima" && data.lcl_fcl === 'LCL'){
+                if (data.type_shipment.description === "Marítima" && data.lcl_fcl === 'LCL') {
                     $('#cubage_kgv').val(data.volumen + ' m3').prop('readonly', true);
                 }
 
-                if(data.type_shipment.description === "Aérea" && data.lcl_fcl === 'LCL'){
-                    $('#cubage_kgv').val(data.kilogram_volumen+' KGV').prop('readonly', true);
+                if (data.type_shipment.description === "Aérea" && data.lcl_fcl === 'LCL') {
+                    $('#cubage_kgv').val(data.kilogram_volumen + ' KGV').prop('readonly', true);
                 }
 
-                if(data.type_shipment.description === "Marítima" && data.lcl_fcl === 'FCL'){
+                if (data.type_shipment.description === "Marítima" && data.lcl_fcl === 'FCL') {
                     $('#ton_kilogram').val(data.tons + " T").prop('readonly', true);
                 }
                 $('#total_weight').val(data.kilograms).prop('readonly', true);
@@ -629,10 +621,10 @@
                 $('#measures').val(data.measures);
                 //Campos Hidden
                 $('#nro_operation').val(data.nro_operation);
-                if(data.lcl_fcl != null){
-                    
+                if (data.lcl_fcl != null) {
+
                     $('#lcl_fcl').val(data.lcl_fcl);
-                }else{
+                } else {
                     $('#lcl_fcl').val('LCL');
                 }
 

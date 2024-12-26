@@ -575,6 +575,7 @@ return [
                     'url'  => 'suppliers',
                     'icon'  => 'fas fa-user-edit',
                     'active' => ['suppliers'],
+                    'can' => 'supplier.module'
 
                 ],
                 [

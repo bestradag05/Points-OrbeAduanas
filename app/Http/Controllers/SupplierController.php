@@ -21,7 +21,6 @@ class SupplierController extends Controller
 
         $heads = [
             '#',
-            'Ruc',
             'Razon Social / Nombre',
             'Nombre de Contacto',
             'Numero de Contacto',
@@ -56,8 +55,8 @@ class SupplierController extends Controller
       $this->validateForm($request, null);
 
       Supplier::create([
-          'id_document' => $request->id_document,
-          'document_number' => $request->document_number,
+          /* 'id_document' => $request->id_document,
+          'document_number' => $request->document_number, */
           'name_businessname' => $request->name_businessname,
           'address' => $request->address,
           'contact_name' => $request->contact_name,
@@ -97,13 +96,8 @@ class SupplierController extends Controller
     {
         $this->validateForm($request, $id);
 
-        $is_supplier = Supplier::where("id", "<>", $id)->where("document_number", $request->document_number)->first();
+  
         $exist_name = Supplier::where("id", "<>", $id)->where("name_businessname", $request->name_businessname)->first();
-
-        if ($is_supplier) {
-
-            return redirect()->back()->withErrors(['document_number' => 'Ya existe este un proovedor registrado con este numero de identificacion.'])->withInput();
-        }
 
         if ($exist_name) {
 
@@ -136,18 +130,18 @@ class SupplierController extends Controller
     public function validateForm($request, $id)
     {
 
-        $document = CustomerSupplierDocument::find($request->id_document);
-        $digits = $document ? $document->number_digits : null;
+        /* $document = CustomerSupplierDocument::find($request->id_document);
+        $digits = $document ? $document->number_digits : null; */
 
 
         $request->validate([
-            'id_document' => 'required|string',
+           /*  'id_document' => 'required|string',
             'document_number' => [
                 'required',
                 'numeric',
                 'unique:suppliers,document_number,' . $id,
                 $digits ? 'digits:' . $digits : 'nullable'
-            ],
+            ], */
             'name_businessname' => 'required|string|unique:suppliers,name_businessname,' . $id,
             'address' => 'required|string',
             'contact_name' => 'required|string',

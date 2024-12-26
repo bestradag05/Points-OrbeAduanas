@@ -1,7 +1,7 @@
 <div class="row">
 
 
-    <div class="col-6">
+  {{--   <div class="col-6">
 
         <x-adminlte-select2 name="id_document" label="Tipo de documento" igroup-size="md"
             data-placeholder="Seleccione una opcion...">
@@ -32,14 +32,14 @@
             <div class="text-danger">{{ $message }}</div>
         @enderror
 
-    </div>
+    </div> --}}
 
     <div class="col-6">
 
         <div class="form-group">
             <label for="name_businessname">Razon Social / Nombre</label>
-            <input type="text" class="form-control" id="name_businessname" name="name_businessname"
-                placeholder="Ingrese su razon social o nombre"
+            <input type="text" class="form-control @error('name_businessname') is-invalid @enderror" id="name_businessname" name="name_businessname"
+                placeholder="Ingrese su razon social o nombre" @error('name_businessname') is-invalid @enderror
                 value="{{ isset($supplier->name_businessname) ? $supplier->name_businessname : old('name_businessname') }}">
             @error('name_businessname')
                 <div class="text-danger">{{ $message }}</div>
@@ -53,8 +53,8 @@
 
         <div class="form-group">
             <label for="address">Direccion</label>
-            <input type="text" class="form-control" id="address" name="address"
-                placeholder="Ingrese su razon social o nombre"
+            <input type="text" class="form-control @error('address') is-invalid @enderror" id="address" name="address"
+                placeholder="Ingrese su razon social o nombre" @error('address') is-invalid @enderror
                 value="{{ isset($supplier->address) ? $supplier->address : old('address') }}">
             @error('address')
                 <div class="text-danger">{{ $message }}</div>
@@ -67,8 +67,8 @@
     <div class="col-6">
         <div class="form-group">
             <label for="contact_name">Nombre del contacto</label>
-            <input type="text" class="form-control" id="contact_name" name="contact_name"
-                placeholder="Ingrese su numero de celular"
+            <input type="text" class="form-control @error('contact_name') is-invalid @enderror" id="contact_name" name="contact_name"
+                placeholder="Ingrese su numero de celular" @error('contact_name') is-invalid @enderror
                 value="{{ isset($supplier->contact_name) ? $supplier->contact_name : old('contact_name') }}">
             @error('contact_name')
                 <div class="text-danger">{{ $message }}</div>
@@ -80,8 +80,8 @@
     <div class="col-6">
         <div class="form-group">
             <label for="contact_number">Numero del contacto</label>
-            <input type="text" class="form-control" id="contact_number" name="contact_number"
-                placeholder="Ingrese su numero de celular"
+            <input type="text" class="form-control @error('contact_number') is-invalid @enderror" id="contact_number" name="contact_number"
+                placeholder="Ingrese su numero de celular" 
                 value="{{ isset($supplier->contact_number) ? $supplier->contact_number : old('contact_number') }}">
             @error('contact_number')
                 <div class="text-danger">{{ $message }}</div>
@@ -94,8 +94,8 @@
 
         <div class="form-group">
             <label for="contact_email">Correo del contacto</label>
-            <input type="text" class="form-control" id="contact_email" name="contact_email"
-                placeholder="Ingrese su numero de celular"
+            <input type="text" class="form-control @error('contact_email') is-invalid @enderror" id="contact_email" name="contact_email"
+                placeholder="Ingrese su correo electronico"
                 value="{{ isset($supplier->contact_email) ? $supplier->contact_email : old('contact_email') }}">
             @error('contact_email')
                 <div class="text-danger">{{ $message }}</div>

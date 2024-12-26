@@ -14,20 +14,22 @@
         @foreach ($suppliers as $supplier)
             <tr>
                 <td>{{ $loop->iteration }}</td>
-                <td>{{ $supplier->document_number }}</td>
                 <td>{{ $supplier->name_businessname }}</td>
                 <td>{{ $supplier->contact_name }}</td>
                 <td>{{ $supplier->contact_number }}</td>
                 <td>{{ $supplier->contact_email }}</td>
                 <td>{{ $supplier->state}}</td>
                 <td>
-                     <a href="{{ url('/suppliers/'. $supplier->id . '/edit') }}"> <i class="fa-solid fa-pen-to-square"></i> </a>
+                    @can('supplier.update')
+                    <a href="{{ url('/suppliers/'. $supplier->id . '/edit') }}"> <i class="fas fa-edit"></i> </a>
+                    @endcan
+                    @can('supplier.delete')
                      <form action="{{ url('/suppliers/'.$supplier->id) }}" class="form-delete" method="POST" style="display: inline;" data-confirm-delete="true">
                         {{ method_field('DELETE') }}
                         @csrf
-                        <button  type="submit" style="border: none; background: none; padding: 0; margin: 0; cursor: pointer;"> <i class="fa-solid fa-trash text-primary"></i> </button>
+                        <button  type="submit" style="border: none; background: none; padding: 0; margin: 0; cursor: pointer;"> <i class="fas fa-trash text-primary"></i> </button>
                     </form>
-                    
+                    @endcan
                 </td>
             </tr>
         @endforeach

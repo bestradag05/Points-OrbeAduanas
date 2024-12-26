@@ -312,6 +312,41 @@
                 @endif
             @endforeach
 
+
+            <tr class="table-secondary">
+                <td> <i class="fas fa-fw fa-copy " aria-hidden="true"></i> Porveedores </td>
+                <td colspan="2">
+                    <a href="{{url('roles/grupos/add-all-permissions', [$rol->id, 'supplier'])}}">Todo</a>
+                    /
+                    <a href="{{url('roles/grupos/remove-all-permissions', [$rol->id, 'supplier'])}}">Nada</a>
+                </td>
+            </tr>
+
+            @foreach ($permissions as $permission)
+                @if (Str::startsWith($permission->name, 'supplier.'))
+                    <tr>
+                        <td></td>
+                        <td>{{ $permission->alias }}</td>
+                        <td>
+
+                            @if ($rol->hasPermissionTo($permission->name))
+                                <a class="reposition"
+                                    href="{{ url('roles/grupos/removepermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
+                                    <i class="fas fa-toggle-on fa-lg"></i>
+                                </a>
+                            @else
+                                <a class="reposition"
+                                    href="{{ url('roles/grupos/assignpermission', ['id_permission' => $permission->id, 'id_role' => $rol->id]) }}">
+                                    <i class="fas fa-toggle-off fa-lg"></i>
+                                </a>
+                            @endif
+
+                        </td>
+                    </tr>
+                @endif
+            @endforeach
+
+
             <tr class="table-secondary">
                 <td> <i class="fas fa-fw fa-copy " aria-hidden="true"></i> Tipo de embarque </td>
                 <td colspan="2">

@@ -52,10 +52,61 @@
                 </div>
                 <div class="modal-footer justify-content-center">
                     <button type="button" id="searchRouting" class="btn btn-primary">Buscar operacion</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Generar cotizacion manual</button>
                 </div>
             </div>
         </div>
     </div>
+
+
+    {{-- Modal Manual para cotizacion --}}
+
+
+    <div class="modal fade" id="modalQuoteTransportManual" tabindex="-1" aria-labelledby="modalQuoteTransportManualLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalQuoteTransportManualLabel">Operacion</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="type_shipment">Tipo de embarque</label>
+                        <select id="type_shipment" class="form-control" name="type_shipment">
+                            <option selected disabled>--- Seleccione una opción ---</option>
+                            <option value="Aérea">Aereo</option>
+                            <option value="Marítima">Maritimo</option>
+                        </select>
+                    </div>
+
+
+                    <div id="contenedor_radio_lcl_fcl" class="d-none text-center">
+                        <div class="form-check d-inline">
+                            <input type="radio" id="radioLcl" name="lcl_fcl" value="LCL"
+                                {{ (isset($routing->lcl_fcl) && $routing->lcl_fcl === 'LCL') || old('lcl_fcl') === 'LCL' ? 'checked' : '' }}
+                                class="form-check-input @error('lcl_fcl') is-invalid @enderror">
+                            <label for="radioLclFcl" class="form-check-label">
+                                LCL
+                            </label>
+                        </div>
+                        <div class="form-check d-inline">
+                            <input type="radio" id="radioFcl" name="lcl_fcl" value="FCL"
+                                {{ (isset($routing->lcl_fcl) && $routing->lcl_fcl === 'FCL') || old('lcl_fcl') === 'FCL' ? 'checked' : '' }}
+                                class="form-check-input @error('lcl_fcl') is-invalid @enderror">
+                            <label for="radioLclFcl" class="form-check-label">
+                                FCL
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" id="generateQuote" class="btn btn-primary">Generar Cotización</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Modal -->
     <div class="modal fade" id="modalQuoteTransportDocuments" tabindex="-1"
@@ -102,7 +153,7 @@
                     if (/\.pdf$/i.test(file.name)) {
                         // Usamos la URL de la imagen predeterminada para los PDFs
                         let pdfThumbnailUrl =
-                        'https://static.vecteezy.com/system/resources/previews/023/234/824/non_2x/pdf-icon-red-and-white-color-for-free-png.png'; // Cambia esto por la ruta de tu imagen predeterminada
+                            'https://static.vecteezy.com/system/resources/previews/023/234/824/non_2x/pdf-icon-red-and-white-color-for-free-png.png'; // Cambia esto por la ruta de tu imagen predeterminada
                         this.emit("thumbnail", file, pdfThumbnailUrl);
                     }
                 });
@@ -147,5 +198,94 @@
                 });
             }
         };
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var myModal = new bootstrap.Modal(document.getElementById('modalQuoteTransport'), {
+                backdrop: 'static', // Evita cierre al hacer clic fuera
+                keyboard: false // Evita cierre con la tecla ESC
+            });
+            myModal.show();
+
+            $('#modalQuoteTransport').on('hidden.bs.modal', function(e) {
+                $('#modalQuoteTransportManual').modal('show', {
+                    backdrop: 'static', // Evita cierre al hacer clic fuera
+                    keyboard: false // Evita cierre con la tecla ESC
+                });
+            })
+
+        });
+
+
+        $('#type_shipment').on('change', (e) => {
+
+            let type = e.target.value;
+            if (type === "Marítima") {
+
+                /*  $('#type_shipment_name').val(respu.description); */
+
+                $('#contenedor_radio_lcl_fcl').removeClass('d-none');
+
+
+            } else {
+
+                $('#contenedor_radio_lcl_fcl').addClass('d-none');
+                $('input[name="lcl_fcl"]').prop('checked', false);
+
+            }
+
+        });
+
+
+        $('#generateQuote').on('click', (e) => {
+
+
+            let typeShipment = $('#type_shipment').val();
+            let radio = $('input[name="lcl_fcl"]:checked').val();
+
+
+            // Verificar si están vacíos
+            if (!typeShipment) {
+                $('#type_shipment').addClass('is-invalid'); // Agregar clase si está vacío
+                return;
+            } else {
+                $('#type_shipment').removeClass('is-invalid'); // Quitar clase si tiene valor
+
+                if (typeShipment === "Marítima") {
+
+                    if (!radio) {
+                        $('input[name="lcl_fcl"]').closest('.form-check').find('input').addClass(
+                            'is-invalid'); // Agregar clase a todos los radios del grupo
+                        return;
+                    } else {
+                        $('input[name="lcl_fcl"]').removeClass(
+                            'is-invalid'); // Quitar clase si hay un valor seleccionado
+                    }
+
+                }
+
+            }
+
+            //Si pasa las validaciones entonces mostramos la cotizacion ideal para el tipo de embarque:
+
+            if (radio === 'LCL' || !radio) {
+                $('#title_quote span').text('LCL');
+
+                $('.lcl_quote').removeClass('d-none');
+                $('.fcl_quote').addClass('d-none');
+
+
+            } else {
+                $('#title_quote span').text('FCL');
+                $('.lcl_quote').addClass('d-none');
+                $('.fcl_quote').removeClass('d-none');
+            }
+
+
+            // Cerrar el modal utilizando la instancia nativa de Bootstrap
+            $('#modalQuoteTransportManual').modal('hide');
+
+
+        })
     </script>
 @endpush
