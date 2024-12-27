@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\QuoteNotification;
 use App\Models\Concepts;
+use App\Models\Customer;
 use App\Models\QuoteTransport;
 use App\Models\Routing;
 use Carbon\Carbon;
@@ -47,14 +48,13 @@ class QuoteTransportController extends Controller
         // Verificar si el usuario es un Super-Admin
         if (Auth::user()->hasRole('Super-Admin')) {
             // Si es Super-Admin, obtener todos los routing
-            $quotes = QuoteTransport::with('routing')->get();
+            $quotes = QuoteTransport::with('routing', 'customer')->get();
         } else {
             // Si no es Super-Admin, solo obtener los clientes que pertenecen al personal del usuario autenticado
             $quotes = QuoteTransport::whereHas('routing', function ($query) use ($personalId) {
                 $query->where('id_personal', $personalId);
-            })->with('routing')->get();
+            })->with('routing', 'customer')->get();
         }
-
 
 
         $heads = [
@@ -81,8 +81,23 @@ class QuoteTransportController extends Controller
      */
     public function create()
     {
+
+         // Obtener el ID del personal del usuario autenticado
+         $personalId = Auth::user()->personal->id;
+
+        if (Auth::user()->hasRole('Super-Admin')) {
+            // Si es Super-Admin, obtener todos los clientes
+            $customers = Customer::with('personal')->get();
+        } else {
+            // Si no es Super-Admin, solo obtener los clientes que pertenecen al personal del usuario autenticado
+            $customers = Customer::with('personal')
+                ->where('id_personal', $personalId)
+                ->get();
+        }
+
+
         $showModal = session('showModal', true);
-        return view('transport.quote.register-quote')->with('showModal', $showModal);
+        return view('transport.quote.register-quote', compact('customers'))->with('showModal', $showModal);
     }
 
 
@@ -115,13 +130,14 @@ class QuoteTransportController extends Controller
      */
     public function store(Request $request)
     {
-
+     
+        /* dd($request->all()); */
 
         $validator = $this->validateForm($request, null);
 
         if ($validator->fails()) {
             // Redirigir con el valor deseado para showModal
-            /* dd($validator->errors()->all()); */
+           /*  dd($validator->errors()->all()); */
             return redirect()->route('quote.transport.create')
                 ->withErrors($validator)
                 ->withInput()
@@ -132,6 +148,7 @@ class QuoteTransportController extends Controller
         QuoteTransport::create([
             'shipping_date' => Carbon::now('America/Lima'),
             'response_date' => null,
+            'id_customer' => ($request->customer != null) ? $request->customer : $request->customer_manual ,
             'pick_up' => ($request->lcl_fcl === 'LCL') ? $request->pick_up_lcl : $request->pick_up_fcl,
             'delivery' => $request->delivery,
             'container_return' => $request->container_return,
@@ -499,8 +516,8 @@ class QuoteTransportController extends Controller
         /* dd($request->all()); */
 
         return Validator::make($request->all(), [
-            'nro_operation' => 'required|string',
-            'customer' => 'required|string',
+            'customer' => 'required_if:nro_operation,!null|nullable|string',
+            'customer_manual' => 'required_if:nro_operation,null|nullable|string',
             'pick_up_lcl' => 'required_if:lcl_fcl,LCL',
             'pick_up_fcl' => 'required_if:lcl_fcl,FCL',
             'delivery' => 'required|string',
@@ -521,7 +538,6 @@ class QuoteTransportController extends Controller
             'total_weight' => 'required_if:lcl_fcl,LCL',
             'packages' => 'required|string',
             'cargo_detail' => 'nullable',
-            'measures' => 'required',
             'lcl_fcl' => 'required',
         ]);
     }

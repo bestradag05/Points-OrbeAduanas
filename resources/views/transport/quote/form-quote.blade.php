@@ -8,16 +8,25 @@
             <div class="body-detail-customer p-2">
                 <div class="form-group row">
                     <label for="customer" class="col-sm-2 col-form-label">Cliente</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-10 customer_quote">
                         <input type="text" class="form-control @error('customer') is-invalid @enderror"
-                            id="customer" name="customer" placeholder="Ingresa el cliente"
-                            value="{{ isset($quote->customer) ? $quote->customer : old('customer') }}">
+                            id="customer_name" name="customer_name" placeholder="Ingresa el cliente"
+                            value="{{ isset($quote->customer_name) ? $quote->customer_name : old('customer_name') }}">
+
+                        <input type="hidden" id="customer" name="customer"  value="{{ isset($quote->customer) ? $quote->customer : old('customer') }}">
                     </div>
-                    @error('customer')
-                        <span class="invalid-feedback d-block" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+                    <div class="col-sm-10 d-none customer_quote_manual">
+                        <select name="customer_manual" class="form-control @error('customer_manual') is-invalid @enderror">
+                            <option />
+                            @foreach ($customers as $customer)
+                                <option value="{{ $customer->id }}"
+                                    {{ (isset($quote->id_customer) && $quote->id_customer == $customer->id) || old('customer_manual') == $customer->id ? 'selected' : '' }}>
+                                    {{ $customer->name_businessname }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
                 </div>
                 <div class="form-group row lcl_quote">
                     <label for="pick_up_lcl" class="col-sm-2 col-form-label">Direccion de recojo</label>
@@ -82,12 +91,13 @@
                         <input type="text" class="form-control @error('contact_name') is-invalid @enderror"
                             id="contact_name" name="contact_name" placeholder="Ingresa el nombre del contacto"
                             value="{{ isset($quote->contact_name) ? $quote->contact_name : old('contact_name') }}">
+                        @error('contact_name')
+                            <span class="invalid-feedback d-block" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
-                    @error('contact_name')
-                        <span class="invalid-feedback d-block" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+
                 </div>
                 <div class="form-group row">
                     <label for="contact_phone" class="col-sm-2 col-form-label">Telefono del contacto</label>
@@ -96,12 +106,14 @@
                             id="contact_phone" name="contact_phone"
                             placeholder="Ingresa el numero de celular del contacto"
                             value="{{ isset($quote->contact_phone) ? $quote->contact_phone : old('contact_phone') }}">
+                        @error('contact_phone')
+                            <span class="invalid-feedback d-block" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+
                     </div>
-                    @error('contact_phone')
-                        <span class="invalid-feedback d-block" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+
                 </div>
                 <div class="form-group row">
                     <label for="max_attention_hour" class="col-sm-2 col-form-label">Hora maxima de entrega</label>
@@ -200,12 +212,14 @@
                         <input type="text" class="form-control @error('load_type') is-invalid @enderror"
                             id="load_type" name="load_type" placeholder="Ingrese el tipo de carga"
                             value="{{ isset($quote->load_type) ? $quote->load_type : old('load_type') }}">
+                        @error('load_type')
+                            <span class="invalid-feedback d-block" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+
                     </div>
-                    @error('load_type')
-                        <span class="invalid-feedback d-block" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+
                 </div>
                 <div class="form-group row">
                     <label for="commodity" class="col-sm-2 col-form-label">Descripcion</label>
@@ -213,20 +227,21 @@
                         <input type="text" class="form-control @error('commodity') is-invalid @enderror"
                             id="commodity" name="commodity" placeholder="Ingrese descripcion del producto"
                             value="{{ isset($quote->commodity) ? $quote->commodity : old('commodity') }}">
+                        @error('commodity')
+                            <span class="invalid-feedback d-block" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+
                     </div>
-                    @error('commodity')
-                        <span class="invalid-feedback d-block" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+
                 </div>
                 <div class="form-group row  fcl_quote">
                     <label for="container_type" class="col-sm-2 col-form-label">Tipo de contenedor</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control @error('container_type') is-invalid @enderror"
                             id="container_type" name="container_type" placeholder="Ingrese el tipo de contenedor"
-                            value="{{ isset($quote->container_type) ? $quote->container_type : old('container_type') }}"
-                            >
+                            value="{{ isset($quote->container_type) ? $quote->container_type : old('container_type') }}">
 
 
                         @error('container_type')
@@ -259,12 +274,14 @@
                         <input type="text" class="form-control @error('packaging_type') is-invalid @enderror"
                             id="packaging_type" name="packaging_type" placeholder="Ingrese el tipo de embalaje"
                             value="{{ isset($quote->packaging_type) ? $quote->packaging_type : old('packaging_type') }}">
+
+                        @error('packaging_type')
+                            <span class="invalid-feedback d-block" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
                     </div>
-                    @error('packaging_type')
-                        <span class="invalid-feedback d-block" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+
                 </div>
                 <div class="form-group row lcl_quote">
                     <label for="stackable" class="col-sm-2 col-form-label">Apilable</label>
@@ -313,12 +330,15 @@
                             id="total_weight" name="total_weight"
                             placeholder="Ingresa la hora maxima de recojo del cliente"
                             value="{{ isset($quote->total_weight) ? $quote->total_weight : old('total_weight') }}">
+                        @error('total_weight')
+                            <span class="invalid-feedback d-block" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+
+
                     </div>
-                    @error('total_weight')
-                        <span class="invalid-feedback d-block" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+
                 </div>
                 <div class="form-group row">
                     <label for="packages" class="col-sm-2 col-form-label">Bultos</label>
@@ -326,12 +346,14 @@
                         <input type="text" class="form-control @error('packages') is-invalid @enderror"
                             id="packages" name="packages" placeholder="Ingresa si tendra valor de cuadrilla"
                             value="{{ isset($quote->packages) ? $quote->packages : old('packages') }}">
+                        @error('packages')
+                            <span class="invalid-feedback d-block" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+
                     </div>
-                    @error('packages')
-                        <span class="invalid-feedback d-block" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
+
                 </div>
 
                 <div class="form-group row">
@@ -372,7 +394,8 @@
                 <input type="hidden" id="measures" name="measures">
                 <input type="hidden" id="nro_operation" name="nro_operation"
                     value="{{ isset($quote->nro_operation) ? $quote->nro_operation : old('nro_operation') }}">
-                <input type="hidden" id="lcl_fcl" name="lcl_fcl">
+                <input type="hidden" id="lcl_fcl" name="lcl_fcl"
+                    value="{{ isset($quote->lcl_fcl) ? $quote->lcl_fcl : old('lcl_fcl') }}">
 
             </div>
 
@@ -392,8 +415,6 @@
 @push('scripts')
     @if ($showModal ?? false)
         <script>
-           
-
             $('#searchRouting').on('click', () => {
 
                 const nro_operation = $('#modal_nro_operation').val().trim();
@@ -452,7 +473,8 @@
                     $('.fcl_quote').removeClass('d-none');
                 }
 
-                $('#customer').val(data.customer.name_businessname).prop('readonly', true);
+                $('#customer_name').val(data.customer.name_businessname).prop('readonly', true);
+                $('#customer').val(data.customer.id);
                 $('#contact_name').val(data.customer.contact_name);
                 $('#contact_phone').val(data.customer.contact_number);
                 $('#load_type').val(data.type_load.name).prop('readonly', true);
@@ -541,6 +563,20 @@
         </script>
     @else
         <script>
+            document.addEventListener('DOMContentLoaded', function() {
+
+                let customer_manual = $('.customer_quote_manual').find('select')[0];
+                
+
+                if (customer_manual.value !== '' || customer_manual.classList.contains('is-invalid')) {
+                  $('.customer_quote_manual').removeClass('d-none');
+                  $('.customer_quote').addClass('d-none');
+              }
+
+
+
+            });
+
             // Cerrar el modal utilizando la instancia nativa de Bootstrap
             $('#modalQuoteTransport').hide();
 
@@ -554,8 +590,29 @@
             document.body.classList.remove('modal-open');
             document.body.style.paddingRight = ''
 
-
+            //Buscamos numero de operacion
             const nro_operation = $('#nro_operation').val();
+
+
+
+            if (nro_operation === '') {
+                const lcl_fcl = $('#lcl_fcl').val();
+
+
+                if (lcl_fcl === 'LCL' || !lcl_fcl) {
+                    $('#title_quote span').text('LCL');
+
+                    $('.lcl_quote').removeClass('d-none');
+                    $('.fcl_quote').addClass('d-none');
+
+
+                } else {
+                    $('#title_quote span').text('FCL');
+                    $('.lcl_quote').addClass('d-none');
+                    $('.fcl_quote').removeClass('d-none');
+                }
+
+            }
 
 
             // Realizar solicitud AJAX
@@ -601,7 +658,8 @@
                     $('.fcl_quote').removeClass('d-none');
                 }
 
-                $('#customer').val(data.customer.name_businessname).prop('readonly', true);
+                $('#customer_name').val(data.customer.name_businessname).prop('readonly', true);
+                $('#customer').val(data.customer.id);
                 $('#load_type').val(data.type_load.name).prop('readonly', true);
                 $('#commodity').val(data.commodity).prop('readonly', true);
                 $('#packaging_type').val(data.packaging_type).prop('readonly', true);

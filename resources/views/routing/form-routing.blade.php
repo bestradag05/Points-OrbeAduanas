@@ -456,7 +456,6 @@
 
               let lclfclSelected = Array.from(document.getElementsByName('lcl_fcl')).find(radio => radio.checked)?.value;
 
-              console.log(lclfclSelected);
 
               // Mostrar/ocultar los campos según los valores
               if (volumenValue.value !== '' || volumenValue.classList.contains('is-invalid')) {

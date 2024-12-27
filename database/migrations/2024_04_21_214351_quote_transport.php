@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->dateTime('shipping_date');
             $table->dateTime('response_date')->nullable();
+            $table->unsignedBigInteger('id_customer');
             $table->string('pick_up')->nullable();
             $table->string('delivery')->nullable();
             $table->string('container_return')->nullable();
@@ -37,7 +38,7 @@ return new class extends Migration
             $table->string('packages')->nullable();
             $table->text('cargo_detail')->nullable();
             $table->string('measures')->nullable();
-            $table->string('nro_operation');
+            $table->string('nro_operation')->nullable();
             $table->string('lcl_fcl');
             $table->text('readjustment_reason')->nullable();
             $table->text('observations')->nullable();
@@ -49,6 +50,7 @@ return new class extends Migration
 
 
             $table->foreign('nro_operation')->references('nro_operation')->on('routing');
+            $table->foreign('id_customer')->references('id')->on('customer');
 
         });
     }

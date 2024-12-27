@@ -26,4 +26,9 @@ class Customer extends Model
         return $this->belongsTo(CustomerSupplierDocument::class, 'id_document', 'id');
     }
 
+    public function quoteTransport()
+    {
+        return $this->hasOne(QuoteTransport::class, 'id_customer', 'id');
+    }
+
 }

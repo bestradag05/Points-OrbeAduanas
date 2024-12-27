@@ -14,6 +14,7 @@ class QuoteTransport extends Model
     protected $fillable = [
         'shipping_date',
         'response_date',
+        'id_customer',
         'pick_up',
         'delivery',
         'container_return',
@@ -58,5 +59,10 @@ class QuoteTransport extends Model
     {
         return $this->belongsTo(Transport::class, 'id', 'id_quote_transport');
     }
+
+    public function customer()
+{
+    return $this->belongsTo(Customer::class, 'id_customer', 'id');
+}
 
 }

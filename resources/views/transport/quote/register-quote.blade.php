@@ -199,93 +199,118 @@
             }
         };
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var myModal = new bootstrap.Modal(document.getElementById('modalQuoteTransport'), {
-                backdrop: 'static', // Evita cierre al hacer clic fuera
-                keyboard: false // Evita cierre con la tecla ESC
-            });
-            myModal.show();
-
-            $('#modalQuoteTransport').on('hidden.bs.modal', function(e) {
-                $('#modalQuoteTransportManual').modal('show', {
+    @if ($showModal ?? false)
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var myModal = new bootstrap.Modal(document.getElementById('modalQuoteTransport'), {
                     backdrop: 'static', // Evita cierre al hacer clic fuera
                     keyboard: false // Evita cierre con la tecla ESC
                 });
-            })
 
-        });
+                myModal.show();
 
+                $('.customer_quote_manual').addClass('d-none');
+                $('.customer_quote').removeClass('d-none');
 
-        $('#type_shipment').on('change', (e) => {
+                $('#modalQuoteTransport').on('hidden.bs.modal', function(e) {
+                    $('#modalQuoteTransportManual').modal('show', {
+                        backdrop: 'static', // Evita cierre al hacer clic fuera
+                        keyboard: false
+                    });
 
-            let type = e.target.value;
-            if (type === "Marítima") {
+                    $('.customer_quote_manual').removeClass('d-none');
+                    $('.customer_quote').addClass('d-none');
 
-                /*  $('#type_shipment_name').val(respu.description); */
-
-                $('#contenedor_radio_lcl_fcl').removeClass('d-none');
-
-
-            } else {
-
-                $('#contenedor_radio_lcl_fcl').addClass('d-none');
-                $('input[name="lcl_fcl"]').prop('checked', false);
-
-            }
-
-        });
+                })
 
 
-        $('#generateQuote').on('click', (e) => {
+                if (volumenValue.value !== '' || volumenValue.classList.contains('is-invalid')) {
+                  $('#contenedor_volumen').removeClass('d-none');
+                  $('#contenedor_kg_vol').addClass('d-none');
+              }
 
 
-            let typeShipment = $('#type_shipment').val();
-            let radio = $('input[name="lcl_fcl"]:checked').val();
+
+            });
 
 
-            // Verificar si están vacíos
-            if (!typeShipment) {
-                $('#type_shipment').addClass('is-invalid'); // Agregar clase si está vacío
-                return;
-            } else {
-                $('#type_shipment').removeClass('is-invalid'); // Quitar clase si tiene valor
+            $('#type_shipment').on('change', (e) => {
 
-                if (typeShipment === "Marítima") {
+                let type = e.target.value;
+                if (type === "Marítima") {
 
-                    if (!radio) {
-                        $('input[name="lcl_fcl"]').closest('.form-check').find('input').addClass(
-                            'is-invalid'); // Agregar clase a todos los radios del grupo
-                        return;
-                    } else {
-                        $('input[name="lcl_fcl"]').removeClass(
-                            'is-invalid'); // Quitar clase si hay un valor seleccionado
+                    /*  $('#type_shipment_name').val(respu.description); */
+
+                    $('#contenedor_radio_lcl_fcl').removeClass('d-none');
+
+
+                } else {
+
+                    $('#contenedor_radio_lcl_fcl').addClass('d-none');
+                    $('input[name="lcl_fcl"]').prop('checked', false);
+
+                }
+
+            });
+
+
+            $('#generateQuote').on('click', (e) => {
+
+
+                let typeShipment = $('#type_shipment').val();
+                let radio = $('input[name="lcl_fcl"]:checked').val();
+
+
+                // Verificar si están vacíos
+                if (!typeShipment) {
+                    $('#type_shipment').addClass('is-invalid'); // Agregar clase si está vacío
+                    return;
+                } else {
+                    $('#type_shipment').removeClass('is-invalid'); // Quitar clase si tiene valor
+
+                    if (typeShipment === "Marítima") {
+
+                        if (!radio) {
+                            $('input[name="lcl_fcl"]').closest('.form-check').find('input').addClass(
+                                'is-invalid'); // Agregar clase a todos los radios del grupo
+                            return;
+                        } else {
+                            $('input[name="lcl_fcl"]').removeClass(
+                                'is-invalid'); // Quitar clase si hay un valor seleccionado
+                        }
+
                     }
 
                 }
 
-            }
+                //Si pasa las validaciones entonces mostramos la cotizacion ideal para el tipo de embarque:
 
-            //Si pasa las validaciones entonces mostramos la cotizacion ideal para el tipo de embarque:
+                if (radio === 'LCL' || !radio) {
+                    $('#title_quote span').text('LCL');
 
-            if (radio === 'LCL' || !radio) {
-                $('#title_quote span').text('LCL');
-
-                $('.lcl_quote').removeClass('d-none');
-                $('.fcl_quote').addClass('d-none');
+                    $('.lcl_quote').removeClass('d-none');
+                    $('.fcl_quote').addClass('d-none');
 
 
-            } else {
-                $('#title_quote span').text('FCL');
-                $('.lcl_quote').addClass('d-none');
-                $('.fcl_quote').removeClass('d-none');
-            }
+                } else {
+                    $('#title_quote span').text('FCL');
+                    $('.lcl_quote').addClass('d-none');
+                    $('.fcl_quote').removeClass('d-none');
+                }
+
+                if (radio != "FCL") {
+
+                    $('#lcl_fcl').val("LCL");
+                } else {
+                    $('#lcl_fcl').val('FCL');
+                }
 
 
-            // Cerrar el modal utilizando la instancia nativa de Bootstrap
-            $('#modalQuoteTransportManual').modal('hide');
+                // Cerrar el modal utilizando la instancia nativa de Bootstrap
+                $('#modalQuoteTransportManual').modal('hide');
 
 
-        })
-    </script>
+            })
+        </script>
+    @endif
 @endpush
