@@ -13,10 +13,12 @@
                             id="customer_name" name="customer_name" placeholder="Ingresa el cliente"
                             value="{{ isset($quote->customer_name) ? $quote->customer_name : old('customer_name') }}">
 
-                        <input type="hidden" id="customer" name="customer"  value="{{ isset($quote->customer) ? $quote->customer : old('customer') }}">
+                        <input type="hidden" id="customer" name="customer"
+                            value="{{ isset($quote->customer) ? $quote->customer : old('customer') }}">
                     </div>
                     <div class="col-sm-10 d-none customer_quote_manual">
-                        <select name="customer_manual" class="form-control @error('customer_manual') is-invalid @enderror">
+                        <select name="customer_manual"
+                            class="form-control @error('customer_manual') is-invalid @enderror">
                             <option />
                             @foreach ($customers as $customer)
                                 <option value="{{ $customer->id }}"
@@ -376,6 +378,31 @@
             </div>
             <div class="body-detail-product p-2">
 
+                <div id="div_measures" class="row justify-content-center mb-4 d-none">
+
+                    <div class="col-2">
+                        <input type="number" class="form-control" step="1" id="amount_package"
+                            name="amount_package" placeholder="Ingresa N° bultos">
+                    </div>
+                    <div class="col-2">
+                        <input type="text" class="form-control CurrencyInput" data-type="currency" id="width"
+                            name="width" placeholder="Ancho(cm)">
+                    </div>
+                    <div class="col-2">
+                        <input type="text" class="form-control CurrencyInput" data-type="currency" id="length"
+                            name="length" placeholder="Largo(cm)">
+                    </div>
+                    <div class="col-2">
+                        <input type="text" class="form-control CurrencyInput" data-type="currency" id="height"
+                            name="height" placeholder="Alto(cm)">
+                    </div>
+                    <div class="col-2">
+                        <button id="addRow" class="btn btn-indigo btn-sm"><i
+                                class="fa fa-plus"></i>Agregar</button>
+                    </div>
+
+                </div>
+
                 <table id="table_measures" class="table table-bordered" style="width:100%">
                     <thead>
                         <tr>
@@ -383,6 +410,7 @@
                             <th>Ancho (cm)</th>
                             <th>Largo (cm)</th>
                             <th>Alto (cm)</th>
+                            <th id="measure_delete" class="d-none">Eliminar</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -509,6 +537,7 @@
                 }
 
                 //load Table measures
+
                 populateTable(JSON.parse(data.measures));
 
 
@@ -560,18 +589,157 @@
                 }
 
             }
+
+
+            //Insertar manualmente las medidas: 
+
+            //Inicializamos la tabla de medidas
+
+            const table = new DataTable('#table_measures', {
+                paging: false, // Desactiva la paginación
+                searching: false, // Oculta el cuadro de búsqueda
+                info: false, // Oculta la información del estado de la tabla
+                lengthChange: false, // Oculta el selector de cantidad de registros por página
+                language: { // Traducciones al español
+                    emptyTable: "No hay medidas registradas"
+                }
+            });
+            let counter = 1;
+
+            // Función para agregar una fila editable
+            let rowIndex = 1; //
+            let currentPackage = 0;
+            let arrayMeasures = {};
+
+            document.getElementById('addRow').addEventListener('click', (e) => {
+
+                e.preventDefault();
+
+                var measures = document.getElementById("div_measures");
+                const inputs = measures.querySelectorAll('input');
+
+                let isValid = true;
+                inputs.forEach(input => {
+
+                    if (input.value.trim() === '' || input.value <= 0) {
+                        isValid = false;
+                        input.classList.add('is-invalid');
+                        return;
+                    } else {
+                        input.classList.remove('is-invalid');
+                        return;
+                    }
+
+                });
+
+                if (!isValid) {
+                    return;
+                }
+
+                const nro_package = parseInt($('#packages').val());
+                const amount_package = parseInt($('#amount_package').val());
+                const width = inputs[1].value.replace(/,/g, '');;
+                const length = inputs[2].value.replace(/,/g, '');;
+                const height = inputs[3].value.replace(/,/g, '');;
+
+
+
+
+                if (isNaN(amount_package) || amount_package <= 0) {
+                    $('#amount_package').addClass('is-invalid');
+                    return;
+                } else {
+                    if (isNaN(nro_package) || amount_package > nro_package) {
+                        alert(
+                            'El numero de paquetes / bultos no puede ser menor que la cantidad ingresada'
+                        );
+                        return;
+                    }
+
+                    currentPackage += amount_package;
+
+
+                    if (currentPackage > nro_package) {
+                        alert(
+                            'No se puede agregar otra fila, por que segun los registros ya completaste el numero de bultos'
+                        );
+                        currentPackage -= amount_package;
+                        return;
+                    }
+
+                    const newRow = table.row.add([
+
+                        // Campo para Cantidad
+                        `<input type="number" class="form-control"  readonly id="amount-${rowIndex}" name="amount-${rowIndex}" value="${amount_package}" placeholder="Cantidad" min="0" step="1">`,
+
+                        // Campo para Ancho
+                        `<input type="number" class="form-control"  readonly id="width-${rowIndex}" name="width-${rowIndex}" value="${width}" placeholder="Ancho" min="0" step="0.0001">`,
+
+                        // Campo para Largo
+                        `<input type="number" class="form-control"  readonly id="length-${rowIndex}" name="length-${rowIndex}" value="${length}" placeholder="Largo" min="0" step="0.0001">`,
+
+                        // Campo para Alto
+                        `<input type="number" class="form-control"  readonly id="height-${rowIndex}" name="height-${rowIndex}" value="${height}" placeholder="Alto" min="0" step="0.0001">`,
+
+                        `<button type="button" class="btn btn-danger btn-sm" id="delete-${rowIndex}" onclick="deleteRow('row-${rowIndex}', ${amount_package}, ${rowIndex})"><i class="fa fa-trash"></i></button>`
+                    ]).draw().node();
+                    newRow.id = `row-${rowIndex}`;
+
+                    arrayMeasures[rowIndex] = { // Usamos rowIndex como clave
+                        amount: amount_package,
+                        width,
+                        length,
+                        height
+                    };
+
+
+                    $('#measures').val(JSON.stringify(arrayMeasures));
+
+                    rowIndex++
+
+                    // Opcional: Enfocar el primer campo de la nueva fila
+                    newRow.querySelector('input').focus();
+
+                }
+
+            });
+
+
+            function deleteRow(rowId, amount, index) {
+                // Reducir el paquete actual
+                currentPackage -= parseInt(amount);
+                // Eliminar la fila del DataTable
+                const row = document.getElementById(rowId);
+                table.row($(row).closest('tr')).remove().draw();
+                delete arrayMeasures[index];
+                $('#measures').val(JSON.stringify(arrayMeasures));
+
+            }
+
+            function cleanMeasures() {
+                table.clear().draw();
+
+                arrayMeasures = {};
+                $('#measures').val("");
+
+                // Restablecer variables relacionadas
+                currentPackage = 0;
+                rowIndex = 1;
+
+            }
         </script>
     @else
         <script>
             document.addEventListener('DOMContentLoaded', function() {
 
                 let customer_manual = $('.customer_quote_manual').find('select')[0];
-                
+                let nro_operation = $('#nro_operation').val();
 
-                if (customer_manual.value !== '' || customer_manual.classList.contains('is-invalid')) {
-                  $('.customer_quote_manual').removeClass('d-none');
-                  $('.customer_quote').addClass('d-none');
-              }
+
+                if ((customer_manual.value !== '' || customer_manual.classList.contains('is-invalid')) && nro_operation === "") {
+                    $('.customer_quote_manual').removeClass('d-none');
+                    $('.customer_quote').addClass('d-none');
+                }
 
 
 

@@ -13,6 +13,7 @@
         @foreach ($quotes as $quote)
             <tr>
                 <td>{{ $loop->iteration }}</td>
+                <td>{{ $quote->nro_quote }}</td>
                 <td>{{ isset($quote->routing->nro_operation) ?  $quote->routing->nro_operation : 'Solo transporte' }}</td>
                 <td>
                     {{ isset($quote->routing->customer->name_businessname) ?  $quote->routing->customer->name_businessname : $quote->customer->name_businessname }}

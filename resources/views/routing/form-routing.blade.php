@@ -252,9 +252,9 @@
                   </div>
               </div>
           </div>
-          <div class="col-12">
+            <div class="col-12">
 
-              <div id="div_measures" class="row justify-content-center">
+                <div id="div_measures" class="row justify-content-center">
 
                   <div class="col-2">
                       <input type="number" class="form-control" step="1" id="amount_package"
@@ -276,9 +276,9 @@
                       <button id="addRow" class="btn btn-indigo btn-sm"><i class="fa fa-plus"></i>Agregar</button>
                   </div>
 
-              </div>
+                </div>
 
-              <table id="measures" class="table table-bordered" style="width:100%">
+                <table id="measures" class="table table-bordered" style="width:100%">
                   <thead>
                       <tr>
                           <th>Cantidad</th>
@@ -306,7 +306,7 @@
 
                   @endif --}}
 
-              </table>
+                </table>
               <input id="value_measures" type="hidden" name="value_measures" />
               @error('value_measures')
                   <span class="invalid-feedback d-block" role="alert">
@@ -314,7 +314,7 @@
                   </span>
               @enderror
 
-          </div>
+            </div>
       </div>
 
 
@@ -454,7 +454,8 @@
               let lcl_fcl = document.getElementsByName('lcl_fcl');
               let container_type = document.getElementById('container_type');
 
-              let lclfclSelected = Array.from(document.getElementsByName('lcl_fcl')).find(radio => radio.checked)?.value;
+              let lclfclSelected = Array.from(document.getElementsByName('lcl_fcl')).find(radio => radio.checked)
+                  ?.value;
 
 
               // Mostrar/ocultar los campos según los valores
@@ -754,9 +755,9 @@
                   // Opcional: Enfocar el primer campo de la nueva fila
                   newRow.querySelector('input').focus();
 
-                }
+              }
 
-            });
+          });
 
 
           function deleteRow(rowId, amount, index) {

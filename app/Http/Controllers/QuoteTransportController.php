@@ -25,6 +25,7 @@ class QuoteTransportController extends Controller
 
         $heads = [
             '#',
+            'N° cotizacion',
             'Cliente',
             'Hora maxima de atencion',
             'LCL / FCL',
@@ -59,6 +60,7 @@ class QuoteTransportController extends Controller
 
         $heads = [
             '#',
+            'N° cotizacion',
             'Nro Operacion',
             'Cliente',
             'Recojo',
@@ -145,7 +147,7 @@ class QuoteTransportController extends Controller
         }
 
 
-        QuoteTransport::create([
+        $quote = QuoteTransport::create([
             'shipping_date' => Carbon::now('America/Lima'),
             'response_date' => null,
             'id_customer' => ($request->customer != null) ? $request->customer : $request->customer_manual ,
@@ -177,7 +179,7 @@ class QuoteTransportController extends Controller
 
         if ($request->uploaded_files) {
 
-            $nroOperationFolder = "documents/$request->nro_operation/quote_transport";
+            $nroOperationFolder = "quote_transport/$quote->nro_quote";
             $tempFolder = "uploads/temp";
 
             if (!Storage::disk('public')->exists($nroOperationFolder)) {
@@ -234,7 +236,24 @@ class QuoteTransportController extends Controller
         $quote = QuoteTransport::findOrFail($id);
         $showModal = false;
 
-        $folderPath = "documents/{$quote->nro_operation}/quote_transport";
+
+        // Obtener el ID del personal del usuario autenticado
+        $personalId = Auth::user()->personal->id;
+
+        if (Auth::user()->hasRole('Super-Admin')) {
+            // Si es Super-Admin, obtener todos los clientes
+            $customers = Customer::with('personal')->get();
+        } else {
+            // Si no es Super-Admin, solo obtener los clientes que pertenecen al personal del usuario autenticado
+            $customers = Customer::with('personal')
+                ->where('id_personal', $personalId)
+                ->get();
+        }
+
+
+
+        //Obtenemos los documentos si es que existen
+        $folderPath = "quote_transport/{$quote->nro_quote}";
         $files = collect(Storage::disk('public')->files($folderPath))->map(function ($file) {
             return [
                 'name' => basename($file), // Nombre del archivo
@@ -244,7 +263,7 @@ class QuoteTransportController extends Controller
         });
 
 
-        return view('transport.quote.edit-quote', compact('quote', 'files'))->with('showModal', $showModal);
+        return view('transport.quote.edit-quote', compact('quote', 'files', 'customers'))->with('showModal', $showModal);
     }
 
     /**
@@ -253,15 +272,17 @@ class QuoteTransportController extends Controller
     public function update(Request $request, string $id)
     {
 
+        /* dd($request->all()); */
         $quote = QuoteTransport::findOrFail($id);
 
         $request->merge(["pick_up" =>  $request->pick_up_lcl != null ? $request->pick_up_lcl : $request->pick_up_fcl]);
         $request->merge(["state" =>  'Pendiente']);
 
+        $quote->update($request->all());
 
         if ($request->uploaded_files) {
 
-            $nroOperationFolder = "documents/$request->nro_operation/quote_transport";
+            $nroOperationFolder = "quote_transport/$quote->nro_quote";
             $tempFolder = "uploads/temp";
 
             if (!Storage::disk('public')->exists($nroOperationFolder)) {

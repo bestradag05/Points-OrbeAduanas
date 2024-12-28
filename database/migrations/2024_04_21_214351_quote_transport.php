@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('quote_transport', function (Blueprint $table) {
             $table->id();
+            $table->string('nro_quote')->unique();
             $table->dateTime('shipping_date');
             $table->dateTime('response_date')->nullable();
             $table->unsignedBigInteger('id_customer');

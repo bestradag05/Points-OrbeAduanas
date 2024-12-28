@@ -221,6 +221,11 @@
                     $('.customer_quote_manual').removeClass('d-none');
                     $('.customer_quote').addClass('d-none');
 
+                    //Habilitamos la tabla para agregar medidas: 
+
+                    $('#div_measures').removeClass('d-none');
+                    $('#measure_delete').removeClass('d-none');
+
                 })
 
 
