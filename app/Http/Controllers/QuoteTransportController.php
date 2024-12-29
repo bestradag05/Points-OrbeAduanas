@@ -214,7 +214,7 @@ class QuoteTransportController extends Controller
         $quote = QuoteTransport::findOrFail($id);
 
 
-        $folderPath = "documents/{$quote->nro_operation}/quote_transport";
+        $folderPath = "quote_transport/{$quote->nro_quote}";
         $files = collect(Storage::disk('public')->files($folderPath))->map(function ($file) {
             return [
                 'name' => basename($file), // Nombre del archivo
@@ -249,7 +249,6 @@ class QuoteTransportController extends Controller
                 ->where('id_personal', $personalId)
                 ->get();
         }
-
 
 
         //Obtenemos los documentos si es que existen

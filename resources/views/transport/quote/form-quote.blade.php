@@ -730,13 +730,16 @@
         </script>
     @else
         <script>
+            const dataMeasures = @json(isset($quote->measures) ? $quote->measures : '');
+
             document.addEventListener('DOMContentLoaded', function() {
 
                 let customer_manual = $('.customer_quote_manual').find('select')[0];
                 let nro_operation = $('#nro_operation').val();
 
 
-                if ((customer_manual.value !== '' || customer_manual.classList.contains('is-invalid')) && nro_operation === "") {
+                if ((customer_manual.value !== '' || customer_manual.classList.contains('is-invalid')) &&
+                    nro_operation === "") {
                     $('.customer_quote_manual').removeClass('d-none');
                     $('.customer_quote').addClass('d-none');
                 }
@@ -780,32 +783,39 @@
                     $('.fcl_quote').removeClass('d-none');
                 }
 
+                $('#measure_delete').removeClass('d-none');
+                $('#div_measures').removeClass('d-none');
+
+            } else {
+
+                // Realizar solicitud AJAX
+                $.ajax({
+                    url: `/quote/search-routing/${nro_operation}`, // Cambia esto por la URL de tu servidor
+                    type: 'GET',
+                    success: function(response) {
+                        // Manejo de la respuesta exitosa
+
+                        loadInfoRouting(response.data[0]);
+
+
+                    },
+                    error: function(xhr, status, error) {
+
+                        // Manejo del error
+                        var errorMessage = xhr.responseJSON ? xhr.responseJSON.message :
+                                'Ocurrió un error inesperado.';
+
+                            // Mostrar el mensaje de error al usuario
+                            $('#error_nro_operation').removeClass('d-none').addClass('d-block');
+                            $('#texto_nro_operation').text(errorMessage);
+                            $('#modal_nro_operation').addClass('is-invalid');
+
+
+                    }
+                });
+
             }
 
-
-            // Realizar solicitud AJAX
-            $.ajax({
-                url: `/quote/search-routing/${nro_operation}`, // Cambia esto por la URL de tu servidor
-                type: 'GET',
-                success: function(response) {
-                    // Manejo de la respuesta exitosa
-
-                    loadInfoRouting(response.data[0]);
-
-
-                },
-                error: function(xhr, status, error) {
-                    // Manejo del error
-                    var errorMessage = xhr.responseJSON ? xhr.responseJSON.message :
-                        'Ocurrió un error inesperado.';
-
-                    // Mostrar el mensaje de error al usuario
-                    $('#error_nro_operation').removeClass('d-none').addClass('d-block');
-                    $('#texto_nro_operation').text(errorMessage);
-                    $('#modal_nro_operation').addClass('is-invalid');
-
-                }
-            });
 
 
             function loadInfoRouting(data) {
@@ -875,7 +885,6 @@
             }
 
 
-
             function populateTable(data) {
                 const tableBody = document.getElementById('table_measures').getElementsByTagName('tbody')[0];
 
@@ -904,6 +913,176 @@
                         cellWidth.textContent = item.width;
                     }
                 }
+
+            }
+
+
+
+            // Cargamos la data si existe
+
+            //Inicializamos la tabla de medidas
+
+            const table = new DataTable('#table_measures', {
+                paging: false, // Desactiva la paginación
+                searching: false, // Oculta el cuadro de búsqueda
+                info: false, // Oculta la información del estado de la tabla
+                lengthChange: false, // Oculta el selector de cantidad de registros por página
+                language: { // Traducciones al español
+                    emptyTable: "No hay medidas registradas"
+                }
+            });
+            let counter = 1;
+
+            // Función para agregar una fila editable
+            let rowIndex = 1; //
+            let currentPackage = 0;
+            let arrayMeasures = {};
+
+            if (dataMeasures != "") {
+
+                const measuresObject = JSON.parse(dataMeasures);
+
+                Object.entries(measuresObject).forEach(([key, item], index) => {
+
+                    const newRow = table.row.add([
+                        `<input type="number" class="form-control" readonly id="amount-${index}" name="amount-${index}" value="${item.amount}" placeholder="Cantidad" min="0" step="1">`,
+                        `<input type="number" class="form-control" readonly id="width-${index}" name="width-${index}" value="${item.width}" placeholder="Ancho" min="0" step="0.0001">`,
+                        `<input type="number" class="form-control" readonly id="length-${index}" name="length-${index}" value="${item.length}" placeholder="Largo" min="0" step="0.0001">`,
+                        `<input type="number" class="form-control" readonly id="height-${index}" name="height-${index}" value="${item.height}" placeholder="Alto" min="0" step="0.0001">`,
+                        `<button type="button" class="btn btn-danger btn-sm" id="delete-${index}" onclick="deleteRow('row-${index}', ${item.amount}, ${index})"><i class="fa fa-trash"></i></button>`
+                    ]).draw().node();
+                    newRow.id = `row-${index}`;
+
+                    // Guardamos las medidas en el objeto `arrayMeasures`
+                    arrayMeasures[index] = {
+                        amount: item.amount,
+                        width: item.width,
+                        length: item.length,
+                        height: item.height
+                    };
+
+                    currentPackage += item.amount; // Sumar al total de paquetes ya cargados
+                });
+
+                $('#measures').val(JSON.stringify(arrayMeasures));
+
+            }
+
+
+            document.getElementById('addRow').addEventListener('click', (e) => {
+
+                e.preventDefault();
+
+                var measures = document.getElementById("div_measures");
+                const inputs = measures.querySelectorAll('input');
+
+                let isValid = true;
+                inputs.forEach(input => {
+
+                    if (input.value.trim() === '' || input.value <= 0) {
+                        isValid = false;
+                        input.classList.add('is-invalid');
+                        return;
+                    } else {
+                        input.classList.remove('is-invalid');
+                        return;
+                    }
+
+                });
+
+                if (!isValid) {
+                    return;
+                }
+
+                const nro_package = parseInt($('#packages').val());
+                const amount_package = parseInt($('#amount_package').val());
+                const width = inputs[1].value.replace(/,/g, '');;
+                const length = inputs[2].value.replace(/,/g, '');;
+                const height = inputs[3].value.replace(/,/g, '');;
+
+
+
+
+                if (isNaN(amount_package) || amount_package <= 0) {
+                    $('#amount_package').addClass('is-invalid');
+                    return;
+                } else {
+                    if (isNaN(nro_package) || amount_package > nro_package) {
+                        alert(
+                            'El numero de paquetes / bultos no puede ser menor que la cantidad ingresada'
+                        );
+                        return;
+                    }
+
+                    currentPackage += amount_package;
+
+
+                    if (currentPackage > nro_package) {
+                        alert(
+                            'No se puede agregar otra fila, por que segun los registros ya completaste el numero de bultos'
+                        );
+                        currentPackage -= amount_package;
+                        return;
+                    }
+
+                    const newRow = table.row.add([
+
+                        // Campo para Cantidad
+                        `<input type="number" class="form-control"  readonly id="amount-${rowIndex}" name="amount-${rowIndex}" value="${amount_package}" placeholder="Cantidad" min="0" step="1">`,
+
+                        // Campo para Ancho
+                        `<input type="number" class="form-control"  readonly id="width-${rowIndex}" name="width-${rowIndex}" value="${width}" placeholder="Ancho" min="0" step="0.0001">`,
+
+                        // Campo para Largo
+                        `<input type="number" class="form-control"  readonly id="length-${rowIndex}" name="length-${rowIndex}" value="${length}" placeholder="Largo" min="0" step="0.0001">`,
+
+                        // Campo para Alto
+                        `<input type="number" class="form-control"  readonly id="height-${rowIndex}" name="height-${rowIndex}" value="${height}" placeholder="Alto" min="0" step="0.0001">`,
+
+                        `<button type="button" class="btn btn-danger btn-sm" id="delete-${rowIndex}" onclick="deleteRow('row-${rowIndex}', ${amount_package}, ${rowIndex})"><i class="fa fa-trash"></i></button>`
+                    ]).draw().node();
+                    newRow.id = `row-${rowIndex}`;
+
+                    arrayMeasures[rowIndex] = { // Usamos rowIndex como clave
+                        amount: amount_package,
+                        width,
+                        length,
+                        height
+                    };
+
+
+                    $('#measures').val(JSON.stringify(arrayMeasures));
+
+                    rowIndex++
+
+                    // Opcional: Enfocar el primer campo de la nueva fila
+                    newRow.querySelector('input').focus();
+
+                }
+
+            });
+
+
+            function deleteRow(rowId, amount, index) {
+                // Reducir el paquete actual
+                currentPackage -= parseInt(amount);
+                // Eliminar la fila del DataTable
+                const row = document.getElementById(rowId);
+                table.row($(row).closest('tr')).remove().draw();
+                delete arrayMeasures[index];
+                $('#measures').val(JSON.stringify(arrayMeasures));
+
+            }
+
+            function cleanMeasures() {
+                table.clear().draw();
+
+                arrayMeasures = {};
+                $('#measures').val("");
+
+                // Restablecer variables relacionadas
+                currentPackage = 0;
+                rowIndex = 1;
 
             }
         </script>
