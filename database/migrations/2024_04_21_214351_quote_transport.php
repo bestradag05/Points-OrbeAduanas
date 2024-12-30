@@ -41,6 +41,7 @@ return new class extends Migration
             $table->string('measures')->nullable();
             $table->string('nro_operation')->nullable();
             $table->string('lcl_fcl');
+            $table->unsignedBigInteger('id_type_shipment');
             $table->text('readjustment_reason')->nullable();
             $table->text('observations')->nullable();
             $table->decimal('old_cost_transport', 8, 2)->nullable();
@@ -52,6 +53,7 @@ return new class extends Migration
 
             $table->foreign('nro_operation')->references('nro_operation')->on('routing');
             $table->foreign('id_customer')->references('id')->on('customer');
+            $table->foreign('id_type_shipment')->references('id')->on('type_shipment');
 
         });
     }

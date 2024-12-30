@@ -420,6 +420,7 @@
                 </table>
 
                 <input type="hidden" id="measures" name="measures">
+                <input type="hidden" id="id_type_shipment" name="id_type_shipment">
                 <input type="hidden" id="nro_operation" name="nro_operation"
                     value="{{ isset($quote->nro_operation) ? $quote->nro_operation : old('nro_operation') }}">
                 <input type="hidden" id="lcl_fcl" name="lcl_fcl"
@@ -508,6 +509,7 @@
                 $('#load_type').val(data.type_load.name).prop('readonly', true);
                 $('#commodity').val(data.commodity).prop('readonly', true);
                 $('#packaging_type').val(data.packaging_type).prop('readonly', true);
+                $('#id_type_shipment').val(data.id_type_shipment);
 
                 if (data.type_shipment.description === "Marítima" && data.lcl_fcl === 'LCL') {
                     $('#cubage_kgv').val(data.volumen + ' m3').prop('readonly', true);
@@ -841,6 +843,9 @@
                 $('#load_type').val(data.type_load.name).prop('readonly', true);
                 $('#commodity').val(data.commodity).prop('readonly', true);
                 $('#packaging_type').val(data.packaging_type).prop('readonly', true);
+                $('#id_type_shipment').val(data.id_type_shipment);
+
+
                 if (data.type_shipment.description === "Marítima" && data.lcl_fcl === 'LCL') {
                     $('#cubage_kgv').val(data.volumen + ' m3').prop('readonly', true);
                 }

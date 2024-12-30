@@ -1,7 +1,7 @@
 @extends('home')
 @section('dinamic-content')
     <div class="d-flex justify-content-center">
-        <h3 class="text-bold">Detalle de cotizacion para Nro de operacion : <span
+        <h3 class="text-bold">Cotizacion : {{$quote->nro_quote}} <span
                 class="text-indigo">{{ $quote->nro_operation }}</span> </h3>
     </div>
     <div class="container">
@@ -51,7 +51,7 @@
                         <div class="col-sm-10">
                             <input type="text" class="form-control @error('customer') is-invalid @enderror"
                                 id="customer" name="customer" placeholder="Ingresa el cliente" @readonly(true)
-                                value="{{ isset($quote->routing->customer) ? $quote->routing->customer->name_businessname : old('customer') }}">
+                                value="{{ isset($quote->customer) ? $quote->customer->name_businessname : old('customer') }}">
                         </div>
                         @error('customer')
                             <span class="invalid-feedback d-block" role="alert">

@@ -12,5 +12,11 @@ class TypeShipment extends Model
     protected $table = 'type_shipment';
 
     protected $fillable = ['code', 'description'];
-    
+
+
+
+    public function quoteTransport()
+    {
+        return $this->hasOne(QuoteTransport::class, 'id_customer', 'id');
+    }
 }

@@ -74,8 +74,9 @@
                         <label for="type_shipment">Tipo de embarque</label>
                         <select id="type_shipment" class="form-control" name="type_shipment">
                             <option selected disabled>--- Seleccione una opción ---</option>
-                            <option value="Aérea">Aereo</option>
-                            <option value="Marítima">Maritimo</option>
+                            @foreach ($type_shipments as $type_shipment)
+                                <option value="{{$type_shipment->id}}">{{$type_shipment->code . ' - ' . $type_shipment->name}}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -230,31 +231,46 @@
 
 
                 if (volumenValue.value !== '' || volumenValue.classList.contains('is-invalid')) {
-                  $('#contenedor_volumen').removeClass('d-none');
-                  $('#contenedor_kg_vol').addClass('d-none');
-              }
+                    $('#contenedor_volumen').removeClass('d-none');
+                    $('#contenedor_kg_vol').addClass('d-none');
+                }
 
 
 
             });
 
+            let type_shipment = null;
 
             $('#type_shipment').on('change', (e) => {
 
-                let type = e.target.value;
-                if (type === "Marítima") {
+                var idShipment = $(e.target).find("option:selected").val();
 
-                    /*  $('#type_shipment_name').val(respu.description); */
+                $.ajax({
+                  type: "GET",
+                  url: "/getLCLFCL",
+                  data: {
+                      idShipment
+                  },
+                  dataType: "JSON",
+                  success: function(respu) {
 
-                    $('#contenedor_radio_lcl_fcl').removeClass('d-none');
+                    type_shipment = respu;
+
+                      if (respu.description === "Marítima") {
+
+                        $('#contenedor_radio_lcl_fcl').removeClass('d-none');
+                        
+
+                      } else {
+
+                        $('#contenedor_radio_lcl_fcl').addClass('d-none');
+                        $('input[name="lcl_fcl"]').prop('checked', false);
+
+                      }
+                  }
+              });
 
 
-                } else {
-
-                    $('#contenedor_radio_lcl_fcl').addClass('d-none');
-                    $('input[name="lcl_fcl"]').prop('checked', false);
-
-                }
 
             });
 
@@ -263,8 +279,7 @@
 
 
                 let typeShipment = $('#type_shipment').val();
-                let radio = $('input[name="lcl_fcl"]:checked').val();
-
+                let radio = $('input[name="lcl_fcl"]:checked').val()
 
                 // Verificar si están vacíos
                 if (!typeShipment) {
@@ -273,7 +288,7 @@
                 } else {
                     $('#type_shipment').removeClass('is-invalid'); // Quitar clase si tiene valor
 
-                    if (typeShipment === "Marítima") {
+                    if (type_shipment.description === "Marítima") {
 
                         if (!radio) {
                             $('input[name="lcl_fcl"]').closest('.form-check').find('input').addClass(
@@ -309,6 +324,9 @@
                 } else {
                     $('#lcl_fcl').val('FCL');
                 }
+
+
+                $('#id_type_shipment').val(type_shipment.id);
 
 
                 // Cerrar el modal utilizando la instancia nativa de Bootstrap

@@ -229,7 +229,6 @@
 
             //Cada que actualicemos el insurance_add borramos los puntos para poder volver a generar un maximo.
             $(`#${container.id} #insurance_points`).val("");
-            console.log(container.id);
 
             calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, container.id);
         }
@@ -690,7 +689,7 @@
                     conceptsArray[id_guard_concept] = {
                         'id': id_guard_concept,
                         'name': 'RESGUARDO',
-                        'value': formatValue("{{ $cost_gang }}"),
+                        'value': formatValue("{{ $cost_guard }}"),
                         'added': 0,
                     }
 
