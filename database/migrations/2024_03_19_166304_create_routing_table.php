@@ -35,7 +35,7 @@ return new class extends Migration
             $table->decimal('volumen', 8, 2)->nullable();
             $table->decimal('kilogram_volumen', 8, 2)->nullable();
             $table->decimal('tons', 8, 2)->nullable();
-            $table->string('measures')->nullable();
+            $table->text('measures')->nullable();
             $table->string('hs_code')->nullable();
             $table->string('observation')->nullable();
             $table->enum('state', ['Activo', 'Inactivo'])->default('Activo');

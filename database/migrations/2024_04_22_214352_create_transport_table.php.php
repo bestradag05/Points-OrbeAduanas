@@ -31,7 +31,7 @@ return new class extends Migration
             $table->string('weight')->nullable();
             $table->date('withdrawal_date')->nullable();
             $table->string('state')->nullable();
-            $table->string('nro_operation');
+            $table->string('nro_operation')->nullable();
             $table->unsignedBigInteger('id_supplier')->nullable();
             $table->unsignedBigInteger('id_quote_transport')->nullable();
             $table->timestamps();

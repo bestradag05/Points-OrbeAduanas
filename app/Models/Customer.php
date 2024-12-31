@@ -28,7 +28,7 @@ class Customer extends Model
 
     public function quoteTransport()
     {
-        return $this->hasOne(QuoteTransport::class, 'id_customer', 'id');
+        return $this->hasMany(QuoteTransport::class, 'id_customer', 'id');
     }
 
 }

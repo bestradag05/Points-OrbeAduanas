@@ -105,7 +105,7 @@
 
         </div>
 
-        <div id="formConceptsTransport" class="formConcepts row">
+        <div id="formConceptsTransport" class="col-12 formConcepts row">
 
             @if (!isset($quote->cost_transport))
                 <div class="col-3">
@@ -187,13 +187,16 @@
                 </div>
 
             </div>
+            <input type="hidden" name="concepts" id="concepts">
+            <input type="hidden" name="id_quote_transport" id="id_quote_transport" value="{{$quote->id}}">
 
         </div>
 
     </div>
 
     <div class="container text-center mt-5">
-        <input class="btn btn-primary" type="submit" value="{{ $formMode === 'edit' ? 'Actualizar' : 'Guardar' }}">
+        <input class="btn btn-primary" onclick="submitForm()"
+            value="{{ $formMode === 'edit' ? 'Actualizar' : 'Guardar' }}">
     </div>
 
     @push('scripts')
@@ -271,6 +274,7 @@
 
                     updateTable(conceptsArray);
 
+
                     inputs[0].value = '';
                     inputs[1].value = '';
                     inputs[2].value = '';
@@ -330,6 +334,7 @@
                                 // Actualiza el valor en `conceptsArray`
                                 conceptsArray[clave].added = newValue;
 
+
                                 // Actualiza el máximo para `inputPA`
                                 let maxPoints = Math.floor(newValue / 45);
                                 inputPA.max = maxPoints;
@@ -340,7 +345,6 @@
                                     inputPA.value = maxPoints;
                                 }
 
-
                                 // Recalcula el total
                                 TotalConcepts = calculateTotal(conceptsArray);
                                 calcTotal(TotalConcepts, transporte, valuea_added);
@@ -350,7 +354,6 @@
                             // Si cost_transport no existe, muestra el valor como texto plano
                             celdaAdded.textContent = item.added;
                         }
-
 
 
                         let celdaPA = fila.insertCell(4);
@@ -418,6 +421,8 @@
                 }
 
                 calcTotal(TotalConcepts, transporte, valuea_added);
+
+
 
             }
 
@@ -502,6 +507,18 @@
 
             function formatValue(value) {
                 return value.replace(/,/g, '');
+            }
+
+
+            function submitForm() {
+
+
+                let form = $('#formTransport');
+
+                let conceptops = JSON.stringify(conceptsArray);
+
+                form.append(`<input type="hidden" name="concepts" value='${conceptops}' />`);
+                form[0].submit();
             }
         </script>
     @endpush

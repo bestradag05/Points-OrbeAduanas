@@ -420,7 +420,7 @@
                 </table>
 
                 <input type="hidden" id="measures" name="measures">
-                <input type="hidden" id="id_type_shipment" name="id_type_shipment">
+                <input type="hidden" id="id_type_shipment" name="id_type_shipment" value="{{ isset($quote->id_type_shipment) ? $quote->id_type_shipment : old('id_type_shipment') }}">
                 <input type="hidden" id="nro_operation" name="nro_operation"
                     value="{{ isset($quote->nro_operation) ? $quote->nro_operation : old('nro_operation') }}">
                 <input type="hidden" id="lcl_fcl" name="lcl_fcl"

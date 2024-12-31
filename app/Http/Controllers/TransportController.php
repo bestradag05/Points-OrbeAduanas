@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AdditionalPoints;
 use App\Models\Supplier;
 use App\Models\Transport;
 use Carbon\Carbon;
@@ -99,6 +100,88 @@ class TransportController extends Controller
     public function store(Request $request)
     {
         //
+
+        $tax_base = $this->parseDouble($request->transport_value) + $this->parseDouble($request->transport_added);
+        $igv = $tax_base * 0.18;
+        $total = $tax_base * 1.18;
+
+        $transport = Transport::create([
+
+            'origin' => $request->origin,
+            'destination' => $request->destination,
+            'transport_value' => $this->parseDouble($request->transport_value),
+            'added_value' => $this->parseDouble($request->transport_added),
+            'tax_base' => $tax_base,
+            'igv' => $igv,
+            'total' => $total,
+            'additional_points' => $request->additional_points,
+            'withdrawal_date' =>  $request->withdrawal_date,
+            'id_quote_transport' => $request->id_quote_transport,
+            'state' => 'Pendiente'
+
+        ]);
+
+
+        if ($transport->additional_points && $this->parseDouble($transport->additional_points) > 0) {
+            $concept = (object) ['name' => 'TRANSPORTE', 'pa' => $transport->additional_points];
+
+            $this->add_aditionals_point($concept, $transport, $transport->tax_base, $transport->igv, $transport->total);
+        }
+        //Relacionamos los conceptos que tendra este transporte
+
+        foreach (json_decode($request->concepts) as $concept) {
+
+            $ne_amount = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
+            $igv = $ne_amount * 0.18;
+            $total = $ne_amount + $igv;
+
+            $transport->concepts()->attach($concept->id, [
+                'value_concept' => $concept->value,
+                'added_value' => $concept->added,
+                'net_amount' => round($ne_amount, 2),
+                'igv' => round($igv),
+                'total' => round($total),
+                'additional_points' => isset($concept->pa)
+            ]);
+
+            //Verificamos si tienen puntos adicionales
+            if (isset($concept->pa)) {
+                $this->add_aditionals_point($concept, $transport, $ne_amount, $igv, $total);
+            }
+        }
+
+
+        return redirect('/transport/personal');
+    }
+
+
+
+    public function add_aditionals_point($concept, $service,  $ne_amount = null, $igv = null, $total = null)
+    {
+
+
+        $additional_point = AdditionalPoints::create([
+            'type_of_service' => $concept->name,
+            'amount' => ($ne_amount != 0 && $ne_amount != null) ? $ne_amount : $this->parseDouble($concept->value) +  $this->parseDouble($concept->added),
+            'igv' => $igv,
+            'total' => $total,
+            'points' => $concept->pa,
+            'id_additional_service' => $service->id,
+            'model_additional_service' => $service::class,
+            'additional_type' => ($service::class === 'App\Models\Freight') ? 'AD-FLETE' : 'AD-ADUANA',
+            'state' => 'Pendiente'
+        ]);
+
+
+        $service->additional_point()->save($additional_point);
+    }
+
+    public function parseDouble($num)
+    {
+
+        $valorDecimal = (float)str_replace(',', '', $num);
+
+        return $valorDecimal;
     }
 
     /**

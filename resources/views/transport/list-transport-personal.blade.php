@@ -14,15 +14,19 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $transport->nro_operation_transport }}</td>
-                <td>
-                    <a href="{{ url('/routing/' . $transport->routing->id . '/detail') }}">
-                        {{ $transport->nro_operation }}
-                    </a>
-                </td>
+                @if (isset($transport->routing))
+                    <td>
+                        <a href="{{ url('/routing/' . $transport->routing->id . '/detail') }}">
+                            {{ $transport->nro_operation }}
+                        </a>
+                    </td>
+                @else
+                    <td>Solo transporte</td>
+                @endif
                 <td>{{ $transport->origin }}</td>
                 <td>{{ $transport->destination }}</td>
                 <td>{{ $transport->total }}</td>
-                <td>{{ \Carbon\Carbon::parse($transport->withdrawal_date)->format('d/m/Y') }}</td>
+                <td class="text-indigo text-bold">{{ \Carbon\Carbon::parse($transport->withdrawal_date)->format('d/m/Y') }}</td>
                 <td class="{{ $transport->state == 'Pendiente' ? 'text-warning' : 'text-success' }}">{{ $transport->state }}
                 </td>
             </tr>

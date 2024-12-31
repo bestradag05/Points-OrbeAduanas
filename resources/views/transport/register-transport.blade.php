@@ -10,7 +10,7 @@
 
 @stop
 @section('dinamic-content')
-    <form action="/transport" method="post" enctype="multipart/form-data">
+    <form action="/transport" method="post" id="formTransport" enctype="multipart/form-data">
         @csrf
         @include ('transport.form-transport', ['formMode' => 'create'])
     </form>
