@@ -8,7 +8,7 @@
         <x-adminlte-select2 name="user" igroup-size="md" data-placeholder="Select un usuario...">
             <x-slot name="prependSlot">
                 <div class="input-group-text">
-                    <i class="fa-solid fa-users mr-2"></i>
+                    <i class="fas fa-users mr-2"></i>
                 </div>
             </x-slot>
             <option />
@@ -47,8 +47,8 @@
                             @csrf
                             <input type="hidden" value="{{ $userHasRole->id }}" name="id_user">
                             <button type="submit"
-                                style="border: none; background: none; padding: 0; margin: 0; cursor: pointer;">
-                                <i class="fa-regular fa-circle-minus"></i></button>
+                                style="border: none; background: none; padding: 0; margin: 0; cursor: pointer;" class="pt-3 text-indigo">
+                                <i class="fas fa-minus-circle"></i></button> 
                         </form>
                     </td>
                 </tr>

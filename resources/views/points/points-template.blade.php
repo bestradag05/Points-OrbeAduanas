@@ -71,11 +71,10 @@
             <div class="col-4 row justify-content-center">
                 {{-- {{ url('/points/export/'.$chart .'/pdf') }} --}}
                 {{-- {{ url('/points/export/'.$chart.'/excel') }} --}}
-                <div class="mx-2 "><a href="#" id="pdf" class="text-indigo"><i
-                            class="fa-sharp fa-xl fa-solid fa-file-pdf"></i></a></div>
+                <div class="mx-2 "><a href="#" id="pdf" class="text-indigo"><i class="fas fa-file-pdf fa-lg"></i></a></div>
                 <div class="mx-2">
                     <a href="#" id="excel" class="text-indigo"> 
-                        <i class="fa-sharp fa-xl fa-solid fa-file-excel"></i>
+                        <i class="fas fa-file-excel fa-lg"></i>
                     </a>
                 </div>
             </div>
