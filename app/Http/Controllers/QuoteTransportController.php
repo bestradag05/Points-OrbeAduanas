@@ -55,7 +55,12 @@ class QuoteTransportController extends Controller
             // Si no es Super-Admin, solo obtener los clientes que pertenecen al personal del usuario autenticado
             $quotes = QuoteTransport::whereHas('routing', function ($query) use ($personalId) {
                 $query->where('id_personal', $personalId);
-            })->with('routing', 'customer')->get();
+            })
+                ->orWhereHas('customer', function ($query) use ($personalId) {
+                    $query->where('id_personal', $personalId);
+                })
+                ->with('routing', 'customer')
+                ->get();
         }
 
 
@@ -375,7 +380,6 @@ class QuoteTransportController extends Controller
                 ]);
 
                 return view('transport.register-transport', compact('concepts', 'quote', 'params'));
-
             } else {
 
 
