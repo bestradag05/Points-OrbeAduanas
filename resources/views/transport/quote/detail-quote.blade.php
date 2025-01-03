@@ -1,7 +1,7 @@
 @extends('home')
 @section('dinamic-content')
     <div class="d-flex justify-content-center">
-        <h3 class="text-bold">Cotizacion : {{$quote->nro_quote}} <span
+        <h3 class="text-bold">Cotizacion : {{ $quote->nro_quote }} <span
                 class="text-indigo">{{ $quote->nro_operation }}</span> </h3>
     </div>
     <div class="container">
@@ -508,15 +508,44 @@
                             <label for="pounds" class="col-sm-4 col-form-label">Costo de transporte: </label>
                             <div class="col-sm-8">
                                 <input type="text" class="form-control CurrencyInput" data-type="currency"
-                                    name="modal_transport_old_cost" id="modal_transport_old_cost"
+                                    name="modal_transport_readjustment_cost" id="modal_transport_readjustment_cost"
                                     placeholder="Ingrese costo de flete de transporte.."
-                                    value="{{ isset($quote->cost_transport) ? $quote->cost_transport : '' }}"
-                                    @readonly(true)>
+                                    value="{{ isset($quote->cost_transport) ? $quote->cost_transport : '' }}">
 
+                                {{-- Costo antiguo --}}
+                                <input type="hidden" id="modal_transport_old_cost" name="modal_transport_old_cost"
+                                    value="{{ isset($quote->cost_transport) ? $quote->cost_transport : '' }}">
+                            </div>
+                        </div>
+                        <div
+                            class="form-group row {{ isset($quote->cost_gang) && $quote->cost_gang != null ? '' : 'd-none' }}">
+                            <label for="pounds" class="col-sm-4 col-form-label">Costo de cuadrilla: </label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                    name="modal_gang_cost" id="modal_gang_cost"
+                                    placeholder="Ingrese costo de flete de transporte.."
+                                    value="{{ isset($quote->cost_gang) ? $quote->cost_gang : '' }}">
+
+                                {{-- Costo antiguo --}}
+                                <input type="hidden" id="modal_gang_old_cost" name="modal_gang_old_cost"
+                                    value="{{ isset($quote->cost_gang) ? $quote->cost_gang : '' }}">
+                            </div>
+                        </div>
+                        <div
+                            class="form-group row {{ isset($quote->cost_guard) && $quote->cost_guard != null ? '' : 'd-none' }}">
+                            <label for="pounds" class="col-sm-4 col-form-label">Costo de resguardo: </label>
+                            <div class="col-sm-8">
+                                <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                    name="modal_guard_cost" id="modal_guard_cost"
+                                    placeholder="Ingrese costo de flete de transporte.."
+                                    value="{{ isset($quote->cost_guard) ? $quote->cost_guard : '' }}">
+
+                                <input type="hidden" id="modal_guard_old_cost" name="modal_guard_old_cost"
+                                    value="{{ isset($quote->cost_guard) ? $quote->cost_guard : '' }}">
                             </div>
                         </div>
 
-                        <div class="form-group row">
+                        {{-- <div class="form-group row">
                             <label for="pounds" class="col-sm-4 col-form-label">Costo reajustado: </label>
                             <div class="col-sm-8">
                                 <input type="text" class="form-control CurrencyInput" data-type="currency"
@@ -536,7 +565,7 @@
 
                             </div>
 
-                        </div>
+                        </div> --}}
 
 
 
@@ -673,43 +702,105 @@
 
             e.preventDefault();
 
-            let currentCost = $('#modal_transport_readjustment_cost').val();
-            let oldCost = $('#modal_transport_old_cost').val();
 
+            let isValid = true; // Bandera para comprobar si el formulario es válido
+            const form = event.target; // El formulario actual
+            const inputs = form.querySelectorAll(
+                'input:not([type="hidden"]), textarea'); // Selecciona inputs excepto los de tipo hidden y textareas
 
-
-            if (currentCost === '') {
-
-                $('#modal_transport_readjustment_cost').addClass('is-invalid');
-                $('#required_reajust_transport_cost').removeClass('d-none').addClass('d-block');
-
-
-
-            } else {
-
-                $('#modal_transport_readjustment_cost').removeClass('is-invalid');
-                $('#required_reajust_transport_cost').removeClass('d-block').addClass('d-none');
-
-                let parseCurrentCost = parseFloat(currentCost.replace(/,/g, ''));
-                let parseOldCost = parseFloat(oldCost.replace(/,/g, ''));
-
-
-                if (parseCurrentCost >= parseOldCost) {
-
-                    $('#modal_transport_readjustment_cost').addClass('is-invalid');
-                    $('#value_reajust_transport_cost').removeClass('d-none').addClass('d-block');
-
-                } else {
-                    $('#modal_transport_readjustment_cost').removeClass('is-invalid');
-                    $('#value_reajust_transport_cost').removeClass('d-block').addClass('d-none');
-
-                    e.target.submit();
-
+            inputs.forEach((input) => {
+                // Ignorar campos ocultos (d-none)
+                if (input.closest('.d-none')) {
+                    return;
                 }
 
+                // Validar si el campo está vacío
+                if (input.value.trim() === '') {
+                    input.classList.add('is-invalid');
+                    isValid = false; // Cambiar bandera si algún campo no es válido
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            });
+
+            // Comparar costos de transporte
+            const transportCost = parseFloat(document.getElementById('modal_transport_readjustment_cost').value.replace(/,/g,
+                '')) || 0;
+            const transportOldCost = parseFloat(document.getElementById('modal_transport_old_cost').value.replace(
+                /,/g, '')) || 0;
+
+            if (transportCost > transportOldCost) {
+                isValid = false;
+                const input = document.getElementById('modal_transport_readjustment_cost');
+                input.classList.add('is-invalid');
+                showError(input, 'El costo de transporte no puede ser mayor que el costo actual.');
+            } else {
+                hideError(document.getElementById('modal_transport_readjustment_cost'));
             }
 
+            // Comparar costos de gang
+            const gangInput = document.getElementById('modal_gang_cost');
+            if (gangInput && !gangInput.closest('.d-none')) {
+                const gangCost = parseFloat(gangInput.value.replace(/,/g, '')) || 0;
+                const gangOldCost = parseFloat(document.getElementById('modal_gang_old_cost').value.replace(/,/g,
+                    '')) || 0;
+
+                if (gangCost > gangOldCost) {
+                    isValid = false;
+                    gangInput.classList.add('is-invalid');
+                    console.log("El precio es mayor que el antiguo");
+                    showError(gangInput, 'El costo de cuadrilla no puede ser mayor que el costo actual.');
+                } else {
+                    hideError(gangInput);
+                }
+            }
+
+            // Comparar costos de guard
+            const guardInput = document.getElementById('modal_guard_cost');
+            if (guardInput && !guardInput.closest('.d-none')) {
+                const guardCost = parseFloat(guardInput.value.replace(/,/g, '')) || 0;
+                const guardOldCost = parseFloat(document.getElementById('modal_guard_old_cost').value.replace(/,/g,
+                    '')) || 0;
+
+                if (guardCost > guardOldCost) {
+                    isValid = false;
+                    guardInput.classList.add('is-invalid');
+                    showError(guardInput, 'El costo de resguardo no puede ser mayor que el costo actual.');
+                } else {
+                    hideError(guardInput);
+                }
+            }
+
+            // Si todo es válido, enviar el formulario
+            if (isValid) {
+                form.submit();
+            }
+
+
         });
+
+
+        // Mostrar mensaje de error
+        function showError(input, message) {
+            let errorSpan = input.nextElementSibling;
+            if (!errorSpan || !errorSpan.classList.contains('invalid-feedback')) {
+                errorSpan = document.createElement('span');
+                errorSpan.classList.add('invalid-feedback');
+                input.after(errorSpan);
+            }
+            errorSpan.textContent = message;
+            errorSpan.style.display = 'block';
+        }
+
+
+        // Ocultar mensaje de error
+        function hideError(input) {
+            let errorSpan = input.nextElementSibling;
+            if (errorSpan && errorSpan.classList.contains('invalid-feedback')) {
+                errorSpan.style.display = 'none';
+            }
+        }
+
 
         $('#sendTransportObservation').on('submit', (e) => {
 

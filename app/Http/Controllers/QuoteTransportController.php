@@ -434,6 +434,10 @@ class QuoteTransportController extends Controller
             $quote->update([
                 'old_cost_transport' => $request->modal_transport_old_cost,
                 'cost_transport' => $request->modal_transport_readjustment_cost,
+                'old_cost_gang' => $request->modal_gang_old_cost,
+                'cost_gang' => $request->modal_gang_cost,
+                'old_cost_guard' => $request->modal_guard_old_cost,
+                'cost_guard' => $request->modal_guard_cost,
                 'state' => 'Respondido'
             ]);
 

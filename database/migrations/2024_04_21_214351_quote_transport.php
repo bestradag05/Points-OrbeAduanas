@@ -25,8 +25,10 @@ return new class extends Migration
             $table->string('max_attention_hour')->nullable();
             $table->string('gang')->nullable();
             $table->decimal('cost_gang', 8 , 2)->nullable();
+            $table->decimal('old_cost_gang', 8 , 2)->nullable();
             $table->string('guard')->nullable();
             $table->decimal('cost_guard', 8, 2)->nullable();
+            $table->decimal('old_cost_guard', 8, 2)->nullable();
             $table->text('customer_detail')->nullable();
             $table->string('commodity')->nullable();
             $table->string('packaging_type')->nullable();
