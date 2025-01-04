@@ -90,6 +90,7 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'customer.update', 'alias' => 'Actualizar Clientes', 'guard_name' => 'web']);
         Permission::create(['name' => 'customer.delete', 'alias' => 'Eliminar Clientes', 'guard_name' => 'web']);
         Permission::create(['name' => 'customer.list', 'alias' => 'Listar Clientes', 'guard_name' => 'web']);
+        Permission::create(['name' => 'customer.all', 'alias' => 'Listar todos los clientes', 'guard_name' => 'web']);
 
         Permission::create(['name' => 'supplier.module', 'alias' => 'Visualizar Modulo', 'guard_name' => 'web']);
         Permission::create(['name' => 'supplier.create', 'alias' => 'Crear Proveedor', 'guard_name' => 'web']);

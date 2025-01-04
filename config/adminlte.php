@@ -518,7 +518,7 @@ return [
         [
             'text' => 'Puntos',
             'icon' => 'fas fa-plus-circle',
-            'can' => 'points.list',
+            'can' => 'points.module',
             'submenu' => [
                 /*                 [
                     'text' => 'Detalle por vendedor',
