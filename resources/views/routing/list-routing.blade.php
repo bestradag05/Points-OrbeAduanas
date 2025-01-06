@@ -21,7 +21,8 @@
                 </td>
                 <td class="text-uppercase">{{ $routing->origin }}</td>
                 <td class="text-uppercase">{{ $routing->destination }}</td>
-                <td>{{ $routing->type_shipment->description }}</td>
+                <td class="text-uppercase">{{ $routing->customer->name_businessname }}</td>
+                <td>{{ $routing->type_shipment->description .' '.(($routing->type_shipment->description  === 'Marítima') ? $routing->lcl_fcl : '') }}</td>
                 <td>{{ $routing->personal->names }}</td>
                 <td class="{{ $routing->state == 'Activo' ? 'text-success' : 'text-danger' }}">{{ $routing->state }}</td>
 

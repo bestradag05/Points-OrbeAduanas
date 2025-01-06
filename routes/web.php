@@ -18,6 +18,7 @@ use App\Http\Controllers\PermissionsController;
 use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\PersonalDocumentController;
 use App\Http\Controllers\PointsController;
+use App\Http\Controllers\QuoteFreightController;
 use App\Http\Controllers\QuoteTransportController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\RoutingController;
@@ -146,6 +147,14 @@ Route::middleware('auth')->group(function () {
     Route::get('quote/transport/cost/accept/{id}', [QuoteTransportController::class, 'acceptQuoteTransport']);
     Route::get('quote/transport/cost/corrected/{id}', [QuoteTransportController::class, 'correctedQuoteTransport']);
 
+    /* Cotizaciones de flete */
+
+    Route::resource('quote/freight', QuoteFreightController::class)->names([
+        'create' => 'quote.freight.create',
+    ]);
+
+    Route::post('quote/freight/file-upload-documents', [QuoteFreightController::class, 'uploadFilesQuoteFreight']);
+    Route::post('quote/freight/file-delete-documents', [QuoteFreightController::class, 'deleteFilesQuoteFreight']);
 
 
     /* Reportes */

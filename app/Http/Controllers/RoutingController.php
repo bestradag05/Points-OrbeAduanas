@@ -55,6 +55,7 @@ class RoutingController extends Controller
             'N° de operacion',
             'Origen',
             'Destino',
+            'Cliente',
             'Tipo de embarque',
             'Asesor Comercial',
             'Estado',

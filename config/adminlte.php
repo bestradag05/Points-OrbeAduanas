@@ -437,6 +437,19 @@ return [
 
         ],
         [
+            'text' => 'Pricing',
+            'icon' => 'fas fa-ship',
+            'submenu' => [
+                [
+                    'text' => 'Generar cotizacion',
+                    'url' => 'quote/freight/create',
+                    'icon'  => 'fas fa-file-invoice-dollar',
+                    'active' => ['quote/pricing'],
+                ],
+            ]
+
+        ],
+        [
             'text' => 'Transporte',
             'icon' => 'fas fa-fw fa-truck-moving',
             'can' => 'transporte.module',
