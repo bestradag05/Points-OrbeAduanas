@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\QuoteFreight;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class QuoteFreightController extends Controller
 {
@@ -35,7 +38,63 @@ class QuoteFreightController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = $this->validateForm($request, null);
+
+        if ($validator->fails()) {
+            // Redirigir con el valor deseado para showModal
+            /*  dd($validator->errors()->all()); */
+            return redirect()->route('quote.freight.create')
+                ->withErrors($validator)
+                ->withInput()
+                ->with('showModal', false);
+        }
+
+
+        $quote = QuoteFreight::create([
+            'shipping_date' => Carbon::now('America/Lima'),
+            'response_date' => null,
+            'origin' => $request->origin,
+            'destination' => $request->destination,
+            'commodity' => $request->commodity,
+            'packaging_type' => $request->packaging_type,
+            'load_type' => $request->load_type,
+            'container_type' => $request->container_type,
+            'ton_kilogram' => $request->ton_kilogram,
+            'cubage_kgv' => $request->cubage_kgv,
+            'total_weight' => $request->total_weight,
+            'packages' => $request->packages,
+            'measures' => $request->measures,
+            'nro_operation' => $request->nro_operation,
+            'state' => 'Borrador'
+
+        ]);
+
+
+        if ($request->uploaded_files) {
+
+            $nroOperationFolder = "quote_freight/$quote->nro_quote";
+            $tempFolder = "uploads/temp";
+
+            if (!Storage::disk('public')->exists($nroOperationFolder)) {
+                Storage::disk('public')->makeDirectory($nroOperationFolder);
+            }
+
+            foreach ($request->uploaded_files as $file) {
+                $tempFilePath = "{$tempFolder}/{$file}";
+                $newFilePath = "{$nroOperationFolder}/{$file}";
+
+
+                if (Storage::disk('public')->exists($tempFilePath)) {
+                    Storage::disk('public')->move($tempFilePath, $newFilePath);
+                }
+            }
+        }
+
+
+        /*  broadcast(new QuoteNotification("Tienes una cotizacion nueva por responder")); */
+
+
+        return redirect('/quote/freight/'. $quote->id);
     }
 
     public function uploadFilesQuoteFreight(Request $request)
@@ -71,6 +130,19 @@ class QuoteFreightController extends Controller
     public function show(string $id)
     {
         //
+
+        $quote = QuoteFreight::findOrFail($id);
+
+        $folderPath = "quote_freight/{$quote->nro_quote}";
+        $files = collect(Storage::disk('public')->files($folderPath))->map(function ($file) {
+            return [
+                'name' => basename($file), // Nombre del archivo
+                'size' => Storage::disk('public')->size($file), // Tamaño del archivo
+                'url' => asset('storage/' . $file), // URL del archivo
+            ];
+        });
+
+        return view('freight/quote/quote-messagin', compact('quote', 'files'));
     }
 
     /**
@@ -96,4 +168,25 @@ class QuoteFreightController extends Controller
     {
         //
     }
+
+    public function validateForm($request, $id)
+    {
+
+        /* dd($request->all()); */
+
+        return Validator::make($request->all(), [
+            'origin' => 'required|string',
+            'destination' => 'required|string',
+            'load_type' => 'required|string',
+            'commodity' => 'required|string',
+            'container_type' => 'required_if:lcl_fcl,FCL',
+            'ton_kilogram' => 'required_if:lcl_fcl,FCL',
+            'packaging_type' => 'required|string',
+            'cubage_kgv' => 'required_if:lcl_fcl,LCL',
+            'total_weight' => 'required_if:lcl_fcl,LCL',
+            'packages' => 'required|string',
+            'lcl_fcl' => 'required',
+        ]);
+    }
+
 }

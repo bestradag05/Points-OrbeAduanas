@@ -10,10 +10,7 @@
                 <label for="customer" class="col-sm-2 col-form-label">Cliente</label>
                 <div class="col-sm-10 customer_quote">
                     <input type="text" class="form-control @error('customer') is-invalid @enderror"
-                        id="customer_name" name="customer_name" placeholder="Ingresa el cliente"
-                        value="{{ isset($quote->customer_name) ? $quote->customer_name : old('customer_name') }}">
-
-                    <input type="hidden" id="customer" name="customer"
+                        id="customer" name="customer" placeholder="Ingresa el cliente"
                         value="{{ isset($quote->customer) ? $quote->customer : old('customer') }}">
                 </div>
 
@@ -26,8 +23,6 @@
                         id="type_shipment" name="type_shipment" placeholder="Ingresa el cliente"
                         value="{{ isset($quote->type_shipment) ? $quote->type_shipment : old('type_shipment') }}">
 
-                    <input type="hidden" id="type_shipment" name="type_shipment"
-                        value="{{ isset($quote->type_shipment) ? $quote->type_shipment : old('customer') }}">
                 </div>
 
             </div>
@@ -237,8 +232,6 @@
                 </table>
 
                 <input type="hidden" id="measures" name="measures">
-                <input type="hidden" id="id_type_shipment" name="id_type_shipment"
-                    value="{{ isset($quote->id_type_shipment) ? $quote->id_type_shipment : old('id_type_shipment') }}">
                 <input type="hidden" id="nro_operation" name="nro_operation"
                     value="{{ isset($quote->nro_operation) ? $quote->nro_operation : old('nro_operation') }}">
                 <input type="hidden" id="lcl_fcl" name="lcl_fcl"
@@ -320,16 +313,14 @@
                     $('.fcl_quote').removeClass('d-none');
                 }
 
-               
-                $('#customer_name').val(data.customer.name_businessname).prop('readonly', true);
-                $('#customer').val(data.customer.id);
+            
+                $('#customer').val(data.customer.name_businessname).prop('readonly', true);
                 $('#type_shipment').val(data.type_shipment.description + ' ' + ((data.lcl_fcl != null) ? data.lcl_fcl : '')).prop('readonly', true);
                 $('#load_type').val(data.type_load.name).prop('readonly', true);
                 $('#origin').val(data.origin);
                 $('#destination').val(data.destination);
                 $('#commodity').val(data.commodity).prop('readonly', true);
                 $('#packaging_type').val(data.packaging_type).prop('readonly', true);
-                $('#id_type_shipment').val(data.id_type_shipment);
 
                 if (data.type_shipment.description === "Marítima") {
                     $('#lbl_origin').text('Puerto de salida');
@@ -534,7 +525,6 @@
                 $('#load_type').val(data.type_load.name).prop('readonly', true);
                 $('#commodity').val(data.commodity).prop('readonly', true);
                 $('#packaging_type').val(data.packaging_type).prop('readonly', true);
-                $('#id_type_shipment').val(data.id_type_shipment);
 
 
                 if (data.type_shipment.description === "Marítima" && data.lcl_fcl === 'LCL') {

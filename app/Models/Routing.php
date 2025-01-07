@@ -77,5 +77,8 @@ class Routing extends Model
         return $this->hasMany(QuoteTransport::class, 'nro_operation', 'nro_operation'); // 'routing_id' es la clave foránea en la tabla cotizaciones
     }
 
-
+    public function quote_freight()
+    {
+        return $this->hasMany(QuoteFreight::class, 'nro_operation', 'nro_operation'); // 'routing_id' es la clave foránea en la tabla cotizaciones
+    }
 }

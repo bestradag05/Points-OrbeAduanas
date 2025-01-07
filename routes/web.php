@@ -152,9 +152,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('quote/freight', QuoteFreightController::class)->names([
         'create' => 'quote.freight.create',
     ]);
-
+    
     Route::post('quote/freight/file-upload-documents', [QuoteFreightController::class, 'uploadFilesQuoteFreight']);
     Route::post('quote/freight/file-delete-documents', [QuoteFreightController::class, 'deleteFilesQuoteFreight']);
+
 
 
     /* Reportes */
