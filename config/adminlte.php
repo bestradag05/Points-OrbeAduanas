@@ -446,6 +446,12 @@ return [
                     'icon'  => 'fas fa-file-invoice-dollar',
                     'active' => ['quote/pricing'],
                 ],
+                [
+                    'text' => 'Listar cotizacion',
+                    'url' => 'quote/freight',
+                    'icon'  => 'fas fa-file-invoice-dollar',
+                    'active' => ['quote/freight'],
+                ],
             ]
 
         ],

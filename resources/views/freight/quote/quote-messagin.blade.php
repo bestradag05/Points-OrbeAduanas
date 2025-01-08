@@ -2,9 +2,9 @@
 
 @section('content_header')
     <div class="d-flex justify-content-between">
-        <h2>Detalle de cotizaciónn</h2>
+        <h2>Detalle de cotización</h2>
         <div>
-            <a href="{{ url('/quote') }}" class="btn btn-primary"> Atras </a>
+            <a href="{{ url('/quote/freight') }}" class="btn btn-primary"> Atras </a>
         </div>
     </div>
 
@@ -13,97 +13,148 @@
 
     <div class="row">
         <div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
-            <div class="row">
-                <div class="col-12 col-sm-4">
-                    <div class="info-box bg-light">
-                        <div class="info-box-content">
-                            <span class="info-box-text text-center text-muted">Estimated budget</span>
-                            <span class="info-box-number text-center text-muted mb-0">2300</span>
+            <div class="card direct-chat direct-chat-primary h-100">
+                <div class="card-header bg-sisorbe-600 text-white py-2">
+                    <h5>Cotizacion : {{ $quote->nro_quote }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="direct-chat-messages h-100">
+                        <div class="direct-chat-msg">
+                            <div class="direct-chat-infos clearfix">
+                                <span class="direct-chat-name float-left">Alexander Pierce</span>
+                                <span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
+                            </div>
+                            <img class="direct-chat-img" src="/docs/3.0/assets/img/user1-128x128.jpg"
+                                alt="message user image">
+                            <div class="direct-chat-text">
+                                Is this template really for free? That's unbelievable!
+                            </div>
                         </div>
+                        <div class="direct-chat-msg right">
+                            <div class="direct-chat-infos clearfix">
+                                <span class="direct-chat-name float-right">Sarah Bullock</span>
+                                <span class="direct-chat-timestamp float-left">23 Jan 2:05 pm</span>
+                            </div>
+                            <img class="direct-chat-img" src="/docs/3.0/assets/img/user3-128x128.jpg"
+                                alt="message user image">
+                            <div class="direct-chat-text">
+                                You better believe it!
+                            </div>
+                        </div>
+                        <div class="direct-chat-msg">
+                            <div class="direct-chat-infos clearfix">
+                                <span class="direct-chat-name float-left">Alexander Pierce</span>
+                                <span class="direct-chat-timestamp float-right">23 Jan 5:37 pm</span>
+                            </div>
+                            <img class="direct-chat-img" src="/docs/3.0/assets/img/user1-128x128.jpg"
+                                alt="message user image">
+                            <div class="direct-chat-text">
+                                Working with AdminLTE on a great new app! Wanna join?
+                            </div>
+                        </div>
+                        <div class="direct-chat-msg right">
+                            <div class="direct-chat-infos clearfix">
+                                <span class="direct-chat-name float-right">Sarah Bullock</span>
+                                <span class="direct-chat-timestamp float-left">23 Jan 6:10 pm</span>
+                            </div>
+                            <img class="direct-chat-img" src="/docs/3.0/assets/img/user3-128x128.jpg"
+                                alt="message user image">
+                            <div class="direct-chat-text">
+                                I would love to.
+                            </div>
+                        </div>
+                    </div>
+                    <!--/.direct-chat-messages-->
+                    <div class="direct-chat-contacts">
+                        <ul class="contacts-list">
+                            <li>
+                                <a href="#">
+                                    <img class="contacts-list-img" src="/docs/3.0/assets/img/user1-128x128.jpg">
+                                    <div class="contacts-list-info">
+                                        <span class="contacts-list-name">
+                                            Count Dracula
+                                            <small class="contacts-list-date float-right">2/28/2015</small>
+                                        </span>
+                                        <span class="contacts-list-msg">How have you been? I was...</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <img class="contacts-list-img" src="/docs/3.0/assets/img/user7-128x128.jpg">
+                                    <div class="contacts-list-info">
+                                        <span class="contacts-list-name">
+                                            Sarah Doe
+                                            <small class="contacts-list-date float-right">2/23/2015</small>
+                                        </span>
+                                        <span class="contacts-list-msg">I will be waiting for...</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <img class="contacts-list-img" src="/docs/3.0/assets/img/user3-128x128.jpg">
+                                    <div class="contacts-list-info">
+                                        <span class="contacts-list-name">
+                                            Nadia Jolie
+                                            <small class="contacts-list-date float-right">2/20/2015</small>
+                                        </span>
+                                        <span class="contacts-list-msg">I'll call you back at...</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <img class="contacts-list-img" src="/docs/3.0/assets/img/user5-128x128.jpg">
+                                    <div class="contacts-list-info">
+                                        <span class="contacts-list-name">
+                                            Nora S. Vans
+                                            <small class="contacts-list-date float-right">2/10/2015</small>
+                                        </span>
+                                        <span class="contacts-list-msg">Where is your new...</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <img class="contacts-list-img" src="/docs/3.0/assets/img/user6-128x128.jpg">
+                                    <div class="contacts-list-info">
+                                        <span class="contacts-list-name">
+                                            John K.
+                                            <small class="contacts-list-date float-right">1/27/2015</small>
+                                        </span>
+                                        <span class="contacts-list-msg">Can I take a look at...</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <img class="contacts-list-img" src="/docs/3.0/assets/img/user8-128x128.jpg">
+                                    <div class="contacts-list-info">
+                                        <span class="contacts-list-name">
+                                            Kenneth M.
+                                            <small class="contacts-list-date float-right">1/4/2015</small>
+                                        </span>
+                                        <span class="contacts-list-msg">Never mind I found...</span>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-                <div class="col-12 col-sm-4">
-                    <div class="info-box bg-light">
-                        <div class="info-box-content">
-                            <span class="info-box-text text-center text-muted">Total amount spent</span>
-                            <span class="info-box-number text-center text-muted mb-0">2000</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-4">
-                    <div class="info-box bg-light">
-                        <div class="info-box-content">
-                            <span class="info-box-text text-center text-muted">Estimated project duration</span>
-                            <span class="info-box-number text-center text-muted mb-0">20</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <h4>Recent Activity</h4>
-                    <div class="post">
-                        <div class="user-block">
-                            <img class="img-circle img-bordered-sm" src="../../dist/img/user1-128x128.jpg" alt="user image">
-                            <span class="username">
-                                <a href="#">Jonathan Burke Jr.</a>
+                <div class="card-footer">
+                    <form action="#" method="post">
+                        <div class="input-group">
+                            <textarea id="mytextarea">¡Hola, Mundo!</textarea>
+                            <span class="input-group-append">
+                                <button type="button" class="btn btn-primary">Send</button>
                             </span>
-                            <span class="description">Shared publicly - 7:45 PM today</span>
                         </div>
-                        <!-- /.user-block -->
-                        <p>
-                            Lorem ipsum represents a long-held tradition for designers,
-                            typographers and the like. Some people hate it and argue for
-                            its demise, but others ignore.
-                        </p>
-
-                        <p>
-                            <a href="#" class="link-black text-sm"><i class="fas fa-link mr-1"></i> Demo File 1 v2</a>
-                        </p>
-                    </div>
-
-                    <div class="post clearfix">
-                        <div class="user-block">
-                            <img class="img-circle img-bordered-sm" src="../../dist/img/user7-128x128.jpg" alt="User Image">
-                            <span class="username">
-                                <a href="#">Sarah Ross</a>
-                            </span>
-                            <span class="description">Sent you a message - 3 days ago</span>
-                        </div>
-                        <!-- /.user-block -->
-                        <p>
-                            Lorem ipsum represents a long-held tradition for designers,
-                            typographers and the like. Some people hate it and argue for
-                            its demise, but others ignore.
-                        </p>
-                        <p>
-                            <a href="#" class="link-black text-sm"><i class="fas fa-link mr-1"></i> Demo File 2</a>
-                        </p>
-                    </div>
-
-                    <div class="post">
-                        <div class="user-block">
-                            <img class="img-circle img-bordered-sm" src="../../dist/img/user1-128x128.jpg" alt="user image">
-                            <span class="username">
-                                <a href="#">Jonathan Burke Jr.</a>
-                            </span>
-                            <span class="description">Shared publicly - 5 days ago</span>
-                        </div>
-                        <!-- /.user-block -->
-                        <p>
-                            Lorem ipsum represents a long-held tradition for designers,
-                            typographers and the like. Some people hate it and argue for
-                            its demise, but others ignore.
-                        </p>
-
-                        <p>
-                            <a href="#" class="link-black text-sm"><i class="fas fa-link mr-1"></i> Demo File 1 v1</a>
-                        </p>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
-        <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2">
+        <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2 px-4">
             <h5 class="text-indigo text-center"><i class="fas fa-file-alt"></i> Detalle de carga</h5>
 
             <br>
@@ -193,17 +244,29 @@
             <h5 class="mt-5 text-muted">Archivos :</h5>
             <ul class="list-unstyled">
                 @foreach ($files as $file)
-                    
-                <li>
-                    <a href="{{$file['url']}}" target="_blank" class="btn-link text-secondary"><i class="far fa-fw fa-file-pdf"></i> {{$file['name']}}</a>
-                </li>
+                    <li>
+                        <a href="{{ $file['url'] }}" target="_blank" class="btn-link text-secondary"><i
+                                class="far fa-fw fa-file-pdf"></i> {{ $file['name'] }}</a>
+                    </li>
                 @endforeach
             </ul>
             <div class="text-center mt-5 mb-3">
-                <a href="#" class="btn btn-sm btn-primary">Add files</a>
-                <a href="#" class="btn btn-sm btn-warning">Report contact</a>
+                <a href="#" class="btn btn-sm btn-primary">Enviar Cotización</a>
+                <a href="#" class="btn btn-sm btn-warning">Editar Cotización</a>
             </div>
         </div>
     </div>
 
 @stop
+
+
+@push('scripts')
+    <script>
+        document.addEventListener("DOMContentLoaded", (event) => {
+
+
+        });
+
+       
+    </script>
+@endpush

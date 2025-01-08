@@ -16,7 +16,26 @@ class QuoteFreightController extends Controller
      */
     public function index()
     {
-        //
+        $quotes = QuoteFreight::with('routing')->get();
+
+        $heads = [
+            '#',
+            'N° cotizacion',
+            'Cliente',
+            'Origen',
+            'Destino',
+            'Producto',
+            'LCL / FCL',
+            'Cubicaje-KGV',
+            'Tonelada-KG',
+            'Peso Total',
+            'Asesor',
+            'N° de operacion',
+            'Estado',
+            'Acciones'
+        ];
+
+        return view('freight/quote/list-quote', compact('quotes', 'heads'));
     }
 
     /**

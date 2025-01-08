@@ -1,24 +1,131 @@
+/* Governor Bay Color Palette */
+:root {
+    --sisorbe-50: #eef4ff;
+    --sisorbe-100: #e0ebff;
+    --sisorbe-200: #c6d9ff;
+    --sisorbe-300: #a4bffd;
+    --sisorbe-400: #7f9bfa;
+    --sisorbe-500: #6178f3;
+    --sisorbe-600: #4451e7;
+    --sisorbe-700: #3640cc;
+    --sisorbe-800: #2e37a4;
+    --sisorbe-900: #2d3682;
+    --sisorbe-950: #1a1e4c;
+}
+
+
+/* Clases para colores usando las variables definidas */
+.bg-sisorbe-50 {
+    background-color: var(--sisorbe-50);
+}
+
+.bg-sisorbe-100 {
+    background-color: var(--sisorbe-100);
+}
+
+.bg-sisorbe-200 {
+    background-color: var(--sisorbe-200);
+}
+
+.bg-sisorbe-300 {
+    background-color: var(--sisorbe-300);
+}
+
+.bg-sisorbe-400 {
+    background-color: var(--sisorbe-400);
+}
+
+.bg-sisorbe-500 {
+    background-color: var(--sisorbe-500);
+}
+
+.bg-sisorbe-600 {
+    background-color: var(--sisorbe-600);
+}
+
+.bg-sisorbe-700 {
+    background-color: var(--sisorbe-700);
+}
+
+.bg-sisorbe-800 {
+    background-color: var(--sisorbe-800);
+}
+
+.bg-sisorbe-900 {
+    background-color: var(--sisorbe-900);
+}
+
+.bg-sisorbe-950 {
+    background-color: var(--sisorbe-950);
+}
+
+/* Clases para el color de texto */
+.text-sisorbe-50 {
+    color: var(--sisorbe-50);
+}
+
+.text-sisorbe-100 {
+    color: var(--sisorbe-100);
+}
+
+.text-sisorbe-200 {
+    color: var(--sisorbe-200);
+}
+
+.text-sisorbe-300 {
+    color: var(--sisorbe-300);
+}
+
+.text-sisorbe-400 {
+    color: var(--sisorbe-400);
+}
+
+.text-sisorbe-500 {
+    color: var(--sisorbe-500);
+}
+
+.text-sisorbe-600 {
+    color: var(--sisorbe-600);
+}
+
+.text-sisorbe-700 {
+    color: var(--sisorbe-700);
+}
+
+.text-sisorbe-800 {
+    color: var(--sisorbe-800);
+}
+
+.text-sisorbe-900 {
+    color: var(--sisorbe-900);
+}
+
+.text-sisorbe-950 {
+    color: var(--sisorbe-950);
+}
+
+
 
 .btn-indigo, .bg-indigo{
-    background: #2e37a4;
+    background: var(--sisorbe-800);
     color: white;
 }
 
 
 
 .btn-outline-indigo {
-    color: #2e37a4;
-    border-color: #2e37a4;
+    color: var(--sisorbe-800);
+    border-color: var(--sisorbe-800);
   }
   
   .btn-outline-indigo:hover {
     color: #fff;
-    background-color: #2e37a4;
-    border-color: #2e37a4;
+    background-color: var(--sisorbe-800);
+    border-color: var(--sisorbe-800);
   }
   
   .btn-outline-indigo:focus, .btn-outline-indigo.focus {
-    box-shadow: 0 0 0 0 #2e37a4;;
+    box-shadow: 0 0 0 0 var(--sisorbe-800);;
   }
 
 
@@ -28,7 +135,7 @@
 }
 
 .text-indigo {
-    color: #2e37a4!important;
+    color: var(--sisorbe-800)!important;
 }
 
 .select2-selection{
@@ -99,3 +206,8 @@
 .status-rechazada {
     color: red;
 }
+.status-borrador {
+    color: gray;
+}
+
+
