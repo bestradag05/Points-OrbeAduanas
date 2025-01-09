@@ -160,9 +160,13 @@ class QuoteFreightController extends Controller
                 'url' => asset('storage/' . $file), // URL del archivo
             ];
         });
+        
+        $messages = QuoteFreight::findOrFail($id)->messages;
 
-        return view('freight/quote/quote-messagin', compact('quote', 'files'));
+
+        return view('freight/quote/quote-messagin', compact('quote', 'files', 'messages'));
     }
+
 
     /**
      * Show the form for editing the specified resource.

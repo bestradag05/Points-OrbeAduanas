@@ -1,36 +1,39 @@
 @extends('home')
 
-@section('content_header')
-    <div class="d-flex justify-content-between">
-        <h2>Detalle de cotización</h2>
-        <div>
-            <a href="{{ url('/quote/freight') }}" class="btn btn-primary"> Atras </a>
-        </div>
-    </div>
 
-@stop
 @section('dinamic-content')
 
     <div class="row">
+        
+        {{-- <div class="col-12  mb-4 text-right">
+            <a href="{{ url('/quote/freight') }}" class="btn btn-primary"> Atras </a>
+        </div> --}}
         <div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
             <div class="card direct-chat direct-chat-primary h-100">
-                <div class="card-header bg-sisorbe-600 text-white py-2">
-                    <h5>Cotizacion : {{ $quote->nro_quote }}</h5>
+                <div class="card-header bg-sisorbe-100 py-2">
+                    <h5 class="text-center text-bold text-uppercase text-indigo">Cotizacion : {{ $quote->nro_quote }}</h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="max-height: 600px; overflow-y: auto;">
                     <div class="direct-chat-messages h-100">
-                        <div class="direct-chat-msg">
-                            <div class="direct-chat-infos clearfix">
-                                <span class="direct-chat-name float-left">Alexander Pierce</span>
-                                <span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
+                        @foreach ($messages as $message)
+                            <div class="direct-chat-msg {{($message->sender_id != auth()->user()->id) ? 'right' : ''}}">
+                                <div class="direct-chat-infos clearfix">
+                                    <span class="direct-chat-name float-left text-indigo text-bold">{{ $message->sender->personal->names }}</span>
+                                    <span class="direct-chat-timestamp float-right text-bold">{{ $message->created_at }}</span>
+                                </div>
+                                @if ($message->sender->personal->img_url !== null)
+                                    <img src="{{ asset('storage/' . $message->sender->personal->img_url) }}"
+                                        class="direct-chat-img" alt="User Image">
+                                @else
+                                    <img src="{{ asset('storage/personals/user_default.png') }}"
+                                        class="direct-chat-img" alt="User Image">
+                                @endif
+                                <div class="direct-chat-text">
+                                    {!! $message->message !!}
+                                </div>
                             </div>
-                            <img class="direct-chat-img" src="/docs/3.0/assets/img/user1-128x128.jpg"
-                                alt="message user image">
-                            <div class="direct-chat-text">
-                                Is this template really for free? That's unbelievable!
-                            </div>
-                        </div>
-                        <div class="direct-chat-msg right">
+                        @endforeach
+                        {{--                         <div class="direct-chat-msg right">
                             <div class="direct-chat-infos clearfix">
                                 <span class="direct-chat-name float-right">Sarah Bullock</span>
                                 <span class="direct-chat-timestamp float-left">23 Jan 2:05 pm</span>
@@ -62,7 +65,7 @@
                             <div class="direct-chat-text">
                                 I would love to.
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                     <!--/.direct-chat-messages-->
                     <div class="direct-chat-contacts">
@@ -143,12 +146,16 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <form action="#" method="post">
-                        <div class="input-group">
-                            <textarea id="mytextarea">¡Hola, Mundo!</textarea>
-                            <span class="input-group-append">
-                                <button type="button" class="btn btn-primary">Send</button>
-                            </span>
+                    <form action="/quote/freight/message" method="POST">
+                        @csrf
+                        <div class="row">
+                            <div class="col-12">
+                                <textarea id="quote-text" name="message"></textarea>
+                                <input type="hidden" name="quote_id" value="{{ $quote->id }}">
+                            </div>
+                            <div class="col-12 row align-items-center justify-content-center mt-2">
+                                <button type="submit" class="btn btn-indigo">Enviar</button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -251,8 +258,8 @@
                 @endforeach
             </ul>
             <div class="text-center mt-5 mb-3">
-                <a href="#" class="btn btn-sm btn-primary">Enviar Cotización</a>
-                <a href="#" class="btn btn-sm btn-warning">Editar Cotización</a>
+                <a href="#" class="btn btn-sm btn-indigo">Enviar Cotización</a>
+                <a href="#" class="btn btn-sm btn-secondary">Editar Cotización</a>
             </div>
         </div>
     </div>
@@ -261,12 +268,12 @@
 
 
 @push('scripts')
+    <!-- include summernote css/js -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", (event) => {
-
-
+        $(document).ready(function() {
+            $('#quote-text').summernote();
         });
-
-       
     </script>
 @endpush

@@ -13,6 +13,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IncotermsController;
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\LiquidacionController;
+use App\Http\Controllers\MessageQuoteFreightController;
 use App\Http\Controllers\ModalityController;
 use App\Http\Controllers\PermissionsController;
 use App\Http\Controllers\PersonalController;
@@ -79,7 +80,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('customer_supplier_document', CustomerSupplierDocumentController::class);
     Route::resource('roles', RolesController::class);
     Route::get('roles/grupos/{id}', [RolesController::class, 'templateRoles']);
-    Route::post('roles/grupos/{rol}', [RolesController::class, 'addPersonGroup']);
+    Route::post('roles/grupos/{idRol}', [RolesController::class, 'addPersonGroup']);
     Route::delete('roles/grupos/{id}', [RolesController::class, 'deletePersonGroup']);
     Route::resource('permissions', PermissionsController::class);
     Route::get('roles/grupos/permissions/{id}', [PermissionsController::class, 'templatePermissions']);
@@ -156,9 +157,12 @@ Route::middleware('auth')->group(function () {
     Route::post('quote/freight/file-upload-documents', [QuoteFreightController::class, 'uploadFilesQuoteFreight']);
     Route::post('quote/freight/file-delete-documents', [QuoteFreightController::class, 'deleteFilesQuoteFreight']);
 
+    /* Mensaje de cotizaciones de flete */
+
+    Route::resource('quote/freight/message', MessageQuoteFreightController::class);
 
 
-    /* Reportes */
+    /* Reportes */  
 
     Route::get('points/export/customs/{type}', [PointsController::class, 'exportCustom']);
     Route::get('points/export/customs/{type}', [PointsController::class, 'exportCustom']);

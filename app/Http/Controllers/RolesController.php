@@ -160,12 +160,14 @@ class RolesController extends Controller
     }
 
 
-    public function addPersonGroup(Request $request, $rol) {
+    public function addPersonGroup(Request $request, $idRol) {
         $user = User::find($request->user);
-        $rolObjet = json_decode($rol);
-        $user->assignRole($rolObjet->name);
 
-        return redirect('roles/grupos/'.$rolObjet->id);
+        $rol = Role::findOrFail($idRol);
+
+        $user->assignRole($rol->name);
+
+        return redirect('roles/grupos/'.$rol->id);
     }
 
     public function deletePersonGroup(Request $request, $idRol){

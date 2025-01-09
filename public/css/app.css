@@ -210,4 +210,25 @@
     color: gray;
 }
 
+.direct-chat-text{
+    background-color: #f3f6f8!important;
+    border: 1px solid #f3f6f8!important;
+    
+}
 
+.direct-chat-text::after, .direct-chat-text::before {
+    border-right-color: #f3f6f8;
+    color: #000;
+}
+
+.direct-chat-primary .right>.direct-chat-text{
+    background-color: var(--sisorbe-100)!important;
+    border-color: var(--sisorbe-100)!important;
+    color: var(--sisorbe-900)!important;
+
+}
+
+
+.direct-chat-primary .right>.direct-chat-text::after, .direct-chat-primary .right>.direct-chat-text::before{
+    border-left-color: var(--sisorbe-100);
+}

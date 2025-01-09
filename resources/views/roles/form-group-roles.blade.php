@@ -2,7 +2,7 @@
 
 
 
-<form action="{{ url('/roles/grupos/' . $rol) }}" method="POST" class="row justify-content-around">
+<form action="{{ url('/roles/grupos/' . $rol->id) }}" method="POST" class="row justify-content-around">
     @csrf
     <div class="col-6">
         <x-adminlte-select2 name="user" igroup-size="md" data-placeholder="Select un usuario...">
