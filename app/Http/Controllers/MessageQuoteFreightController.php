@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MessageQuoteFreight;
+use App\Models\QuoteFreight;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -59,6 +60,13 @@ class MessageQuoteFreightController extends Controller
     public function edit(string $id)
     {
         //
+ 
+        $quote = QuoteFreight::findOrFail($id);
+  
+        $showModal = session('showModal', false);
+
+        return view('freight.quote.register-quote', compact('quote'))->with('showModal', $showModal);
+    
     }
 
     /**

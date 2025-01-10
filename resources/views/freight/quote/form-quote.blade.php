@@ -445,32 +445,9 @@
             document.body.classList.remove('modal-open');
             document.body.style.paddingRight = ''
 
-            //Buscamos numero de operacion
-            const nro_operation = $('#nro_operation').val();
+      
 
 
-
-            if (nro_operation === '') {
-                const lcl_fcl = $('#lcl_fcl').val();
-
-
-                if (lcl_fcl === 'LCL' || !lcl_fcl) {
-                    $('#title_quote span').text('LCL');
-
-                    $('.lcl_quote').removeClass('d-none');
-                    $('.fcl_quote').addClass('d-none');
-
-
-                } else {
-                    $('#title_quote span').text('FCL');
-                    $('.lcl_quote').addClass('d-none');
-                    $('.fcl_quote').removeClass('d-none');
-                }
-
-                $('#measure_delete').removeClass('d-none');
-                $('#div_measures').removeClass('d-none');
-
-            } else {
 
                 // Realizar solicitud AJAX
                 $.ajax({
@@ -498,7 +475,7 @@
                     }
                 });
 
-            }
+
 
 
 

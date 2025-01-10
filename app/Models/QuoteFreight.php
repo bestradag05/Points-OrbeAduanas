@@ -49,6 +49,7 @@ class QuoteFreight extends Model
         'nro_quote',
         'shipping_date',
         'response_date',
+        'customer',
         'origin',
         'destination',
         'commodity',
