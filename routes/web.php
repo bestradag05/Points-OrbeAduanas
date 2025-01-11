@@ -159,6 +159,7 @@ Route::middleware('auth')->group(function () {
 
     /* Mensaje de cotizaciones de flete */
 
+    Route::get('quote/freight/message/sendQuote/{id}', [MessageQuoteFreightController::class, 'sendQuote']);
     Route::resource('quote/freight/message', MessageQuoteFreightController::class);
 
 

@@ -45,7 +45,7 @@
                                 <input type="hidden" name="quote_id" value="{{ $quote->id }}">
                             </div>
                             <div class="col-12 row align-items-center justify-content-center mt-2">
-                                <button type="submit" class="btn btn-indigo">Enviar</button>
+                                <button type="submit" {{$quote->state === 'Borrador' ? 'disabled' : '' }} class="btn btn-indigo">Enviar</button>
                             </div>
                         </div>
                     </form>
@@ -139,7 +139,18 @@
                 </div>
             @endif
 
-            <h5 class="mt-5 text-muted">Archivos :</h5>
+            <div class="row text-muted mt-3">
+                <div class="col-6">
+                    <p class="text-uppercase ">Estado :
+                        <b class="status-{{strtolower($quote->state)}}">{{ $quote->state }}</b>
+                        <b class="status-{{strtolower($quote->state)}}"><i class="fas fa-circle"></i></b>
+                        
+                    </p>
+                </div>
+             
+            </div>
+
+            <h5 class="mt-3 text-muted">Archivos :</h5>
             <ul class="list-unstyled">
                 @foreach ($files as $file)
                     <li>
@@ -149,8 +160,9 @@
                 @endforeach
             </ul>
             <div class="text-center mt-5 mb-3">
-                <a href="#" class="btn btn-sm btn-indigo">Enviar Cotización</a>
-                <a href="{{ url('/quote/freight/message/'. $quote->id . '/edit') }}" class="btn btn-sm btn-secondary">Editar Cotización</a>
+                <a href="{{ url('/quote/freight/message/sendQuote/'. $quote->id) }}" class="btn btn-sm btn-indigo {{$quote->state != 'Borrador' ? 'd-none' : '' }}">Enviar Cotización</a>
+                <a href="{{ url('/quote/freight/message/'. $quote->id . '/edit') }}" class="btn btn-sm btn-secondary {{$quote->state != 'Borrador' ? 'd-none' : '' }}">Editar Cotización</a>
+                <a href="" class="btn btn-sm btn-success {{$quote->state === 'Borrador' ? 'd-none' : '' }}">Cotización Aceptada</a>
             </div>
         </div>
     </div>

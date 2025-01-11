@@ -10,8 +10,8 @@
                 <label for="customer" class="col-sm-2 col-form-label">Cliente</label>
                 <div class="col-sm-10 customer_quote">
                     <input type="text" class="form-control @error('customer') is-invalid @enderror"
-                        id="customer" name="customer" placeholder="Ingresa el cliente"
-                        value="{{ isset($quote->customer) ? $quote->customer : old('customer') }}">
+                        id="customer" name="customer" placeholder="Ingresa el cliente" {{isset($quote->routing->customer->name_businessname) ? 'readonly' : ''}}
+                        value="{{ isset($quote->routing->customer->name_businessname) ? $quote->routing->customer->name_businessname : old('customer') }}">
                 </div>
 
             </div>
@@ -20,8 +20,8 @@
                 <label for="type_shipment" class="col-sm-2 col-form-label">Tipo de embarque</label>
                 <div class="col-sm-10 type_shipment_quote">
                     <input type="text" class="form-control @error('type_shipment') is-invalid @enderror"
-                        id="type_shipment" name="type_shipment" placeholder="Ingresa el cliente"
-                        value="{{ isset($quote->type_shipment) ? $quote->type_shipment : old('type_shipment') }}">
+                        id="type_shipment" name="type_shipment" placeholder="Ingresa el cliente" {{isset($quote->routing->type_shipment->description) ? 'readonly' : ''}}
+                        value="{{ isset($quote->routing->type_shipment->description) ? $quote->routing->type_shipment->description : old('type_shipment') }}">
 
                 </div>
 
@@ -32,7 +32,7 @@
                 <div class="col-sm-10">
                     <input type="text" class="form-control @error('origin') is-invalid @enderror"
                         id="origin" name="origin" placeholder="Ingrese la direccion de recojo"
-                        value="{{ isset($quote->origin) && $quote->lcl_fcl === 'LCL' ? $quote->origin : old('origin') }}">
+                        value="{{ isset($quote->origin) ? $quote->origin : old('origin') }}">
                     @error('origin')
                         <span class="invalid-feedback d-block" role="alert">
                             <strong>{{ $message }}</strong>
@@ -60,7 +60,7 @@
                 <label for="load_type" class="col-sm-2 col-form-label">Tipo de Carga</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control @error('load_type') is-invalid @enderror" id="load_type"
-                        name="load_type" placeholder="Ingrese el tipo de carga"
+                        name="load_type" placeholder="Ingrese el tipo de carga" {{isset($quote->load_type) ? 'readonly' : ''}}
                         value="{{ isset($quote->load_type) ? $quote->load_type : old('load_type') }}">
                     @error('load_type')
                         <span class="invalid-feedback d-block" role="alert">
@@ -75,7 +75,7 @@
                 <label for="commodity" class="col-sm-2 col-form-label">Descripcion de Mercaderia</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control @error('commodity') is-invalid @enderror" id="commodity"
-                        name="commodity" placeholder="Ingrese descripcion del producto"
+                        name="commodity" placeholder="Ingrese descripcion del producto" {{isset($quote->commodity) ? 'readonly' : ''}}
                         value="{{ isset($quote->commodity) ? $quote->commodity : old('commodity') }}">
                     @error('commodity')
                         <span class="invalid-feedback d-block" role="alert">
@@ -86,11 +86,11 @@
                 </div>
 
             </div>
-            <div class="form-group row  fcl_quote">
+            <div class="form-group row  fcl_quote {{isset($quote->container_type) ? '' : 'd-none'}}" >
                 <label for="container_type" class="col-sm-2 col-form-label">Tipo de contenedor</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control @error('container_type') is-invalid @enderror"
-                        id="container_type" name="container_type" placeholder="Ingrese el tipo de contenedor"
+                        id="container_type" name="container_type" placeholder="Ingrese el tipo de contenedor" {{isset($quote->container_type) ? 'readonly' : ''}}
                         value="{{ isset($quote->container_type) ? $quote->container_type : old('container_type') }}">
 
 
@@ -103,11 +103,11 @@
                 </div>
 
             </div>
-            <div class="form-group row  fcl_quote">
+            <div class="form-group row  fcl_quote {{isset($quote->ton_kilogram) ? '' : 'd-none'}}">
                 <label for="ton_kilogram" class="col-sm-2 col-form-label">Toneladas / KG</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control @error('ton_kilogram') is-invalid @enderror"
-                        id="ton_kilogram" name="ton_kilogram" placeholder="Ingrese el preso de carga"
+                        id="ton_kilogram" name="ton_kilogram" placeholder="Ingrese el preso de carga" {{isset($quote->ton_kilogram) ? 'readonly' : ''}}
                         value="{{ isset($quote->ton_kilogram) ? $quote->ton_kilogram : old('ton_kilogram') }}">
 
                     @error('ton_kilogram')
@@ -122,7 +122,7 @@
                 <label for="packaging_type" class="col-sm-2 col-form-label">Tipo de embalaje</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control @error('packaging_type') is-invalid @enderror"
-                        id="packaging_type" name="packaging_type" placeholder="Ingrese el tipo de embalaje"
+                        id="packaging_type" name="packaging_type" placeholder="Ingrese el tipo de embalaje" {{isset($quote->packaging_type) ? 'readonly' : ''}}
                         value="{{ isset($quote->packaging_type) ? $quote->packaging_type : old('packaging_type') }}">
 
                     @error('packaging_type')
@@ -133,11 +133,11 @@
                 </div>
 
             </div>
-            <div class="form-group row lcl_quote">
+            <div class="form-group row lcl_quote {{isset($quote->cubage_kgv) ? '' : 'd-none'}}">
                 <label for="cubage_kgv" class="col-sm-2 col-form-label">Cubicaje/KGV</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control @error('cubage_kgv') is-invalid @enderror"
-                        id="cubage_kgv" name="cubage_kgv" placeholder="Ingresa el cubicaje / kgv"
+                        id="cubage_kgv" name="cubage_kgv" placeholder="Ingresa el cubicaje / kgv" {{isset($quote->cubage_kgv) ? 'readonly' : ''}}
                         value="{{ isset($quote->cubage_kgv) ? $quote->cubage_kgv : old('cubage_kgv') }}">
                     @error('cubage_kgv')
                         <span class="invalid-feedback d-block" role="alert">
@@ -146,12 +146,12 @@
                     @enderror
                 </div>
             </div>
-            <div class="form-group row lcl_quote">
+            <div class="form-group row lcl_quote {{isset($quote->total_weight) ? '' : 'd-none'}}">
                 <label for="total_weight" class="col-sm-2 col-form-label">Peso total</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control @error('total_weight') is-invalid @enderror"
                         id="total_weight" name="total_weight"
-                        placeholder="Ingresa la hora maxima de recojo del cliente"
+                        placeholder="Ingresa la hora maxima de recojo del cliente" {{isset($quote->total_weight) ? 'readonly' : ''}}
                         value="{{ isset($quote->total_weight) ? $quote->total_weight : old('total_weight') }}">
                     @error('total_weight')
                         <span class="invalid-feedback d-block" role="alert">
@@ -167,7 +167,7 @@
                 <label for="packages" class="col-sm-2 col-form-label">Bultos</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control @error('packages') is-invalid @enderror"
-                        id="packages" name="packages" placeholder="Ingresa si tendra valor de cuadrilla"
+                        id="packages" name="packages" placeholder="Ingresa si tendra valor de cuadrilla" {{isset($quote->packages) ? 'readonly' : ''}}
                         value="{{ isset($quote->packages) ? $quote->packages : old('packages') }}">
                     @error('packages')
                         <span class="invalid-feedback d-block" role="alert">
@@ -222,7 +222,6 @@
                             <th>Ancho (cm)</th>
                             <th>Largo (cm)</th>
                             <th>Alto (cm)</th>
-                            <th id="measure_delete" class="d-none">Eliminar</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -416,171 +415,6 @@
         <script>
             const dataMeasures = @json(isset($quote->measures) ? $quote->measures : '');
 
-            document.addEventListener('DOMContentLoaded', function() {
-
-                let customer_manual = $('.customer_quote_manual').find('select')[0];
-                let nro_operation = $('#nro_operation').val();
-
-
-                if ((customer_manual.value !== '' || customer_manual.classList.contains('is-invalid')) &&
-                    nro_operation === "") {
-                    $('.customer_quote_manual').removeClass('d-none');
-                    $('.customer_quote').addClass('d-none');
-                }
-
-
-
-            });
-
-            // Cerrar el modal utilizando la instancia nativa de Bootstrap
-            $('#modalQuoteTransport').hide();
-
-            // Eliminar manualmente el backdrop si persiste
-            const modalBackdrop = document.querySelector('.modal-backdrop');
-            if (modalBackdrop) {
-                modalBackdrop.remove();
-            }
-
-            // Eliminar la clase `modal-open` del body para restaurar el scroll
-            document.body.classList.remove('modal-open');
-            document.body.style.paddingRight = ''
-
-      
-
-
-
-                // Realizar solicitud AJAX
-                $.ajax({
-                    url: `/quote/search-routing/${nro_operation}`, // Cambia esto por la URL de tu servidor
-                    type: 'GET',
-                    success: function(response) {
-                        // Manejo de la respuesta exitosa
-
-                        loadInfoRouting(response.data[0]);
-
-
-                    },
-                    error: function(xhr, status, error) {
-
-                        // Manejo del error
-                        var errorMessage = xhr.responseJSON ? xhr.responseJSON.message :
-                            'Ocurrió un error inesperado.';
-
-                        // Mostrar el mensaje de error al usuario
-                        $('#error_nro_operation').removeClass('d-none').addClass('d-block');
-                        $('#texto_nro_operation').text(errorMessage);
-                        $('#modal_nro_operation').addClass('is-invalid');
-
-
-                    }
-                });
-
-
-
-
-
-            function loadInfoRouting(data) {
-
-                $('#title_quote span').text(data.lcl_fcl);
-
-
-                if (data.lcl_fcl === 'LCL' || data.lcl_fcl === null) {
-                    $('#title_quote span').text('LCL');
-
-                    $('.lcl_quote').removeClass('d-none');
-                    $('.fcl_quote').addClass('d-none');
-
-
-                } else {
-                    $('#title_quote span').text('FCL');
-                    $('.lcl_quote').addClass('d-none');
-                    $('.fcl_quote').removeClass('d-none');
-                }
-
-                $('#customer_name').val(data.customer.name_businessname).prop('readonly', true);
-                $('#customer').val(data.customer.id);
-                $('#load_type').val(data.type_load.name).prop('readonly', true);
-                $('#commodity').val(data.commodity).prop('readonly', true);
-                $('#packaging_type').val(data.packaging_type).prop('readonly', true);
-
-
-                if (data.type_shipment.description === "Marítima" && data.lcl_fcl === 'LCL') {
-                    $('#cubage_kgv').val(data.volumen + ' m3').prop('readonly', true);
-                }
-
-                if (data.type_shipment.description === "Aérea" && data.lcl_fcl === 'LCL') {
-                    $('#cubage_kgv').val(data.kilogram_volumen + ' KGV').prop('readonly', true);
-                }
-
-                if (data.type_shipment.description === "Marítima" && data.lcl_fcl === 'FCL') {
-                    $('#ton_kilogram').val(data.tons + " T").prop('readonly', true);
-                }
-                $('#total_weight').val(data.kilograms).prop('readonly', true);
-                $('#packages').val(data.nro_package).prop('readonly', true);
-                $('#measures').val(data.measures);
-                //Campos Hidden
-                $('#nro_operation').val(data.nro_operation);
-                if (data.lcl_fcl != null) {
-
-                    $('#lcl_fcl').val(data.lcl_fcl);
-                } else {
-                    $('#lcl_fcl').val('LCL');
-                }
-
-                //load Table measures
-                populateTable(JSON.parse(data.measures));
-
-
-                // Cerrar el modal utilizando la instancia nativa de Bootstrap
-                $('#modalQuoteTransport').hide();
-
-                // Eliminar manualmente el backdrop si persiste
-                const modalBackdrop = document.querySelector('.modal-backdrop');
-                if (modalBackdrop) {
-                    modalBackdrop.remove();
-                }
-
-                // Eliminar la clase `modal-open` del body para restaurar el scroll
-                document.body.classList.remove('modal-open');
-                document.body.style.paddingRight = ''
-
-
-            }
-
-
-            function populateTable(data) {
-                const tableBody = document.getElementById('table_measures').getElementsByTagName('tbody')[0];
-
-                // Limpiar la tabla antes de agregar nuevos datos
-                tableBody.innerHTML = '';
-
-                // Iterar sobre los datos y agregar una fila por cada objeto
-                for (const key in data) {
-                    if (data.hasOwnProperty(key)) {
-                        const item = data[key]; // Accede al objeto de cada clave
-
-                        // Crear una nueva fila
-                        let row = tableBody.insertRow();
-
-                        // Insertar celdas en la fila y agregar los valores
-                        let cellAmount = row.insertCell(0);
-                        cellAmount.textContent = item.amount;
-
-                        let cellHeight = row.insertCell(1);
-                        cellHeight.textContent = item.height;
-
-                        let cellLength = row.insertCell(2);
-                        cellLength.textContent = item.length;
-
-                        let cellWidth = row.insertCell(3);
-                        cellWidth.textContent = item.width;
-                    }
-                }
-
-            }
-
-
-
             // Cargamos la data si existe
 
             //Inicializamos la tabla de medidas
@@ -611,8 +445,7 @@
                         `<input type="number" class="form-control" readonly id="amount-${index}" name="amount-${index}" value="${item.amount}" placeholder="Cantidad" min="0" step="1">`,
                         `<input type="number" class="form-control" readonly id="width-${index}" name="width-${index}" value="${item.width}" placeholder="Ancho" min="0" step="0.0001">`,
                         `<input type="number" class="form-control" readonly id="length-${index}" name="length-${index}" value="${item.length}" placeholder="Largo" min="0" step="0.0001">`,
-                        `<input type="number" class="form-control" readonly id="height-${index}" name="height-${index}" value="${item.height}" placeholder="Alto" min="0" step="0.0001">`,
-                        `<button type="button" class="btn btn-danger btn-sm" id="delete-${index}" onclick="deleteRow('row-${index}', ${item.amount}, ${index})"><i class="fa fa-trash"></i></button>`
+                        `<input type="number" class="form-control" readonly id="height-${index}" name="height-${index}" value="${item.height}" placeholder="Alto" min="0" step="0.0001">`
                     ]).draw().node();
                     newRow.id = `row-${index}`;
 
@@ -702,7 +535,6 @@
                         // Campo para Alto
                         `<input type="number" class="form-control"  readonly id="height-${rowIndex}" name="height-${rowIndex}" value="${height}" placeholder="Alto" min="0" step="0.0001">`,
 
-                        `<button type="button" class="btn btn-danger btn-sm" id="delete-${rowIndex}" onclick="deleteRow('row-${rowIndex}', ${amount_package}, ${rowIndex})"><i class="fa fa-trash"></i></button>`
                     ]).draw().node();
                     newRow.id = `row-${rowIndex}`;
 
@@ -725,17 +557,6 @@
 
             });
 
-
-            function deleteRow(rowId, amount, index) {
-                // Reducir el paquete actual
-                currentPackage -= parseInt(amount);
-                // Eliminar la fila del DataTable
-                const row = document.getElementById(rowId);
-                table.row($(row).closest('tr')).remove().draw();
-                delete arrayMeasures[index];
-                $('#measures').val(JSON.stringify(arrayMeasures));
-
-            }
 
             function cleanMeasures() {
                 table.clear().draw();
