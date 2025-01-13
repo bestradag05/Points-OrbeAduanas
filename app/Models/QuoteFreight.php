@@ -60,6 +60,7 @@ class QuoteFreight extends Model
         'total_weight',
         'packages',
         'measures',
+        'ocean_freight',
         'nro_operation',
         'state'
     ];

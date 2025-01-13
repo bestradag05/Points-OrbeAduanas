@@ -56,6 +56,7 @@ class FreightController extends Controller
     public function create()
     {
         //
+        return view('freight.register-freight');
     }
 
     /**

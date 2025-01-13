@@ -153,13 +153,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('quote/freight', QuoteFreightController::class)->names([
         'create' => 'quote.freight.create',
     ]);
-    
+
+    Route::patch('quote/freight/cost/accept/{id}', [QuoteFreightController::class, 'acceptQuoteFreight']);
     Route::post('quote/freight/file-upload-documents', [QuoteFreightController::class, 'uploadFilesQuoteFreight']);
     Route::post('quote/freight/file-delete-documents', [QuoteFreightController::class, 'deleteFilesQuoteFreight']);
+    Route::get('quote/freight/sendQuote/{id}', [QuoteFreightController::class, 'sendQuote']);
 
     /* Mensaje de cotizaciones de flete */
 
-    Route::get('quote/freight/message/sendQuote/{id}', [MessageQuoteFreightController::class, 'sendQuote']);
     Route::resource('quote/freight/message', MessageQuoteFreightController::class);
 
 

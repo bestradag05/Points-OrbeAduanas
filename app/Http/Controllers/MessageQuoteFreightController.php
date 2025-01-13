@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MessageQuoteFreight;
 use App\Models\QuoteFreight;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -55,20 +56,6 @@ class MessageQuoteFreightController extends Controller
         //
     }
 
-    public function sendQuote(string $id){
-        
-
-        $quote = QuoteFreight::findOrFail($id);
-
-        $quote->update([
-            'state' => 'Pendiente'
-        ]);
-
-        toastr()->success('Ahora la cotizacion esta en proceso, envia un mensaje al area de Pricing');
-
-        return redirect('/quote/freight/'.$quote->id);
-        
-    }
 
     /**
      * Show the form for editing the specified resource.

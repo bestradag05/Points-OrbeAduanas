@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('quote_freight', function (Blueprint $table) {
             $table->id();
             $table->string('nro_quote')->unique();
-            $table->dateTime('shipping_date');
+            $table->dateTime('shipping_date')->nullable();
             $table->dateTime('response_date')->nullable();
             $table->string('origin')->nullable();
             $table->string('destination')->nullable();
@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('total_weight')->nullable();
             $table->string('packages')->nullable();
             $table->string('measures')->nullable();
+            $table->decimal('ocean_freight', 8, 2)->nullable();
             $table->string('nro_operation');
             $table->enum('state', ['Borrador','Pendiente', 'Respondido', 'Aceptada', 'Reajuste', 'Observado', 'Rechazada'])->default('Borrador');
             $table->timestamps();

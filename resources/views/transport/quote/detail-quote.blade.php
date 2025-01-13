@@ -407,12 +407,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (json_decode($quote->measures) as $measure)
-                                <td>{{ $measure->amount }}</td>
-                                <td>{{ $measure->height }}</td>
-                                <td>{{ $measure->length }}</td>
-                                <td>{{ $measure->width }}</td>
-                            @endforeach
+                            @if (!empty($quote->measures) && is_array(json_decode($quote->measures)))
+                                @foreach (json_decode($quote->measures) as $measure)
+                                    <td>{{ $measure->amount }}</td>
+                                    <td>{{ $measure->height }}</td>
+                                    <td>{{ $measure->length }}</td>
+                                    <td>{{ $measure->width }}</td>
+                                @endforeach
+                            @endif
                         </tbody>
 
                     </table>
@@ -724,8 +726,9 @@
             });
 
             // Comparar costos de transporte
-            const transportCost = parseFloat(document.getElementById('modal_transport_readjustment_cost').value.replace(/,/g,
-                '')) || 0;
+            const transportCost = parseFloat(document.getElementById('modal_transport_readjustment_cost').value
+                .replace(/,/g,
+                    '')) || 0;
             const transportOldCost = parseFloat(document.getElementById('modal_transport_old_cost').value.replace(
                 /,/g, '')) || 0;
 

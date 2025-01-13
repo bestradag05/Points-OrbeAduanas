@@ -70,7 +70,7 @@ class QuoteFreightController extends Controller
 
 
         $quote = QuoteFreight::create([
-            'shipping_date' => Carbon::now('America/Lima'),
+            'shipping_date' => null,
             'response_date' => null,
             'origin' => $request->origin,
             'destination' => $request->destination,
@@ -114,6 +114,19 @@ class QuoteFreightController extends Controller
 
 
         return redirect('/quote/freight/'. $quote->id);
+    }
+
+
+    public function acceptQuoteFreight(Request $request, $id)
+    {
+        $quote = QuoteFreight::findOrFail($id);
+
+        $quote->update([
+            'ocean_freight' => $request->ocean_freight,
+            'state' => 'Aceptada'
+        ]);
+
+        return redirect('/quote/freight');
     }
 
     public function uploadFilesQuoteFreight(Request $request)
@@ -165,6 +178,23 @@ class QuoteFreightController extends Controller
 
 
         return view('freight/quote/quote-messagin', compact('quote', 'files', 'messages'));
+    }
+
+
+    public function sendQuote(string $id){
+        
+
+        $quote = QuoteFreight::findOrFail($id);
+
+        $quote->update([
+            'shipping_date' => Carbon::now('America/Lima'),
+            'state' => 'Pendiente'
+        ]);
+
+        toastr()->success('Ahora la cotizacion esta en proceso, envia un mensaje al area de Pricing');
+
+        return redirect('/quote/freight/'.$quote->id);
+        
     }
 
 
