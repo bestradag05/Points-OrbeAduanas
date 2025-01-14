@@ -110,9 +110,6 @@ class QuoteFreightController extends Controller
         }
 
 
-        /*  broadcast(new QuoteNotification("Tienes una cotizacion nueva por responder")); */
-
-
         return redirect('/quote/freight/'. $quote->id);
     }
 
@@ -122,7 +119,10 @@ class QuoteFreightController extends Controller
         $quote = QuoteFreight::findOrFail($id);
 
         $quote->update([
-            'ocean_freight' => $request->ocean_freight,
+            'ocean_freight' => $this->parseDouble($request->ocean_freight),
+            'utility' =>  $this->parseDouble($request->utility),
+            'operations_commission' =>  $this->parseDouble($request->operations_commission),
+            'pricing_commission' =>  $this->parseDouble($request->pricing_commission),
             'state' => 'Aceptada'
         ]);
 
@@ -173,6 +173,7 @@ class QuoteFreightController extends Controller
                 'url' => asset('storage/' . $file), // URL del archivo
             ];
         });
+        
         
         $messages = QuoteFreight::findOrFail($id)->messages;
 
@@ -240,6 +241,15 @@ class QuoteFreightController extends Controller
             'packages' => 'required|string',
             'lcl_fcl' => 'required',
         ]);
+    }
+
+
+    public function parseDouble($num)
+    {
+
+        $valorDecimal = (float)str_replace(',', '', $num);
+
+        return $valorDecimal;
     }
 
 }

@@ -61,6 +61,9 @@ class QuoteFreight extends Model
         'packages',
         'measures',
         'ocean_freight',
+        'utility',
+        'operations_commission',
+        'pricing_commission',
         'nro_operation',
         'state'
     ];

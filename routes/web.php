@@ -113,6 +113,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('freight/pending', [FreightController::class, 'getFreightPending']);
     Route::resource('freight', FreightController::class);
+    Route::get('freight/create/{quoteId}', [FreightController::class, 'createFreight'] );
 
     Route::get('transport/pending', [TransportController::class, 'getTransportPending']);
     Route::get('transport/personal', [TransportController::class, 'getTransportPersonal']);

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Concepts;
 use App\Models\Freight;
+use App\Models\QuoteFreight;
+use App\Models\TypeInsurance;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -56,7 +59,17 @@ class FreightController extends Controller
     public function create()
     {
         //
-        return view('freight.register-freight');
+        
+    }
+
+    public function createFreight($quoteId){
+
+        $quote = QuoteFreight::findOrFail($quoteId);
+        $type_insurace = TypeInsurance::all();
+        $concepts = Concepts::all();
+
+        return view('freight.register-freight', compact('quote', 'type_insurace', 'concepts'));
+
     }
 
     /**

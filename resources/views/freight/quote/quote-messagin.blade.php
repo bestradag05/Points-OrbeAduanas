@@ -166,7 +166,8 @@
             </ul>
 
             <hr>
-            <div class="row text-muted mt-3">
+            <div
+                class="row text-muted mt-3 {{ $quote->ocean_freight != null && $quote->state === 'Aceptada' ? '' : 'd-none' }}">
                 <div class="col-12 row justify-content-center">
                     <p class="text-uppercase text-bold text-lg">Costo del Flete :
                         <b class="status-{{ strtolower($quote->state) }}">{{ $quote->ocean_freight }}</b>
@@ -185,7 +186,7 @@
                     class="btn btn-sm btn-success {{ $quote->state === 'Borrador' || $quote->state === 'Aceptada' ? 'd-none' : '' }}"
                     type="button" data-toggle="modal" data-target="#quote-freight">Cotización Aceptada</button>
 
-                <a href="{{ url('/freight/create') }}"
+                <a href="{{ url('/freight/create/'.$quote->id) }}"
                     class="btn btn-sm btn-indigo {{ $quote->state === 'Aceptada' ? '' : 'd-none' }}">Generar Flete</a>
             </div>
         </div>
@@ -210,6 +211,21 @@
                             <label for="ocean_freight">Flete maritimo</label>
                             <input id="ocean_freight" data-type="currency" class="form-control CurrencyInput"
                                 type="text" name="ocean_freight">
+                        </div>
+                        <div class="form-group">
+                            <label for="utility">Utilidad</label>
+                            <input id="utility" data-type="currency" class="form-control CurrencyInput" type="text"
+                                name="utility">
+                        </div>
+                        <div class="form-group">
+                            <label for="operations_commission">Comision de operaciones</label>
+                            <input id="operations_commission" data-type="currency" class="form-control CurrencyInput"
+                                type="text" name="operations_commission">
+                        </div>
+                        <div class="form-group">
+                            <label for="pricing_commission">Comision de pricing</label>
+                            <input id="pricing_commission" data-type="currency" class="form-control CurrencyInput"
+                                type="text" name="pricing_commission">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -238,19 +254,27 @@
 
             e.preventDefault();
 
-            let oceanfreight = $('#ocean_freight')[0];
             let isValid = true; // Bandera para comprobar si el formulario es válido
             let form = e.target;
+            const inputs = form.querySelectorAll('input');
 
-            // Validar si el campo está vacío
-            if (oceanfreight.value.trim() === '') {
-                oceanfreight.classList.add('is-invalid');
-                isValid = false; // Cambiar bandera si algún campo no es válido
-                showError(oceanfreight, 'Debe completar el costo de flete acordado');
-            } else {
-                oceanfreight.classList.remove('is-invalid');
-                hideError(oceanfreight);
-            }
+
+            inputs.forEach((input) => {
+                // Ignorar campos ocultos (d-none)
+                if (input.closest('.d-none')) {
+                    return;
+                }
+
+                // Validar si el campo está vacío
+                if (input.value.trim() === '') {
+                    input.classList.add('is-invalid');
+                    isValid = false; // Cambiar bandera si algún campo no es válido
+                    showError(input, 'Debe completar este campo');
+                } else {
+                    input.classList.remove('is-invalid');
+                    hideError(input);
+                }
+            });
 
 
             if (isValid) {
