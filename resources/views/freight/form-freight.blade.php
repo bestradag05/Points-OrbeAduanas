@@ -105,7 +105,9 @@
                 <option />
                 @foreach ($concepts as $concept)
                     @if ($concept->typeService->name == 'Flete' && $quote->routing->type_shipment->id == $concept->id_type_shipment)
-                        <option value="{{ $concept->id }}">{{ $concept->name }}</option>
+                        @if ($conceptFreight->name != $concept->name)
+                            <option value="{{ $concept->id }}">{{ $concept->name }}</option>
+                        @endif
                     @endif
                 @endforeach
             </x-adminlte-select2>
@@ -201,7 +203,20 @@
             let flete = 0;
             let value_insurance = 0;
             let valuea_added_insurance = 0;
-            let typeService = '';
+
+            let value_ocean_freight = @json($quote->ocean_freight);
+            let conceptFreight = @json($conceptFreight);
+
+            conceptsArray[conceptFreight.id] = {
+                'id': conceptFreight.id,
+                'name': conceptFreight.name,
+                'value': formatValue(value_ocean_freight),
+                'added': 0,
+            }
+
+
+            updateTable(conceptsArray, value_ocean_freight);
+
 
             function enableInsurance(checkbox) {
 
@@ -334,7 +349,7 @@
             };
 
 
-            function updateTable(conceptsArray, cost_freight = null) {
+            function updateTable(conceptsArray, ocean_freight = null) {
 
                 let tbodyRouting = $(`#formConceptsFlete`).find('tbody')[0];
 
@@ -346,7 +361,9 @@
 
                 let contador = 0;
 
+
                 for (let clave in conceptsArray) {
+
 
                     let item = conceptsArray[clave];
 
@@ -371,8 +388,9 @@
                         // Insertar el valor en la cuarta celda de la fila
 
                         let celdaAdded = fila.insertCell(3);
-                        if (cost_freight) {
-                            // Si cost_freight existe, muestra un input editable
+
+                        if (ocean_freight) {
+                            // Si ocean_freight existe, muestra un input editable
                             let inputAdded = document.createElement('input');
                             inputAdded.type = 'number';
                             inputAdded.value = item.added;
@@ -399,11 +417,12 @@
 
                                 // Recalcula el total
                                 TotalConcepts = calculateTotal(conceptsArray);
-                                calcTotal(TotalConcepts, transporte, valuea_added);
+
+                                calcTotal(TotalConcepts, value_insurance, valuea_added_insurance);
 
                             });
                         } else {
-                            // Si cost_freight no existe, muestra el valor como texto plano
+                            // Si ocean_freight no existe, muestra el valor como texto plano
                             celdaAdded.textContent = item.added;
                         }
 
@@ -422,7 +441,7 @@
 
                         inputPA.addEventListener('input', (e) => {
 
-                            if (cost_freight) {
+                            if (ocean_freight) {
 
                                 conceptsArray[clave].pa = e.target.value
 
@@ -446,7 +465,7 @@
 
 
 
-                        if (!cost_freight) {
+                        if (!ocean_freight) {
 
                             // Insertar un botón para eliminar la fila en la cuarta celda de la fila
                             let celdaEliminar = fila.insertCell(5);
@@ -472,10 +491,17 @@
                     }
                 }
 
-                calcTotal(TotalConcepts, valuea_added);
+                calcTotal(TotalConcepts, value_insurance, valuea_added_insurance);
 
 
 
+            }
+
+
+            function calculateTotal(conceptsArray) {
+                return Object.values(conceptsArray).reduce((acc, concept) => {
+                    return acc + parseFloat(concept.value || 0) + parseFloat(concept.added || 0);
+                }, 0);
             }
 
 

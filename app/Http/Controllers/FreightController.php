@@ -17,7 +17,7 @@ class FreightController extends Controller
     public function index()
     {
         $freights = Freight::all();
-       
+
 
         $heads = [
             '#',
@@ -27,17 +27,18 @@ class FreightController extends Controller
             'Estado',
             'Acciones'
         ];
-        
-        
 
-        return view("freight/list-freight", compact("freights","heads"));
+
+
+        return view("freight/list-freight", compact("freights", "heads"));
     }
 
 
-    public function getFreightPending(){
+    public function getFreightPending()
+    {
 
         $freights = Freight::where('state', 'Pendiente')->get()->load('routing.personal');
-       
+
 
         $heads = [
             '#',
@@ -47,10 +48,10 @@ class FreightController extends Controller
             'Estado',
             'Acciones'
         ];
-        
-        
 
-        return view("freight/pending-list-freight", compact("freights","heads"));
+
+
+        return view("freight/pending-list-freight", compact("freights", "heads"));
     }
 
     /**
@@ -59,17 +60,25 @@ class FreightController extends Controller
     public function create()
     {
         //
-        
+
     }
 
-    public function createFreight($quoteId){
+    public function createFreight($quoteId)
+    {
 
         $quote = QuoteFreight::findOrFail($quoteId);
         $type_insurace = TypeInsurance::all();
         $concepts = Concepts::all();
+        $conceptFreight = null;
+        foreach ($concepts as $concept) {
 
-        return view('freight.register-freight', compact('quote', 'type_insurace', 'concepts'));
+            if ($concept->typeService->name == 'Flete' && $concept->name === 'OCEAN FREIGHT') {
+                $conceptFreight = $concept;
+            }
+        }
 
+
+        return view('freight.register-freight', compact('quote', 'type_insurace', 'concepts', 'conceptFreight'));
     }
 
     /**
@@ -93,21 +102,20 @@ class FreightController extends Controller
      */
     public function edit(string $id)
     {
-         // Obtenemos el registro que se va editar
+        // Obtenemos el registro que se va editar
 
-         $freight = Freight::find($id);
-         $value_freight = 0;
+        $freight = Freight::find($id);
+        $value_freight = 0;
 
-         /* $freight->load('concepts'); */
-         
-     
+        /* $freight->load('concepts'); */
 
-         foreach($freight->concepts as $concept){
+
+
+        foreach ($freight->concepts as $concept) {
             $value_freight += $concept->pivot->value_concept;
-            
-         }
+        }
 
-         return view('freight/edit-freight', compact('freight', 'value_freight'));
+        return view('freight/edit-freight', compact('freight', 'value_freight'));
     }
 
     /**
@@ -119,7 +127,7 @@ class FreightController extends Controller
         $this->validateForm($request, $id);
 
         $freight = Freight::find($id);
-        
+
 
         $dateRegisterFormat = Carbon::createFromFormat('d/m/Y', $request['edt'])->toDateString();
         $request['date_register'] = $dateRegisterFormat;
@@ -136,7 +144,6 @@ class FreightController extends Controller
         $freight->save();
 
         return redirect('freight');
-
     }
 
     /**
@@ -147,12 +154,10 @@ class FreightController extends Controller
         //
     }
 
-    public function validateForm($request, $id){
+    public function validateForm($request, $id)
+    {
         $request->validate([
             'roi' => 'required|string|unique:freight,roi,' . $id
         ]);
-    
     }
-
-
 }
