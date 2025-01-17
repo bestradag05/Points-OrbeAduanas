@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('certified_number')->nullable();
             $table->string('insured_references')->nullable();
             $table->date('date')->nullable();
+            $table->decimal('insurance_value', 8,2);
+            $table->decimal('insurance_value_added', 8,2);
             $table->decimal('insurance_sale', 8,2);
             $table->decimal('sales_value', 8,2);
             $table->decimal('sales_price', 8, 2);

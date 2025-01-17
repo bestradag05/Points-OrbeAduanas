@@ -10,7 +10,7 @@
 
 @stop
 @section('dinamic-content')
-    <form action="/freight" method="post" enctype="multipart/form-data">
+    <form action="/freight" method="post" id="formFreight" enctype="multipart/form-data">
         @csrf
         @include ('freight.form-freight', ['formMode' => 'create'])
     </form>

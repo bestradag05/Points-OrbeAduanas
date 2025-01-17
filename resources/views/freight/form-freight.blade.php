@@ -1,7 +1,8 @@
 <div class="row">
 
-    {{--     <input type="hidden" name="nro_operation" value="{{ $routing->nro_operation }}">
-    <input type="hidden" name="typeService" id="typeService"> --}}
+    <input type="hidden" name="nro_operation" value="{{ $quote->nro_operation }}">
+    <input type="hidden" name="id_quote_freight" value="{{ $quote->id }}">
+    {{-- <input type="hidden" name="typeService" id="typeService"> --}}
 
 
     <div class="col-6 offset-3">
@@ -15,8 +16,8 @@
                         $
                     </span>
                 </div>
-                <input type="text" class="form-control CurrencyInput" id="utility" name="utility" data-type="currency"
-                    @readonly(true) placeholder="Ingrese valor de la utilidad"
+                <input type="text" class="form-control CurrencyInput" id="utility" name="utility"
+                    data-type="currency" @readonly(true) placeholder="Ingrese valor de la utilidad"
                     value="{{ isset($quote->utility) ? $quote->utility : old('utility') }}">
 
             </div>
@@ -138,8 +139,8 @@
                             $
                         </span>
                     </div>
-                    <input type="text" class="form-control CurrencyInput " name="value_added" data-type="currency"
-                        placeholder="Ingrese valor agregado" value="0">
+                    <input type="text" class="form-control CurrencyInput " name="value_added"
+                        data-type="currency" placeholder="Ingrese valor agregado" value="0">
                 </div>
             </div>
 
@@ -203,19 +204,20 @@
             let flete = 0;
             let value_insurance = 0;
             let valuea_added_insurance = 0;
+            let countConcepts = 0;
 
-            let value_ocean_freight = @json($quote->ocean_freight);
+            let value_ocean_freight = @json($quote->total_ocean_freight);
             let conceptFreight = @json($conceptFreight);
 
-            conceptsArray[conceptFreight.id] = {
+            conceptsArray[countConcepts] = {
                 'id': conceptFreight.id,
                 'name': conceptFreight.name,
                 'value': formatValue(value_ocean_freight),
                 'added': 0,
             }
 
-
-            updateTable(conceptsArray, value_ocean_freight);
+            countConcepts++
+            updateTable(conceptsArray);
 
 
             function enableInsurance(checkbox) {
@@ -246,12 +248,11 @@
                     value_insurance = parseFloat(element.value.replace(/,/g, ''));
                 }
 
-                calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, container.id);
+                calcTotal(TotalConcepts, value_insurance, valuea_added_insurance);
             }
 
 
             function updateInsuranceAddedTotal(element) {
-
 
                 if (element.value === '') {
                     valuea_added_insurance = 0;
@@ -259,15 +260,17 @@
                     valuea_added_insurance = parseFloat(element.value.replace(/,/g, ''));
                 }
 
-
+                console.log("Valor agregado : ", valuea_added_insurance);
                 //Cada que actualicemos el insurance_add borramos los puntos para poder volver a generar un maximo.
                 $(`#insurance_points`).val("");
 
-                calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance);
+                calcTotal(TotalConcepts, value_insurance, valuea_added_insurance);
             }
 
 
             function calcTotal(TotalConcepts, value_insurance, valuea_added_insurance) {
+
+                console.log(valuea_added_insurance);
 
                 total = TotalConcepts + value_insurance + valuea_added_insurance;
 
@@ -333,12 +336,14 @@
                 if (camposInvalidos === 0) {
                     // Si no hay campos inválidos, envía el formulario
 
-                    conceptsArray[inputs[0].value] = {
-                        'id': inputs[0].value,
+                    conceptsArray[countConcepts] = {
+                        'id': parseInt(inputs[0].value),
                         'name': inputs[0].options[inputs[0].selectedIndex].text,
                         'value': formatValue(inputs[1].value),
                         'added': formatValue(inputs[2].value),
                     }
+
+                    countConcepts++;
 
                     updateTable(conceptsArray);
 
@@ -349,7 +354,7 @@
             };
 
 
-            function updateTable(conceptsArray, ocean_freight = null) {
+            function updateTable(conceptsArray) {
 
                 let tbodyRouting = $(`#formConceptsFlete`).find('tbody')[0];
 
@@ -360,7 +365,6 @@
                 TotalConcepts = 0;
 
                 let contador = 0;
-
 
                 for (let clave in conceptsArray) {
 
@@ -389,13 +393,14 @@
 
                         let celdaAdded = fila.insertCell(3);
 
-                        if (ocean_freight) {
+
+                        if (item.name === "OCEAN FREIGHT") {
                             // Si ocean_freight existe, muestra un input editable
                             let inputAdded = document.createElement('input');
-                            inputAdded.type = 'number';
+                            inputAdded.type = 'text';
                             inputAdded.value = item.added;
-                            inputAdded.min = 0;
-                            inputAdded.classList.add('form-control');
+                            inputAdded.classList.add('form-control', 'CurrencyInput'); // Agregar clases
+                            inputAdded.setAttribute('data-type', 'currency'); // Establecer el atributo data-type
                             celdaAdded.appendChild(inputAdded);
 
                             inputAdded.addEventListener('input', (e) => {
@@ -438,17 +443,22 @@
                         inputPA.min = 0;
                         celdaPA.appendChild(inputPA);
 
+                        inputPA.addEventListener('keydown', (e) => {
+                            // Permitimos solo las flechas (arriba: 38, abajo: 40), Tab (9), Enter (13)
+                            const allowedKeys = ['ArrowUp', 'ArrowDown', 'Tab', 'Enter'];
+                            if (!allowedKeys.includes(e.key)) {
+                                e.preventDefault();
+                            }
+                        });
+
 
                         inputPA.addEventListener('input', (e) => {
 
-                            if (ocean_freight) {
 
-                                conceptsArray[clave].pa = e.target.value
 
-                            } else {
+                            conceptsArray[clave].pa = e.target.value
 
-                                e.preventDefault();
-                            }
+
                         });
 
                         if (Math.floor(item.added / 45) === 0) {
@@ -465,7 +475,7 @@
 
 
 
-                        if (!ocean_freight) {
+                        if (item.name != "OCEAN FREIGHT") {
 
                             // Insertar un botón para eliminar la fila en la cuarta celda de la fila
                             let celdaEliminar = fila.insertCell(5);
@@ -508,5 +518,19 @@
             function formatValue(value) {
                 return value.replace(/,/g, '');
             }
+
+
+            $('#formFreight').on('submit', (e) => {
+
+                e.preventDefault();
+
+                let form = $('#formFreight');
+                let conceptops = JSON.stringify(conceptsArray);
+
+                form.append(`<input type="hidden" name="concepts" value='${conceptops}' />`);
+
+                form[0].submit();
+
+            });
         </script>
     @endpush

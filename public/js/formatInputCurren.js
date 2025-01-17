@@ -1,3 +1,13 @@
+  // Event delegation para inputs con data-type="currency"
+  $(document).on('keyup', "input[data-type='currency']", function() {
+    formatCurrency($(this));
+  });
+
+  $(document).on('blur', "input[data-type='currency']", function() {
+    formatCurrency($(this), "blur");
+  });
+
+
 $("input[data-type='currency']").on({
     keyup: function() {
       formatCurrency($(this));

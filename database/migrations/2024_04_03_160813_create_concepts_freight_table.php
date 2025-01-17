@@ -16,6 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('id_concepts');
             $table->unsignedBigInteger('id_freight');
             $table->decimal('value_concept', 8 , 2);
+            $table->decimal('value_concept_added', 8 , 2);
+            $table->decimal('total_value_concept', 8 , 2);
             $table->integer('additional_points')->nullable();
             $table->timestamps();
 

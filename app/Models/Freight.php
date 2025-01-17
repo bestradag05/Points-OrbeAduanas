@@ -12,7 +12,20 @@ class Freight extends Model
 
     protected $table = 'freight';
 
-    protected $fillable = ['roi', 'hawb_hbl', 'bl_work', 'date_register', 'edt', 'eta','value_utility', 'value_freight', 'state', 'nro_operation'];
+    protected $fillable = 
+    [
+        'roi', 
+        'hawb_hbl', 
+        'bl_work', 
+        'date_register', 
+        'edt', 
+        'eta',
+        'value_utility', 
+        'value_freight', 
+        'state',
+        'id_quote_freight', 
+        'nro_operation'
+    ];
 
     public function concepts()
     {

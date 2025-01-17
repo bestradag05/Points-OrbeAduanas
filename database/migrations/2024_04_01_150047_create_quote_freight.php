@@ -31,6 +31,7 @@ return new class extends Migration
             $table->decimal('utility', 8, 2)->nullable();
             $table->decimal('operations_commission', 8, 2)->nullable();
             $table->decimal('pricing_commission', 8, 2)->nullable();
+            $table->decimal('total_ocean_freight', 8, 2)->nullable();
             $table->string('nro_operation');
             $table->enum('state', ['Borrador','Pendiente', 'Respondido', 'Aceptada', 'Reajuste', 'Observado', 'Rechazada'])->default('Borrador');
             $table->timestamps();

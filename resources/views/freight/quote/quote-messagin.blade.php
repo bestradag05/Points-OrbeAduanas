@@ -166,15 +166,74 @@
             </ul>
 
             <hr>
-            <div
-                class="row text-muted mt-3 {{ $quote->ocean_freight != null && $quote->state === 'Aceptada' ? '' : 'd-none' }}">
-                <div class="col-12 row justify-content-center">
-                    <p class="text-uppercase text-bold text-lg">Costo del Flete :
-                        <b class="status-{{ strtolower($quote->state) }}">{{ $quote->ocean_freight }}</b>
-                    </p>
-                </div>
+            @if ($quote->ocean_freight != null && $quote->state === 'Aceptada')
+                <div class="row">
 
-            </div>
+                    <div class="col-12">
+                        <h6 class="text-indigo text-center mb-3 text-bold"><i class="fas fa-dollar-sign"></i> Detalle de
+                            costos
+                        </h6>
+                    </div>
+
+                    <div class="col-12 ml-4">
+
+                        <div class="row text-muted">
+                            <div class="col-4">
+                                <p class="text-sm">Flete :
+                                </p>
+                            </div>
+                            <div class="col-6">
+                                <b class="d-inline">$ {{ $quote->ocean_freight }}</b>
+                            </div>
+
+                        </div>
+                        <div class="row text-muted">
+                            <div class="col-4">
+                                <p class="text-sm"> Orbe (utilidad) :
+                                </p>
+                            </div>
+                            <div class="col-6">
+                                <b class="d-inline">$ {{ $quote->utility }}</b>
+                            </div>
+
+                        </div>
+                        <div class="row text-muted">
+                            <div class="col-4">
+                                <p class="text-sm">Operaciones :
+                                </p>
+                            </div>
+                            <div class="col-6">
+                                <b class="d-inline">$ {{ $quote->operations_commission }}</b>
+                            </div>
+
+                        </div>
+                        <div class="row text-muted">
+                            <div class="col-4">
+                                <p class="text-sm">Pricing :
+                                </p>
+                            </div>
+                            <div class="col-6">
+                                <b class="d-inline">$ {{ $quote->pricing_commission }}</b>
+                            </div>
+
+                        </div>
+
+                        <div class="row text-muted mt-3 ">
+                            <div class="col-12 row justify-content-center">
+                                <p class="text-uppercase text-bold text-lg">Costo del Flete :
+                                    <b class="status-{{ strtolower($quote->state) }}">$ {{ $quote->total_ocean_freight }}</b>
+                                </p>
+                            </div>
+    
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+            @endif
+
 
             <div class="text-center mt-5 mb-3">
                 <a href="{{ url('/quote/freight/sendQuote/' . $quote->id) }}"
@@ -186,7 +245,7 @@
                     class="btn btn-sm btn-success {{ $quote->state === 'Borrador' || $quote->state === 'Aceptada' ? 'd-none' : '' }}"
                     type="button" data-toggle="modal" data-target="#quote-freight">Cotización Aceptada</button>
 
-                <a href="{{ url('/freight/create/'.$quote->id) }}"
+                <a href="{{ url('/freight/create/' . $quote->id) }}"
                     class="btn btn-sm btn-indigo {{ $quote->state === 'Aceptada' ? '' : 'd-none' }}">Generar Flete</a>
             </div>
         </div>

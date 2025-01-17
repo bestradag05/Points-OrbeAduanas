@@ -118,15 +118,23 @@ class QuoteFreightController extends Controller
     {
         $quote = QuoteFreight::findOrFail($id);
 
+        $ocean_freight = $this->parseDouble($request->ocean_freight); 
+        $utility = $this->parseDouble($request->utility); 
+        $operations_commission = $this->parseDouble($request->operations_commission); 
+        $pricing_commission = $this->parseDouble($request->pricing_commission); 
+        $total_ocean_freight = $ocean_freight + $utility + $operations_commission +  $pricing_commission;
+
+
         $quote->update([
-            'ocean_freight' => $this->parseDouble($request->ocean_freight),
-            'utility' =>  $this->parseDouble($request->utility),
-            'operations_commission' =>  $this->parseDouble($request->operations_commission),
-            'pricing_commission' =>  $this->parseDouble($request->pricing_commission),
+            'ocean_freight' => $ocean_freight,
+            'utility' => $utility,
+            'operations_commission' =>   $operations_commission,
+            'pricing_commission' =>  $pricing_commission,
+            'total_ocean_freight' => $total_ocean_freight,
             'state' => 'Aceptada'
         ]);
 
-        return redirect('/quote/freight');
+        return redirect('/quote/freight/'. $quote->id);
     }
 
     public function uploadFilesQuoteFreight(Request $request)
