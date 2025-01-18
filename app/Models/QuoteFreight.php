@@ -75,6 +75,11 @@ class QuoteFreight extends Model
         return $this->belongsTo(Routing::class, 'nro_operation', 'nro_operation');
     }
 
+    public function freight()
+    {
+        return $this->belongsTo(Freight::class, 'id', 'id_quote_freight');
+    }
+
 
     public function messages()
     {

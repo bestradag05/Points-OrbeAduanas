@@ -10,6 +10,7 @@ use App\Models\QuoteFreight;
 use App\Models\TypeInsurance;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use stdClass;
 
 class FreightController extends Controller
 {
@@ -56,6 +57,37 @@ class FreightController extends Controller
         return view("freight/pending-list-freight", compact("freights", "heads"));
     }
 
+    public function getFreightPersonal()
+    {
+        dd("Holaaaaaaaaaa");
+
+        $personalId = Auth::user()->personal->id;
+
+        // Verificar si el usuario es un Super-Admin
+        if (Auth::user()->hasRole('Super-Admin')) {
+            // Si es Super-Admin, obtener todos los routing
+            $transports = Freight::with('quoteFreights')->get();
+        } else {
+            // Si no es Super-Admin, solo obtener los clientes que pertenecen al personal del usuario autenticado
+            $transports = Freight::whereHas('routing', function ($query) use ($personalId) {
+                $query->where('id_personal', $personalId);
+            })->with('quoteFreights')->get();
+        }
+
+        $heads = [
+            '#',
+            'N° Operacion',
+            'Asesor Comercial',
+            'Utilidad a Orbe',
+            'Estado',
+            'Acciones'
+        ];
+
+
+
+        return view("freight/list-freight-personal", compact("freights", "heads"));
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -88,8 +120,11 @@ class FreightController extends Controller
      */
     public function store(Request $request)
     {
+        /* dd($request->all()); */
 
-        dd($request->concepts);
+        //Convertimos el json a un objeto
+        $concepts = json_decode($request->concepts);
+
         $freight = Freight::create([
             'value_freight' => $request->total,
             'value_utility' => $request->utility,
@@ -97,6 +132,7 @@ class FreightController extends Controller
             'id_quote_freight' => $request->id_quote_freight,
             'nro_operation' => $request->nro_operation,
         ]);
+
 
 
         if ($request->state_insurance) {
@@ -118,6 +154,31 @@ class FreightController extends Controller
 
             $freight->insurance()->save($insurance);
 
+            //Si existe seguro agregaremos el concepto de SEGURO a la tabla concepts_freight
+
+
+            $arrayConcepts = (array) $concepts; //convertimos array los conceptos
+            $lastKey = array_key_last($arrayConcepts); // obtenemos el ultimo indice
+            $key = $lastKey + 1; // agregamos al ultimo indice par acrear el concepto de seguro
+
+            $concept = Concepts::where('name', 'SEGURO')
+                ->where('id_type_shipment', $freight->routing->type_shipment->id)
+                ->whereHas('typeService', function ($query) {
+                    $query->where('name', 'Flete');  // Segunda condición: Filtrar por name del tipo de servicio
+                })
+                ->first();
+
+            //creamos el objeto del seguro
+            $insuranceObject = new stdClass();
+
+            $insuranceObject->id = $concept->id;
+            $insuranceObject->name = 'SEGURO';
+            $insuranceObject->value = $request->value_insurance;
+            $insuranceObject->added = $request->insurance_added;
+            $insuranceObject->pa = $request->insurance_points;
+
+
+            $concepts->$key = $insuranceObject;
 
 
             if ($request->insurance_points && $this->parseDouble($request->insurance_points) > 0) {
@@ -135,14 +196,16 @@ class FreightController extends Controller
 
         //Relacionamos los conceptos que tendra este flete
 
-        foreach (json_decode($request->concepts) as $concept) {
-            $freight->concepts()->attach($concept->id, 
-            [
-                'value_concept' => $concept->value, 
-                'value_concept_added' => $concept->added ,
-                'total_value_concept' => $concept->value + $concept->added ,
-                'additional_points' => isset($concept->pa) ? $concept->pa : 0
-            ]);
+        foreach ($concepts as $concept) {
+            $freight->concepts()->attach(
+                $concept->id,
+                [
+                    'value_concept' => $concept->value,
+                    'value_concept_added' => $concept->added,
+                    'total_value_concept' => $concept->value + $concept->added,
+                    'additional_points' => isset($concept->pa) ? $concept->pa : 0
+                ]
+            );
 
             if (isset($concept->pa)) {
 
@@ -153,10 +216,6 @@ class FreightController extends Controller
         }
 
         dd($request->all());
-
-
-
-
     }
 
 
@@ -253,7 +312,7 @@ class FreightController extends Controller
     }
 
 
-    
+
     public function parseDouble($num)
     {
 

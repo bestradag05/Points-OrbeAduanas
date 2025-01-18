@@ -47,4 +47,8 @@ class Freight extends Model
         return $this->morphMany(AdditionalPoints::class, 'additional', 'model_additional_service', 'id_additional_service');
     }
     
+    public function quoteFreights()
+    {
+        return $this->hasMany(QuoteFreight::class, 'id', 'id_quote_freight');
+    }
 }

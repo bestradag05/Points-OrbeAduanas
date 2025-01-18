@@ -432,7 +432,14 @@ return [
                     'icon' => 'fas fa-list-ul',
                     'active' => ['type_insurance', 'type_insurance*', 'regex:@^content/[0-9]+$@'],
                     'can' => 'operaciones.type_insurance',
-                ]
+                ],
+                [
+                    'text' => 'Mis Fletes',
+                    'url'  => 'freight/personal',
+                    'icon' => 'fas fa-ship',
+                    'active' => ['freight/personal'],
+
+                ],
             ]
 
         ],
