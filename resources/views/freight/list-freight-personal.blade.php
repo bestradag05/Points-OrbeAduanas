@@ -18,23 +18,24 @@
                         {{ $freight->nro_operation }}
                     </a>
                 </td>
-                <td>{{$freight->routing->personal->names}}</td>
+                @forelse ($freight->quoteFreights as $quoteFreights)
+                    @if ($quoteFreights->state === 'Aceptada')
+                        <td>{{ $quoteFreights->nro_quote }}</td>
+                    @endif
+                @empty
+                    <td>Sin Cotización</td>
+                @endforelse
 
                 <td>{{ $freight->value_utility }}</td>
+                <td>{{ $freight->value_freight }}</td>
 
+                <td>{{ $freight->routing->personal->names }}</td>
                 <td class="{{ $freight->state == 'Pendiente' ? 'text-warning' : 'text-success' }}">{{ $freight->state }}
                 </td>
 
-                @can('operaciones.generate')
-                    <td>
-                        <a href="{{ url('/freight/' . $freight->id . '/edit') }}" class="btn btn-outline-success btn-sm">
-                            {{ $freight->state == 'Pendiente' ? 'Generar punto' : 'Modificar' }}
-                        </a>
-
-                    </td>
-                @else
-                    <td></td>
-                @endcan
+                <td>
+                    <a href="{{ url('/freight/' . $freight->id . '/edit') }}"> <i class="fas fa-edit"></i> </a>
+                </td>
             </tr>
         @endforeach
     </x-adminlte-datatable>

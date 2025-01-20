@@ -221,10 +221,11 @@
                         <div class="row text-muted mt-3 ">
                             <div class="col-12 row justify-content-center">
                                 <p class="text-uppercase text-bold text-lg">Costo del Flete :
-                                    <b class="status-{{ strtolower($quote->state) }}">$ {{ $quote->total_ocean_freight }}</b>
+                                    <b class="status-{{ strtolower($quote->state) }}">$
+                                        {{ $quote->total_ocean_freight }}</b>
                                 </p>
                             </div>
-    
+
                         </div>
 
 
@@ -245,8 +246,10 @@
                     class="btn btn-sm btn-success {{ $quote->state === 'Borrador' || $quote->state === 'Aceptada' ? 'd-none' : '' }}"
                     type="button" data-toggle="modal" data-target="#quote-freight">Cotización Aceptada</button>
 
-                <a href="{{ url('/freight/create/' . $quote->id) }}"
-                    class="btn btn-sm btn-indigo {{ $quote->state === 'Aceptada' ? '' : 'd-none' }}">Generar Flete</a>
+                @if (!$quote->freight()->exists())
+                    <a href="{{ url('/freight/create/' . $quote->id) }}"
+                        class="btn btn-sm btn-indigo {{ $quote->state === 'Aceptada' ? '' : 'd-none' }}">Generar Flete</a>
+                @endif
             </div>
         </div>
     </div>

@@ -10,6 +10,7 @@ use App\Models\QuoteFreight;
 use App\Models\TypeInsurance;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use stdClass;
 
 class FreightController extends Controller
@@ -59,26 +60,28 @@ class FreightController extends Controller
 
     public function getFreightPersonal()
     {
-        dd("Holaaaaaaaaaa");
 
         $personalId = Auth::user()->personal->id;
 
         // Verificar si el usuario es un Super-Admin
         if (Auth::user()->hasRole('Super-Admin')) {
             // Si es Super-Admin, obtener todos los routing
-            $transports = Freight::with('quoteFreights')->get();
+            $freights = Freight::with('quoteFreights')->get();
         } else {
             // Si no es Super-Admin, solo obtener los clientes que pertenecen al personal del usuario autenticado
-            $transports = Freight::whereHas('routing', function ($query) use ($personalId) {
+            $freights = Freight::whereHas('routing', function ($query) use ($personalId) {
                 $query->where('id_personal', $personalId);
             })->with('quoteFreights')->get();
         }
 
+
         $heads = [
             '#',
             'N° Operacion',
-            'Asesor Comercial',
+            'N° Cotizacion',
             'Utilidad a Orbe',
+            'Valor del Flete',
+            'Asesor Comercial',
             'Estado',
             'Acciones'
         ];
@@ -180,17 +183,6 @@ class FreightController extends Controller
 
             $concepts->$key = $insuranceObject;
 
-
-            if ($request->insurance_points && $this->parseDouble($request->insurance_points) > 0) {
-
-
-                $concept = (object) ['name' => 'SEGURO', 'pa' => $request->insurance_points];
-
-                $ne_amount = $this->parseDouble($request->value_insurance) + $this->parseDouble($request->insurance_added);
-
-
-                $this->add_aditionals_point($concept, $freight, $ne_amount);
-            }
         }
 
 

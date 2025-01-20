@@ -433,19 +433,33 @@ return [
                     'active' => ['type_insurance', 'type_insurance*', 'regex:@^content/[0-9]+$@'],
                     'can' => 'operaciones.type_insurance',
                 ],
-                [
-                    'text' => 'Mis Fletes',
-                    'url'  => 'freight/personal',
-                    'icon' => 'fas fa-ship',
-                    'active' => ['freight/personal'],
-
-                ],
+               
             ]
 
         ],
         [
             'text' => 'Pricing',
             'icon' => 'fas fa-ship',
+            'submenu' => [
+               /*  [
+                    'text' => 'Generar cotizacion',
+                    'url' => 'quote/freight/create',
+                    'icon'  => 'fas fa-file-invoice-dollar',
+                    'active' => ['quote/pricing'],
+                ],
+                [
+                    'text' => 'Listar cotizacion',
+                    'url' => 'quote/freight',
+                    'icon'  => 'fas fa-file-invoice-dollar',
+                    'active' => ['quote/freight'],
+                ], */
+            ]
+
+        ],
+        [
+            'text' => 'Flete',
+            'icon' => 'fas fa-ship',
+            'can' => 'freight.module',
             'submenu' => [
                 [
                     'text' => 'Generar cotizacion',
@@ -459,8 +473,14 @@ return [
                     'icon'  => 'fas fa-file-invoice-dollar',
                     'active' => ['quote/freight'],
                 ],
-            ]
+                [
+                    'text' => 'Mis Fletes',
+                    'url'  => 'freight/personal',
+                    'icon' => 'fas fa-ship',
+                    'active' => ['freight/personal'],
 
+                ],
+            ]
         ],
         [
             'text' => 'Transporte',

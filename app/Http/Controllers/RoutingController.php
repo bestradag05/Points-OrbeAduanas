@@ -24,6 +24,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Ramsey\Uuid\Type\Integer;
+use stdClass;
 
 class RoutingController extends Controller
 {
@@ -385,7 +386,6 @@ class RoutingController extends Controller
 
     public function storeRoutingService(Request $request)
     {
-        /* dd($request->all()); */
         $routing = Routing::where('nro_operation', $request->nro_operation)->first();
 
         $type_services = TypeService::find($request->typeService);
@@ -470,6 +470,9 @@ class RoutingController extends Controller
                 # Flete...
                 // Verificamos si tiene seguro
 
+                //Convertimos el json a un objeto
+                $concepts = json_decode($request->concepts);
+
                 $freight = Freight::create([
                     'value_freight' => $request->total,
                     'value_utility' => $request->utility,
@@ -483,6 +486,8 @@ class RoutingController extends Controller
                     $sales_price = $request->value_insurance + $request->insurance_added;
 
                     $insurance = Insurance::create([
+                        'insurance_value' => $request->value_insurance, // precio neto del seguro
+                        'insurance_value_added' => $request->insurance_added, // precio agregado del asesor
                         'insurance_sale' => $sales_price,
                         'sales_value' => $sales_price * 0.18,
                         'sales_price' => $sales_price * 1.18,
@@ -496,24 +501,43 @@ class RoutingController extends Controller
                     $freight->insurance()->save($insurance);
 
 
+                    $arrayConcepts = (array) $concepts; //convertimos array los conceptos
+                    $lastKey = array_key_last($arrayConcepts); // obtenemos el ultimo indice
+                    $key = $lastKey + 1; // agregamos al ultimo indice par acrear el concepto de seguro
 
-                    if ($request->insurance_points && $this->parseDouble($request->insurance_points) > 0) {
+                    $concept = Concepts::where('name', 'SEGURO')
+                        ->where('id_type_shipment', $freight->routing->type_shipment->id)
+                        ->whereHas('typeService', function ($query) {
+                            $query->where('name', 'Flete');  // Segunda condición: Filtrar por name del tipo de servicio
+                        })
+                        ->first();
+
+                    //creamos el objeto del seguro
+                    $insuranceObject = new stdClass();
+
+                    $insuranceObject->id = $concept->id;
+                    $insuranceObject->name = 'SEGURO';
+                    $insuranceObject->value = $request->value_insurance;
+                    $insuranceObject->added = $request->insurance_added;
+                    $insuranceObject->pa = $request->insurance_points;
 
 
-                        $concept = (object) ['name' => 'SEGURO', 'pa' => $request->insurance_points];
+                    $concepts->$key = $insuranceObject;
 
-                        $ne_amount = $this->parseDouble($request->value_insurance) + $this->parseDouble($request->insurance_added);
-
-
-                        $this->add_aditionals_point($concept, $freight, $ne_amount);
-                    }
                 }
-
 
                 //Relacionamos los conceptos que tendra este flete
 
-                foreach (json_decode($request->concepts) as $concept) {
-                    $freight->concepts()->attach($concept->id, ['value_concept' => $concept->value, 'additional_points' => isset($concept->pa)]);
+                foreach ($concepts as $concept) {
+                    $freight->concepts()->attach(
+                        $concept->id,
+                        [
+                            'value_concept' => $concept->value,
+                            'value_concept_added' => $concept->added,
+                            'total_value_concept' => $concept->value + $concept->added,
+                            'additional_points' => isset($concept->pa) ? $concept->pa : 0
+                        ]
+                    );
 
                     if (isset($concept->pa)) {
 

@@ -144,6 +144,8 @@
         let containerResult = '';
         let container = '';
         let typeService = '';
+        let countConcepts = 0;
+
 
         $('.modal').on('hidden.bs.modal', function(e) {
             conceptsArray = {};
@@ -152,6 +154,7 @@
             flete = 0;
             value_insurance = 0;
             valuea_added_insurance = 0;
+            countConcepts = 0;
 
             updateTable(conceptsArray, e.target.id);
 
@@ -284,12 +287,14 @@
             if (camposInvalidos === 0) {
                 // Si no hay campos inválidos, envía el formulario
 
-                conceptsArray[inputs[0].value] = {
+                conceptsArray[countConcepts] = {
                     'id': inputs[0].value,
                     'name': inputs[0].options[inputs[0].selectedIndex].text,
                     'value': formatValue(inputs[1].value),
                     'added': formatValue(inputs[2].value),
                 }
+
+                countConcepts++;
 
                 updateTable(conceptsArray, container.id);
 
