@@ -1,7 +1,7 @@
 <div class="row">
 
-    <input type="hidden" name="nro_operation" value="{{ $quote->nro_operation }}">
-    <input type="hidden" name="id_quote_freight" value="{{ $quote->id }}">
+    <input type="hidden" name="nro_operation" value="{{ isset($quote->nro_operation) ? $quote->nro_operation : ''  }}">
+    <input type="hidden" name="id_quote_freight" value="{{ isset($quote->id) ? $quote->id : '' }}">
     {{-- <input type="hidden" name="typeService" id="typeService"> --}}
 
 
@@ -29,20 +29,20 @@
     <div class=" col-12 form-group">
         <div class="custom-control custom-switch">
             <input type="checkbox" name="state_insurance" class="custom-control-input" id="seguroFreight"
-                onchange="enableInsurance(this)">
+                onchange="enableInsurance(this)" {{ isset($insurance) ? 'checked' : ''}}>
             <label class="custom-control-label" for="seguroFreight">Agregar Seguro</label>
         </div>
     </div>
 
     <hr>
-    <div class="col-12 row d-none justify-content-center" id="content_seguroFreight">
+    <div class="col-12 row {{ isset($insurance) ? '' : 'd-none'}} justify-content-center" id="content_seguroFreight">
         <div class="col-3">
             <label for="type_insurance">Tipo de seguro</label>
-            <select name="type_insurance" class="d-none form-control" label="Tipo de seguro" igroup-size="md"
+            <select name="type_insurance" class="{{ isset($insurance) ? '' : 'd-none'}} form-control" label="Tipo de seguro" igroup-size="md"
                 data-placeholder="Seleccione una opcion...">
                 <option />
                 @foreach ($type_insurace as $type)
-                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                    <option value="{{ $type->id }}" {{ (isset($insurance) && $insurance->id === $type->id) ? 'selected' : ''  }} >{{ $type->name }}</option>
                 @endforeach
             </select>
         </div>
@@ -56,8 +56,8 @@
                             $
                         </span>
                     </div>
-                    <input type="text" class="form-control CurrencyInput d-none " name="value_insurance"
-                        data-type="currency" placeholder="Ingrese valor de la carga"
+                    <input type="text" class="form-control CurrencyInput {{ isset($insurance) ? '' : 'd-none'}} " name="value_insurance"
+                        data-type="currency" placeholder="Ingrese valor de la carga" value="{{ isset($insurance) ? $insurance->insurance_value : ''}}"
                         onchange="updateInsuranceTotal(this)">
                 </div>
 
@@ -74,8 +74,8 @@
                             $
                         </span>
                     </div>
-                    <input type="text" class="form-control CurrencyInput d-none" id="insurance_added"
-                        name="insurance_added" data-type="currency" value="0"
+                    <input type="text" class="form-control CurrencyInput {{ isset($insurance) ? '' : 'd-none'}}" id="insurance_added"
+                        name="insurance_added" data-type="currency"  value="{{ isset($insurance) ? $insurance->insurance_value_added : 0 }}"
                         placeholder="Ingrese valor de la carga" onchange="updateInsuranceAddedTotal(this)">
                 </div>
 
@@ -86,7 +86,7 @@
                 <label for="load_value">Puntos</label>
 
                 <div class="input-group">
-                    <input type="number" class="form-control d-none" id="insurance_points" name="insurance_points"
+                    <input type="number" class="form-control {{ isset($insurance) ? '' : 'd-none'}}" id="insurance_points" name="insurance_points"
                         min="0" onkeydown="preventeDefaultAction(event)" oninput="addPointsInsurance(this)">
                 </div>
 

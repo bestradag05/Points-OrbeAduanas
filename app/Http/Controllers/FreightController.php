@@ -182,7 +182,6 @@ class FreightController extends Controller
 
 
             $concepts->$key = $insuranceObject;
-
         }
 
 
@@ -239,10 +238,9 @@ class FreightController extends Controller
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+
+
+    public function getTemplateGeneratePointFreight(string $id)
     {
         // Obtenemos el registro que se va editar
 
@@ -257,7 +255,66 @@ class FreightController extends Controller
             $value_freight += $concept->pivot->value_concept;
         }
 
-        return view('freight/edit-freight', compact('freight', 'value_freight'));
+        return view('freight/edit-point-freight', compact('freight', 'value_freight'));
+    }
+
+    public function updatePointFreight(Request $request, string $id)
+    {
+        $this->validateForm($request, $id);
+
+        $freight = Freight::find($id);
+
+
+        $dateRegisterFormat = Carbon::createFromFormat('d/m/Y', $request['edt'])->toDateString();
+        $request['date_register'] = $dateRegisterFormat;
+
+        $edtFormat = Carbon::createFromFormat('d/m/Y', $request['edt'])->toDateString();
+        $request['edt'] = $edtFormat;
+
+        $etaFormat = Carbon::createFromFormat('d/m/Y', $request['eta'])->toDateString();
+        $request['eta'] = $etaFormat;
+
+        $request['state'] = "Generado";
+
+        $freight->fill($request->all());
+        $freight->save();
+
+        return redirect('freight');
+    }
+
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        // Obtenemos el registro que se va editar
+
+        $freight = Freight::find($id);
+        $value_freight = 0;
+
+        if($freight->insurance()->exists()){
+            $insurance = $freight->insurance;
+        }
+
+        $quote = $freight->quoteFreights()->where('state', 'Aceptada')->first();
+        $type_insurace = TypeInsurance::all();
+        $concepts = Concepts::all();
+
+        $conceptFreight = null;
+        foreach ($concepts as $concept) {
+
+            if ($concept->typeService->name == 'Flete' && $concept->name === 'OCEAN FREIGHT') {
+                $conceptFreight = $concept;
+            }
+        }
+        
+
+        foreach ($freight->concepts as $concept) {
+            $value_freight += $concept->pivot->value_concept;
+        }
+
+        return view('freight/edit-freight', compact('freight', 'value_freight', 'quote', 'type_insurace', 'concepts', 'conceptFreight' ,  'insurance'));
     }
 
     /**

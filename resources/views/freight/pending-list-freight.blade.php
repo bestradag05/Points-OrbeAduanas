@@ -2,7 +2,7 @@
 
 @section('content_header')
     <div class="d-flex justify-content-between">
-        <h2>Fletes</h2>
+        <h2>Fletes pendientes</h2>
     </div>
 
 @stop

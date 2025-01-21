@@ -27,7 +27,7 @@
 
                 @can('operaciones.generate')
                     <td>
-                        <a href="{{ url('/freight/' . $freight->id . '/edit') }}" class="btn btn-outline-success btn-sm">
+                        <a href="{{ url('/freight/' . $freight->id . '/point') }}" class="btn btn-outline-success btn-sm">
                             {{ $freight->state == 'Pendiente' ? 'Generar punto' : 'Modificar' }}
                         </a>
 

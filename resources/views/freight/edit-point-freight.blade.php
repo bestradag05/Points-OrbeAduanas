@@ -12,10 +12,10 @@
 @section('dinamic-content')
 
 
-<form action={{ url('/freight/' . $freight->id) }} method="POST" enctype="multipart/form-data">
+<form action={{ url('/freight/' . $freight->id . '/point') }} method="POST" enctype="multipart/form-data">
     {{ method_field('PATCH') }}
     {{ csrf_field() }}
-    @include ('freight.form-freight', ['formMode' => 'edit'])
+    @include ('freight.form-point-freight', ['formMode' => 'edit'])
 </form>
 
 
