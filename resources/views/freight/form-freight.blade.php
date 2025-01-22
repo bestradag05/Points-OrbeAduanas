@@ -87,7 +87,7 @@
 
                 <div class="input-group">
                     <input type="number" class="form-control {{ isset($insurance) ? '' : 'd-none'}}" id="insurance_points" name="insurance_points"
-                        min="0" onkeydown="preventeDefaultAction(event)" oninput="addPointsInsurance(this)">
+                        min="0" onkeydown="preventeDefaultAction(event)" oninput="addPointsInsurance(this)" value="{{ isset($insurance) ? $insurance->insurance_value_added : 0 }}">
                 </div>
 
             </div>
