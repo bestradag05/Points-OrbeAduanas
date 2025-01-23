@@ -82,7 +82,7 @@
             </div>
         </div>
         <div class="col-3">
-            <div class="form-group">
+            <div class="form-group">    
                 <label for="load_value">Puntos</label>
 
                 <div class="input-group">

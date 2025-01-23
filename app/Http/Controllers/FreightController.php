@@ -293,6 +293,8 @@ class FreightController extends Controller
         $freight = Freight::find($id);
         $value_freight = 0;
 
+   
+
         if($freight->insurance()->exists()){
             $insurance = $freight->insurance;
         }

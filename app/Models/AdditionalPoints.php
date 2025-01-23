@@ -21,8 +21,8 @@ class AdditionalPoints extends Model
         'igv',
         'total',
         'points',
-        'id_additional_service',
-        'model_additional_service',
+        'id_additional_concept_service',
+        'model_additional_concept_service',
         'additional_type',
         'administrator',
         'state',
@@ -31,7 +31,7 @@ class AdditionalPoints extends Model
 
     public function additional()
     {
-        return $this->morphTo(__FUNCTION__,'model_additional_service', 'id_additional_service');
+        return $this->morphTo(__FUNCTION__,'model_additional_concept_service', 'id_additional_concept_service');
     }
 
 
