@@ -459,7 +459,7 @@ return [
         [
             'text' => 'Flete',
             'icon' => 'fas fa-ship',
-            'can' => 'freight.module',
+            //'can' => 'freight.module',
             'submenu' => [
                 [
                     'text' => 'Generar cotizacion',

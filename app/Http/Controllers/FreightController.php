@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdditionalPoints;
+use App\Models\ConceptFreight;
 use App\Models\Concepts;
 use App\Models\Freight;
 use App\Models\Insurance;
@@ -123,7 +124,6 @@ class FreightController extends Controller
      */
     public function store(Request $request)
     {
-        /* dd($request->all()); */
 
         //Convertimos el json a un objeto
         $concepts = json_decode($request->concepts);
@@ -136,8 +136,6 @@ class FreightController extends Controller
             'nro_operation' => $request->nro_operation,
         ]);
 
-
-
         if ($request->state_insurance) {
 
             $sales_price = $request->value_insurance + $request->insurance_added;
@@ -148,6 +146,7 @@ class FreightController extends Controller
                 'insurance_sale' => $sales_price, // Valor venta del seguro
                 'sales_value' => $sales_price * 0.18, // valor venta prima (igv)
                 'sales_price' => $sales_price * 1.18, // precio de venta
+                'additional_points' => $request->insurance_points,
                 'id_type_insurance' =>  $request->type_insurance,
                 'name_service' => 'Flete',
                 'id_insurable_service' => $freight->id,
@@ -188,25 +187,24 @@ class FreightController extends Controller
         //Relacionamos los conceptos que tendra este flete
 
         foreach ($concepts as $concept) {
-            $freight->concepts()->attach(
-                $concept->id,
-                [
-                    'value_concept' => $concept->value,
-                    'value_concept_added' => $concept->added,
-                    'total_value_concept' => $concept->value + $concept->added,
-                    'additional_points' => isset($concept->pa) ? $concept->pa : 0
-                ]
-            );
+            $service = ConceptFreight::create([
+                'id_concepts' => $concept->id, // ID del concepto relacionado
+                'id_freight' => $freight->id, // Clave foránea al modelo Freight
+                'value_concept' => $concept->value,
+                'value_concept_added' => $concept->added,
+                'total_value_concept' => $concept->value + $concept->added,
+                'additional_points' => isset($concept->pa) ? $concept->pa : 0,
+            ]);
 
             if (isset($concept->pa)) {
 
                 $ne_amount = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
 
-                $this->add_aditionals_point($concept, $freight, $ne_amount);
+                $this->add_aditionals_point($concept, $service, $ne_amount);
             }
         }
 
-        dd($request->all());
+        return redirect('freight/personal');
     }
 
 
@@ -220,9 +218,9 @@ class FreightController extends Controller
             'igv' => $igv,
             'total' => $total,
             'points' => $concept->pa,
-            'id_additional_service' => $service->id,
-            'model_additional_service' => $service::class,
-            'additional_type' => ($service::class === 'App\Models\Freight') ? 'AD-FLETE' : 'AD-ADUANA',
+            'id_additional_concept_service' => $concept->id,
+            'model_additional_concept_service' => $service::class,
+            'additional_type' => ($service::class === 'App\Models\ConceptFreight') ? 'AD-FLETE' : 'AD-ADUANA',
             'state' => 'Pendiente'
         ]);
 
@@ -248,8 +246,6 @@ class FreightController extends Controller
         $value_freight = 0;
 
         /* $freight->load('concepts'); */
-
-
 
         foreach ($freight->concepts as $concept) {
             $value_freight += $concept->pivot->value_concept;
@@ -290,12 +286,11 @@ class FreightController extends Controller
     {
         // Obtenemos el registro que se va editar
 
-        $freight = Freight::find($id);
+        $freight = Freight::with('concepts.concept_freight.additional_point')->find($id);
         $value_freight = 0;
 
-   
 
-        if($freight->insurance()->exists()){
+        if ($freight->insurance()->exists()) {
             $insurance = $freight->insurance;
         }
 
@@ -310,13 +305,12 @@ class FreightController extends Controller
                 $conceptFreight = $concept;
             }
         }
-        
 
         foreach ($freight->concepts as $concept) {
             $value_freight += $concept->pivot->value_concept;
         }
 
-        return view('freight/edit-freight', compact('freight', 'value_freight', 'quote', 'type_insurace', 'concepts', 'conceptFreight' ,  'insurance'));
+        return view('freight/edit-freight', compact('freight', 'value_freight', 'quote', 'type_insurace', 'concepts', 'conceptFreight',  'insurance'));
     }
 
     /**
@@ -324,27 +318,89 @@ class FreightController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
-        $this->validateForm($request, $id);
+   
+        //Convertimos el json a un objeto
+        $concepts = json_decode($request->concepts);
 
-        $freight = Freight::find($id);
+        dd($concepts);
+
+        $freight = Freight::create([
+            'value_freight' => $request->total,
+            'value_utility' => $request->utility,
+            'state' => 'Pendiente',
+            'id_quote_freight' => $request->id_quote_freight,
+            'nro_operation' => $request->nro_operation,
+        ]);
+
+        if ($request->state_insurance) {
+
+            $sales_price = $request->value_insurance + $request->insurance_added;
+
+            $insurance = Insurance::create([
+                'insurance_value' => $request->value_insurance, // precio neto del seguro
+                'insurance_value_added' => $request->insurance_added, // precio agregado del asesor
+                'insurance_sale' => $sales_price, // Valor venta del seguro
+                'sales_value' => $sales_price * 0.18, // valor venta prima (igv)
+                'sales_price' => $sales_price * 1.18, // precio de venta
+                'additional_points' => $request->insurance_points,
+                'id_type_insurance' =>  $request->type_insurance,
+                'name_service' => 'Flete',
+                'id_insurable_service' => $freight->id,
+                'model_insurable_service' => Freight::class,
+                'state' => 'Pendiente'
+            ]);
+
+            $freight->insurance()->save($insurance);
+
+            //Si existe seguro agregaremos el concepto de SEGURO a la tabla concepts_freight
 
 
-        $dateRegisterFormat = Carbon::createFromFormat('d/m/Y', $request['edt'])->toDateString();
-        $request['date_register'] = $dateRegisterFormat;
+            $arrayConcepts = (array) $concepts; //convertimos array los conceptos
+            $lastKey = array_key_last($arrayConcepts); // obtenemos el ultimo indice
+            $key = $lastKey + 1; // agregamos al ultimo indice par acrear el concepto de seguro
 
-        $edtFormat = Carbon::createFromFormat('d/m/Y', $request['edt'])->toDateString();
-        $request['edt'] = $edtFormat;
+            $concept = Concepts::where('name', 'SEGURO')
+                ->where('id_type_shipment', $freight->routing->type_shipment->id)
+                ->whereHas('typeService', function ($query) {
+                    $query->where('name', 'Flete');  // Segunda condición: Filtrar por name del tipo de servicio
+                })
+                ->first();
 
-        $etaFormat = Carbon::createFromFormat('d/m/Y', $request['eta'])->toDateString();
-        $request['eta'] = $etaFormat;
+            //creamos el objeto del seguro
+            $insuranceObject = new stdClass();
 
-        $request['state'] = "Generado";
+            $insuranceObject->id = $concept->id;
+            $insuranceObject->name = 'SEGURO';
+            $insuranceObject->value = $request->value_insurance;
+            $insuranceObject->added = $request->insurance_added;
+            $insuranceObject->pa = $request->insurance_points;
 
-        $freight->fill($request->all());
-        $freight->save();
 
-        return redirect('freight');
+            $concepts->$key = $insuranceObject;
+        }
+
+
+        //Relacionamos los conceptos que tendra este flete
+
+        foreach ($concepts as $concept) {
+            $service = ConceptFreight::create([
+                'id_concepts' => $concept->id, // ID del concepto relacionado
+                'id_freight' => $freight->id, // Clave foránea al modelo Freight
+                'value_concept' => $concept->value,
+                'value_concept_added' => $concept->added,
+                'total_value_concept' => $concept->value + $concept->added,
+                'additional_points' => isset($concept->pa) ? $concept->pa : 0,
+            ]);
+
+            if (isset($concept->pa)) {
+
+                $ne_amount = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
+
+                $this->add_aditionals_point($concept, $service, $ne_amount);
+            }
+        }
+
+        return redirect('freight/personal');
     }
 
     /**

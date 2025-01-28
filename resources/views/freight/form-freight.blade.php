@@ -1,6 +1,6 @@
 <div class="row">
 
-    <input type="hidden" name="nro_operation" value="{{ isset($quote->nro_operation) ? $quote->nro_operation : ''  }}">
+    <input type="hidden" name="nro_operation" value="{{ isset($quote->nro_operation) ? $quote->nro_operation : '' }}">
     <input type="hidden" name="id_quote_freight" value="{{ isset($quote->id) ? $quote->id : '' }}">
     {{-- <input type="hidden" name="typeService" id="typeService"> --}}
 
@@ -29,20 +29,22 @@
     <div class=" col-12 form-group">
         <div class="custom-control custom-switch">
             <input type="checkbox" name="state_insurance" class="custom-control-input" id="seguroFreight"
-                onchange="enableInsurance(this)" {{ isset($insurance) ? 'checked' : ''}}>
+                onchange="enableInsurance(this)" {{ isset($insurance) ? 'checked' : '' }}>
             <label class="custom-control-label" for="seguroFreight">Agregar Seguro</label>
         </div>
     </div>
 
     <hr>
-    <div class="col-12 row {{ isset($insurance) ? '' : 'd-none'}} justify-content-center" id="content_seguroFreight">
+    <div class="col-12 row {{ isset($insurance) ? '' : 'd-none' }} justify-content-center" id="content_seguroFreight">
         <div class="col-3">
             <label for="type_insurance">Tipo de seguro</label>
-            <select name="type_insurance" class="{{ isset($insurance) ? '' : 'd-none'}} form-control" label="Tipo de seguro" igroup-size="md"
-                data-placeholder="Seleccione una opcion...">
+            <select name="type_insurance" class="{{ isset($insurance) ? '' : 'd-none' }} form-control"
+                label="Tipo de seguro" igroup-size="md" data-placeholder="Seleccione una opcion...">
                 <option />
                 @foreach ($type_insurace as $type)
-                    <option value="{{ $type->id }}" {{ (isset($insurance) && $insurance->id === $type->id) ? 'selected' : ''  }} >{{ $type->name }}</option>
+                    <option value="{{ $type->id }}"
+                        {{ isset($insurance) && $insurance->id === $type->id ? 'selected' : '' }}>{{ $type->name }}
+                    </option>
                 @endforeach
             </select>
         </div>
@@ -56,8 +58,9 @@
                             $
                         </span>
                     </div>
-                    <input type="text" class="form-control CurrencyInput {{ isset($insurance) ? '' : 'd-none'}} " name="value_insurance"
-                        data-type="currency" placeholder="Ingrese valor de la carga" value="{{ isset($insurance) ? $insurance->insurance_value : ''}}"
+                    <input type="text" class="form-control CurrencyInput {{ isset($insurance) ? '' : 'd-none' }} "
+                        name="value_insurance" data-type="currency" placeholder="Ingrese valor de la carga"
+                        value="{{ isset($insurance) ? $insurance->insurance_value : '' }}"
                         onchange="updateInsuranceTotal(this)">
                 </div>
 
@@ -74,20 +77,22 @@
                             $
                         </span>
                     </div>
-                    <input type="text" class="form-control CurrencyInput {{ isset($insurance) ? '' : 'd-none'}}" id="insurance_added"
-                        name="insurance_added" data-type="currency"  value="{{ isset($insurance) ? $insurance->insurance_value_added : 0 }}"
+                    <input type="text" class="form-control CurrencyInput {{ isset($insurance) ? '' : 'd-none' }}"
+                        id="insurance_added" name="insurance_added" data-type="currency"
+                        value="{{ isset($insurance) ? $insurance->insurance_value_added : 0 }}"
                         placeholder="Ingrese valor de la carga" onchange="updateInsuranceAddedTotal(this)">
                 </div>
 
             </div>
         </div>
         <div class="col-3">
-            <div class="form-group">    
+            <div class="form-group">
                 <label for="load_value">Puntos</label>
 
                 <div class="input-group">
-                    <input type="number" class="form-control {{ isset($insurance) ? '' : 'd-none'}}" id="insurance_points" name="insurance_points"
-                        min="0" onkeydown="preventeDefaultAction(event)" oninput="addPointsInsurance(this)" value="{{ isset($insurance) ? $insurance->insurance_value_added : 0 }}">
+                    <input type="number" class="form-control {{ isset($insurance) ? '' : 'd-none' }}"
+                        id="insurance_points" name="insurance_points" min="0" oninput="addPointsInsurance(this)" onkeydown="return false;"
+                        value="{{ isset($insurance) ? $insurance->additional_points : 0 }}">
                 </div>
 
             </div>
@@ -106,7 +111,7 @@
                 <option />
                 @foreach ($concepts as $concept)
                     @if ($concept->typeService->name == 'Flete' && $quote->routing->type_shipment->id == $concept->id_type_shipment)
-                        @if ($conceptFreight->name != $concept->name)
+                        @if ($conceptFreight->name != $concept->name && $concept->name != 'SEGURO')
                             <option value="{{ $concept->id }}">{{ $concept->name }}</option>
                         @endif
                     @endif
@@ -184,12 +189,6 @@
 
     </div>
 
-    <x-slot name="footerSlot">
-        <x-adminlte-button class="btn btn-indigo" id="btnSubmit" type="submit" onclick="submitForm(this)"
-            label="Guardar" />
-        <x-adminlte-button theme="secondary" label="Cerrar" data-dismiss="modal" />
-    </x-slot>
-
 
 
     <div class="container text-center mt-5">
@@ -198,7 +197,7 @@
 
     @push('scripts')
         <script>
-            let conceptsArray = {};
+            let conceptsArray = [];
             let TotalConcepts = 0;
             let total = 0;
             let flete = 0;
@@ -206,18 +205,73 @@
             let valuea_added_insurance = 0;
             let countConcepts = 0;
 
-            let value_ocean_freight = @json($quote->total_ocean_freight);
-            let conceptFreight = @json($conceptFreight);
 
-            conceptsArray[countConcepts] = {
-                'id': conceptFreight.id,
-                'name': conceptFreight.name,
-                'value': formatValue(value_ocean_freight),
-                'added': 0,
-            }
+            //PAra editar, verificamos si tiene conceptos el flete: 
 
-            countConcepts++
+            @if (isset($formMode) && $formMode === 'edit')
+
+                //Obtenemos los valores del seguro para sumarlo al total
+                @if ($freight->insurance)
+                    value_insurance = parseFloat(@json($freight->insurance->insurance_value));
+                    valuea_added_insurance = parseFloat(@json($freight->insurance->insurance_value_added));
+
+                    //Obtenemos el insurance added para poder calcular el maximo de puntos: 
+
+                    let inputInsurancePoints = $('#insurance_points');
+
+                    if (!valuea_added_insurance) {
+                        inputInsurancePoints.val(0); // Usamos .val() para establecer el valor
+                        inputInsurancePoints.attr('max', 0); // Usamos .attr() para establecer el atributo max
+                    } else {
+                        if (Math.floor(valuea_added_insurance / 45) === 0) {
+                            inputInsurancePoints.val(0);
+                            inputInsurancePoints.attr('max', 0);
+                        } else {
+                            inputInsurancePoints.attr('max', Math.floor(valuea_added_insurance / 45));
+                        }
+                    }
+                @endif
+
+
+                @if (isset($freight->concepts))
+
+
+                    let concepts = @json($freight->concepts)
+
+                    concepts.forEach((concept, index) => {
+
+                        if (concept.name != "SEGURO") {
+
+                            conceptsArray.push({
+                                'id': concept.id,
+                                'name': concept.name,
+                                'value': formatValue(concept.concept_freight.value_concept),
+                                'added': formatValue(concept.concept_freight.value_concept_added),
+                                'pa': concept.concept_freight.additional_points > 0 ? concept.concept_freight
+                                    .additional_points : 0
+                            });
+
+                        }
+
+                    });
+                @endif
+            @else
+
+                let value_ocean_freight = @json($quote->total_ocean_freight);
+                let conceptFreight = @json($conceptFreight);
+
+
+                conceptsArray.push({
+                    'id': conceptFreight.id,
+                    'name': conceptFreight.name,
+                    'value': formatValue(value_ocean_freight),
+                    'added': 0,
+                });
+            @endif
+
+
             updateTable(conceptsArray);
+
 
 
             function enableInsurance(checkbox) {
@@ -233,10 +287,10 @@
                     contenedorInsurance.find("input").val('').addClass('d-none').removeClass('is-invalid');
                     contenedorInsurance.find('select').val('').addClass('d-none').removeClass('is-invalid');
 
-                    /*  value_insurance = 0;
-                     valuea_added_insurance = 0; */
+                    value_insurance = 0;
+                    valuea_added_insurance = 0;
 
-                    /*  calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, container.id); */
+                    calcTotal(TotalConcepts, value_insurance, valuea_added_insurance);
 
                 }
             }
@@ -260,7 +314,6 @@
                     valuea_added_insurance = parseFloat(element.value.replace(/,/g, ''));
                 }
 
-                console.log("Valor agregado : ", valuea_added_insurance);
                 //Cada que actualicemos el insurance_add borramos los puntos para poder volver a generar un maximo.
                 $(`#insurance_points`).val("");
 
@@ -269,8 +322,6 @@
 
 
             function calcTotal(TotalConcepts, value_insurance, valuea_added_insurance) {
-
-                console.log(valuea_added_insurance);
 
                 total = TotalConcepts + value_insurance + valuea_added_insurance;
 
@@ -336,14 +387,30 @@
                 if (camposInvalidos === 0) {
                     // Si no hay campos inválidos, envía el formulario
 
-                    conceptsArray[countConcepts] = {
-                        'id': parseInt(inputs[0].value),
-                        'name': inputs[0].options[inputs[0].selectedIndex].text,
-                        'value': formatValue(inputs[1].value),
-                        'added': formatValue(inputs[2].value),
+                    //Verificamos si el concepto ya existe en el array 
+
+                    const index = conceptsArray.findIndex(item => item.id === parseInt(inputs[0].value));
+
+                    if (index !== -1) {
+
+                        conceptsArray[index] = {
+                            'id': parseInt(inputs[0].value),
+                            'name': inputs[0].options[inputs[0].selectedIndex].text,
+                            'value': formatValue(inputs[1].value),
+                            'added': formatValue(inputs[2].value),
+                        };
+
+                    } else {
+
+                        conceptsArray.push({
+                            'id': parseInt(inputs[0].value),
+                            'name': inputs[0].options[inputs[0].selectedIndex].text,
+                            'value': formatValue(inputs[1].value),
+                            'added': formatValue(inputs[2].value),
+                        });
                     }
 
-                    countConcepts++;
+
 
                     updateTable(conceptsArray);
 
@@ -352,6 +419,8 @@
                     inputs[2].value = '';
                 }
             };
+
+
 
 
             function updateTable(conceptsArray) {
@@ -454,8 +523,6 @@
 
                         inputPA.addEventListener('input', (e) => {
 
-
-
                             conceptsArray[clave].pa = e.target.value
 
 
@@ -465,12 +532,7 @@
 
                             inputPA.max = 0;
                         } else {
-                            inputPA.addEventListener('input', (e) => {
-                                // Indicamos cual es el maximo de puntos que puede asignarle
-                                inputPA.max = Math.floor(item.added / 45);
-                                // Agregamos este valor del punto al objeto, para que cuando dibujemos la tabla nuevamente, no se eliminen
-                                conceptsArray[clave].pa = e.target.value
-                            })
+                            inputPA.max = Math.floor(item.added / 45);
                         }
 
 
@@ -488,7 +550,7 @@
                                 let fila = this.parentNode.parentNode;
                                 let indice = fila.rowIndex -
                                     1; // Restar 1 porque el índice de las filas en tbody comienza en 0
-                                delete conceptsArray[Object.keys(conceptsArray)[indice]];
+                                conceptsArray.splice(indice, 1); // Eliminar el elemento en el índice correspondiente
                                 updateTable(conceptsArray);
                             });
                             celdaEliminar.appendChild(botonEliminar);
@@ -518,6 +580,8 @@
             function formatValue(value) {
                 return value.replace(/,/g, '');
             }
+
+
 
 
             $('#formFreight').on('submit', (e) => {

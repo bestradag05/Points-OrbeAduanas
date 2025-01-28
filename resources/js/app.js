@@ -7,7 +7,7 @@ import Pusher from 'pusher-js';
 
 window.Chart = Chart;
 window.Pusher = Pusher;
-window.tinymce = tinymce;
+/* window.tinymce = tinymce;
 
 
 window.Echo = new Echo({
@@ -20,4 +20,4 @@ window.Echo = new Echo({
     disableStats: true,
     forceTLS: false,
 });
-
+ */
