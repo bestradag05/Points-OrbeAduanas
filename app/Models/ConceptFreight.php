@@ -37,4 +37,6 @@ class ConceptFreight extends Model
     {
         return $this->morphOne(AdditionalPoints::class, 'additional', 'model_additional_concept_service', 'id_additional_concept_service');
     }
+
+
 }
