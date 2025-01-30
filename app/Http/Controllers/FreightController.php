@@ -82,6 +82,7 @@ class FreightController extends Controller
             'N° Cotizacion',
             'Utilidad a Orbe',
             'Valor del Flete',
+            'Seguro',
             'Asesor Comercial',
             'Estado',
             'Acciones'
@@ -105,18 +106,29 @@ class FreightController extends Controller
     {
 
         $quote = QuoteFreight::findOrFail($quoteId);
+        $routing = $quote->routing;
         $type_insurace = TypeInsurance::all();
         $concepts = Concepts::all();
         $conceptFreight = null;
+
+
+
         foreach ($concepts as $concept) {
 
-            if ($concept->typeService->name == 'Flete' && $concept->name === 'OCEAN FREIGHT') {
-                $conceptFreight = $concept;
+            foreach ($concepts as $concept) {
+
+                if ($routing->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Flete' && $concept->name === 'OCEAN FREIGHT') {
+                    $conceptFreight = $concept;
+                }
+
+                if ($routing->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Flete' && $concept->name === 'AIR FREIGHT') {
+                    $conceptFreight = $concept;
+                }
             }
         }
 
 
-        return view('freight.register-freight', compact('quote', 'type_insurace', 'concepts', 'conceptFreight'));
+        return view('freight.register-freight', compact('quote', 'type_insurace', 'concepts', 'conceptFreight', 'routing'));
     }
 
     /**
@@ -125,90 +137,30 @@ class FreightController extends Controller
     public function store(Request $request)
     {
 
+
         //Convertimos el json a un objeto
         $concepts = json_decode($request->concepts);
 
-        $freight = Freight::create([
-            'value_freight' => $request->total,
-            'value_utility' => $request->utility,
-            'state' => 'Pendiente',
-            'id_quote_freight' => $request->id_quote_freight,
-            'nro_operation' => $request->nro_operation,
-        ]);
-
-        if ($request->state_insurance) {
-
-            $sales_price = $request->value_insurance + $request->insurance_added;
-
-            $insurance = Insurance::create([
-                'insurance_value' => $request->value_insurance, // precio neto del seguro
-                'insurance_value_added' => $request->insurance_added, // precio agregado del asesor
-                'insurance_sale' => $sales_price, // Valor venta del seguro
-                'sales_value' => $sales_price * 0.18, // valor venta prima (igv)
-                'sales_price' => $sales_price * 1.18, // precio de venta
-                'additional_points' => $request->insurance_points,
-                'id_type_insurance' =>  $request->type_insurance,
-                'name_service' => 'Flete',
-                'id_insurable_service' => $freight->id,
-                'model_insurable_service' => Freight::class,
-                'state' => 'Pendiente'
-            ]);
-
-            $freight->insurance()->save($insurance);
-
-            //Si existe seguro agregaremos el concepto de SEGURO a la tabla concepts_freight
+        $freight = $this->createOrUpdateFreight($request);
 
 
-            $arrayConcepts = (array) $concepts; //convertimos array los conceptos
-            $lastKey = array_key_last($arrayConcepts); // obtenemos el ultimo indice
-            $key = $lastKey + 1; // agregamos al ultimo indice par acrear el concepto de seguro
-
-            $concept = Concepts::where('name', 'SEGURO')
-                ->where('id_type_shipment', $freight->routing->type_shipment->id)
-                ->whereHas('typeService', function ($query) {
-                    $query->where('name', 'Flete');  // Segunda condición: Filtrar por name del tipo de servicio
-                })
-                ->first();
-
-            //creamos el objeto del seguro
-            $insuranceObject = new stdClass();
-
-            $insuranceObject->id = $concept->id;
-            $insuranceObject->name = 'SEGURO';
-            $insuranceObject->value = $request->value_insurance;
-            $insuranceObject->added = $request->insurance_added;
-            $insuranceObject->pa = $request->insurance_points;
+        $insurance = $this->createOrUpdateInsurance($request, $freight);
 
 
-            $concepts->$key = $insuranceObject;
+        if ($insurance) {
+            $concepts = $this->updateConceptInsurance($concepts, $freight, $request);
         }
 
 
         //Relacionamos los conceptos que tendra este flete
-        foreach ($concepts as $concept) {
-            $service = ConceptFreight::create([
-                'id_concepts' => $concept->id, // ID del concepto relacionado
-                'id_freight' => $freight->id, // Clave foránea al modelo Freight
-                'value_concept' => $concept->value,
-                'value_concept_added' => $concept->added,
-                'total_value_concept' => $concept->value + $concept->added,
-                'additional_points' => isset($concept->pa) ? $concept->pa : 0,
-            ]);
 
-
-            if (isset($concept->pa)) {
-
-                $ne_amount = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
-
-                $this->add_aditionals_point($concept, $service, $ne_amount);
-            }
-        }
+        $this->syncFreightConcepts($freight, $concepts);
 
         return redirect('freight/personal');
     }
 
 
-   
+
 
     /**
      * Display the specified resource.
@@ -269,9 +221,9 @@ class FreightController extends Controller
         // Obtenemos el registro que se va editar
 
         $freight = Freight::with('concepts.concept_freight.additional_point')->find($id);
+        $routing = $freight->routing;
         $value_freight = 0;
         $insurance = null;
-
 
         if ($freight->insurance()->exists()) {
             $insurance = $freight->insurance;
@@ -282,18 +234,24 @@ class FreightController extends Controller
         $concepts = Concepts::all();
 
         $conceptFreight = null;
+
         foreach ($concepts as $concept) {
 
-            if ($concept->typeService->name == 'Flete' && $concept->name === 'OCEAN FREIGHT') {
+            if ($freight->routing->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Flete' && $concept->name === 'OCEAN FREIGHT') {
+                $conceptFreight = $concept;
+            }
+
+            if ($freight->routing->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Flete' && $concept->name === 'AIR FREIGHT') {
                 $conceptFreight = $concept;
             }
         }
+
 
         foreach ($freight->concepts as $concept) {
             $value_freight += $concept->pivot->value_concept;
         }
 
-        return view('freight/edit-freight', compact('freight', 'value_freight', 'quote', 'type_insurace', 'concepts', 'conceptFreight',  'insurance'));
+        return view('freight/edit-freight', compact('freight', 'value_freight', 'quote', 'type_insurace', 'concepts', 'conceptFreight',  'insurance', 'routing'));
     }
 
     /**
@@ -305,7 +263,7 @@ class FreightController extends Controller
 
 
         $freight = $this->createOrUpdateFreight($request, $id);
-    
+
         $insurance = $this->createOrUpdateInsurance($request, $freight);
 
         if ($insurance) {
@@ -368,7 +326,7 @@ class FreightController extends Controller
                 'sales_price' => $sales_price * 1.18,
                 'additional_points' => $request->insurance_points,
                 'id_type_insurance' =>  $request->type_insurance,
-                'state' => $request->state_insurance ?? $insurance->state,
+                'state' => 'Pendiente',
             ]);
         } else {
             // Si no existe, crearlo
@@ -401,7 +359,6 @@ class FreightController extends Controller
         $key = $lastKey + 1; // agregamos al ultimo indice par acrear el concepto de seguro
 
 
-
         // Buscar el concepto en la base de datos
         $concept = Concepts::where('name', 'SEGURO')
             ->where('id_type_shipment', $freight->routing->type_shipment->id)
@@ -431,9 +388,9 @@ class FreightController extends Controller
         // Eliminar los conceptos previos si estamos actualizando, pero antes 
         $conceptsFreight = ConceptFreight::where('id_freight', $freight->id)->get(); // cuando eliminamos el concepto se elimina el additional_point relacionado en cascada
 
-        if($conceptsFreight){
+        if ($conceptsFreight) {
             foreach ($conceptsFreight as $concept) {
-                $concept->additional_point()->delete(); 
+                $concept->additional_point()->delete();
                 $concept->forceDelete(); // Esto elimina el ConceptFreight definitivamente
             }
         }

@@ -1,6 +1,8 @@
 <div class="row">
 
-    <input type="hidden" name="nro_operation" value="{{ isset($quote->nro_operation) ? $quote->nro_operation : '' }}">
+ 
+    <input type="hidden" name="nro_operation"
+        value="{{ isset($routing->nro_operation) ? $routing->nro_operation : '' }}">
     <input type="hidden" name="id_quote_freight" value="{{ isset($quote->id) ? $quote->id : '' }}">
     {{-- <input type="hidden" name="typeService" id="typeService"> --}}
 
@@ -16,10 +18,16 @@
                         $
                     </span>
                 </div>
+                {{-- Utilizamos el if solo por que podemos crear flete desde una cotizacion como no. --}}
+                @if (isset($freight->value_utility)) 
+                    <input type="text" class="form-control CurrencyInput" id="utility" name="utility"
+                        data-type="currency" @readonly(true) placeholder="Ingrese valor de la utilidad"
+                        value="{{ isset($freight->value_utility) ? $freight->value_utility : old('utility') }}">
+                @else
                 <input type="text" class="form-control CurrencyInput" id="utility" name="utility"
-                    data-type="currency" @readonly(true) placeholder="Ingrese valor de la utilidad"
-                    value="{{ isset($quote->utility) ? $quote->utility : old('utility') }}">
-
+                data-type="currency" @readonly(true) placeholder="Ingrese valor de la utilidad"
+                value="{{ isset($quote->utility) ? $quote->utility : old('utility') }}">
+                @endif
             </div>
 
         </div>
@@ -43,7 +51,8 @@
                 <option />
                 @foreach ($type_insurace as $type)
                     <option value="{{ $type->id }}"
-                        {{ isset($insurance) && $insurance->id === $type->id ? 'selected' : '' }}>{{ $type->name }}
+                        {{ isset($insurance) && $insurance->id_type_insurance === $type->id ? 'selected' : '' }}>
+                        {{ $type->name }}
                     </option>
                 @endforeach
             </select>
@@ -91,8 +100,8 @@
 
                 <div class="input-group">
                     <input type="number" class="form-control {{ isset($insurance) ? '' : 'd-none' }}"
-                        id="insurance_points" name="insurance_points" min="0" oninput="addPointsInsurance(this)" onkeydown="return false;"
-                        value="{{ isset($insurance) ? $insurance->additional_points : 0 }}">
+                        id="insurance_points" name="insurance_points" min="0" oninput="addPointsInsurance(this)"
+                        onkeydown="return false;" value="{{ isset($insurance) ? $insurance->additional_points : 0 }}">
                 </div>
 
             </div>
@@ -110,7 +119,7 @@
                 data-placeholder="Seleccione un concepto...">
                 <option />
                 @foreach ($concepts as $concept)
-                    @if ($concept->typeService->name == 'Flete' && $quote->routing->type_shipment->id == $concept->id_type_shipment)
+                    @if ($concept->typeService->name == 'Flete' && $routing->type_shipment->id == $concept->id_type_shipment)
                         @if ($conceptFreight->name != $concept->name && $concept->name != 'SEGURO')
                             <option value="{{ $concept->id }}">{{ $concept->name }}</option>
                         @endif
@@ -204,12 +213,15 @@
             let value_insurance = 0;
             let valuea_added_insurance = 0;
             let countConcepts = 0;
+            let value_ocean_freight = 0;
+            let conceptFreight = null
 
 
             //PAra editar, verificamos si tiene conceptos el flete: 
 
             @if (isset($formMode) && $formMode === 'edit')
 
+                conceptFreight = @json($conceptFreight);
                 //Obtenemos los valores del seguro para sumarlo al total
                 @if ($freight->insurance)
                     value_insurance = parseFloat(@json($freight->insurance->insurance_value));
@@ -257,8 +269,8 @@
                 @endif
             @else
 
-                let value_ocean_freight = @json($quote->total_ocean_freight);
-                let conceptFreight = @json($conceptFreight);
+                value_ocean_freight = @json($quote->total_ocean_freight);
+                conceptFreight = @json($conceptFreight);
 
 
                 conceptsArray.push({
@@ -267,6 +279,9 @@
                     'value': formatValue(value_ocean_freight),
                     'added': 0,
                 });
+
+                console.log(conceptFreight);
+
             @endif
 
 
@@ -463,7 +478,7 @@
                         let celdaAdded = fila.insertCell(3);
 
 
-                        if (item.name === "OCEAN FREIGHT") {
+                        if (item.name === conceptFreight.name) {
                             // Si ocean_freight existe, muestra un input editable
                             let inputAdded = document.createElement('input');
                             inputAdded.type = 'text';
@@ -537,7 +552,7 @@
 
 
 
-                        if (item.name != "OCEAN FREIGHT") {
+                        if (item.name != conceptFreight.name) {
 
                             // Insertar un botón para eliminar la fila en la cuarta celda de la fila
                             let celdaEliminar = fila.insertCell(5);
