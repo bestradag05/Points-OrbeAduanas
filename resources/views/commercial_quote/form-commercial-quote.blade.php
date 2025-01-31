@@ -1,5 +1,14 @@
-  <div id="test-l-1" role="tabpanel" class="bs-stepper-pane active dstepper-block" aria-labelledby="stepper1trigger1">
+  <div id="informacion" role="tabpanel" class="bs-stepper-pane active dstepper-block" aria-labelledby="stepperInformacion">
 
+      <div class="form-group">
+          <label for="nro_quote_commercial">N° de Cotizacion</label>
+          <input type="text" class="form-control" id="nro_quote_commercial" name="nro_quote_commercial"
+              placeholder="Ingrese el numero de operacion" @readonly(true)
+              value="{{ isset($quote_commercial->nro_quote_commercial) ? $quote_commercial->nro_quote_commercial : $nro_quote_commercial }}">
+          @error('nro_quote_commercial')
+              <div class="text-danger">{{ $message }}</div>
+          @enderror
+      </div>
 
       <div class="row">
 
@@ -19,7 +28,7 @@
           </div>
           <div class="col-6">
 
-              <x-adminlte-select2 name="destination" label="Destino" igroup-size="md"
+              <x-adminlte-select2 name="destination" label="Destino" igroup-si ze="md"
                   data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($stateCountrys as $stateCountry)
@@ -37,20 +46,20 @@
           <div class="col-6">
 
               <div class="form-group">
-                  <label for="load_value">Cliente</label>
+                  <label for="load_value">Valor del la carga / factura</label>
 
                   <div class="input-group">
                       <div class="input-group-prepend">
                           <span class="input-group-text text-bold @error('load_value') is-invalid @enderror">
-                            <i class="fas fa-users"></i>
+                              $
                           </span>
                       </div>
                       <input type="text"
-                          class="form-control @error('customer') is-invalid @enderror "
-                          name="customer" placeholder="Ingrese nombre del cliente"
-                          value="{{ isset($routing->customer) ? $routing->customer : old('customer') }}">
+                          class="form-control CurrencyInput @error('load_value') is-invalid @enderror "
+                          name="load_value" data-type="currency" placeholder="Ingrese valor de la carga"
+                          value="{{ isset($routing->load_value) ? $routing->load_value : old('load_value') }}">
                   </div>
-                  @error('customer')
+                  @error('load_value')
                       <span class="invalid-feedback d-block" role="alert">
                           <strong>{{ $message }}</strong>
                       </span>
@@ -58,33 +67,6 @@
 
               </div>
           </div>
-
-
-         {{--  <div class="col-6">
-              <x-adminlte-select2 name="id_customer" label="Clientes" igroup-size="md"
-                  data-placeholder="Seleccione una opcion...">
-                  <option />
-                  @foreach ($customers as $customer)
-                      <option value="{{ $customer->id }}"
-                          {{ (isset($routing->id_customer) && $routing->id_customer == $customer->id) || old('id_customer') == $customer->id ? 'selected' : '' }}>
-                          {{ $customer->name_businessname }}
-                      </option>
-                  @endforeach
-              </x-adminlte-select2>
-          </div> --}}
-
-         {{--  <div class="col-6">
-              <x-adminlte-select2 name="id_supplier" label="Provedor del Cliente" igroup-size="md"
-                  data-placeholder="Seleccione una opcion...">
-                  <option />
-                  @foreach ($suppliers as $supplier)
-                      <option value="{{ $supplier->id }}"
-                          {{ (isset($routing->id_supplier) && $routing->id_supplier == $supplier->id) || old('id_supplier') == $supplier->id ? 'selected' : '' }}>
-                          {{ $supplier->name_businessname }}
-                      </option>
-                  @endforeach
-              </x-adminlte-select2>
-          </div> --}}
 
           <div class="col-6 row" id="lclfcl_content">
               <div class="col-12">
@@ -158,23 +140,12 @@
               </x-adminlte-select2>
           </div>
 
-          <div class="col-12 mb-5">
-              <label for="wr_loading" class="bg-primary w-100 px-2 py-1"> WR Loading </label>
-              <div class="form-group row justify-content-center">
-                  <label for="inputEmail3" class="col-sm-2 col-form-label">WR Loading:</label>
-                  <div class="col-sm-6">
-                      <input type="text" class="form-control" id="wr_loading" name="wr_loading"
-                          placeholder="Ingrese su WR..."
-                          value="{{ isset($routing->wr_loading) ? $routing->wr_loading : old('wr_loading') }}">
-                  </div>
-              </div>
-          </div>
 
       </div>
 
       <button class="btn btn-primary" onclick="stepper.next()">Siguiente</button>
   </div>
-  <div id="test-l-2" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepper1trigger2">
+  <div id="detalle_producto" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepperDetalleProducto">
 
       <div class="form-group row">
           <label for="commodity" class="col-sm-2 col-form-label">Producto</label>
@@ -190,7 +161,7 @@
           </div>
       </div>
 
-      <div class="row">
+      <div class="row my-4">
 
           <div class="col-6">
               <div class="form-group row">
@@ -244,9 +215,9 @@
                   </div>
               </div>
           </div>
-            <div class="col-12">
+          <div id="container_measures" class="col-12 mt-2">
 
-                <div id="div_measures" class="row justify-content-center">
+              <div id="div_measures" class="row justify-content-center">
 
                   <div class="col-2">
                       <input type="number" class="form-control" step="1" id="amount_package"
@@ -268,9 +239,9 @@
                       <button id="addRow" class="btn btn-indigo btn-sm"><i class="fa fa-plus"></i>Agregar</button>
                   </div>
 
-                </div>
+              </div>
 
-                <table id="measures" class="table table-bordered" style="width:100%">
+              <table id="measures" class="table table-bordered" style="width:100%">
                   <thead>
                       <tr>
                           <th>Cantidad</th>
@@ -280,25 +251,7 @@
                           <th>Eliminar</th>
                       </tr>
                   </thead>
-                  {{--  @if (isset($routing->measures))
-                  <tbody>
-
-                    @foreach (json_decode($routing->measures) as $measure)
-                    <tr>
-                        <td>{{$measure->amount}}</td>
-                        <td>{{$measure->width}}</td>
-                        <td>{{$measure->length}}</td>
-                        <td>{{$measure->height}}</td>
-                        <td></td>
-                    </tr>
-                        
-                    @endforeach
-
-                  </tbody>
-
-                  @endif --}}
-
-                </table>
+              </table>
               <input id="value_measures" type="hidden" name="value_measures" />
               @error('value_measures')
                   <span class="invalid-feedback d-block" role="alert">
@@ -306,28 +259,11 @@
                   </span>
               @enderror
 
-            </div>
+          </div>
       </div>
 
 
-      <div class="row">
-
-          <hr class="w-100">
-
-          <div class="col-4">
-              <div class="form-group row">
-                  <label for="pounds" class="col-sm-4 col-form-label">Libras: </label>
-                  <div class="col-sm-8">
-                      <input type="text" class="form-control CurrencyInput" id="pounds" name="pounds"
-                          data-type="currency" placeholder="Ingrese las libras"
-                          value="{{ isset($routing) ? $routing->pounds : '' }}" @readonly(true)>
-                      @error('pounds')
-                          <div class="text-danger">{{ $message }}</div>
-                      @enderror
-                  </div>
-              </div>
-          </div>
-
+      <div class="row mt-4">
           <div class="col-4">
               <div id="contenedor_weight" class="form-group row d-none">
                   <label for="kilograms" class="col-sm-4 col-form-label">Peso Total : </label>
@@ -399,37 +335,31 @@
 
           </div>
       </div>
-      <hr class="w-100">
-      <div class="form-group row">
-          <label for="hs_code" class="col-sm-2 col-form-label">H.S. Code</label>
-          <div class="col-sm-10">
-              <input type="number" min="0" step="1" class="form-control" id="hs_code"
-                  name="hs_code" placeholder="Ingrese el hs code.." oninput="validarInputNumber(this)"
-                  value="{{ isset($routing) ? $routing->hs_code : '' }}">
-              @error('hs_code')
-                  <div class="text-danger">{{ $message }}</div>
-              @enderror
-          </div>
-      </div>
-
-      <div class="form-group row">
-          <label for="observation" class="col-sm-2 col-form-label">Observacion</label>
-          <div class="col-sm-10">
-              <textarea name="observation" id="observation" class="form-control" cols="30" rows="5">{{ isset($routing->observation) ? $routing->observation : old('observation') }}</textarea>
-              @error('observation')
-                  <div class="text-danger">{{ $message }}</div>
-              @enderror
-          </div>
-      </div>
 
       <input type="hidden" id="type_shipment_name" name="type_shipment_name">
 
 
 
       <button class="btn btn-secondary mt-5" onclick="stepper.previous()">Anterior</button>
-      <button type="submit" class="btn btn-indigo mt-5" onclick="submitForm()">Guardar</button>
+      <button class="btn btn-primary mt-5" onclick="stepper.next()">Siguiente</button>
   </div>
 
+  <div id="servicios" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepperServicios">
+
+      <div class="container">
+          <div class="row">
+              <div class="col-12 text-center">
+                  <h5 class="text-indigo">Seleccione los servicios que se cotizaran para incluir dentro de este
+                      documento</h5>
+              </div>
+          </div>
+      </div>
+
+
+
+      <button class="btn btn-secondary mt-5" onclick="stepper.previous()">Anterior</button>
+      <button type="submit" class="btn btn-indigo mt-5" onclick="submitForm()">Guardar</button>
+  </div>
 
   @push('scripts')
       <script>
@@ -589,24 +519,6 @@
 
           });
 
-          $('#kilograms').on('change', (e) => {
-
-              let kilogramsVal = $(e.target).val();
-              let kilograms = kilogramsVal.replace(/,/g, '');
-              let numberValue = parseFloat(kilograms);
-
-              if (!kilogramsVal || isNaN(numberValue)) {
-
-                  $('#pounds').val(0);
-
-              } else {
-
-                  $('#pounds').val(numberValue * 2.21);
-
-              }
-
-
-          });
 
 
           //Inicializamos la tabla de medidas
@@ -781,12 +693,14 @@
                   const containerTypeWrapper = document.getElementById('containerTypeWrapper');
                   const contenedor_tons = document.getElementById('contenedor_tons');
                   const contenedor_weight = document.getElementById('contenedor_weight');
+                  const contentedor_measures = document.getElementById('container_measures');
 
                   // Si el valor es FCL, mostrar el campo
                   if (this.value === 'FCL') {
                       containerTypeWrapper.classList.remove('d-none');
                       contenedor_tons.classList.remove('d-none');
                       contenedor_weight.classList.add('d-none');
+                      contentedor_measures.classList.add('d-none');
 
                       const parentElement = containerTypeWrapper.closest('.row');
                       if (parentElement) {
@@ -811,6 +725,7 @@
                       containerTypeWrapper.classList.add('d-none');
                       contenedor_tons.classList.add('d-none');
                       contenedor_weight.classList.remove('d-none');
+                      contentedor_measures.classList.remove('d-none');
 
                       $('#containerTypeWrapper').find('input').val('');
 

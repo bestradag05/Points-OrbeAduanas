@@ -16,19 +16,27 @@
 <div class="mb-5 p-4">
     <div id="stepper" class="bs-stepper linear">
         <div class="bs-stepper-header" role="tablist">
-            <div class="step active" data-target="#test-l-1">
-                <button type="button" class="step-trigger" role="tab" id="stepper1trigger1"
-                    aria-controls="test-l-1" aria-selected="true">
+            <div class="step active" data-target="#informacion">
+                <button type="button" class="step-trigger" role="tab" id="stepperInformacion"
+                    aria-controls="informacion" aria-selected="true">
                     <span class="bs-stepper-circle">1</span>
                     <span class="bs-stepper-label">Informacion</span>
                 </button>
             </div>
             <div class="bs-stepper-line"></div>
-            <div class="step" data-target="#test-l-2">
-                <button type="button" class="step-trigger" role="tab" id="stepper1trigger2"
-                    aria-controls="test-l-2" aria-selected="false" disabled="disabled">
+            <div class="step" data-target="#detalle_producto">
+                <button type="button" class="step-trigger" role="tab" id="stepperDetalleProducto"
+                    aria-controls="detalle_producto" aria-selected="false" disabled="disabled">
                     <span class="bs-stepper-circle">2</span>
                     <span class="bs-stepper-label">Detalle del Producto</span>
+                </button>
+            </div>
+            <div class="bs-stepper-line"></div> 
+            <div class="step" data-target="#servicios">
+                <button type="button" class="step-trigger" role="tab" id="stepperServicios"
+                    aria-controls="servicios" aria-selected="false" disabled="disabled">
+                    <span class="bs-stepper-circle">3</span>
+                    <span class="bs-stepper-label">Servicios</span>
                 </button>
             </div>
             

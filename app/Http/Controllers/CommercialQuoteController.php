@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CommercialQuote;
 use App\Models\Incoterms;
 use App\Models\Regime;
 use App\Models\StateCountry;
@@ -24,13 +25,14 @@ class CommercialQuoteController extends Controller
      */
     public function create()
     {
+        $nro_quote_commercial = $this->getNroQuoteCommercial();
         $stateCountrys = StateCountry::all()->load('country');
         $type_shipments = TypeShipment::all();
         $type_loads = TypeLoad::all();
         $regimes = Regime::all();
         $incoterms = Incoterms::all();
    
-        return view("commercial_quote/register-commercial-quote", compact('stateCountrys', 'type_shipments', 'type_loads', 'regimes', 'incoterms'));
+        return view("commercial_quote/register-commercial-quote", compact('stateCountrys', 'type_shipments', 'type_loads', 'regimes', 'incoterms', 'nro_quote_commercial'));
     }
 
     /**
@@ -71,5 +73,25 @@ class CommercialQuoteController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+
+    public function getNroQuoteCommercial()
+    {
+        $lastCode = CommercialQuote::latest('id')->first();
+        $year = date('y');
+        $prefix = 'COTI-';
+
+        // Si no hay registros, empieza desde 1
+        if (!$lastCode) {
+            $codigo = $prefix . $year . '1';
+        } else {
+            // Extraer el número y aumentarlo
+            $number = (int) substr($lastCode->nro_operation, 7);
+            $number++;
+            $codigo = $prefix . $year  . $number;
+        }
+
+        return $codigo;
     }
 }
