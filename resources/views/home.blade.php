@@ -22,7 +22,7 @@
     document.addEventListener('DOMContentLoaded', () => {
 
         // Suscripción al canal privado
-        Echo.private('quote')
+       /*  Echo.private('quote')
             .listen('QuoteNotification', (event) => {
                 toastr.info(event.message, "Nuevo requerimiento!");
             })
@@ -31,6 +31,6 @@
             })
             .error((error) => {
                 console.error('Error al intentar suscribirse al canal:', error);
-            });
+            }); */
     });
 </script>

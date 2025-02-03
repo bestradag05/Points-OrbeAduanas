@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdditionalPoints;
+use App\Models\ConceptFreight;
 use App\Models\Concepts;
 use App\Models\Country;
 use App\Models\Custom;
@@ -491,6 +492,7 @@ class RoutingController extends Controller
                         'insurance_sale' => $sales_price,
                         'sales_value' => $sales_price * 0.18,
                         'sales_price' => $sales_price * 1.18,
+                        'additional_points' => $request->insurance_points,
                         'id_type_insurance' =>  $request->type_insurance,
                         'name_service' => 'Flete',
                         'id_insurable_service' => $freight->id,
@@ -523,27 +525,24 @@ class RoutingController extends Controller
 
 
                     $concepts->$key = $insuranceObject;
-
                 }
 
                 //Relacionamos los conceptos que tendra este flete
 
                 foreach ($concepts as $concept) {
-                    $freight->concepts()->attach(
-                        $concept->id,
-                        [
-                            'value_concept' => $concept->value,
-                            'value_concept_added' => $concept->added,
-                            'total_value_concept' => $concept->value + $concept->added,
-                            'additional_points' => isset($concept->pa) ? $concept->pa : 0
-                        ]
-                    );
+                    $conceptFreight = ConceptFreight::create([
+                        'id_concepts' => $concept->id, // ID del concepto relacionado
+                        'id_freight' => $freight->id, // Clave foránea al modelo Freight
+                        'value_concept' => $concept->value,
+                        'value_concept_added' => $concept->added,
+                        'total_value_concept' => $concept->value + $concept->added,
+                        'additional_points' => isset($concept->pa) ? $concept->pa : 0,
+                    ]);
 
+                    // Si hay puntos adicionales, ejecutamos la función
                     if (isset($concept->pa)) {
-
                         $ne_amount = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
-
-                        $this->add_aditionals_point($concept, $freight, $ne_amount);
+                        $this->add_aditionals_point($conceptFreight, $ne_amount);
                     }
                 }
 
@@ -612,24 +611,24 @@ class RoutingController extends Controller
     }
 
 
-    public function add_aditionals_point($concept, $service,  $ne_amount = null, $igv = null, $total = null)
+    public function add_aditionals_point($conceptService,  $ne_amount = null, $igv = null, $total = null)
     {
 
 
         $additional_point = AdditionalPoints::create([
-            'type_of_service' => $concept->name,
-            'amount' => ($ne_amount != 0 && $ne_amount != null) ? $ne_amount : $this->parseDouble($concept->value) +  $this->parseDouble($concept->added),
+            'type_of_service' => $conceptService->concepts->name,
+            'amount' => ($ne_amount != 0 && $ne_amount != null) ? $ne_amount : $this->parseDouble($conceptService->value_concept) +  $this->parseDouble($conceptService->value_concept_added),
             'igv' => $igv,
             'total' => $total,
-            'points' => $concept->pa,
-            'id_additional_service' => $service->id,
-            'model_additional_service' => $service::class,
-            'additional_type' => ($service::class === 'App\Models\Freight') ? 'AD-FLETE' : 'AD-ADUANA',
+            'points' => $conceptService->additional_points,
+            'id_additional_concept_service' => $conceptService->id,
+            'model_additional_concept_service' => $conceptService::class,
+            'additional_type' => ($conceptService::class === 'App\Models\ConceptFreight') ? 'AD-FLETE' : 'AD-ADUANA',
             'state' => 'Pendiente'
         ]);
 
 
-        $service->additional_point()->save($additional_point);
+        $conceptService->additional_point()->save($additional_point);
     }
 
 

@@ -2,19 +2,17 @@
 
 use App\Events\QuoteNotification;
 use App\Http\Controllers\AdditionalPointsController;
+use App\Http\Controllers\CommercialQuoteController;
 use App\Http\Controllers\ConceptsController;
 use App\Http\Controllers\CustomController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\StateCountryController;
 use App\Http\Controllers\CustomerSupplierDocumentController;
-use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\FreightController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\IncotermsController;
 use App\Http\Controllers\InsuranceController;
-use App\Http\Controllers\LiquidacionController;
 use App\Http\Controllers\MessageQuoteFreightController;
 use App\Http\Controllers\ModalityController;
 use App\Http\Controllers\PermissionsController;
@@ -31,8 +29,6 @@ use App\Http\Controllers\TypeInsuranceController;
 use App\Http\Controllers\TypeLoadController;
 use App\Http\Controllers\TypeShipmentController;
 use App\Http\Controllers\UserController;
-use App\Models\Transport;
-use App\Models\TypeInsurance;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 
@@ -175,6 +171,11 @@ Route::middleware('auth')->group(function () {
     /* Mensaje de cotizaciones de flete */
 
     Route::resource('quote/freight/message', MessageQuoteFreightController::class);
+
+
+    /* Cotizaciones comerciales */
+
+    Route::resource('commercial/quote', CommercialQuoteController::class);
 
 
     /* Reportes */  

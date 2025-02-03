@@ -28,13 +28,14 @@
 
                 <td>{{ $freight->value_utility }}</td>
                 <td>{{ $freight->value_freight }}</td>
+                <td class="text-indigo text-bold">{{ ($freight->insurance) ? 'SI' : 'NO' }}</td>
 
                 <td>{{ $freight->routing->personal->names }}</td>
                 <td class="{{ $freight->state == 'Pendiente' ? 'text-warning' : 'text-success' }}">{{ $freight->state }}
                 </td>
 
                 <td>
-                    <a href="{{ url('/freight/' . $freight->id . '/edit') }}"> <i class="fas fa-edit"></i> </a>
+                    <a href="{{ url('/freight/' . $freight->id . '/edit') }}" class="{{($freight->state === 'Pendiente') ? '' : 'd-none'}}"> <i class="fas fa-edit"></i> </a>
                 </td>
             </tr>
         @endforeach
@@ -75,5 +76,6 @@
             });
 
         });
+        
     </script>
 @endpush

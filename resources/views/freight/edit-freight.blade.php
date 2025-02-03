@@ -12,38 +12,11 @@
 @section('dinamic-content')
 
 
-<form action={{ url('/freight/' . $freight->id) }} method="POST" enctype="multipart/form-data">
-    {{ method_field('PATCH') }}
-    {{ csrf_field() }}
-    @include ('freight.form-freight', ['formMode' => 'edit'])
-</form>
+    <form action={{ url('/freight/' . $freight->id) }} method="POST" id="formFreight" enctype="multipart/form-data">
+        {{ method_field('PATCH') }}
+        {{ csrf_field() }}
+        @include ('freight.form-freight', ['formMode' => 'edit'])
+    </form>
 
 
 @stop
-
-
-@push('scripts')
-    <script>
-        $('#reguralization').datetimepicker({
-            format: 'DD/MM/YYYY',
-            lang: 'es',
-            mask: true,
-            timepicker: false
-            
-            
-        });
-
-/*         $('#doc_custom').change(function() {
-            var archivo = $(this).prop('files')[0];
-            if (archivo) {
-                // Por ejemplo, podrías enviar el formulario después de seleccionar el archivo
-
-                $('#formLoadFile').submit();
-            }
-        }); */
-
-    </script>
-
-
-@endpush
-

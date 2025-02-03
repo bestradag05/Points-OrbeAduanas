@@ -19,8 +19,6 @@ class CustomerController extends Controller
 
         // Obtener el ID del personal del usuario autenticado
         $personalId = Auth::user()->personal->id;
-
-        dd($personalId);
         // Verificar si el usuario es un Super-Admin
         if (Auth::user()->hasRole('Super-Admin') || Auth::user()->can('customar.all')) {
             // Si es Super-Admin, obtener todos los clientes
