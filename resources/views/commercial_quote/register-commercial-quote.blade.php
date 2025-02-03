@@ -42,7 +42,7 @@
             
         </div>
         <div class="bs-stepper-content">
-            <form id="formRouting"  onsubmit="return false;" action="/routing" method="post" enctype="multipart/form-data" >
+            <form id="formRouting"  onsubmit="return false;" action="/commercial/quote" method="post" enctype="multipart/form-data" >
 
                 @csrf
                 @include ('commercial_quote.form-commercial-quote', ['formMode' => 'create'])
