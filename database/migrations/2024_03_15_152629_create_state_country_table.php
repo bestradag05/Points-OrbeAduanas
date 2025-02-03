@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->unsignedBigInteger('id_country');
+            $table->enum('state', ['Activo', 'Inactivo'])->default('Activo');
             $table->timestamps();
 
             $table->foreign('id_country')->references('id')->on('country');

@@ -5,6 +5,8 @@ use App\Http\Controllers\AdditionalPointsController;
 use App\Http\Controllers\ConceptsController;
 use App\Http\Controllers\CustomController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CountryController;
+use App\Http\Controllers\StateCountryController;
 use App\Http\Controllers\CustomerSupplierDocumentController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\FreightController;
@@ -110,6 +112,13 @@ Route::middleware('auth')->group(function () {
     Route::get('custom/pending', [CustomController::class, 'getCustomPending']);
     Route::resource('custom', CustomController::class);
     /* Route::post('custom/load', [CustomController::class, 'loadDocument']); */
+
+    /* Paises */
+    Route::resource('country', CountryController::class);
+
+    /* Ciudades */
+    Route::resource('state_country', StateCountryController::class);
+
 
     Route::get('freight/pending', [FreightController::class, 'getFreightPending']);
     Route::get('freight/personal', [FreightController::class, 'getFreightPersonal']);

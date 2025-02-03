@@ -363,6 +363,27 @@ return [
             ]
         ],
         [
+            'text' => 'Origen-Destino',
+            'icon' => 'fas fa-fw fa-user-tie',
+            
+            'submenu' => [
+                [
+                    'text' => 'Pais',
+                    'url' => 'country',
+                    'icon'  => 'fa fa-exclamation-circle',
+                    'active' => ['country'],
+                ],
+                [
+                    'text' => 'Ciudad',
+                    'url'  => 'state_country',
+                    'icon' => 'fa fa-check-double',
+                    'active' => ['state_country'],
+                ],
+
+            ]
+
+        ],
+        [
             'text' => 'Conceptos',
             'url'  => 'concepts',
             'icon' => 'fas fa-fw fa-copy',
@@ -396,6 +417,46 @@ return [
                 ],
 
             ]
+        ],
+                [
+            'text' => 'Operaciones',
+            'icon' => 'fas fa-fw fa-user-tie',
+            'can' => 'operaciones.list',
+            'submenu' => [
+                [
+                    'text' => 'Puntos pendientes - Flete',
+                    'url' => 'freight/pending',
+                    'icon'  => 'fa fa-exclamation-circle',
+                    'active' => ['freight/pending'],
+                ],
+                [
+                    'text' => 'Todos los puntos - Flete',
+                    'url'  => 'freight',
+                    'icon' => 'fa fa-check-double',
+                    'active' => ['freight'],
+                ],
+                [
+                    'text' => 'Puntos pendientes - Seguro',
+                    'url'  => 'insurance/pending',
+                    'icon' => 'fa fa-exclamation-circle',
+                    'active' => ['insurance/pending'],
+                ],
+                [
+                    'text' => 'Todos los puntos - Seguro',
+                    'url'  => 'insurance',
+                    'icon' => 'fa fa-check-double',
+                    'active' => ['insurance'],
+                ],
+                [
+                    'text' => 'Tipo de Seguro',
+                    'url'  => 'type_insurance',
+                    'icon' => 'fas fa-list-ul',
+                    'active' => ['type_insurance', 'type_insurance*', 'regex:@^content/[0-9]+$@'],
+                    'can' => 'operaciones.type_insurance',
+                ],
+               
+            ]
+
         ],
         [
             'text' => 'Operaciones',

@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('country', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->enum('state', ['Activo', 'Inactivo'])->default('Activo');
             $table->timestamps();
+
         });
     }
 

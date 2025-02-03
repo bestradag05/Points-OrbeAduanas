@@ -11,7 +11,7 @@ class StateCountry extends Model
 
     protected $table = 'state_country';
 
-    protected $fillable = ['name', 'id_country'];
+    protected $fillable = ['name', 'id_country', 'state'];
 
     public function country()
     {
