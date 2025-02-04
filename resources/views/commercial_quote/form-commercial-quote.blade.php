@@ -41,6 +41,43 @@
 
           </div>
 
+          <div class="col-6">
+
+              <div class="form-group">
+                  <label for="customer_ruc">RUC</label>
+
+                  <div class="input-group">
+
+                      <input type="text" class="form-control  @error('customer_ruc') is-invalid @enderror "
+                          name="customer_ruc" placeholder="Ingrese valor de la carga"
+                          value="{{ isset($routing->customer_ruc) ? $routing->customer_ruc : old('customer_ruc') }}">
+                  </div>
+                  @error('customer_ruc')
+                      <span class="invalid-feedback d-block" role="alert">
+                          <strong>{{ $message }}</strong>
+                      </span>
+                  @enderror
+
+              </div>
+          </div>
+          <div class="col-6">
+
+              <div class="form-group">
+                  <label for="customer_company_name">Razon social / Nombre</label>
+
+                  <div class="input-group">
+                      <input type="text" class="form-control @error('customer_company_name') is-invalid @enderror "
+                          name="customer_company_name" placeholder="Ingrese valor de la carga"
+                          value="{{ isset($routing->customer_company_name) ? $routing->customer_company_name : old('customer_company_name') }}">
+                  </div>
+                  @error('customer_company_name')
+                      <span class="invalid-feedback d-block" role="alert">
+                          <strong>{{ $message }}</strong>
+                      </span>
+                  @enderror
+
+              </div>
+          </div>
 
 
           <div class="col-6">
@@ -165,7 +202,7 @@
 
           <div class="col-6">
               <div class="form-group row">
-                  <label for="nro_package" class="col-sm-4 col-form-label">N° Paquetes</label>
+                  <label for="nro_package" class="col-sm-4 col-form-label">N° Paquetes / Bultos</label>
                   <div class="col-sm-8">
                       <input type="number" min="0" step="1"
                           class="form-control @error('nro_package') is-invalid @enderror" id="nro_package"
@@ -264,6 +301,21 @@
 
 
       <div class="row mt-4">
+
+          <div class="col-4">
+              <div class="form-group row">
+                  <label for="pounds" class="col-sm-4 col-form-label">Libras: </label>
+                  <div class="col-sm-8">
+                      <input type="text" class="form-control CurrencyInput" id="pounds" name="pounds"
+                          data-type="currency" placeholder="Ingrese las libras"
+                          value="{{ isset($routing) ? $routing->pounds : '' }}" @readonly(true)>
+                      @error('pounds')
+                          <div class="text-danger">{{ $message }}</div>
+                      @enderror
+                  </div>
+              </div>
+          </div>
+
           <div class="col-4">
               <div id="contenedor_weight" class="form-group row d-none">
                   <label for="kilograms" class="col-sm-4 col-form-label">Peso Total : </label>
@@ -285,7 +337,7 @@
                   <div class="col-sm-8">
                       <input type="text" class="form-control CurrencyInput @error('tons') is-invalid @enderror"
                           id="tons" name="tons" data-type="currency"
-                          placeholder="Ingrese el nro de paquetes.."
+                          placeholder="Ingrese el peso en toneladas.."
                           value="{{ isset($routing->tons) ? $routing->tons : old('tons') }}">
                   </div>
                   @error('tons')
@@ -353,9 +405,10 @@
                       documento</h5>
                   @foreach ($types_services as $type_service)
                       <div class="icheck-danger d-inline mx-4 mt-4">
-                          <input type="checkbox" id="type_service" value="{{$type_service->name}}" name="type_service[]">
-                          <label for="type_service">
-                            {{$type_service->name}}
+                          <input type="checkbox" id="type_service_{{ $type_service->id }}"
+                              value="{{ $type_service->name }}" name="type_service[]">
+                          <label for="type_service_{{ $type_service->id }}">
+                              {{ $type_service->name }}
                           </label>
                       </div>
                   @endforeach
@@ -528,6 +581,25 @@
 
           });
 
+
+          $('#kilograms').on('change', (e) => {
+
+              let kilogramsVal = $(e.target).val();
+              let kilograms = kilogramsVal.replace(/,/g, '');
+              let numberValue = parseFloat(kilograms);
+
+              if (!kilogramsVal || isNaN(numberValue)) {
+
+                  $('#pounds').val(0);
+
+              } else {
+
+                  $('#pounds').val(numberValue * 2.21);
+
+              }
+
+
+          });
 
 
           //Inicializamos la tabla de medidas
@@ -702,14 +774,13 @@
                   const containerTypeWrapper = document.getElementById('containerTypeWrapper');
                   const contenedor_tons = document.getElementById('contenedor_tons');
                   const contenedor_weight = document.getElementById('contenedor_weight');
-                  const contentedor_measures = document.getElementById('container_measures');
 
                   // Si el valor es FCL, mostrar el campo
                   if (this.value === 'FCL') {
                       containerTypeWrapper.classList.remove('d-none');
                       contenedor_tons.classList.remove('d-none');
                       contenedor_weight.classList.add('d-none');
-                      contentedor_measures.classList.add('d-none');
+
 
                       const parentElement = containerTypeWrapper.closest('.row');
                       if (parentElement) {
@@ -734,7 +805,6 @@
                       containerTypeWrapper.classList.add('d-none');
                       contenedor_tons.classList.add('d-none');
                       contenedor_weight.classList.remove('d-none');
-                      contentedor_measures.classList.remove('d-none');
 
                       $('#containerTypeWrapper').find('input').val('');
 

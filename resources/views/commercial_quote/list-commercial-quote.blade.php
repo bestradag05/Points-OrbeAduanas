@@ -11,28 +11,28 @@
 @stop
 @section('dinamic-content')
     <x-adminlte-datatable id="table1" :heads="$heads">
-        @foreach ($routings as $routing)
+        @foreach ($commercial_quotes as $commercial_quote)
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>
-                    <a href="{{ url('/routing/' . $routing->id . '/detail') }}">
-                        {{ $routing->nro_operation }}
+                    <a href="{{ url('/commercial/quote/' . $commercial_quote->id . '/detail') }}">
+                        {{ $commercial_quote->nro_quote_commercial }}
                     </a>
                 </td>
-                <td class="text-uppercase">{{ $routing->origin }}</td>
-                <td class="text-uppercase">{{ $routing->destination }}</td>
-                <td class="text-uppercase">{{ $routing->customer->name_businessname }}</td>
-                <td>{{ $routing->type_shipment->description .' '.(($routing->type_shipment->description  === 'Marítima') ? $routing->lcl_fcl : '') }}</td>
-                <td>{{ $routing->personal->names }}</td>
-                <td class="{{ $routing->state == 'Activo' ? 'text-success' : 'text-danger' }}">{{ $routing->state }}</td>
+                <td class="text-uppercase">{{ $commercial_quote->origin }}</td>
+                <td class="text-uppercase">{{ $commercial_quote->destination }}</td>
+                <td class="text-uppercase">{{ $commercial_quote->customer_company_name }}</td>
+                <td>{{ $commercial_quote->type_shipment->description .' '.(($commercial_quote->type_shipment->description  === 'Marítima') ? $commercial_quote->lcl_fcl : '') }}</td>
+                <td>{{ $commercial_quote->personal->names }}</td>
+                <td class="{{ $commercial_quote->state == 'Activo' ? 'text-success' : 'text-danger' }}">{{ $commercial_quote->state }}</td>
 
                 <td>
-                    @if (!$routing->typeService()->exists() || auth()->user()->hasRole('Super-Admin'))
-                        @can('routing.update')
-                            <a href="{{ url('/routing/' . $routing->id . '/edit') }}"> <i class="fas fa-edit"></i></a>
+                    @if (!$commercial_quote->typeService()->exists() || auth()->user()->hasRole('Super-Admin'))
+                        @can('commercial_quote.update')
+                            <a href="{{ url('/commercial_quote/' . $commercial_quote->id . '/edit') }}"> <i class="fas fa-edit"></i></a>
                         @endcan
-                        @can('routing.delete')
-                            <form action="{{ url('/routing/' . $routing->id) }}" class="form-delete" method="POST"
+                        @can('commercial_quote.delete')
+                            <form action="{{ url('/commercial_quote/' . $commercial_quote->id) }}" class="form-delete" method="POST"
                                 style="display: inline;" data-confirm-delete="true">
                                 {{ method_field('DELETE') }}
                                 @csrf

@@ -731,6 +731,12 @@ return [
                     'text' => 'Generar Cotizacion',
                     'url'  => 'commercial/quote/create',
                     'icon' => 'fas fa-file-medical',
+                    'active' => ['commercial/quote/create'],
+                ],
+                [
+                    'text' => 'Lista cotizaciones',
+                    'url'  => 'commercial/quote',
+                    'icon' => 'fas fa-file-medical',
                     'active' => ['commercial/quote'],
                 ],
 

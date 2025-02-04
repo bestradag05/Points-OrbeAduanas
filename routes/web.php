@@ -99,7 +99,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('modality', ModalityController::class);
 
     Route::resource('routing', RoutingController::class);
-    Route::get('routing/{id_routing}/detail', [RoutingController::class, 'getTemplateDetailRouting'])->name('routing.detail');;
+    Route::get('routing/{id_routing}/detail', [RoutingController::class, 'getTemplateDetailRouting'])->name('routing.detail');
     Route::get('routing/{id_routing}/documents', [RoutingController::class, 'getTemplateDocumentsRouting']);
     Route::post('routing_service', [RoutingController::class, 'storeRoutingService']);
     Route::post('routing_insurance', [RoutingController::class, 'storeInsuranceService']);
@@ -175,6 +175,7 @@ Route::middleware('auth')->group(function () {
 
     /* Cotizaciones comerciales */
 
+    Route::get('commercial/quote/{id_quote}/detail', [CommercialQuoteController::class, 'getTemplateDetailCommercialQuote'])->name('commercial.quote.detail');
     Route::resource('commercial/quote', CommercialQuoteController::class);
 
 
