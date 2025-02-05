@@ -70,4 +70,9 @@ class CommercialQuote extends Model
     }
 
 
+    public function quote_freight()
+    {
+        return $this->hasMany(QuoteFreight::class, 'nro_quote_commercial', 'nro_quote_commercial'); // 'routing_id' es la clave foránea en la tabla cotizaciones
+    }
+
 }

@@ -276,35 +276,56 @@
     <div class="col-12 mt-4">
         <h6 class="text-indigo text-uppercase text-center text-bold">Cotizacion de flete</h6>
 
-        <x-adminlte-datatable id="table1" :heads="$heads" hoverable>
-            @foreach ($quotes as $quote)
-                <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $quote->nro_quote }}</td>
-                    <td>{{ $quote->routing->customer->name_businessname }}</td>
-                    <td>{{ $quote->origin }}</td>
-                    <td>{{ $quote->destination }}</td>
-                    <td>{{ $quote->commodity }}</td>
-                    <td>{{ $quote->routing->lcl_fcl }}</td>
-                    <td>{{ $quote->cubage_kgv }}</td>
-                    <td>{{ $quote->ton_kilogram }}</td>
-                    <td>{{ $quote->total_weight }}</td>
-                    <td>{{ $quote->routing->personal->names }}</td>
-                    <td>{{ $quote->nro_operation }}</td>
-                    <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
-                    </td>
-                    
+        <table class="table table-sm text-sm">
+            <thead class="thead-dark">
+                <th>#</th>
+                <th>N° cotizacion</th>
+                <th>Cliente</th>
+                <th>Origen</th>
+                <th>Destino</th>
+                <th>Producto</th>
+                <th>LCL / FCL</th>
+                <th>Cubicaje-KGV</th>
+                <th>Tonelada-KG</th>
+                <th>Peso Total</th>
+                <th>Asesor</th>
+                <th>N° de operacion</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </thead>
+            <tbody>
 
-                    <td>
-                        <a href="{{ url('/quote/freight/' . $quote->id) }}"
-                            class="btn btn-outline-indigo btn-sm mb-2 ">
-                            Detalle
-                        </a>
-                    </td>
+                @foreach ($comercialQuote->quote_freight as $quote)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $quote->nro_quote }}</td>
+                        <td>{{ $quote->commercial_quote->customer_company_name }}</td>
+                        <td>{{ $quote->origin }}</td>
+                        <td>{{ $quote->destination }}</td>
+                        <td>{{ $quote->commodity }}</td>
+                        <td>{{ $quote->commercial_quote->lcl_fcl }}</td>
+                        <td>{{ $quote->commercial_quote->cubage_kgv }}</td>
+                        <td>{{ $quote->ton_kilogram }}</td>
+                        <td>{{ $quote->total_weight }}</td>
+                        <td>{{ $quote->commercial_quote->personal->names }}</td>
+                        <td>{{ $quote->nro_quote_commercial }}</td>
+                        <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
+                        </td>
 
-                </tr>
-            @endforeach
-        </x-adminlte-datatable>
+
+                        <td>
+                            <a href="{{ url('/quote/freight/' . $quote->id) }}"
+                                class="btn btn-outline-indigo btn-sm mb-2 ">
+                                Detalle
+                            </a>
+                        </td>
+
+                    </tr>
+                @endforeach
+
+            </tbody>
+
+        </table>
 
     </div>
 </div>

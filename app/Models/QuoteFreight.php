@@ -65,7 +65,7 @@ class QuoteFreight extends Model
         'operations_commission',
         'pricing_commission',
         'total_ocean_freight',
-        'nro_operation',
+        'nro_quote_commercial',
         'nro_quote_commercial',
         'state'
     ];
@@ -74,6 +74,11 @@ class QuoteFreight extends Model
     public function routing()
     {
         return $this->belongsTo(Routing::class, 'nro_operation', 'nro_operation');
+    }
+
+    public function commercial_quote()
+    {
+        return $this->belongsTo(CommercialQuote::class, 'nro_quote_commercial', 'nro_quote_commercial');
     }
 
     public function freight()

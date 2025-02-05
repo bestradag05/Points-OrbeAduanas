@@ -32,7 +32,7 @@ return new class extends Migration
             $table->decimal('operations_commission', 8, 2)->nullable();
             $table->decimal('pricing_commission', 8, 2)->nullable();
             $table->decimal('total_ocean_freight', 8, 2)->nullable();
-            $table->string('nro_operation');
+            $table->string('nro_operation')->nullable();
             $table->string('nro_quote_commercial');
             $table->enum('state', ['Borrador','Pendiente', 'Respondido', 'Aceptada', 'Reajuste', 'Observado', 'Rechazada'])->default('Borrador');
             $table->timestamps();

@@ -76,7 +76,6 @@ class CommercialQuoteController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
         $this->validateForm($request, null);
 
         $commercialQuote = CommercialQuote::create([
@@ -113,8 +112,8 @@ class CommercialQuoteController extends Controller
 
                 switch ($type_service) {
                     case 'Flete':
-                        
-                        $this->createQuoteFreight($request, $comercialQuote);
+
+                        $this->createQuoteFreight($commercialQuote);
 
                         break;
                     case 'Aduanas':
@@ -137,27 +136,27 @@ class CommercialQuoteController extends Controller
         return redirect('commercial/quote');
     }
 
-    public function createQuoteFreight($request){
+    public function createQuoteFreight($commercialQuote)
+    {
 
-        $quote = QuoteFreight::create([
+        QuoteFreight::create([
             'shipping_date' => null,
             'response_date' => null,
-            'origin' => $request->origin,
-            'destination' => $request->destination,
-            'commodity' => $request->commodity,
-            'packaging_type' => $request->packaging_type,
-            'load_type' => $request->load_type,
-            'container_type' => $request->container_type,
-            'ton_kilogram' => $request->ton_kilogram,
-            'cubage_kgv' => $request->cubage_kgv,
-            'total_weight' => $request->total_weight,
-            'packages' => $request->packages,
-            'measures' => $request->measures,
-            'nro_quote_commercial' => $request->nro_quote_commercial,
+            'origin' => $commercialQuote->origin,
+            'destination' => $commercialQuote->destination,
+            'commodity' => $commercialQuote->commodity,
+            'packaging_type' => $commercialQuote->packaging_type,
+            'load_type' => $commercialQuote->type_load->name,
+            'container_type' => $commercialQuote->container_type,
+            'ton_kilogram' => $commercialQuote->ton_kilogram,
+            'cubage_kgv' => $commercialQuote->cubage_kgv,
+            'total_weight' => $commercialQuote->total_weight,
+            'packages' => $commercialQuote->packages,
+            'measures' => $commercialQuote->measures,
+            'nro_quote_commercial' => $commercialQuote->nro_quote_commercial,
             'state' => 'Borrador'
 
         ]);
-
     }
 
 
@@ -191,11 +190,6 @@ class CommercialQuoteController extends Controller
             'type_insurace' => $type_insurace,
 
         ];
-
-
-        dd($data['comercialQuote']);
-
-
 
         return view('commercial_quote/detail-commercial-quote', $data);
     }
