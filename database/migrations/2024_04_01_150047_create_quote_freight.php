@@ -33,11 +33,13 @@ return new class extends Migration
             $table->decimal('pricing_commission', 8, 2)->nullable();
             $table->decimal('total_ocean_freight', 8, 2)->nullable();
             $table->string('nro_operation');
+            $table->string('nro_quote_commercial');
             $table->enum('state', ['Borrador','Pendiente', 'Respondido', 'Aceptada', 'Reajuste', 'Observado', 'Rechazada'])->default('Borrador');
             $table->timestamps();
 
 
             $table->foreign('nro_operation')->references('nro_operation')->on('routing');
+            $table->foreign('nro_quote_commercial')->references('nro_quote_commercial')->on('commercial_quote');
 
         });
     }

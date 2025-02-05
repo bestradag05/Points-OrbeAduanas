@@ -5,109 +5,189 @@
             <i class="fa-regular fa-circle-info"></i>
             Información de la operacion
         </h5>
-        <table class="table">
-            <tbody>
-                <tr>
-                    <td class="text-secondary text-bold text-uppercase">Nro Cotización</td>
-                    <td>{{ $comercialQuote->nro_quote_commercial }}</td>
-                </tr>
-                <tr>
-                    <td class="text-secondary text-bold text-uppercase">Origen</td>
-                    <td>{{ $comercialQuote->origin }}</td>
-                </tr>
-                <tr>
-                    <td class="text-secondary text-bold text-uppercase">Destino</td>
-                    <td>{{ $comercialQuote->destination }}</td>
-                </tr>
-                <tr>
-                    <td class="text-secondary text-bold text-uppercase">Cliente</td>
-                    <td>{{ $comercialQuote->customer_company_name }}</td>
-                </tr>
-                <tr>
-                    <td class="text-secondary text-bold text-uppercase">Producto / Mercancía</td>
-                    <td>{{ $comercialQuote->commodity }}</td>
-                </tr>
-        
-                @if ($comercialQuote->type_shipment->description === 'Aérea')
-                    <tr>
-                        <td class="text-secondary text-bold text-uppercase">Peso KG</td>
-                        <td>{{ $comercialQuote->kilograms }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-secondary text-bold text-uppercase">KGV</td>
-                        <td>{{ $comercialQuote->kilogram_volumen }}</td>
-                    </tr>
-                @endif
-        
-                @if ($comercialQuote->type_shipment->description === 'Marítima')
-                    @if ($comercialQuote->lcl_fcl === 'FCL')
-                        <tr>
-                            <td class="text-secondary text-bold text-uppercase">Contenedor</td>
-                            <td>{{ $comercialQuote->container_type }}</td>
-                        </tr>
-                    @endif
-                    <tr>
-                        <td class="text-secondary text-bold text-uppercase">Toneladas</td>
-                        <td>{{ $comercialQuote->tons }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-secondary text-bold text-uppercase">Volumen</td>
-                        <td>{{ $comercialQuote->volumen }}</td>
-                    </tr>
-                @endif
-        
-                <!-- Botón para expandir -->
-                <tr id="btn-expand">
-                    <td colspan="2" class="text-center">
-                        <a class="btn btn-link btn-block text-center" data-bs-toggle="collapse" data-bs-target="#extraFields">
-                            <i class="fas fa-sort-down"></i>
-                        </a>
-                    </td>
-                </tr>   
-        
-                <!-- Campos adicionales dentro de una única fila para que el colapso funcione correctamente -->
-                <tr>
-                    <td colspan="2">
-                        <div class="collapse mt-2" id="extraFields">
-                            <table class="table">
-                                <tbody>
-                                    <tr>
-                                        <td class="text-secondary text-bold text-uppercase">Incoterm</td>
-                                        <td>{{ $comercialQuote->incoterm->code }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-secondary text-bold text-uppercase">Tipo de carga</td>
-                                        <td>{{ $comercialQuote->type_load->name }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-secondary text-bold text-uppercase">Valor de la Carga</td>
-                                        <td>$ {{ $comercialQuote->load_value }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-secondary text-bold text-uppercase">Tipo de embarque</td>
-                                        <td>{{ $comercialQuote->type_shipment->description . ' (' . ($comercialQuote->type_shipment->description === 'Marítima' ? $comercialQuote->lcl_fcl : '') . ')' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-secondary text-bold text-uppercase">Régimen</td>
-                                        <td>{{ $comercialQuote->regime->description }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-        
-                            <!-- Botón para contraer -->
-                            <div class="text-center mt-3">
-                                <a class="btn btn-link" data-bs-toggle="collapse" data-bs-target="#extraFields">
-                                    <i class="fas fa-sort-up"></i>
-                                </a>
-                            </div>
+
+        <div class="row">
+
+            <div class="col-12 border-bottom border-bottom-2">
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label">Nro Cotización: </label>
+                    <div class="col-sm-8">
+
+                        <p class="form-control-plaintext text-indigo">{{ $comercialQuote->nro_quote_commercial }}</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-12 border-bottom border-bottom-2">
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label">Origen : </label>
+                    <div class="col-sm-8">
+
+                        <p class="form-control-plaintext">{{ $comercialQuote->origin }}</p>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-12 border-bottom border-bottom-2">
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label">Destino : </label>
+                    <div class="col-sm-8">
+
+                        <p class="form-control-plaintext">{{ $comercialQuote->destination }}</p>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-12 border-bottom border-bottom-2">
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label">Cliente : </label>
+                    <div class="col-sm-8">
+
+                        <p class="form-control-plaintext">{{ $comercialQuote->customer_company_name }}</p>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-12 border-bottom border-bottom-2">
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label">Producto / Mercancía : </label>
+                    <div class="col-sm-8">
+
+                        <p class="form-control-plaintext">{{ $comercialQuote->commodity }}</p>
+                    </div>
+
+                </div>
+            </div>
+
+            @if ($comercialQuote->type_shipment->description === 'Aérea')
+                <div class="col-12 border-bottom border-bottom-2">
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Peso KG : </label>
+                        <div class="col-sm-8">
+
+                            <p class="form-control-plaintext">{{ $comercialQuote->kilograms }}</p>
                         </div>
-                    </td>
-                </tr>
-        
-            </tbody>
-        </table>
+
+                    </div>
+                </div>
+                <div class="col-12 border-bottom border-bottom-2">
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">KGV : </label>
+                        <div class="col-sm-8">
+
+                            <p class="form-control-plaintext">{{ $comercialQuote->kilogram_volumen }}</p>
+                        </div>
+
+                    </div>
+                </div>
+            @endif
+
+            @if ($comercialQuote->type_shipment->description === 'Marítima')
+                @if ($comercialQuote->lcl_fcl === 'FCL')
+                    <div class="col-12 border-bottom border-bottom-2">
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Contenedor : </label>
+                            <div class="col-sm-8">
+
+                                <p class="form-control-plaintext">{{ $comercialQuote->container_type }}</p>
+                            </div>
+
+                        </div>
+                    </div>
+                @endif
+                <div class="col-12 border-bottom border-bottom-2">
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Toneladas : </label>
+                        <div class="col-sm-8">
+
+                            <p class="form-control-plaintext">{{ $comercialQuote->tons }}</p>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-12 border-bottom border-bottom-2">
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Volumen : </label>
+                        <div class="col-sm-8">
+
+                            <p class="form-control-plaintext">{{ $comercialQuote->volumen }}</p>
+                        </div>
+
+                    </div>
+                </div>
+            @endif
+
+            <div class="col-12" id="extraFieldsOpen">
+                <a class="btn btn-link btn-block text-center" data-bs-toggle="collapse" data-bs-target="#extraFields">
+                    <i class="fas fa-sort-down fa-lg"></i>
+                </a>
+            </div>
+
+            <div class="col-12 row collapse mt-2" id="extraFields">
+
+                <div class="col-12 border-bottom border-bottom-2">
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Incoterm : </label>
+                        <div class="col-sm-8">
+
+                            <p class="form-control-plaintext">{{ $comercialQuote->incoterm->code }}</p>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-12 border-bottom border-bottom-2">
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Tipo de carga : </label>
+                        <div class="col-sm-8">
+
+                            <p class="form-control-plaintext">{{ $comercialQuote->type_load->name }}</p>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-12 border-bottom border-bottom-2">
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Valor de la Carga : </label>
+                        <div class="col-sm-8">
+
+                            <p class="form-control-plaintext">$ {{ $comercialQuote->load_value }}</p>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-12 border-bottom border-bottom-2">
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Tipo de embarque : </label>
+                        <div class="col-sm-8">
+
+                            <p class="form-control-plaintext">
+                                {{ $comercialQuote->type_shipment->description . ' (' . ($comercialQuote->type_shipment->description === 'Marítima' ? $comercialQuote->lcl_fcl : '') . ')' }}
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-12 border-bottom border-bottom-2">
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Régimen : </label>
+                        <div class="col-sm-8">
+
+                            <p class="form-control-plaintext">{{ $comercialQuote->regime->description }}</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-12 text-center mt-3">
+                    <a class="btn btn-link text-center" data-bs-toggle="collapse" data-bs-target="#extraFields">
+                        <i class="fas fa-sort-up"></i>
+                    </a>
+                </div>
 
 
+            </div>
+        </div>
 
     </div>
     <div class="col-6 px-5">
@@ -186,7 +266,45 @@
             </tbody>
         </table>
 
+
+
+
         {{--  @include('comercialQuote/modals/modalsServices') --}}
+
+    </div>
+
+    <div class="col-12 mt-4">
+        <h6 class="text-indigo text-uppercase text-center text-bold">Cotizacion de flete</h6>
+
+        <x-adminlte-datatable id="table1" :heads="$heads" hoverable>
+            @foreach ($quotes as $quote)
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $quote->nro_quote }}</td>
+                    <td>{{ $quote->routing->customer->name_businessname }}</td>
+                    <td>{{ $quote->origin }}</td>
+                    <td>{{ $quote->destination }}</td>
+                    <td>{{ $quote->commodity }}</td>
+                    <td>{{ $quote->routing->lcl_fcl }}</td>
+                    <td>{{ $quote->cubage_kgv }}</td>
+                    <td>{{ $quote->ton_kilogram }}</td>
+                    <td>{{ $quote->total_weight }}</td>
+                    <td>{{ $quote->routing->personal->names }}</td>
+                    <td>{{ $quote->nro_operation }}</td>
+                    <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
+                    </td>
+                    
+
+                    <td>
+                        <a href="{{ url('/quote/freight/' . $quote->id) }}"
+                            class="btn btn-outline-indigo btn-sm mb-2 ">
+                            Detalle
+                        </a>
+                    </td>
+
+                </tr>
+            @endforeach
+        </x-adminlte-datatable>
 
     </div>
 </div>
@@ -211,17 +329,17 @@
         let typeService = '';
         let countConcepts = 0;
 
-        /* Funcion para ocultar y mostrar informacion del detalle de la cotizacion */
-
-        function toggleButtons() {
-            document.getElementById('btn-expand').style.display =
-                document.getElementById('btn-expand').style.display === 'none' ? 'table-row' : 'none';
-            document.getElementById('btn-collapse').style.display =
-                document.getElementById('btn-collapse').style.display === 'none' ? 'block' : 'none';
-        }
 
 
-        $('.modal').on('hidden.bs.modal', function(e) {
+        $('#extraFields').on("show.bs.collapse", () => {
+            $('#extraFieldsOpen').addClass('d-none');
+        });
+
+        $('#extraFields').on("hidden.bs.collapse", () => {
+            $('#extraFieldsOpen').removeClass('d-none');
+        });
+
+        $('.modal').on('hide.bs.modal', function(e) {
             conceptsArray = {};
             TotalConcepts = 0;
             total = 0;

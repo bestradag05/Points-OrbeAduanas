@@ -6,6 +6,7 @@ use App\Models\CommercialQuote;
 use App\Models\Concepts;
 use App\Models\Incoterms;
 use App\Models\Modality;
+use App\Models\QuoteFreight;
 use App\Models\Regime;
 use App\Models\StateCountry;
 use App\Models\TypeInsurance;
@@ -67,7 +68,7 @@ class CommercialQuoteController extends Controller
         $incoterms = Incoterms::all();
         $types_services = TypeService::all();
 
-        return view("cccc/register-commercial-quote", compact('stateCountrys', 'type_shipments', 'type_loads', 'regimes', 'incoterms', 'nro_quote_commercial', 'types_services'));
+        return view("commercial_quote/register-commercial-quote", compact('stateCountrys', 'type_shipments', 'type_loads', 'regimes', 'incoterms', 'nro_quote_commercial', 'types_services'));
     }
 
     /**
@@ -75,11 +76,10 @@ class CommercialQuoteController extends Controller
      */
     public function store(Request $request)
     {
+        dd($request->all());
+        $this->validateForm($request, null);
 
-         /* dd($request->all()); */
-         $this->validateForm($request, null);
-
-        CommercialQuote::create([
+        $commercialQuote = CommercialQuote::create([
             'nro_quote_commercial' => $request->nro_quote_commercial,
             'origin' => $request->origin,
             'destination' => $request->destination,
@@ -108,11 +108,60 @@ class CommercialQuoteController extends Controller
         ]);
 
 
+        if (isset($request->type_service) || !empty($request->type_service)) {
+            foreach ($request->type_service as $type_service) {
+
+                switch ($type_service) {
+                    case 'Flete':
+                        
+                        $this->createQuoteFreight($request, $comercialQuote);
+
+                        break;
+                    case 'Aduanas':
+                        # code...
+                        break;
+
+                    case 'Transporte':
+                        # code...
+                        break;
+
+                    default:
+                        # code...
+                        break;
+                }
+            }
+        }
+
+
+
         return redirect('commercial/quote');
     }
 
+    public function createQuoteFreight($request){
 
-    
+        $quote = QuoteFreight::create([
+            'shipping_date' => null,
+            'response_date' => null,
+            'origin' => $request->origin,
+            'destination' => $request->destination,
+            'commodity' => $request->commodity,
+            'packaging_type' => $request->packaging_type,
+            'load_type' => $request->load_type,
+            'container_type' => $request->container_type,
+            'ton_kilogram' => $request->ton_kilogram,
+            'cubage_kgv' => $request->cubage_kgv,
+            'total_weight' => $request->total_weight,
+            'packages' => $request->packages,
+            'measures' => $request->measures,
+            'nro_quote_commercial' => $request->nro_quote_commercial,
+            'state' => 'Borrador'
+
+        ]);
+
+    }
+
+
+
     public function getTemplateDetailCommercialQuote($id)
     {
 
@@ -128,23 +177,10 @@ class CommercialQuoteController extends Controller
 
 
         $services = [];
-        //Verificamos los servicios que esten dentro de nuestro detalle de la carga y lo agregamos
-        /* if ($routing->custom()->exists()) {
-            $services['Aduanas'] = $routing->custom->load('insurance');
-        }
-
-        if ($routing->freight()->exists()) {
-            $services['Flete'] = $routing->freight->load('insurance');
-        }
-
-        if ($routing->transport()->exists()) {
-            $services['Transporte'] = $routing->transport;
-        }
- */
 
         $tab = 'detail';
 
-         $data = [
+        $data = [
             'comercialQuote' => $comercialQuote,
             'type_services' => $type_services,
             'services' => $services,
@@ -156,35 +192,9 @@ class CommercialQuoteController extends Controller
 
         ];
 
-/*
 
-        if ($withdrawal_date = request('withdrawal_date', null)) {
-            $data['withdrawal_date'] = $withdrawal_date;
-        }
+        dd($data['comercialQuote']);
 
-        if ($cost_transport = request('cost_transport', null)) {
-            $data['cost_transport'] = $cost_transport;
-        }
-
-        if ($origin = request('origin', null)) {
-            $data['origin'] = $origin;
-        }
-
-        if ($destination = request('destination', null)) {
-            $data['destination'] = $destination;
-        } */
-
-        // Condicionalmente agregar cost_gang si está presente
-/*         if ($cost_gang = request('cost_gang', null)) {
-            $data['id_gang_concept'] = request('id_gang_concept', null);
-            $data['cost_gang'] = $cost_gang;
-        } */
-
-        // Condicionalmente agregar cost_guard si está presente
-/*         if ($cost_guard = request('cost_guard', null)) {
-            $data['id_guard_concept'] = request('id_guard_concept', null);
-            $data['cost_guard'] = $cost_guard;
-        } */
 
 
         return view('commercial_quote/detail-commercial-quote', $data);
