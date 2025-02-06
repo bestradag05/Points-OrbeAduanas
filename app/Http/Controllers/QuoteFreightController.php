@@ -134,7 +134,7 @@ class QuoteFreightController extends Controller
             'state' => 'Aceptada'
         ]);
 
-        return redirect('/freight/create'. $quote->id);
+        return redirect('/freight/create/'. $quote->id);
     }
 
     public function uploadFilesQuoteFreight(Request $request)
