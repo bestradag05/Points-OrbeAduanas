@@ -106,14 +106,14 @@ class FreightController extends Controller
     {
 
         $quote = QuoteFreight::findOrFail($quoteId);
-        $routing = $quote->routing;
+        $commercial_quote = $quote->commercial_quote;
         $type_insurace = TypeInsurance::all();
         $concepts = Concepts::all();
         $conceptFreight = null;
 
 
 
-        foreach ($concepts as $concept) {
+        /*  foreach ($concepts as $concept) {
 
             foreach ($concepts as $concept) {
 
@@ -125,10 +125,23 @@ class FreightController extends Controller
                     $conceptFreight = $concept;
                 }
             }
+        } */
+
+        foreach ($concepts as $concept) {
+
+            foreach ($concepts as $concept) {
+
+                if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Flete' && $concept->name === 'OCEAN FREIGHT') {
+                    $conceptFreight = $concept;
+                }
+
+                if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Flete' && $concept->name === 'AIR FREIGHT') {
+                    $conceptFreight = $concept;
+                }
+            }
         }
 
-
-        return view('freight.register-freight', compact('quote', 'type_insurace', 'concepts', 'conceptFreight', 'routing'));
+        return view('freight.register-freight', compact('quote', 'type_insurace', 'concepts', 'conceptFreight', 'commercial_quote'));
     }
 
     /**
@@ -289,10 +302,12 @@ class FreightController extends Controller
             'value_utility' => $request->utility,
             'state' => $request->state ?? 'Pendiente',
             'id_quote_freight' => $request->id_quote_freight,
-            'nro_operation' => $request->nro_operation,
+            /* 'nro_operation' => $request->nro_operation, */
+            'nro_quote_commercial' => $request->nro_quote_commercial,
         ]);
 
         $freight->save();
+
 
         return $freight;
     }
@@ -360,8 +375,16 @@ class FreightController extends Controller
 
 
         // Buscar el concepto en la base de datos
-        $concept = Concepts::where('name', 'SEGURO')
+        /*   $concept = Concepts::where('name', 'SEGURO')
             ->where('id_type_shipment', $freight->routing->type_shipment->id)
+            ->whereHas('typeService', function ($query) {
+                $query->where('name', 'Flete');  // Segunda condición: Filtrar por name del tipo de servicio
+            })
+            ->first(); */
+
+
+        $concept = Concepts::where('name', 'SEGURO')
+            ->where('id_type_shipment', $freight->commercial_quote->type_shipment->id)
             ->whereHas('typeService', function ($query) {
                 $query->where('name', 'Flete');  // Segunda condición: Filtrar por name del tipo de servicio
             })

@@ -24,10 +24,12 @@ return new class extends Migration
             $table->string('state');
             /* $table->unsignedBigInteger('id_insurance')->nullable(); */
             $table->string('nro_operation')->nullable();
+            $table->string('nro_quote_commercial')->nullable();
             $table->unsignedBigInteger('id_quote_freight')->nullable();
             $table->timestamps();
 
             $table->foreign('nro_operation')->references('nro_operation')->on('routing');
+            $table->foreign('nro_quote_commercial')->references('nro_quote_commercial')->on('commercial_quote');
             $table->foreign('id_quote_freight')->references('id')->on('quote_freight');
             /* $table->foreign('id_insurance')->references('id')->on('insurance'); */
         });

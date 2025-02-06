@@ -287,7 +287,6 @@
                 <th>LCL / FCL</th>
                 <th>Cubicaje-KGV</th>
                 <th>Tonelada-KG</th>
-                <th>Peso Total</th>
                 <th>Asesor</th>
                 <th>N° de operacion</th>
                 <th>Estado</th>
@@ -304,9 +303,8 @@
                         <td>{{ $quote->destination }}</td>
                         <td>{{ $quote->commodity }}</td>
                         <td>{{ $quote->commercial_quote->lcl_fcl }}</td>
-                        <td>{{ $quote->commercial_quote->cubage_kgv }}</td>
+                        <td>{{ $quote->cubage_kgv }}</td>
                         <td>{{ $quote->ton_kilogram }}</td>
-                        <td>{{ $quote->total_weight }}</td>
                         <td>{{ $quote->commercial_quote->personal->names }}</td>
                         <td>{{ $quote->nro_quote_commercial }}</td>
                         <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}

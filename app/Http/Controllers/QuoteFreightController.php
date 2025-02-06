@@ -28,9 +28,9 @@ class QuoteFreightController extends Controller
             'LCL / FCL',
             'Cubicaje-KGV',
             'Tonelada-KG',
-            'Peso Total',
             'Asesor',
-            'N° de operacion',
+            /* 'N° de operacion', */
+            'N° de Cotizacion',
             'Estado',
             'Acciones'
         ];
@@ -134,7 +134,7 @@ class QuoteFreightController extends Controller
             'state' => 'Aceptada'
         ]);
 
-        return redirect('/quote/freight/'. $quote->id);
+        return redirect('/freight/create'. $quote->id);
     }
 
     public function uploadFilesQuoteFreight(Request $request)

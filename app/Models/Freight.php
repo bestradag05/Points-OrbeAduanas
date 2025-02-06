@@ -24,7 +24,8 @@ class Freight extends Model
         'value_freight', 
         'state',
         'id_quote_freight', 
-        'nro_operation'
+        'nro_operation',
+        'nro_quote_commercial'
     ];
 
     public function concepts()
@@ -37,6 +38,11 @@ class Freight extends Model
     public function routing()
     {
         return $this->belongsTo(Routing::class, 'nro_operation', 'nro_operation');
+    }
+    
+    public function commercial_quote()
+    {
+        return $this->belongsTo(CommercialQuote::class, 'nro_quote_commercial', 'nro_quote_commercial');
     }
 
     public function insurance()

@@ -1,9 +1,14 @@
 <div class="row">
 
  
-    <input type="hidden" name="nro_operation"
+    {{-- <input type="hidden" name="nro_operation"
         value="{{ isset($routing->nro_operation) ? $routing->nro_operation : '' }}">
+    <input type="hidden" name="id_quote_freight" value="{{ isset($quote->id) ? $quote->id : '' }}"> --}}
+
+    <input type="hidden" name="nro_quote_commercial"
+        value="{{ isset($commercial_quote->nro_quote_commercial) ? $commercial_quote->nro_quote_commercial : '' }}">
     <input type="hidden" name="id_quote_freight" value="{{ isset($quote->id) ? $quote->id : '' }}">
+
     {{-- <input type="hidden" name="typeService" id="typeService"> --}}
 
 
@@ -119,7 +124,7 @@
                 data-placeholder="Seleccione un concepto...">
                 <option />
                 @foreach ($concepts as $concept)
-                    @if ($concept->typeService->name == 'Flete' && $routing->type_shipment->id == $concept->id_type_shipment)
+                    @if ($concept->typeService->name == 'Flete' && $commercial_quote->type_shipment->id == $concept->id_type_shipment)
                         @if ($conceptFreight->name != $concept->name && $concept->name != 'SEGURO')
                             <option value="{{ $concept->id }}">{{ $concept->name }}</option>
                         @endif

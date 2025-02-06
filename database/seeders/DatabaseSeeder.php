@@ -129,6 +129,12 @@ class DatabaseSeeder extends Seeder
             'state' => 'Activo'
         ]);
 
+        $userPricing = User::create([
+            'email' => 'victor.gomez@orbeaduanas.com',
+            'password' => bcrypt('Orbe2025'),
+            'state' => 'Activo'
+        ]);
+
         $user->assignRole($role);
 
 
@@ -161,6 +167,23 @@ class DatabaseSeeder extends Seeder
             'civil_status' => 'Soltero',
             'id_document' => $document->id,
             'id_user' => $user->id
+        ]);
+        
+        Personal::create([
+            'id' => '100',
+            'document_number' => '796521448',
+            'names' => 'Victor',
+            'last_name' => 'Gomez',
+            'mother_last_name' => 'Canelo',
+            'cellphone' => '966523658',
+            'email' => 'victor.gomez@orbeaduanas.com',
+            'address' => 'Av Revolucion Calle Q - Villa el Salvador',
+            'img_url' =>  null,
+            'state' => 'Activo',
+            'sexo' => 'Masculino',
+            'civil_status' => 'Soltero',
+            'id_document' => $document->id,
+            'id_user' => $userPricing->id
         ]);
 
 

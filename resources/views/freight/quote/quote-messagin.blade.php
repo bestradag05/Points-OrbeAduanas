@@ -72,9 +72,14 @@
                         <b class="d-block">{{ $quote->nro_quote }}</b>
                     </p>
                 </div>
-                <div class="col-6">
+                {{-- <div class="col-6">
                     <p class="text-sm">Cliente :
                         <b class="d-block">{{ $quote->routing->customer->name_businessname }}</b>
+                    </p>
+                </div> --}}
+                <div class="col-6">
+                    <p class="text-sm">Cliente :
+                        <b class="d-block">{{ $quote->commercial_quote->customer_company_name }}</b>
                     </p>
                 </div>
             </div>
@@ -91,10 +96,16 @@
                 </div>
             </div>
             <div class="row text-muted">
-                <div class="col-6">
+               {{--  <div class="col-6">
                     <p class="text-sm">Tipo de embarque :
                         <b class="d-block">{{ $quote->routing->type_shipment->description }}
                             {{ $quote->routing->lcl_fcl != null ? '(' . $quote->routing->lcl_fcl . ')' : '' }}</b>
+                    </p>
+                </div> --}}
+                <div class="col-6">
+                    <p class="text-sm">Tipo de embarque :
+                        <b class="d-block">{{ $quote->commercial_quote->type_shipment->description }}
+                            {{ $quote->commercial_quote->lcl_fcl != null ? '(' . $quote->commercial_quote->lcl_fcl . ')' : '' }}</b>
                     </p>
                 </div>
                 <div class="col-6">
@@ -115,7 +126,7 @@
                     </p>
                 </div>
             </div>
-            @if ($quote->routing->lcl_fcl === 'LCL' || $quote->routing->lcl_fcl === null)
+           {{--  @if ($quote->routing->lcl_fcl === 'LCL' || $quote->routing->lcl_fcl === null)
                 <div class="row text-muted">
                     <div class="col-6">
                         <p class="text-sm">Cubicaje/KGV :
@@ -141,7 +152,35 @@
                         </p>
                     </div>
                 </div>
-            @endif
+            @endif --}}
+
+            @if ($quote->commercial_quote->lcl_fcl === 'LCL' || $quote->commercial_quote->lcl_fcl === null)
+            <div class="row text-muted">
+                <div class="col-6">
+                    <p class="text-sm">Cubicaje/KGV :
+                        <b class="d-block">{{ $quote->cubage_kgv }}</b>
+                    </p>
+                </div>
+                <div class="col-6">
+                    <p class="text-sm">Peso total :
+                        <b class="d-block">{{ $quote->total_weight }}</b>
+                    </p>
+                </div>
+            </div>
+        @else
+            <div class="row text-muted">
+                <div class="col-6">
+                    <p class="text-sm">Tipo de contenedor :
+                        <b class="d-block">{{ $quote->container_type }}</b>
+                    </p>
+                </div>
+                <div class="col-6">
+                    <p class="text-sm">Toneladas/Kilogramos :
+                        <b class="d-block">{{ $quote->ton_kilogram }}</b>
+                    </p>
+                </div>
+            </div>
+        @endif
 
             <div class="row text-muted mt-3">
                 <div class="col-6">

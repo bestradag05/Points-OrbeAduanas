@@ -102,8 +102,6 @@ class CommercialQuoteController extends Controller
             'nro_operation' => $request->nro_operation,
             'observation' => $request->observation,
             'id_personal' => auth()->user()->personal->id,
-
-
         ]);
 
 
@@ -138,7 +136,6 @@ class CommercialQuoteController extends Controller
 
     public function createQuoteFreight($commercialQuote)
     {
-
         QuoteFreight::create([
             'shipping_date' => null,
             'response_date' => null,
@@ -148,13 +145,13 @@ class CommercialQuoteController extends Controller
             'packaging_type' => $commercialQuote->packaging_type,
             'load_type' => $commercialQuote->type_load->name,
             'container_type' => $commercialQuote->container_type,
-            'ton_kilogram' => $commercialQuote->ton_kilogram,
-            'cubage_kgv' => $commercialQuote->cubage_kgv,
+            'ton_kilogram' => $commercialQuote->kilograms ? $commercialQuote->kilograms : $commercialQuote->tons ,
+            'cubage_kgv' => $commercialQuote->kilogram_volumen ? $commercialQuote->kilogram_volumen : $commercialQuote->volumen,
             'total_weight' => $commercialQuote->total_weight,
-            'packages' => $commercialQuote->packages,
+            'packages' => $commercialQuote->nro_package,
             'measures' => $commercialQuote->measures,
             'nro_quote_commercial' => $commercialQuote->nro_quote_commercial,
-            'state' => 'Borrador'
+            'state' => 'Pendiente'
 
         ]);
     }
@@ -190,6 +187,7 @@ class CommercialQuoteController extends Controller
             'type_insurace' => $type_insurace,
 
         ];
+        
 
         return view('commercial_quote/detail-commercial-quote', $data);
     }
