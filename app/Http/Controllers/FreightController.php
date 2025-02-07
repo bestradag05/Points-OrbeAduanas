@@ -169,7 +169,7 @@ class FreightController extends Controller
 
         $this->syncFreightConcepts($freight, $concepts);
 
-        return redirect('freight/personal');
+        return redirect('commercial/quote/'. $freight->commercial_quote->id .'/detail');
     }
 
 
