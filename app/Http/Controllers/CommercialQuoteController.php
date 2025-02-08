@@ -7,12 +7,14 @@ use App\Models\Concepts;
 use App\Models\Incoterms;
 use App\Models\Modality;
 use App\Models\QuoteFreight;
+use App\Models\QuoteTransport;
 use App\Models\Regime;
 use App\Models\StateCountry;
 use App\Models\TypeInsurance;
 use App\Models\TypeLoad;
 use App\Models\TypeService;
 use App\Models\TypeShipment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -119,7 +121,9 @@ class CommercialQuoteController extends Controller
                         break;
 
                     case 'Transporte':
-                        # code...
+
+                        $this->createQuoteTransport($commercialQuote);
+
                         break;
 
                     default:
@@ -145,13 +149,46 @@ class CommercialQuoteController extends Controller
             'packaging_type' => $commercialQuote->packaging_type,
             'load_type' => $commercialQuote->type_load->name,
             'container_type' => $commercialQuote->container_type,
-            'ton_kilogram' => $commercialQuote->kilograms ? $commercialQuote->kilograms : $commercialQuote->tons ,
+            'ton_kilogram' => $commercialQuote->kilograms ? $commercialQuote->kilograms : $commercialQuote->tons,
             'cubage_kgv' => $commercialQuote->kilogram_volumen ? $commercialQuote->kilogram_volumen : $commercialQuote->volumen,
             'total_weight' => $commercialQuote->total_weight,
             'packages' => $commercialQuote->nro_package,
             'measures' => $commercialQuote->measures,
             'nro_quote_commercial' => $commercialQuote->nro_quote_commercial,
             'state' => 'Pendiente'
+
+        ]);
+    }
+
+    public function createQuoteTransport($commercialQuote)
+    {
+         QuoteTransport::create([
+            'shipping_date' => Carbon::now('America/Lima'),
+            'response_date' => null,
+            'id_customer' => ($commercialQuote->customer_company_name != null) ? $commercialQuote->customer_company_name : '',
+            'pick_up' => ($request->lcl_fcl === 'LCL') ? $request->pick_up_lcl : $request->pick_up_fcl,
+            'delivery' => $request->delivery,
+            'container_return' => $request->container_return,
+            'contact_phone' => $request->contact_phone,
+            'contact_name' => $request->contact_name,
+            'max_attention_hour' => $request->max_attention_hour,
+            'gang' => $request->gang,
+            'guard' => $request->guard,
+            'customer_detail' => $request->customer_detail,
+            'commodity' => $request->commodity,
+            'packaging_type' => $request->packaging_type,
+            'load_type' => $request->load_type,
+            'container_type' => $request->container_type,
+            'ton_kilogram' => $request->ton_kilogram,
+            'stackable' => $request->stackable,
+            'cubage_kgv' => $request->cubage_kgv,
+            'total_weight' => $request->total_weight,
+            'packages' => $request->packages,
+            'cargo_detail' => $request->cargo_detail,
+            'measures' => $request->measures,
+            'nro_operation' => $request->nro_operation,
+            'lcl_fcl' => $request->lcl_fcl,
+            'id_type_shipment' => $request->id_type_shipment,
 
         ]);
     }
@@ -187,7 +224,7 @@ class CommercialQuoteController extends Controller
             'type_insurace' => $type_insurace,
 
         ];
-        
+
 
         return view('commercial_quote/detail-commercial-quote', $data);
     }

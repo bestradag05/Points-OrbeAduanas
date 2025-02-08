@@ -15,7 +15,6 @@ class QuoteTransport extends Model
         'nro_quote',
         'shipping_date',
         'response_date',
-        'id_customer',
         'pick_up',
         'delivery',
         'container_return',
@@ -40,7 +39,6 @@ class QuoteTransport extends Model
         'packages',
         'cargo_detail',
         'measures',
-        'nro_operation',
         'lcl_fcl',
         'id_type_shipment',
         'old_cost_transport',
@@ -48,7 +46,9 @@ class QuoteTransport extends Model
         'readjustment_reason',
         'withdrawal_date',
         'observations',
-        'state'
+        'state',
+        'nro_operation',
+        'nro_quote_commercial',
     ];
 
 
