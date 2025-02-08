@@ -399,13 +399,12 @@
                 <th>#</th>
                 <th>N° cotizacion</th>
                 <th>Cliente</th>
-                <th>Origen</th>
-                <th>Destino</th>
-                <th>Producto</th>
+                <th>Recojo</th>
+                <th>Entrega</th>
+                <th>Hora maxima de atencion</th>
                 <th>LCL / FCL</th>
                 <th>Cubicaje-KGV</th>
                 <th>Tonelada-KG</th>
-                <th>Asesor</th>
                 <th>N° de operacion</th>
                 <th>Estado</th>
                 <th>Acciones</th>
