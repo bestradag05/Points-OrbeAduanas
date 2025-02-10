@@ -480,6 +480,67 @@
                         <input id="delivery" class="form-control" type="text" name="delivery">
                     </div>
 
+                    <div class="form-group row">
+                        <label for="gang" class="col-sm-4 col-form-label">Cuadrilla</label>
+                        <div class="col-sm-8 row align-items-center">
+                            <div class="form-check d-inline mx-2">
+                                <input type="radio" id="radioGang" name="gang" value="SI"
+                                    class="form-check-input">
+                                <label for="radioGang" class="form-check-label">
+                                    SI
+                                </label>
+                            </div>
+                            <div class="form-check d-inline mx-2">
+                                <input type="radio" id="radioGang" name="gang" value="NO"
+                                    class="form-check-input">
+                                <label for="radioGang" class="form-check-label">
+                                    NO
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="guard" class="col-sm-4 col-form-label">Resguardo</label>
+                        <div class="col-sm-8">
+                            <div class="form-check d-inline">
+                                <input type="radio" id="radioGuard" name="guard" value="SI"
+                                    class="form-check-input">
+                                <label for="radioGuard" class="form-check-label">
+                                    SI
+                                </label>
+                            </div>
+                            <div class="form-check d-inline">
+                                <input type="radio" id="radioGuard" name="guard" value="NO"
+                                    class="form-check-input">
+                                <label for="radioGuard" class="form-check-label">
+                                    NO
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group row">
+                        <label for="stackable" class="col-sm-4 col-form-label">Apilable</label>
+                        <div class="col-sm-8">
+                            <div class="form-check d-inline">
+                                <input type="radio" id="radioStackable" name="stackable" value="SI"
+                                    class="form-check-input">
+                                <label for="radioStackable" class="form-check-label">
+                                    SI
+                                </label>
+                            </div>
+                            <div class="form-check d-inline">
+                                <input type="radio" id="radioStackable" name="stackable" value="NO"
+                                    class="form-check-input">
+                                <label for="radioStackable" class="form-check-label">
+                                    NO
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" onclick="submitTransport(event)" class="btn btn-primary">Guardar</button>
@@ -1090,7 +1151,7 @@
         function openModalTransport(id) {
             let modalTransport = $('#modalTransport');
 
-            $('#modalTransport form').attr('action', 'quote/transport/' + id);
+            $('#modalTransport form').attr('action', '/quote/transport/complete/' + id);
 
 
             modalTransport.modal('show');

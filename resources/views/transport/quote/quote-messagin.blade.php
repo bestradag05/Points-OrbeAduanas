@@ -39,7 +39,7 @@
 
                 </div>
                 <div class="card-footer">
-                    <form action="/quote/freight/message" method="POST">
+                    <form action="/quote/transport/message" method="POST">
                         @csrf
                         <div class="row">
                             <div class="col-12">
@@ -48,7 +48,7 @@
                             </div>
                             <div class="col-12 row align-items-center justify-content-center mt-2">
                                 <button type="submit"
-                                    {{ $quote->state === 'Borrador' || $quote->state === 'Aceptada' ? 'disabled' : '' }}
+                                    {{ $quote->state === 'Aceptada' ? 'disabled' : '' }}
                                     class="btn btn-indigo">Enviar</button>
                             </div>
                         </div>
@@ -86,12 +86,12 @@
             <div class="row text-muted">
                 <div class="col-6">
                     <p class="text-sm">Origen :
-                        <b class="d-block">{{ $quote->origin }}</b>
+                        <b class="d-block">{{ $quote->pick_up }}</b>
                     </p>
                 </div>
                 <div class="col-6">
                     <p class="text-sm">Destino :
-                        <b class="d-block">{{ $quote->destination }}</b>
+                        <b class="d-block">{{ $quote->delivery }}</b>
                     </p>
                 </div>
             </div>
@@ -285,7 +285,7 @@
                     class="btn btn-sm btn-success {{ $quote->state === 'Borrador' || $quote->state === 'Aceptada' ? 'd-none' : '' }}"
                     type="button" data-toggle="modal" data-target="#quote-freight">Cotización Aceptada</button>
 
-                @if (!$quote->freight()->exists())
+                @if (!$quote->transport()->exists())
                     <a href="{{ url('/freight/create/' . $quote->id) }}"
                         class="btn btn-sm btn-indigo {{ $quote->state === 'Aceptada' ? '' : 'd-none' }}">Generar Flete</a>
                 @endif

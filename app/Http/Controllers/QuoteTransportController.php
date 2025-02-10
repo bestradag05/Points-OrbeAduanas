@@ -221,7 +221,7 @@ class QuoteTransportController extends Controller
         //Ver el detalle de la cotizacion
 
         $quote = QuoteTransport::findOrFail($id);
-
+        $messages = $quote->messages;
 
         $folderPath = "quote_transport/{$quote->nro_quote}";
         $files = collect(Storage::disk('public')->files($folderPath))->map(function ($file) {
@@ -232,7 +232,7 @@ class QuoteTransportController extends Controller
             ];
         });
 
-        return view('transport/quote/detail-quote', compact('quote', 'files'));
+        return view('transport/quote/quote-messagin', compact('quote', 'files', 'messages'));
     }
 
     /**
@@ -271,6 +271,28 @@ class QuoteTransportController extends Controller
 
 
         return view('transport.quote.edit-quote', compact('quote', 'files', 'customers'))->with('showModal', $showModal);
+    }
+
+    public function updateQuoteTransport(Request $request, string $id){
+        $quote = QuoteTransport::findOrFail($id);
+
+        $quote->update($request->all());
+
+        $folderPath = "quote_transport/{$quote->nro_quote}";
+        $files = collect(Storage::disk('public')->files($folderPath))->map(function ($file) {
+            return [
+                'name' => basename($file), // Nombre del archivo
+                'size' => Storage::disk('public')->size($file), // Tamaño del archivo
+                'url' => asset('storage/' . $file), // URL del archivo
+            ];
+        });
+        
+
+
+        $messages = $quote->messages;
+
+        return view('transport/quote/quote-messagin', compact('quote', 'messages', 'files'));
+
     }
 
     /**

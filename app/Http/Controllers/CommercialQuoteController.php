@@ -40,6 +40,7 @@ class CommercialQuoteController extends Controller
                 ->get();
         }
 
+        
 
 
         $heads = [

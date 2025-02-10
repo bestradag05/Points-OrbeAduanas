@@ -97,4 +97,9 @@ class QuoteTransport extends Model
     {
         return $this->belongsTo(TypeShipment::class, 'id_type_shipment', 'id');
     }
+
+    public function messages()
+    {
+        return $this->hasMany(MessageQuoteTransport::class, 'quote_transport_id', 'id');
+    }
 }
