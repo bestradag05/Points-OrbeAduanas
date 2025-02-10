@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('nro_quote')->unique();
             $table->string('pick_up')->nullable();
             $table->string('delivery')->nullable();
-            $table->string('container_return')->nullable();
             $table->string('gang')->nullable();
             $table->string('guard')->nullable();
             $table->string('commodity')->nullable();

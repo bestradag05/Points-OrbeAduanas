@@ -288,7 +288,6 @@
                     <th>LCL / FCL</th>
                     <th>Cubicaje-KGV</th>
                     <th>Tonelada-KG</th>
-                    <th>Asesor</th>
                     <th>N° de operacion</th>
                     <th>Estado</th>
                     <th>Acciones</th>
@@ -306,7 +305,6 @@
                             <td>{{ $quote->commercial_quote->lcl_fcl }}</td>
                             <td>{{ $quote->cubage_kgv }}</td>
                             <td>{{ $quote->ton_kilogram }}</td>
-                            <td>{{ $quote->commercial_quote->personal->names }}</td>
                             <td>{{ $quote->nro_quote_commercial }}</td>
                             <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
                             </td>
@@ -390,63 +388,106 @@
 
 
     {{-- Tabla para cotizaciones de Transporte --}}
-    @if($comercialQuote->quote_transport()->exists())
-    <div class="col-12 mt-4">
-        <h6 class="text-indigo text-uppercase text-center text-bold">Cotizacion de transporte</h6>
+    @if ($comercialQuote->quote_transport()->exists())
+        <div class="col-12 mt-4">
+            <h6 class="text-indigo text-uppercase text-center text-bold">Cotizacion de transporte</h6>
 
-        <table class="table table-sm text-sm">
-            <thead class="thead-dark">
-                <th>#</th>
-                <th>N° cotizacion</th>
-                <th>Cliente</th>
-                <th>Recojo</th>
-                <th>Entrega</th>
-                <th>Hora maxima de atencion</th>
-                <th>LCL / FCL</th>
-                <th>Cubicaje-KGV</th>
-                <th>Tonelada-KG</th>
-                <th>N° de operacion</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </thead>
-            <tbody>
+            <table class="table table-sm text-sm">
+                <thead class="thead-dark">
+                    <th>#</th>
+                    <th>N° cotizacion</th>
+                    <th>Cliente</th>
+                    <th>Recojo</th>
+                    <th>Entrega</th>
+                    <th>LCL / FCL</th>
+                    <th>Cubicaje-KGV</th>
+                    <th>Tonelada-KG</th>
+                    <th>N° de operacion</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </thead>
+                <tbody>
 
-                @foreach ($comercialQuote->quote_freight as $quote)
-                    <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ $quote->nro_quote }}</td>
-                        <td>{{ $quote->commercial_quote->customer_company_name }}</td>
-                        <td>{{ $quote->origin }}</td>
-                        <td>{{ $quote->destination }}</td>
-                        <td>{{ $quote->commodity }}</td>
-                        <td>{{ $quote->commercial_quote->lcl_fcl }}</td>
-                        <td>{{ $quote->cubage_kgv }}</td>
-                        <td>{{ $quote->ton_kilogram }}</td>
-                        <td>{{ $quote->commercial_quote->personal->names }}</td>
-                        <td>{{ $quote->nro_quote_commercial }}</td>
-                        <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
-                        </td>
+                    @foreach ($comercialQuote->quote_transport as $quote)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $quote->nro_quote }}</td>
+                            <td>{{ $quote->commercial_quote->customer_company_name }}</td>
+                            <td>{!! $quote->pick_up ? e($quote->pick_up) : '<span class="text-muted">Falta información</span>' !!}</td>
+                            <td>{!! $quote->delivery ? e($quote->delivery) : '<span class="text-muted">Falta información</span>' !!}</td>
+                            <td>{{ $quote->commercial_quote->lcl_fcl }}</td>
+                            <td>{{ $quote->cubage_kgv }}</td>
+                            <td>{{ $quote->ton_kilogram }}</td>
+                            <td>{{ $quote->nro_quote_commercial }}</td>
+                            <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
+                            </td>
 
+                            @if (!$quote->pick_up || !$quote->delivery)
+                                <td>
+                                    <button type="button" class="btn btn-outline-indigo btn-sm mb-2"
+                                        onclick="openModalTransport('{{ $quote->id }}')">
+                                        Detalle
+                                    </button>
+                                </td>
+                            @else
+                                <td>
+                                    <a href="{{ url('/quote/transport/' . $quote->id) }}"
+                                        class="btn btn-outline-indigo btn-sm mb-2 ">
+                                        Detalle
+                                    </a>
+                                </td>
+                            @endif
 
-                        <td>
-                            <a href="{{ url('/quote/freight/' . $quote->id) }}"
-                                class="btn btn-outline-indigo btn-sm mb-2 ">
-                                Detalle
-                            </a>
-                        </td>
+                        </tr>
+                    @endforeach
 
-                    </tr>
-                @endforeach
+                </tbody>
 
-            </tbody>
+            </table>
 
-        </table>
-
-    </div>
+        </div>
     @endif
-   
 
 
+
+</div>
+
+
+{{-- Modal para completar informacion del transporte --}}
+
+<div id="modalTransport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalTransport-title"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="POST" id="formQuoteTransport">
+                {{ method_field('PATCH') }}
+                {{ csrf_field() }}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTransport-title">Cotización de transporte</h5>
+                    <button class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-warning text-center">Para completar la cotizacion de transporte, por favor brinde la
+                        siguiente información: </p>
+                    <div class="form-group">
+                        <label for="pick_up">Dirección de Recojo:</label>
+                        <input id="pick_up" class="form-control" type="text" name="pick_up">
+                    </div>
+                    <div class="form-group">
+                        <label for="delivery">Dirección de entrega</label>
+                        <input id="delivery" class="form-control" type="text" name="delivery">
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="submitTransport(event)" class="btn btn-primary">Guardar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 
@@ -1041,6 +1082,73 @@
             value_insurance = parseFloat(cost_transport);
 
             calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, container.id);
+        }
+
+
+
+
+        function openModalTransport(id) {
+            let modalTransport = $('#modalTransport');
+
+            $('#modalTransport form').attr('action', 'quote/transport/' + id);
+
+
+            modalTransport.modal('show');
+        }
+
+        function submitTransport(e) {
+            e.preventDefault();
+
+            let isValid = true;
+            let form = $('#modalTransport form')[0];
+
+            const inputs = Array.from(form.querySelectorAll('input')).filter(input => input.type !== 'hidden');
+
+
+            inputs.forEach((input) => {
+                // Ignorar campos ocultos (d-none)
+                if (input.closest('.d-none')) {
+                    return;
+                }
+
+                // Validar si el campo está vacío
+                if (input.value.trim() === '') {
+                    input.classList.add('is-invalid');
+                    isValid = false; // Cambiar bandera si algún campo no es válido
+                    showError(input, 'Debe completar este campo');
+                } else {
+                    input.classList.remove('is-invalid');
+                    hideError(input);
+                }
+            });
+
+
+            if (isValid) {
+                form.submit();
+            }
+
+
+        }
+
+        // Mostrar mensaje de error
+        function showError(input, message) {
+            let errorSpan = input.nextElementSibling;
+            if (!errorSpan || !errorSpan.classList.contains('invalid-feedback')) {
+                errorSpan = document.createElement('span');
+                errorSpan.classList.add('invalid-feedback');
+                input.after(errorSpan);
+            }
+            errorSpan.textContent = message;
+            errorSpan.style.display = 'block';
+        }
+
+
+        // Ocultar mensaje de error
+        function hideError(input) {
+            let errorSpan = input.nextElementSibling;
+            if (errorSpan && errorSpan.classList.contains('invalid-feedback')) {
+                errorSpan.style.display = 'none';
+            }
         }
     </script>
 @endpush
