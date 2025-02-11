@@ -128,6 +128,7 @@ Route::middleware('auth')->group(function () {
     Route::get('transport/pending', [TransportController::class, 'getTransportPending']);
     Route::get('transport/personal', [TransportController::class, 'getTransportPersonal']);
     Route::resource('transport', TransportController::class);
+    Route::get('transport/create/{quoteId}', [TransportController::class, 'createTransport']);
 
     Route::get('insurance/pending', [InsuranceController::class, 'getInsurancePending']);
     Route::resource('insurance', InsuranceController::class);
@@ -159,10 +160,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('quote/search-routing/{nro_operation}', [QuoteTransportController::class, 'searchRouting']);
     Route::patch('quote/transport/cost/{id}', [QuoteTransportController::class, 'costTransport']);
-    Route::patch('quote/transport/cost/{action}/{id}', [QuoteTransportController::class, 'handleTransportAction']);
+  /*   Route::patch('quote/transport/cost/{action}/{id}', [QuoteTransportController::class, 'handleTransportAction']); */
     Route::get('quote/transport/cost/reject/{id}', [QuoteTransportController::class, 'rejectQuoteTransport']);
     Route::get('quote/transport/cost/keep/{id}', [QuoteTransportController::class, 'keepQuoteTransport']);
-    Route::get('quote/transport/cost/accept/{id}', [QuoteTransportController::class, 'acceptQuoteTransport']);
+    Route::patch('quote/transport/cost/accept/{id}', [QuoteTransportController::class, 'acceptQuoteTransport']);
     Route::get('quote/transport/cost/corrected/{id}', [QuoteTransportController::class, 'correctedQuoteTransport']);
 
     /* Cotizaciones de flete */

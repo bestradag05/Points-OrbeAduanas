@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdditionalPoints;
+use App\Models\Concepts;
+use App\Models\QuoteTransport;
 use App\Models\Supplier;
 use App\Models\Transport;
+use App\Models\TypeInsurance;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -94,6 +97,55 @@ class TransportController extends Controller
         //
     }
 
+    public function createTransport($quoteId)
+    {
+
+        $quote = QuoteTransport::findOrFail($quoteId);
+        $commercial_quote = $quote->commercial_quote;
+        $type_insurace = TypeInsurance::all();
+        $concepts = Concepts::all();
+        $conceptsTransport = [];
+
+
+
+        /*  foreach ($concepts as $concept) {
+
+            foreach ($concepts as $concept) {
+
+                if ($routing->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Flete' && $concept->name === 'OCEAN FREIGHT') {
+                    $conceptFreight = $concept;
+                }
+
+                if ($routing->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Flete' && $concept->name === 'AIR FREIGHT') {
+                    $conceptFreight = $concept;
+                }
+            }
+        } */
+
+
+
+        foreach ($concepts as $concept) {
+
+            if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Transporte' && $concept->name === 'TRANSPORTE') {
+                $conceptsTransport[] = (object) array_merge((array) $concept, ['cost' => $quote->cost_transport]);
+            }
+
+            if ($quote->gang && $quote->gang === 'SI') {
+                if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Transporte' && $concept->name === 'CUADRILLA') {
+                    $conceptsTransport[] = (object) array_merge((array) $concept, ['cost' => $quote->cost_gang]);
+                }
+            }
+
+            if ($quote->guard && $quote->guard === 'SI') {
+                if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Transporte' && $concept->name === 'RESGUARDO') {
+                    $conceptsTransport[] = (object) array_merge((array) $concept, ['cost' => $quote->cost_guard]);
+                }
+            }
+        }
+
+
+        return view('transport.register-transport', compact('quote', 'type_insurace', 'concepts', 'conceptsTransport', 'commercial_quote'));
+    }
     /**
      * Store a newly created resource in storage.
      */

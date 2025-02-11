@@ -127,17 +127,16 @@ class FreightController extends Controller
             }
         } */
 
+
+
         foreach ($concepts as $concept) {
 
-            foreach ($concepts as $concept) {
+            if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Flete' && $concept->name === 'OCEAN FREIGHT') {
+                $conceptFreight = $concept;
+            }
 
-                if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Flete' && $concept->name === 'OCEAN FREIGHT') {
-                    $conceptFreight = $concept;
-                }
-
-                if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Flete' && $concept->name === 'AIR FREIGHT') {
-                    $conceptFreight = $concept;
-                }
+            if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Flete' && $concept->name === 'AIR FREIGHT') {
+                $conceptFreight = $concept;
             }
         }
 
@@ -169,7 +168,7 @@ class FreightController extends Controller
 
         $this->syncFreightConcepts($freight, $concepts);
 
-        return redirect('commercial/quote/'. $freight->commercial_quote->id .'/detail');
+        return redirect('commercial/quote/' . $freight->commercial_quote->id . '/detail');
     }
 
 
