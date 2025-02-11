@@ -528,7 +528,7 @@ class QuoteTransportController extends Controller
 
 
     public function acceptQuoteTransport(Request $request, string $id){
-
+ 
         $quote = QuoteTransport::findOrFail($id);
 
         $cost_transport = $this->parseDouble($request->cost_transport); 
@@ -542,6 +542,7 @@ class QuoteTransportController extends Controller
             'cost_gang' => $cost_gang,
             'cost_guard' =>   $cost_guard,
             'total_transport' =>  $total_transport,
+            'withdrawal_date' => $request->withdrawal_date,
             'state' => 'Aceptada'
         ]);
 

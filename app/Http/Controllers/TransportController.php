@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AdditionalPoints;
 use App\Models\Concepts;
+use App\Models\ConceptTransport;
 use App\Models\QuoteTransport;
 use App\Models\Supplier;
 use App\Models\Transport;
@@ -123,26 +124,25 @@ class TransportController extends Controller
         } */
 
 
+        $conceptsTransport = $concepts->map(function ($concept) use ($quote, $commercial_quote) {
+            $data = collect($concept)->only(['id', 'name']); // Atributos que deseas conservar
 
-        foreach ($concepts as $concept) {
+            if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Transporte') {
+                if ($concept->name === 'TRANSPORTE') {
+                    return $data->merge(['cost' => $quote->cost_transport]);
+                }
 
-            if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Transporte' && $concept->name === 'TRANSPORTE') {
-                $conceptsTransport[] = (object) array_merge((array) $concept, ['cost' => $quote->cost_transport]);
-            }
+                if ($quote->gang === 'SI' && $concept->name === 'CUADRILLA') {
+                    return $data->merge(['cost' => $quote->cost_gang]);
+                }
 
-            if ($quote->gang && $quote->gang === 'SI') {
-                if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Transporte' && $concept->name === 'CUADRILLA') {
-                    $conceptsTransport[] = (object) array_merge((array) $concept, ['cost' => $quote->cost_gang]);
+                if ($quote->guard === 'SI' && $concept->name === 'RESGUARDO') {
+                    return $data->merge(['cost' => $quote->cost_guard]);
                 }
             }
 
-            if ($quote->guard && $quote->guard === 'SI') {
-                if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Transporte' && $concept->name === 'RESGUARDO') {
-                    $conceptsTransport[] = (object) array_merge((array) $concept, ['cost' => $quote->cost_guard]);
-                }
-            }
-        }
-
+            return null; // Si no cumple ninguna condición, no lo incluye
+        })->filter()->values(); // Filtra los `null` y reindexa la colección
 
         return view('transport.register-transport', compact('quote', 'type_insurace', 'concepts', 'conceptsTransport', 'commercial_quote'));
     }
@@ -151,81 +151,91 @@ class TransportController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Obtenemos el concepto llamado TRANSPORTE
+        // Debido que en el reporte de transport solo colocan este concepto
 
-        $tax_base = $this->parseDouble($request->transport_value) + $this->parseDouble($request->transport_added);
+        $concepts  = json_decode($request->concepts);
+        /*  dd($concepts);
+ */
+        $collection = collect($concepts);
+
+        $transporte = $collection->firstWhere('name', 'TRANSPORTE');
+
+        $withdrawal_date = Carbon::createFromFormat('d/m/Y', $request->withdrawal_date)->format('Y-m-d');
+
+        //Calculamos igv del monto del transporte
+
+        $tax_base = $this->parseDouble($transporte->value) + $this->parseDouble($transporte->added);
         $igv = $tax_base * 0.18;
         $total = $tax_base * 1.18;
 
         $transport = Transport::create([
 
-            'origin' => $request->origin,
-            'destination' => $request->destination,
-            'transport_value' => $this->parseDouble($request->transport_value),
-            'added_value' => $this->parseDouble($request->transport_added),
+            'origin' => $request->pick_up,
+            'destination' => $request->delivery,
+            'transport_value' => $this->parseDouble($transporte->value),
+            'added_value' => $this->parseDouble($transporte->added),
             'tax_base' => $tax_base,
             'igv' => $igv,
             'total' => $total,
-            'additional_points' => $request->additional_points,
-            'withdrawal_date' =>  $request->withdrawal_date,
+            'additional_points' => $transporte->pa,
+            'withdrawal_date' => $withdrawal_date,
             'id_quote_transport' => $request->id_quote_transport,
             'state' => 'Pendiente'
 
         ]);
 
 
-        if ($transport->additional_points && $this->parseDouble($transport->additional_points) > 0) {
-            $concept = (object) ['name' => 'TRANSPORTE', 'pa' => $transport->additional_points];
-
-            $this->add_aditionals_point($concept, $transport, $transport->tax_base, $transport->igv, $transport->total);
-        }
         //Relacionamos los conceptos que tendra este transporte
 
-        foreach (json_decode($request->concepts) as $concept) {
 
-            $ne_amount = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
-            $igv = $ne_amount * 0.18;
-            $total = $ne_amount + $igv;
+        foreach ($concepts as $concept) {
 
-            $transport->concepts()->attach($concept->id, [
-                'value_concept' => $concept->value,
-                'added_value' => $concept->added,
-                'net_amount' => round($ne_amount, 2),
-                'igv' => round($igv),
-                'total' => round($total),
-                'additional_points' => isset($concept->pa)
+            $net_amount = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
+            $igv = $net_amount * 0.18;
+            $total = $net_amount * 1.18;
+
+            $conceptTransport = ConceptTransport::create([
+                'id_concepts' => $concept->id, // ID del concepto relacionado
+                'id_transport' => $transport->id, // Clave foránea al modelo Freight
+                'value_concept' => $this->parseDouble($concept->value),
+                'added_value' => $this->parseDouble($concept->added),
+                'net_amount' => $net_amount,
+                'igv' => $igv,
+                'total' => $total,
+                'additional_points' => isset($concept->pa) ? $concept->pa : 0,
             ]);
+
 
             //Verificamos si tienen puntos adicionales
             if (isset($concept->pa)) {
-                $this->add_aditionals_point($concept, $transport, $ne_amount, $igv, $total);
+                $ne_amount = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
+                $this->add_aditionals_point($conceptTransport, $ne_amount,  $igv, $total);
             }
         }
 
 
-        return redirect('/transport/personal');
+        return redirect('/commercial/quote/'.$transport->id_quote_transport.'/detail');
     }
 
 
-
-    public function add_aditionals_point($concept, $service,  $ne_amount = null, $igv = null, $total = null)
+    public function add_aditionals_point($conceptTransport,  $ne_amount = null, $igv = null, $total = null)
     {
 
-
         $additional_point = AdditionalPoints::create([
-            'type_of_service' => $concept->name,
-            'amount' => ($ne_amount != 0 && $ne_amount != null) ? $ne_amount : $this->parseDouble($concept->value) +  $this->parseDouble($concept->added),
+            'type_of_service' => $conceptTransport->concepts->name,
+            'amount' => $ne_amount,
             'igv' => $igv,
             'total' => $total,
-            'points' => $concept->pa,
-            'id_additional_service' => $service->id,
-            'model_additional_service' => $service::class,
-            'additional_type' => ($service::class === 'App\Models\Freight') ? 'AD-FLETE' : 'AD-ADUANA',
+            'points' => $conceptTransport->additional_points,
+            'id_additional_concept_service' => $conceptTransport->id,
+            'model_additional_concept_service' => $conceptTransport::class,
+            'additional_type' => ($conceptTransport::class === 'App\Models\ConceptFreight') ? 'AD-FLETE' : 'AD-ADUANA',
             'state' => 'Pendiente'
         ]);
 
 
-        $service->additional_point()->save($additional_point);
+        $conceptTransport->additional_point()->save($additional_point);
     }
 
     public function parseDouble($num)

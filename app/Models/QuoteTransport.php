@@ -34,6 +34,7 @@ class QuoteTransport extends Model
         'id_type_shipment',
         'cost_transport',
         'total_transport',
+        'withdrawal_date',
         'observations',
         'state',
         'nro_operation',

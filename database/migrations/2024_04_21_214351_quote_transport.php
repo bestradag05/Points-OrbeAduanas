@@ -36,6 +36,7 @@ return new class extends Migration
             $table->text('observations')->nullable();
             $table->decimal('cost_transport', 8, 2)->nullable();
             $table->decimal('total_transport', 8, 2)->nullable();
+            $table->date('withdrawal_date')->nullable();
             $table->string('nro_operation')->nullable();
             $table->string('nro_quote_commercial');
             $table->enum('state', ['Pendiente', 'Respondido', 'Aceptada', 'Reajuste', 'Observado', 'Rechazada'])->default('pendiente');

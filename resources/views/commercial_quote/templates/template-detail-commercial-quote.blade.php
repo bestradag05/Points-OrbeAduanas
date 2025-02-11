@@ -480,6 +480,11 @@
                         <input id="delivery" class="form-control" type="text" name="delivery">
                     </div>
 
+                    <div class="form-group" id="container_return">
+                        <label for="container_return">Devolución de contenedor</label>
+                        <input id="container_return" class="form-control" type="text" name="container_return">
+                    </div>
+
                     <div class="form-group row">
                         <label for="gang" class="col-sm-4 col-form-label">Cuadrilla</label>
                         <div class="col-sm-8 row align-items-center">
@@ -1159,11 +1164,15 @@
                 $('#container-guard').find('input').addClass('d-none');
                 $('#container-stackable').removeClass('d-none');
                 $('#container-stackable').find('input').removeClass('d-none');
+                $('#container_return').addClass('d-none');
+                $('#container_return').find('input').addClass('d-none');
             }else{
                 $('#container-guard').removeClass('d-none');
                 $('#container-guard').find('input').removeClass('d-none');
                 $('#container-stackable').addClass('d-none');
                 $('#container-stackable').find('input').addClass('d-none');
+                $('#container_return').removeClass('d-none');
+                $('#container_return').find('input').removeClass('d-none');
             }
 
 

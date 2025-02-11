@@ -312,8 +312,8 @@
                     type="button" data-toggle="modal" data-target="#quote-transport">Cotización Aceptada</button>
 
                 @if (!$quote->transport()->exists())
-                    <a href="{{ url('/freight/create/' . $quote->id) }}"
-                        class="btn btn-sm btn-indigo {{ $quote->state === 'Aceptada' ? '' : 'd-none' }}">Generar Flete</a>
+                    <a href="{{ url('/transport/create/' . $quote->id) }}"
+                        class="btn btn-sm btn-indigo {{ $quote->state === 'Aceptada' ? '' : 'd-none' }}">Generar Transporte</a>
                 @endif
             </div>
         </div>
@@ -354,6 +354,12 @@
                                     type="text" name="cost_guard">
                             </div>
                         @endif
+
+                        <div class="form-group">
+                            <label for="cost_transport">Fecha de retiro</label>
+                            <input type="date" class="form-control" id="withdrawal_date" name="withdrawal_date"
+                                    placeholder="Ingrese el destino">
+                        </div>
 
                        
                     </div>
