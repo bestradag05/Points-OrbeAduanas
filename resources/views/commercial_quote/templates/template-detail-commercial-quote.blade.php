@@ -11,9 +11,12 @@
             <div class="col-12 border-bottom border-bottom-2">
                 <div class="form-group row">
                     <label class="col-sm-4 col-form-label">Nro Cotización: </label>
-                    <div class="col-sm-8">
+                    <div class="col-sm-8 d-inline">
+                        <p class="form-control-plaintext text-indigo d-inline">{{ $comercialQuote->nro_quote_commercial }}</p>
+                        <a href="" class="text-indigo d-inline">
+                            <i class="fas fa-file-pdf"></i>
+                        </a>
 
-                        <p class="form-control-plaintext text-indigo">{{ $comercialQuote->nro_quote_commercial }}</p>
                     </div>
 
                 </div>
@@ -1159,14 +1162,14 @@
 
             $('#modalTransport form').attr('action', '/quote/transport/complete/' + data.id);
 
-            if(data.lcl_fcl != 'FCL'){
+            if (data.lcl_fcl != 'FCL') {
                 $('#container-guard').addClass('d-none');
                 $('#container-guard').find('input').addClass('d-none');
                 $('#container-stackable').removeClass('d-none');
                 $('#container-stackable').find('input').removeClass('d-none');
                 $('#container_return').addClass('d-none');
                 $('#container_return').find('input').addClass('d-none');
-            }else{
+            } else {
                 $('#container-guard').removeClass('d-none');
                 $('#container-guard').find('input').removeClass('d-none');
                 $('#container-stackable').addClass('d-none');
@@ -1188,34 +1191,34 @@
             const inputs = Array.from(form.querySelectorAll('input')).filter(input => input.type !== 'hidden');
 
             inputs.forEach((input) => {
-        // Ignorar campos ocultos (d-none)
-        if (input.closest('.d-none')) {
-            return;
-        }
+                // Ignorar campos ocultos (d-none)
+                if (input.closest('.d-none')) {
+                    return;
+                }
 
-        if (input.type === 'radio') {
-            // Obtener el grupo de radios
-            let radioGroup = form.querySelectorAll(`input[name="${input.name}"]`);
-            let isChecked = Array.from(radioGroup).some(radio => radio.checked);
+                if (input.type === 'radio') {
+                    // Obtener el grupo de radios
+                    let radioGroup = form.querySelectorAll(`input[name="${input.name}"]`);
+                    let isChecked = Array.from(radioGroup).some(radio => radio.checked);
 
-            if (!isChecked) {
-                radioGroup.forEach(radio => radio.classList.add('is-invalid'));
-                isValid = false;
-            } else {
-                radioGroup.forEach(radio => radio.classList.remove('is-invalid'));
-            }
-        } else {
-            // Validar si el campo está vacío (excepto radios)
-            if (input.value.trim() === '') {
-                input.classList.add('is-invalid');
-                isValid = false; // Cambiar bandera si algún campo no es válido
-                showError(input, 'Debe completar este campo');
-            } else {
-                input.classList.remove('is-invalid');
-                hideError(input);
-            }
-        }
-    });
+                    if (!isChecked) {
+                        radioGroup.forEach(radio => radio.classList.add('is-invalid'));
+                        isValid = false;
+                    } else {
+                        radioGroup.forEach(radio => radio.classList.remove('is-invalid'));
+                    }
+                } else {
+                    // Validar si el campo está vacío (excepto radios)
+                    if (input.value.trim() === '') {
+                        input.classList.add('is-invalid');
+                        isValid = false; // Cambiar bandera si algún campo no es válido
+                        showError(input, 'Debe completar este campo');
+                    } else {
+                        input.classList.remove('is-invalid');
+                        hideError(input);
+                    }
+                }
+            });
 
             if (isValid) {
                 form.submit();
