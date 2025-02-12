@@ -116,7 +116,7 @@ class QuoteFreightController extends Controller
 
     public function acceptQuoteFreight(Request $request, $id)
     {
-        dd("ok");
+
         $quote = QuoteFreight::findOrFail($id);
 
         $ocean_freight = $this->parseDouble($request->ocean_freight); 
