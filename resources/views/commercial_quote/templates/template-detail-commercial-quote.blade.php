@@ -13,7 +13,7 @@
                     <label class="col-sm-4 col-form-label">Nro Cotización: </label>
                     <div class="col-sm-8 d-inline">
                         <p class="form-control-plaintext text-indigo d-inline">{{ $comercialQuote->nro_quote_commercial }}</p>
-                        <a href="" class="text-indigo d-inline">
+                        <a href="{{ url('/commercial/quote/getPDF/'.$comercialQuote->id)  }}" class="text-indigo d-inline">
                             <i class="fas fa-file-pdf"></i>
                         </a>
 

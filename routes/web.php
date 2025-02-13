@@ -185,6 +185,7 @@ Route::middleware('auth')->group(function () {
     /* Cotizaciones comerciales */
 
     Route::get('commercial/quote/{id_quote}/detail', [CommercialQuoteController::class, 'getTemplateDetailCommercialQuote'])->name('commercial.quote.detail');
+    Route::get('commercial/quote/getPDF/{id}', [CommercialQuoteController::class, 'getPDF']);
     Route::resource('commercial/quote', CommercialQuoteController::class);
 
 
