@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('code');
             $table->string('description');
+            $table->enum('state', ['Activo', 'Inactivo'])->default('Activo');
             $table->timestamps();
         });
     }

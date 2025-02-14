@@ -702,6 +702,13 @@ return [
             'can' => 'type_shipment.list',
         ],
         [
+            'text' => 'Regimen',
+            'url'  => 'regimes',
+            'icon' => 'fas fa-gavel',
+            'active' => ['regimes', 'regimes*', 'regex:@^content/[0-9]+$@'],
+            'can' => 'regimes.list',
+        ],
+        [
             'text' => 'Tipo de carga',
             'url'  => 'type_load',
             'icon' => 'fas fa-pallet',
