@@ -22,6 +22,7 @@ use App\Http\Controllers\PersonalDocumentController;
 use App\Http\Controllers\PointsController;
 use App\Http\Controllers\QuoteFreightController;
 use App\Http\Controllers\QuoteTransportController;
+use App\Http\Controllers\RegimeController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\RoutingController;
 use App\Http\Controllers\SupplierController;
@@ -116,6 +117,10 @@ Route::middleware('auth')->group(function () {
 
     /* Ciudades */
     Route::resource('state_country', StateCountryController::class);
+
+    /* Regimenes */
+
+    Route::resource('regimes', RegimeController::class);
 
 
     Route::get('freight/pending', [FreightController::class, 'getFreightPending']);

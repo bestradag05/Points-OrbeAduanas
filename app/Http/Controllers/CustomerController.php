@@ -47,7 +47,7 @@ class CustomerController extends Controller
         return view("customer/list-customer", compact("customers", "heads"));
     }
 
-    /**
+    /**bb
      * Show the form for creating a new resource.
      */
     public function create()

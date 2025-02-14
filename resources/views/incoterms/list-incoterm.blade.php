@@ -14,19 +14,21 @@
         @foreach ($incoterms as $incoterm)
             <tr>
                 <td>{{ $loop->iteration }}</td>
-                <td>{{ $incoterm->code }}</td>
-                <td>{{ $incoterm->name }}</td>
-                <td>{{ $incoterm->description }}</td>
-                <td>{{ $incoterm->state }}</td>
-        
+                <td>{{ $incoterm->code}}</td>
+                <td>{{ $incoterm->name}}</td>
+                <td>{{ $incoterm->description}}</td>
+                <td>{{ $incoterm->state}}</td>
                 <td>
-                     <a href="{{ url('/incoterms/'. $incoterm->id . '/edit') }}"> <i class="fa-solid fa-pen-to-square"></i> </a>
+                     @can('incoterms.update')
+                     <a href="{{ url('/incoterms/'. $incoterm->id . '/edit') }}"> <i class="fas fa-edit"></i> </a>
+                     @endcan
+                     @can('incoterms.delete')
                      <form action="{{ url('/incoterms/'.$incoterm->id) }}" class="form-delete" method="POST" style="display: inline;" data-confirm-delete="true">
                         {{ method_field('DELETE') }}
                         @csrf
-                        <button  type="submit" style="border: none; background: none; padding: 0; margin: 0; cursor: pointer;"> <i class="fa-solid fa-trash text-primary"></i> </button>
+                        <button  type="submit" style="border: none; background: none; padding: 0; margin: 0; cursor: pointer;"> <i class="fas fa-trash text-primary"></i> </button>
                     </form>
-                    
+                    @endcan
                 </td>
             </tr>
         @endforeach

@@ -459,46 +459,6 @@ return [
 
         ],
         [
-            'text' => 'Operaciones',
-            'icon' => 'fas fa-fw fa-user-tie',
-            'can' => 'operaciones.list',
-            'submenu' => [
-                [
-                    'text' => 'Puntos pendientes - Flete',
-                    'url' => 'freight/pending',
-                    'icon'  => 'fa fa-exclamation-circle',
-                    'active' => ['freight/pending'],
-                ],
-                [
-                    'text' => 'Todos los puntos - Flete',
-                    'url'  => 'freight',
-                    'icon' => 'fa fa-check-double',
-                    'active' => ['freight'],
-                ],
-                [
-                    'text' => 'Puntos pendientes - Seguro',
-                    'url'  => 'insurance/pending',
-                    'icon' => 'fa fa-exclamation-circle',
-                    'active' => ['insurance/pending'],
-                ],
-                [
-                    'text' => 'Todos los puntos - Seguro',
-                    'url'  => 'insurance',
-                    'icon' => 'fa fa-check-double',
-                    'active' => ['insurance'],
-                ],
-                [
-                    'text' => 'Tipo de Seguro',
-                    'url'  => 'type_insurance',
-                    'icon' => 'fas fa-list-ul',
-                    'active' => ['type_insurance', 'type_insurance*', 'regex:@^content/[0-9]+$@'],
-                    'can' => 'operaciones.type_insurance',
-                ],
-
-            ]
-
-        ],
-        [
             'text' => 'Pricing',
             'icon' => 'fas fa-ship',
             'submenu' => [
@@ -602,21 +562,21 @@ return [
                     'text' => 'Puntos pendientes - Aduanas',
                     'url' => 'additionals/pending/custom',
                     'icon'  => 'fa fa-exclamation-circle',
-                    'active' => ['additionals', 'additionals*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['additionals/pending/custom'],
                     'can' => 'additional.custom'
                 ],
                 [
                     'text' => 'Puntos pendientes - Flete',
                     'url' => 'additionals/pending/freight',
                     'icon'  => 'fa fa-exclamation-circle',
-                    'active' => ['additionals', 'additionals*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['additionals/pending/freight'],
                     'can' => 'additional.freight'
                 ],
                 [
                     'text' => 'Todos los puntos',
                     'url'  => 'additionals',
                     'icon' => 'fa fa-check-double',
-                    'active' => ['additionals', 'additionals*', 'regex:@^content/[0-9]+$@'],
+                    'active' => ['additionals'],
                     'can' => 'additional.listAll'
                 ]
             ]
@@ -700,6 +660,13 @@ return [
             'icon' => 'fas fa-dolly',
             'active' => ['type_shipment', 'type_shipment*', 'regex:@^content/[0-9]+$@'],
             'can' => 'type_shipment.list',
+        ],
+        [
+            'text' => 'Regimen',
+            'url'  => 'regimes',
+            'icon' => 'fas fa-gavel',
+            'active' => ['regimes', 'regimes*', 'regex:@^content/[0-9]+$@'],
+            'can' => 'regimes.list',
         ],
         [
             'text' => 'Tipo de carga',

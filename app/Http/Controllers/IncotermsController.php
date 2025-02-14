@@ -21,11 +21,12 @@ class IncotermsController extends Controller
             'Code',
             'Nombre',
             'Descripcion',
+            'Estado',
             'Acciones'
         ];
 
 
-        return view("incoterms/list-incoterm", compact("incoterms", "heads"));
+        return view('incoterms/list-incoterm', compact('incoterms', "heads"));
     }
 
     /**

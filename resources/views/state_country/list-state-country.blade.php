@@ -9,8 +9,8 @@
           
         </div>
     </div>
-
 @stop
+
 @section('dinamic-content')
     <x-adminlte-datatable id="table1" :heads="$heads">
         @foreach ($statecountrys as $stateCountry)

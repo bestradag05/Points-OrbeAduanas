@@ -34,7 +34,7 @@
                 @if ($rol->name !== 'Super-Admin')
                     <td>
                         <a href="{{ url('/roles/' . $rol->id . '/edit') }}"> <i class="fa-solid fa-pen-to-square"></i> </a>
-                        <form action="{{ url('/roles/' . $rol->id) }}" class="form-delete" method="POST"
+                        <form action="{{ url('/roles/' . $rol->id) }}" class="form-delete" method="POST" 
                             style="display: inline;" data-confirm-delete="true">
                             {{ method_field('DELETE') }}
                             @csrf
