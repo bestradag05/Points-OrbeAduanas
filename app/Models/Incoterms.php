@@ -11,7 +11,7 @@ class Incoterms extends Model
 
     protected $table = 'incoterms';
 
-    protected $fillable = ['code', 'name', 'description', 'state'];
+    protected $fillable = ['code', 'name', 'state'];
 
     
 
