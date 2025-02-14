@@ -17,7 +17,9 @@ class QuoteTransport extends Model
         'delivery',
         'container_return',
         'gang',
+        'cost_gang',
         'guard',
+        'cost_guard',
         'commodity',
         'packaging_type',
         'load_type',
@@ -31,6 +33,8 @@ class QuoteTransport extends Model
         'lcl_fcl',
         'id_type_shipment',
         'cost_transport',
+        'total_transport',
+        'withdrawal_date',
         'observations',
         'state',
         'nro_operation',
@@ -96,5 +100,10 @@ class QuoteTransport extends Model
     public function type_shipment()
     {
         return $this->belongsTo(TypeShipment::class, 'id_type_shipment', 'id');
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(MessageQuoteTransport::class, 'quote_transport_id', 'id');
     }
 }

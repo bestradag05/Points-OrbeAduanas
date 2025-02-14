@@ -1,249 +1,233 @@
-    <div class="row">
+<div class="row">
 
+
+    {{-- <input type="hidden" name="nro_operation"
+        value="{{ isset($routing->nro_operation) ? $routing->nro_operation : '' }}">
+    <input type="hidden" name="id_quote_freight" value="{{ isset($quote->id) ? $quote->id : '' }}"> --}}
+
+    <input type="hidden" name="nro_quote_commercial"
+        value="{{ isset($commercial_quote->nro_quote_commercial) ? $commercial_quote->nro_quote_commercial : '' }}">
+    <input type="hidden" name="id_quote_transport" value="{{ isset($quote->id) ? $quote->id : '' }}">
+
+    {{-- <input type="hidden" name="typeService" id="typeService"> --}}
+
+
+    <div class="col-6">
+        <div class="form-group">
+            <label for="utility">Recojo</label>
+            <input type="text" class="form-control" id="pick_up" name="pick_up" @readonly(true)
+                placeholder="Ingrese la direccion de recojo"
+                value="{{ isset($quote->pick_up) ? $quote->pick_up : old('pick_up') }}">
+        </div>
+    </div>
+
+    <div class="col-6">
+        <div class="form-group">
+            <label for="utility">Entrega</label>
+            <input type="text" class="form-control" id="delivery" name="delivery" @readonly(true)
+                placeholder="Ingrese la direccion de entrega"
+                value="{{ isset($quote->delivery) ? $quote->delivery : old('delivery') }}">
+
+        </div>
+    </div>
+
+    @if ($quote->container_return)
+        <div class="col-6">
+            <div class="form-group">
+                <label for="utility">Devolucion de contenedor</label>
+                <input type="text" class="form-control" id="delivery" name="container_return" @readonly(true)
+                    placeholder="Ingrese la devolucion del contenedor"
+                    value="{{ isset($quote->container_return) ? $quote->container_return : old('container_return') }}">
+            </div>
+        </div>
+    @endif
+
+
+    <div class="col-6">
+        <div class="form-group">
+            <label for="utility">Fecha de retiro</label>
+            <input type="text" class="form-control" id="delivery" name="withdrawal_date" @readonly(true)
+                placeholder="Fecha de retiro"
+                value="{{ isset($quote->withdrawal_date) ? \Carbon\Carbon::parse($quote->withdrawal_date)->format('d/m/Y') : old('withdrawal_date') }}">
+        </div>
+    </div>
+
+
+    <div class="col-12">
+        <hr>
+    </div>
+
+    <div id="formConceptsTransport" class="formConcepts row">
+        <div class="col-4">
+
+            <x-adminlte-select2 name="concept" id="concept_transport" label="Conceptos"
+                data-placeholder="Seleccione un concepto...">
+                <option />
+                @foreach ($concepts as $concept)
+                    @if ($concept->typeService->name == 'Transporte' && $commercial_quote->type_shipment->id == $concept->id_type_shipment)
+                        @php
+                            // Verificar si el concepto ya está en conceptsTransport
+                            $exists = collect($conceptsTransport)->contains('name', $concept->name);
+                        @endphp
+
+                        @if (!$exists)
+                            <option value="{{ $concept->id }}">{{ $concept->name }}</option>
+                        @endif
+                    @endif
+                @endforeach
+            </x-adminlte-select2>
+
+        </div>
         <div class="col-4">
             <div class="form-group">
-                <label for="transport_value">Valor del Transporte</label>
-
+                <label for="value_concept">Valor del neto del concepto</label>
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <span class="input-group-text text-bold">
                             $
                         </span>
                     </div>
-                    <input type="text" class="form-control CurrencyInput" id="transport_value" name="transport_value"
-                        onchange="updateTransportTotal(this)" data-type="currency" placeholder="Ingrese valor del flete"
-                        @readonly(true) value="{{ isset($quote->cost_transport) ? $quote->cost_transport : '' }}">
-
-                    @error('transport_value')
-                        <div class="text-danger">{{ $message }}</div>
-                    @enderror
+                    <input type="text" class="form-control CurrencyInput " name="value_concept" data-type="currency"
+                        placeholder="Ingrese valor del concepto" value="">
                 </div>
-
             </div>
+
         </div>
 
         <div class="col-4">
             <div class="form-group">
-                <label for="load_value">Valor ha agregar</label>
-
+                <label for="value_concept">Valor ha agregar</label>
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <span class="input-group-text text-bold">
                             $
                         </span>
                     </div>
-                    <input type="text" class="form-control CurrencyInput" id="transport_added" name="transport_added"
-                        data-type="currency" placeholder="Ingrese valor de la carga"
-                        onchange="updateTransportAddedTotal(this)">
-
+                    <input type="text" class="form-control CurrencyInput " name="value_added" data-type="currency"
+                        placeholder="Ingrese valor agregado" value="0">
                 </div>
-
-            </div>
-        </div>
-        <div class="col-4">
-            <div class="form-group">
-                <label for="load_value">Puntos</label>
-
-                <div class="input-group">
-                    <input type="number" class="form-control" id="additional_points" name="additional_points"
-                        min="0" oninput="addPointsTransport(this)">
-                </div>
-
-            </div>
-        </div>
-
-
-
-        <div class="col-4">
-
-            <div class="form-group">
-                <label for="origin">Recojo</label>
-                <input type="text" class="form-control" id="origin" name="origin" placeholder="Ingrese el origin"
-                    @readonly(true) value="{{ isset($quote->pick_up) ? $quote->pick_up : '' }}">
-
-                @error('origin')
-                    <div class="text-danger">{{ $message }}</div>
-                @enderror
-
             </div>
 
         </div>
-        <div class="col-4">
-
-            <div class="form-group">
-                <label for="destination">Destino</label>
-
-                <input type="text" class="form-control" id="destination" name="destination"
-                    placeholder="Ingrese el destino" @readonly(true)
-                    value="{{ isset($quote->delivery) ? $quote->delivery : '' }}">
-
-
-                @error('destination')
-                    <div class="text-danger">{{ $message }}</div>
-                @enderror
-
-            </div>
-
-        </div>
-        <div class="col-4">
-
-
-            <div class="form-group">
-                <label for="withdrawal_date">Fecha de retiro</label>
-
-
-                <input type="date" class="form-control" id="withdrawal_date" name="withdrawal_date"
-                    placeholder="Ingrese el destino" @readonly(true)
-                    value="{{ isset($quote->withdrawal_date) ? $quote->withdrawal_date : '' }}">
-
-
-                @error('withdrawal_date')
-                    <div class="text-danger">{{ $message }}</div>
-                @enderror
-
-            </div>
+        <div class="col-12 d-flex justify-content-center align-items-center pt-3 mb-2">
+            <button class="btn btn-indigo" type="button" id="btnAddConcept" onclick="addConcept(this)">
+                Agregar
+            </button>
 
         </div>
 
-        <div id="formConceptsTransport" class="col-12 formConcepts row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 10px">#</th>
+                    <th>Concepto</th>
+                    <th>Valor del concepto</th>
+                    <th>Valor agregado</th>
+                    <th>Puntos Adicionales</th>
+                    <th>x</th>
+                </tr>
+            </thead>
+            <tbody id="tbodyFlete">
 
-            @if (!isset($quote->cost_transport))
-                <div class="col-3">
 
-                    <x-adminlte-select2 name="concept" id="concept_transport" label="Conceptos"
-                        data-placeholder="Seleccione un concepto...">
-                        <option />
-                        @foreach ($concepts as $concept)
-                            @if ($concept->typeService->name == 'Transporte' && $quote->type_shipment->id == $concept->id_type_shipment)
-                                <option value="{{ $concept->id }}">{{ $concept->name }}</option>
-                            @endif
-                        @endforeach
-                    </x-adminlte-select2>
+            </tbody>
+        </table>
 
+
+        <div class="row w-100 justify-content-end">
+
+            <div class="col-4 row">
+                <label for="total" class="col-sm-4 col-form-label">Total:</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="total" id="total" value="0.00"
+                        @readonly(true)>
                 </div>
-                <div class="col-3">
-                    <div class="form-group">
-                        <label for="value_concept">Valor del neto del concepto</label>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text text-bold">
-                                    $
-                                </span>
-                            </div>
-                            <input type="text" class="form-control CurrencyInput " name="value_concept"
-                                data-type="currency" placeholder="Ingrese valor del concepto" value="">
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="col-3">
-                    <div class="form-group">
-                        <label for="value_concept">Valor ha agregar</label>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text text-bold">
-                                    $
-                                </span>
-                            </div>
-                            <input type="text" class="form-control CurrencyInput " name="value_added"
-                                data-type="currency" placeholder="Ingrese valor agregado" value="0">
-                        </div>
-                    </div>
-
-                </div>
-                <div class="col-2 d-flex justify-content-center align-items-center pt-3 mb-2">
-                    <button class="btn btn-indigo" type="button" id="btnAddConcept" onclick="addConcept(this)">
-                        Agregar
-                    </button>
-
-                </div>
-            @endif
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th style="width: 10px">#</th>
-                        <th>Concepto</th>
-                        <th>Valor del concepto</th>
-                        <th>Valor agregado</th>
-                        <th>Puntos Adicionales</th>
-                        <th>x</th>
-                    </tr>
-                </thead>
-                <tbody id="tbodyTransport">
-
-
-                </tbody>
-            </table>
-
-            <div class="row w-100 justify-content-end">
-
-                <div class="col-4 row">
-                    <label for="total" class="col-sm-4 col-form-label">Total:</label>
-                    <div class="col-sm-8">
-                        <input type="text" class="form-control" name="total" id="total" value="0.00"
-                            @readonly(true)>
-                    </div>
-                </div>
-
             </div>
-            <input type="hidden" name="concepts" id="concepts">
-            <input type="hidden" name="id_quote_transport" id="id_quote_transport" value="{{$quote->id}}">
 
         </div>
 
     </div>
 
+
+
     <div class="container text-center mt-5">
-        <input class="btn btn-primary" onclick="submitForm()"
-            value="{{ $formMode === 'edit' ? 'Actualizar' : 'Guardar' }}">
+        <input class="btn btn-primary" type="submit" value="{{ $formMode === 'edit' ? 'Actualizar' : 'Guardar' }}">
     </div>
 
     @push('scripts')
         <script>
-            let conceptsArray = {};
+            let conceptsArray = [];
             let TotalConcepts = 0;
-            let valuea_added = 0;
-            let transporte = parseFloat($('#transport_value').val() || 0);
-
-            let cost_gang = @json($quote->cost_gang ?? null);
-            let cost_guard = @json($quote->cost_guard ?? null);
+            let total = 0;
+            let countConcepts = 0;
+            let conceptTransport = null
 
 
+            //PAra editar, verificamos si tiene conceptos el flete: 
 
-            calcTotal(TotalConcepts, transporte, valuea_added);
+            @if (isset($formMode) && $formMode === 'edit')
 
+                conceptTransport = @json($conceptTransport);
+                //Obtenemos los valores del seguro para sumarlo al total
 
-            function updateTransportAddedTotal(element) {
-
-
-                if (element.value === '') {
-                    valuea_added = 0;
-                } else {
-                    valuea_added = parseFloat(element.value.replace(/,/g, ''));
-                }
-
-                $(`#additional_points`).val("");
+                @if (isset($freight->concepts))
 
 
-                calcTotal(TotalConcepts, transporte, valuea_added);
-            }
+                    let concepts = @json($freight->concepts)
 
-            function calcTotal(TotalConcepts, transporte, valuea_added) {
+                    concepts.forEach((concept, index) => {
 
-                total = TotalConcepts + transporte + valuea_added;
+                        if (concept.name != "SEGURO") {
+
+                            conceptsArray.push({
+                                'id': concept.id,
+                                'name': concept.name,
+                                'value': formatValue(concept.concept_freight.value_concept),
+                                'added': formatValue(concept.concept_freight.value_concept_added),
+                                'pa': concept.concept_freight.additional_points > 0 ? concept.concept_freight
+                                    .additional_points : 0
+                            });
+
+                        }
+
+                    });
+                @endif
+            @else
+
+                value_transport = @json($quote->cost_transport);
+                conceptTransport = @json($conceptsTransport);
+
+
+                conceptTransport.forEach(concept => {
+                    conceptsArray.push({
+                        'id': concept.id,
+                        'name': concept.name,
+                        'value': formatValue(concept.cost),
+                        'added': 0,
+                    });
+                });
+            @endif
+
+
+            updateTable(conceptsArray);
+
+
+            function calcTotal(TotalConcepts) {
+
+                total = TotalConcepts;
 
                 //Buscamos dentro del contenedor el campo total
 
-                let inputTotal = $(`#total`);
+                let inputTotal = $('#total');
 
                 inputTotal.val(total.toFixed(2));
 
             }
 
+
             function addConcept(buton) {
 
-                let divConcepts = $('#formConceptsTransport');
+                let divConcepts = $('.formConcepts');
                 const inputs = divConcepts.find('input:not(.points), select');
 
                 // Busca todos los campos de entrada dentro del formulario
@@ -264,16 +248,32 @@
                 if (camposInvalidos === 0) {
                     // Si no hay campos inválidos, envía el formulario
 
-                    conceptsArray[inputs[0].value] = {
-                        'id': inputs[0].value,
-                        'name': inputs[0].options[inputs[0].selectedIndex].text,
-                        'value': formatValue(inputs[1].value),
-                        'added': formatValue(inputs[2].value),
+                    //Verificamos si el concepto ya existe en el array 
+
+                    const index = conceptsArray.findIndex(item => item.id === parseInt(inputs[0].value));
+
+                    if (index !== -1) {
+
+                        conceptsArray[index] = {
+                            'id': parseInt(inputs[0].value),
+                            'name': inputs[0].options[inputs[0].selectedIndex].text,
+                            'value': formatValue(inputs[1].value),
+                            'added': formatValue(inputs[2].value),
+                        };
+
+                    } else {
+
+                        conceptsArray.push({
+                            'id': parseInt(inputs[0].value),
+                            'name': inputs[0].options[inputs[0].selectedIndex].text,
+                            'value': formatValue(inputs[1].value),
+                            'added': formatValue(inputs[2].value),
+                        });
                     }
 
 
-                    updateTable(conceptsArray);
 
+                    updateTable(conceptsArray);
 
                     inputs[0].value = '';
                     inputs[1].value = '';
@@ -282,7 +282,9 @@
             };
 
 
-            function updateTable(conceptsArray, cost_transport = null) {
+
+
+            function updateTable(conceptsArray) {
 
                 let tbodyRouting = $(`#formConceptsTransport`).find('tbody')[0];
 
@@ -295,6 +297,7 @@
                 let contador = 0;
 
                 for (let clave in conceptsArray) {
+
 
                     let item = conceptsArray[clave];
 
@@ -319,13 +322,15 @@
                         // Insertar el valor en la cuarta celda de la fila
 
                         let celdaAdded = fila.insertCell(3);
-                        if (cost_transport) {
-                            // Si cost_transport existe, muestra un input editable
+
+
+                        if (conceptTransport.some(concept => concept.name === item.name)) {
+                            // Si concepto existe, muestra un input editable
                             let inputAdded = document.createElement('input');
-                            inputAdded.type = 'number';
+                            inputAdded.type = 'text';
                             inputAdded.value = item.added;
-                            inputAdded.min = 0;
-                            inputAdded.classList.add('form-control');
+                            inputAdded.classList.add('form-control', 'CurrencyInput'); // Agregar clases
+                            inputAdded.setAttribute('data-type', 'currency'); // Establecer el atributo data-type
                             celdaAdded.appendChild(inputAdded);
 
                             inputAdded.addEventListener('input', (e) => {
@@ -347,11 +352,12 @@
 
                                 // Recalcula el total
                                 TotalConcepts = calculateTotal(conceptsArray);
-                                calcTotal(TotalConcepts, transporte, valuea_added);
+
+                                calcTotal(TotalConcepts);
 
                             });
                         } else {
-                            // Si cost_transport no existe, muestra el valor como texto plano
+                            // Si ocean_freight no existe, muestra el valor como texto plano
                             celdaAdded.textContent = item.added;
                         }
 
@@ -367,34 +373,31 @@
                         inputPA.min = 0;
                         celdaPA.appendChild(inputPA);
 
+                        inputPA.addEventListener('keydown', (e) => {
+                            // Permitimos solo las flechas (arriba: 38, abajo: 40), Tab (9), Enter (13)
+                            const allowedKeys = ['ArrowUp', 'ArrowDown', 'Tab', 'Enter'];
+                            if (!allowedKeys.includes(e.key)) {
+                                e.preventDefault();
+                            }
+                        });
+
 
                         inputPA.addEventListener('input', (e) => {
 
-                            if (cost_transport) {
+                            conceptsArray[clave].pa = e.target.value
 
-                                conceptsArray[clave].pa = e.target.value
 
-                            } else {
-
-                                e.preventDefault();
-                            }
                         });
 
                         if (Math.floor(item.added / 45) === 0) {
 
                             inputPA.max = 0;
                         } else {
-                            inputPA.addEventListener('input', (e) => {
-                                // Indicamos cual es el maximo de puntos que puede asignarle
-                                inputPA.max = Math.floor(item.added / 45);
-                                // Agregamos este valor del punto al objeto, para que cuando dibujemos la tabla nuevamente, no se eliminen
-                                conceptsArray[clave].pa = e.target.value
-                            })
+                            inputPA.max = Math.floor(item.added / 45);
                         }
 
 
-
-                        if (!cost_transport) {
+                        if (!conceptTransport.some(concept => concept.name === item.name)) {
 
                             // Insertar un botón para eliminar la fila en la cuarta celda de la fila
                             let celdaEliminar = fila.insertCell(5);
@@ -407,7 +410,7 @@
                                 let fila = this.parentNode.parentNode;
                                 let indice = fila.rowIndex -
                                     1; // Restar 1 porque el índice de las filas en tbody comienza en 0
-                                delete conceptsArray[Object.keys(conceptsArray)[indice]];
+                                conceptsArray.splice(indice, 1); // Eliminar el elemento en el índice correspondiente
                                 updateTable(conceptsArray);
                             });
                             celdaEliminar.appendChild(botonEliminar);
@@ -420,12 +423,11 @@
                     }
                 }
 
-                calcTotal(TotalConcepts, transporte, valuea_added);
+                calcTotal(TotalConcepts);
 
 
 
             }
-
 
 
             function calculateTotal(conceptsArray) {
@@ -435,90 +437,24 @@
             }
 
 
-
-
-            const addPointsTransport = (input) => {
-
-
-                let value_added = $(`#transport_added`).val();
-
-
-                if (!value_added.trim()) {
-                    input.value = 0;
-                    input.max = 0;
-                } else {
-
-                    let value_added_number = parseFloat(value_added.replace(/,/g, ''));
-
-                    //Indicamos el modal donde estemos trabajando y luego seleccionamos el campo.
-
-                    if (Math.floor(value_added_number / 45) === 0) {
-                        input.value = 0;
-                        input.max = 0;
-
-                    } else {
-                        input.max = Math.floor(value_added_number / 45);
-                    }
-
-
-                }
-
-
-            }
-
-
-
-            @if (isset($quote->cost_gang))
-
-                if (cost_gang && cost_gang != '') {
-                    let id_gang_concept = @json($params['id_gang_concept']);
-
-                    conceptsArray[id_gang_concept] = {
-                        'id': id_gang_concept,
-                        'name': 'CUADRILLA',
-                        'value': formatValue(cost_gang),
-                        'added': 0,
-                    }
-
-                    updateTable(conceptsArray, transporte);
-
-                }
-            @endif
-
-
-            @if (isset($quote->cost_guard))
-
-                if (cost_guard && cost_guard != '') {
-                    let id_guard_concept = @json($params['id_guard_concept']);
-
-                    conceptsArray[id_guard_concept] = {
-                        'id': id_guard_concept,
-                        'name': 'RESGUARDO',
-                        'value': formatValue(cost_guard),
-                        'added': 0,
-                    }
-
-                    updateTable(conceptsArray, transporte);
-
-                }
-            @endif
-
-
-
             function formatValue(value) {
                 return value.replace(/,/g, '');
             }
 
 
-            function submitForm() {
 
+
+            $('#formTransport').on('submit', (e) => {
+
+                e.preventDefault();
 
                 let form = $('#formTransport');
-
                 let conceptops = JSON.stringify(conceptsArray);
 
                 form.append(`<input type="hidden" name="concepts" value='${conceptops}' />`);
+
                 form[0].submit();
-            }
+
+            });
         </script>
     @endpush

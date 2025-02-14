@@ -14,6 +14,8 @@ use App\Models\TypeInsurance;
 use App\Models\TypeLoad;
 use App\Models\TypeService;
 use App\Models\TypeShipment;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use Barryvdh\DomPDF\PDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -39,6 +41,7 @@ class CommercialQuoteController extends Controller
                 ->where('state', 'Activo')
                 ->get();
         }
+
 
 
 
@@ -162,7 +165,7 @@ class CommercialQuoteController extends Controller
 
     public function createQuoteTransport($commercialQuote)
     {
-         QuoteTransport::create([
+        QuoteTransport::create([
             /* 'pick_up' => $request->pick_up,
             'delivery' => $request->delivery,
             'container_return' => $request->container_return,
@@ -250,6 +253,44 @@ class CommercialQuoteController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+
+    public function getPDF($id)
+    {
+
+        $commercialQuote = CommercialQuote::with([
+            'quote_freight' => function ($query) {
+                $query->where('state', 'Aceptada');
+            },
+            'quote_transport' => function ($query) {
+                $query->where('state', 'Aceptada');
+            }
+        ])->find($id);
+
+ 
+
+        $freightConcepts = [];
+        $transportConcepts = [];
+
+
+        if ($commercialQuote->quote_freight->isNotEmpty()) {
+            $freightConcepts = $commercialQuote->quote_freight->first()?->freight->concepts;
+        }
+
+        if ($commercialQuote->quote_transport->isNotEmpty()) {
+            $transportConcepts = $commercialQuote->quote_transport->first()?->transport->concepts;
+        }
+
+    
+        $commercialQuoteArray = $commercialQuote->toArray(); // Convierte el modelo a un array
+
+
+
+        $pdf = FacadePdf::loadView('commercial_quote.pdf.commercial_quote_pdf', compact('commercialQuote', 'freightConcepts', 'transportConcepts'));
+
+        return $pdf->stream('Cotizacion Comercial.pdf'); // Muestra el PDF en el navegador
+
     }
 
     public function validateForm($request, $id)

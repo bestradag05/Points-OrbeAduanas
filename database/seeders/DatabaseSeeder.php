@@ -291,5 +291,7 @@ class DatabaseSeeder extends Seeder
         Concepts::create(['name' => 'SEGURO', 'id_type_shipment' => 8, 'id_type_service' => 2]);
         Concepts::create(['name' => 'SEGURO', 'id_type_shipment' => 21, 'id_type_service' => 1]);
         Concepts::create(['name' => 'SEGURO', 'id_type_shipment' => 21, 'id_type_service' => 2]);
+        Concepts::create(['name' => 'TRANSPORTE', 'id_type_shipment' => 21, 'id_type_service' => 3]);
+        Concepts::create(['name' => 'TRANSPORTE', 'id_type_shipment' => 8, 'id_type_service' => 3]);
     }
 }

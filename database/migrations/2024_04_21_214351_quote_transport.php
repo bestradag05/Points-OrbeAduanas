@@ -16,8 +16,11 @@ return new class extends Migration
             $table->string('nro_quote')->unique();
             $table->string('pick_up')->nullable();
             $table->string('delivery')->nullable();
+            $table->string('container_return')->nullable();
             $table->string('gang')->nullable();
+            $table->decimal('cost_gang', 8, 2)->nullable();
             $table->string('guard')->nullable();
+            $table->decimal('cost_guard', 8, 2)->nullable();
             $table->string('commodity')->nullable();
             $table->string('packaging_type')->nullable();
             $table->string('load_type')->nullable();
@@ -32,6 +35,8 @@ return new class extends Migration
             $table->unsignedBigInteger('id_type_shipment')->nullable();
             $table->text('observations')->nullable();
             $table->decimal('cost_transport', 8, 2)->nullable();
+            $table->decimal('total_transport', 8, 2)->nullable();
+            $table->date('withdrawal_date')->nullable();
             $table->string('nro_operation')->nullable();
             $table->string('nro_quote_commercial');
             $table->enum('state', ['Pendiente', 'Respondido', 'Aceptada', 'Reajuste', 'Observado', 'Rechazada'])->default('pendiente');

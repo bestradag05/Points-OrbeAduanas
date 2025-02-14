@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IncotermsController;
 use App\Http\Controllers\InsuranceController;
 use App\Http\Controllers\MessageQuoteFreightController;
+use App\Http\Controllers\MessageQuoteTransportController;
 use App\Http\Controllers\ModalityController;
 use App\Http\Controllers\PermissionsController;
 use App\Http\Controllers\PersonalController;
@@ -30,6 +31,7 @@ use App\Http\Controllers\TypeInsuranceController;
 use App\Http\Controllers\TypeLoadController;
 use App\Http\Controllers\TypeShipmentController;
 use App\Http\Controllers\UserController;
+use App\Models\MessageQuoteTransport;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 
@@ -126,11 +128,12 @@ Route::middleware('auth')->group(function () {
     Route::get('freight/{id}/point', [FreightController::class, 'getTemplateGeneratePointFreight']);
     Route::patch('freight/{id}/point', [FreightController::class, 'updatePointFreight']);
     Route::resource('freight', FreightController::class);
-    Route::get('freight/create/{quoteId}', [FreightController::class, 'createFreight'] );
+    Route::get('freight/create/{quoteId}', [FreightController::class, 'createFreight']);
 
     Route::get('transport/pending', [TransportController::class, 'getTransportPending']);
     Route::get('transport/personal', [TransportController::class, 'getTransportPersonal']);
     Route::resource('transport', TransportController::class);
+    Route::get('transport/create/{quoteId}', [TransportController::class, 'createTransport']);
 
     Route::get('insurance/pending', [InsuranceController::class, 'getInsurancePending']);
     Route::resource('insurance', InsuranceController::class);
@@ -148,18 +151,24 @@ Route::middleware('auth')->group(function () {
 
     /* Cotizaciones Transporte */
     Route::get('quote/transport/personal', [QuoteTransportController::class, 'getQuoteTransportPersonal']);
+    Route::patch('quote/transport/complete/{id}', [QuoteTransportController::class, 'updateQuoteTransport']);
     Route::post('quote/transport/file-upload-documents', [QuoteTransportController::class, 'uploadFilesQuoteTransport']);
     Route::post('quote/transport/file-delete-documents', [QuoteTransportController::class, 'deleteFilesQuoteTransport']);
 
     Route::resource('quote/transport', QuoteTransportController::class)->names([
         'create' => 'quote.transport.create',
     ]);
+
+    /* Mensaje de cotizaciones de flete */
+
+    Route::resource('quote/transport/message', MessageQuoteTransportController::class);
+
     Route::get('quote/search-routing/{nro_operation}', [QuoteTransportController::class, 'searchRouting']);
     Route::patch('quote/transport/cost/{id}', [QuoteTransportController::class, 'costTransport']);
-    Route::patch('quote/transport/cost/{action}/{id}', [QuoteTransportController::class, 'handleTransportAction']);
+  /*   Route::patch('quote/transport/cost/{action}/{id}', [QuoteTransportController::class, 'handleTransportAction']); */
     Route::get('quote/transport/cost/reject/{id}', [QuoteTransportController::class, 'rejectQuoteTransport']);
     Route::get('quote/transport/cost/keep/{id}', [QuoteTransportController::class, 'keepQuoteTransport']);
-    Route::get('quote/transport/cost/accept/{id}', [QuoteTransportController::class, 'acceptQuoteTransport']);
+    Route::patch('quote/transport/cost/accept/{id}', [QuoteTransportController::class, 'acceptQuoteTransport']);
     Route::get('quote/transport/cost/corrected/{id}', [QuoteTransportController::class, 'correctedQuoteTransport']);
 
     /* Cotizaciones de flete */
@@ -181,10 +190,11 @@ Route::middleware('auth')->group(function () {
     /* Cotizaciones comerciales */
 
     Route::get('commercial/quote/{id_quote}/detail', [CommercialQuoteController::class, 'getTemplateDetailCommercialQuote'])->name('commercial.quote.detail');
+    Route::get('commercial/quote/getPDF/{id}', [CommercialQuoteController::class, 'getPDF']);
     Route::resource('commercial/quote', CommercialQuoteController::class);
 
 
-    /* Reportes */  
+    /* Reportes */
 
     Route::get('points/export/customs/{type}', [PointsController::class, 'exportCustom']);
     Route::get('points/export/customs/{type}', [PointsController::class, 'exportCustom']);

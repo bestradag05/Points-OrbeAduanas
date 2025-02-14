@@ -39,7 +39,7 @@
 
                 </div>
                 <div class="card-footer">
-                    <form action="/quote/freight/message" method="POST">
+                    <form action="/quote/transport/message" method="POST">
                         @csrf
                         <div class="row">
                             <div class="col-12">
@@ -47,8 +47,7 @@
                                 <input type="hidden" name="quote_id" value="{{ $quote->id }}">
                             </div>
                             <div class="col-12 row align-items-center justify-content-center mt-2">
-                                <button type="submit"
-                                    {{ $quote->state === 'Borrador' || $quote->state === 'Aceptada' ? 'disabled' : '' }}
+                                <button type="submit" {{ $quote->state === 'Aceptada' ? 'disabled' : '' }}
                                     class="btn btn-indigo">Enviar</button>
                             </div>
                         </div>
@@ -61,8 +60,8 @@
 
             <br>
             <div class="">
-                <p class="text-sm">N° Operacion :
-                    <b class="d-block">{{ $quote->nro_operation }}</b>
+                <p class="text-sm">N° Cotizacion General :
+                    <b class="d-block">{{ $quote->nro_quote_commercial }}</b>
                 </p>
             </div>
 
@@ -86,17 +85,17 @@
             <div class="row text-muted">
                 <div class="col-6">
                     <p class="text-sm">Origen :
-                        <b class="d-block">{{ $quote->origin }}</b>
+                        <b class="d-block">{{ $quote->pick_up }}</b>
                     </p>
                 </div>
                 <div class="col-6">
                     <p class="text-sm">Destino :
-                        <b class="d-block">{{ $quote->destination }}</b>
+                        <b class="d-block">{{ $quote->delivery }}</b>
                     </p>
                 </div>
             </div>
             <div class="row text-muted">
-               {{--  <div class="col-6">
+                {{--  <div class="col-6">
                     <p class="text-sm">Tipo de embarque :
                         <b class="d-block">{{ $quote->routing->type_shipment->description }}
                             {{ $quote->routing->lcl_fcl != null ? '(' . $quote->routing->lcl_fcl . ')' : '' }}</b>
@@ -126,7 +125,7 @@
                     </p>
                 </div>
             </div>
-           {{--  @if ($quote->routing->lcl_fcl === 'LCL' || $quote->routing->lcl_fcl === null)
+            {{--  @if ($quote->routing->lcl_fcl === 'LCL' || $quote->routing->lcl_fcl === null)
                 <div class="row text-muted">
                     <div class="col-6">
                         <p class="text-sm">Cubicaje/KGV :
@@ -155,32 +154,59 @@
             @endif --}}
 
             @if ($quote->commercial_quote->lcl_fcl === 'LCL' || $quote->commercial_quote->lcl_fcl === null)
-            <div class="row text-muted">
-                <div class="col-6">
-                    <p class="text-sm">Cubicaje/KGV :
-                        <b class="d-block">{{ $quote->cubage_kgv }}</b>
-                    </p>
+                <div class="row text-muted">
+                    <div class="col-6">
+                        <p class="text-sm">Cubicaje/KGV :
+                            <b class="d-block">{{ $quote->cubage_kgv }}</b>
+                        </p>
+                    </div>
+                    <div class="col-6">
+                        <p class="text-sm">Peso total :
+                            <b class="d-block">{{ $quote->total_weight }}</b>
+                        </p>
+                    </div>
                 </div>
-                <div class="col-6">
-                    <p class="text-sm">Peso total :
-                        <b class="d-block">{{ $quote->total_weight }}</b>
-                    </p>
+                <div class="row text-muted">
+                    <div class="col-6">
+                        <p class="text-sm">Cuadrilla :
+                            <b class="d-block">{{ $quote->gang }}</b>
+                        </p>
+                    </div>
+                    <div class="col-6">
+                        <p class="text-sm">Apilable :
+                            <b class="d-block">{{ $quote->stackable }}</b>
+                        </p>
+                    </div>
                 </div>
-            </div>
-        @else
-            <div class="row text-muted">
-                <div class="col-6">
-                    <p class="text-sm">Tipo de contenedor :
-                        <b class="d-block">{{ $quote->container_type }}</b>
-                    </p>
+            @else
+                <div class="row text-muted">
+                    <div class="col-6">
+                        <p class="text-sm">Tipo de contenedor :
+                            <b class="d-block">{{ $quote->container_type }}</b>
+                        </p>
+                    </div>
+                    <div class="col-6">
+                        <p class="text-sm">Toneladas/Kilogramos :
+                            <b class="d-block">{{ $quote->ton_kilogram }}</b>
+                        </p>
+                    </div>
                 </div>
-                <div class="col-6">
-                    <p class="text-sm">Toneladas/Kilogramos :
-                        <b class="d-block">{{ $quote->ton_kilogram }}</b>
-                    </p>
+
+                <div class="row text-muted">
+                    <div class="col-6">
+                        <p class="text-sm">Cuadrilla :
+                            <b class="d-block">{{ $quote->gang }}</b>
+                        </p>
+                    </div>
+                    <div class="col-6">
+                        <p class="text-sm">Resguardo :
+                            <b class="d-block">{{ $quote->guard }}</b>
+                        </p>
+                    </div>
                 </div>
-            </div>
-        @endif
+            @endif
+
+
 
             <div class="row text-muted mt-3">
                 <div class="col-6">
@@ -283,51 +309,59 @@
                     Cotización</a>
                 <button
                     class="btn btn-sm btn-success {{ $quote->state === 'Borrador' || $quote->state === 'Aceptada' ? 'd-none' : '' }}"
-                    type="button" data-toggle="modal" data-target="#quote-freight">Cotización Aceptada</button>
+                    type="button" data-toggle="modal" data-target="#quote-transport">Cotización Aceptada</button>
 
-                @if (!$quote->freight()->exists())
-                    <a href="{{ url('/freight/create/' . $quote->id) }}"
-                        class="btn btn-sm btn-indigo {{ $quote->state === 'Aceptada' ? '' : 'd-none' }}">Generar Flete</a>
+                @if (!$quote->transport()->exists())
+                    <a href="{{ url('/transport/create/' . $quote->id) }}"
+                        class="btn btn-sm btn-indigo {{ $quote->state === 'Aceptada' ? '' : 'd-none' }}">Generar Transporte</a>
                 @endif
             </div>
         </div>
     </div>
 
 
-    <div id="quote-freight" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="quote-freight-title"
+    <div id="quote-transport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="quote-transport-title"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <form action={{ url('/quote/freight/cost/accept/' . $quote->id) }} id="sendFreightCost" method="POST">
+                <form action={{ url('/quote/transport/cost/accept/' . $quote->id) }} id="sendTransportCost"
+                    method="POST">
                     {{ method_field('PATCH') }}
                     {{ csrf_field() }}
                     <div class="modal-header">
-                        <h5 class="modal-title" id="quote-freight-title">{{ $quote->nro_quote }}</h5>
+                        <h5 class="modal-title" id="quote-transport-title">{{ $quote->nro_quote }}</h5>
                         <button class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="ocean_freight">Flete maritimo</label>
-                            <input id="ocean_freight" data-type="currency" class="form-control CurrencyInput"
-                                type="text" name="ocean_freight">
+                            <label for="cost_transport">Transporte</label>
+                            <input id="cost_transport" data-type="currency" class="form-control CurrencyInput" type="text"
+                                name="cost_transport">
                         </div>
+                        @if ($quote->gang && $quote->gang === 'SI')
+                            <div class="form-group">
+                                <label for="cost_gang">Cuadrilla</label>
+                                <input id="cost_gang" data-type="currency" class="form-control CurrencyInput"
+                                    type="text" name="cost_gang">
+                            </div>
+                        @endif
+                        @if ($quote->guard && $quote->guard === 'SI')
+                            <div class="form-group">
+                                <label for="cost_guard">Resguardo</label>
+                                <input id="cost_guard" data-type="currency" class="form-control CurrencyInput"
+                                    type="text" name="cost_guard">
+                            </div>
+                        @endif
+
                         <div class="form-group">
-                            <label for="utility">Utilidad</label>
-                            <input id="utility" data-type="currency" class="form-control CurrencyInput" type="text"
-                                name="utility">
+                            <label for="cost_transport">Fecha de retiro</label>
+                            <input type="date" class="form-control" id="withdrawal_date" name="withdrawal_date"
+                                    placeholder="Ingrese el destino">
                         </div>
-                        <div class="form-group">
-                            <label for="operations_commission">Comision de operaciones</label>
-                            <input id="operations_commission" data-type="currency" class="form-control CurrencyInput"
-                                type="text" name="operations_commission">
-                        </div>
-                        <div class="form-group">
-                            <label for="pricing_commission">Comision de pricing</label>
-                            <input id="pricing_commission" data-type="currency" class="form-control CurrencyInput"
-                                type="text" name="pricing_commission">
-                        </div>
+
+                       
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Cerrar Cotización</button>
@@ -351,7 +385,7 @@
         });
 
 
-        $('#sendFreightCost').on('submit', (e) => {
+        $('#sendTransportCost').on('submit', (e) => {
 
             e.preventDefault();
 

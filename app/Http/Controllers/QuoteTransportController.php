@@ -221,7 +221,7 @@ class QuoteTransportController extends Controller
         //Ver el detalle de la cotizacion
 
         $quote = QuoteTransport::findOrFail($id);
-
+        $messages = $quote->messages;
 
         $folderPath = "quote_transport/{$quote->nro_quote}";
         $files = collect(Storage::disk('public')->files($folderPath))->map(function ($file) {
@@ -232,7 +232,7 @@ class QuoteTransportController extends Controller
             ];
         });
 
-        return view('transport/quote/detail-quote', compact('quote', 'files'));
+        return view('transport/quote/quote-messagin', compact('quote', 'files', 'messages'));
     }
 
     /**
@@ -271,6 +271,28 @@ class QuoteTransportController extends Controller
 
 
         return view('transport.quote.edit-quote', compact('quote', 'files', 'customers'))->with('showModal', $showModal);
+    }
+
+    public function updateQuoteTransport(Request $request, string $id){
+        $quote = QuoteTransport::findOrFail($id);
+
+        $quote->update($request->all());
+
+        $folderPath = "quote_transport/{$quote->nro_quote}";
+        $files = collect(Storage::disk('public')->files($folderPath))->map(function ($file) {
+            return [
+                'name' => basename($file), // Nombre del archivo
+                'size' => Storage::disk('public')->size($file), // Tamaño del archivo
+                'url' => asset('storage/' . $file), // URL del archivo
+            ];
+        });
+        
+
+
+        $messages = $quote->messages;
+
+        return view('transport/quote/quote-messagin', compact('quote', 'messages', 'files'));
+
     }
 
     /**
@@ -458,7 +480,7 @@ class QuoteTransportController extends Controller
     }
 
 
-    public function acceptQuoteTransport(string $id)
+   /*  public function acceptQuoteTransport(string $id)
     {
 
         $quote = QuoteTransport::with('routing')->findOrFail($id);
@@ -502,8 +524,31 @@ class QuoteTransportController extends Controller
 
         // Redirigir con los parámetros
         return redirect()->route('routing.detail', $params);
-    }
+    } */
 
+
+    public function acceptQuoteTransport(Request $request, string $id){
+ 
+        $quote = QuoteTransport::findOrFail($id);
+
+        $cost_transport = $this->parseDouble($request->cost_transport); 
+        $cost_gang = $this->parseDouble($request->cost_gang); 
+        $cost_guard = $this->parseDouble($request->cost_guard); 
+        $total_transport = $cost_transport + $cost_gang + $cost_guard;
+
+
+        $quote->update([
+            'cost_transport' => $cost_transport,
+            'cost_gang' => $cost_gang,
+            'cost_guard' =>   $cost_guard,
+            'total_transport' =>  $total_transport,
+            'withdrawal_date' => $request->withdrawal_date,
+            'state' => 'Aceptada'
+        ]);
+
+        return redirect('/transport/create/'. $quote->id);
+
+    }
 
     public function correctedQuoteTransport(string $id)
     {
@@ -611,4 +656,13 @@ class QuoteTransportController extends Controller
             'lcl_fcl' => 'required',
         ]);
     }
+
+    public function parseDouble($num)
+    {
+
+        $valorDecimal = (float)str_replace(',', '', $num);
+
+        return $valorDecimal;
+    }
+
 }

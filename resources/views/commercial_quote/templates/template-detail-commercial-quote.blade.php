@@ -11,9 +11,12 @@
             <div class="col-12 border-bottom border-bottom-2">
                 <div class="form-group row">
                     <label class="col-sm-4 col-form-label">Nro Cotización: </label>
-                    <div class="col-sm-8">
+                    <div class="col-sm-8 d-inline">
+                        <p class="form-control-plaintext text-indigo d-inline">{{ $comercialQuote->nro_quote_commercial }}</p>
+                        <a href="{{ url('/commercial/quote/getPDF/'.$comercialQuote->id)  }}" class="text-indigo d-inline">
+                            <i class="fas fa-file-pdf"></i>
+                        </a>
 
-                        <p class="form-control-plaintext text-indigo">{{ $comercialQuote->nro_quote_commercial }}</p>
                     </div>
 
                 </div>
@@ -425,7 +428,7 @@
                             @if (!$quote->pick_up || !$quote->delivery)
                                 <td>
                                     <button type="button" class="btn btn-outline-indigo btn-sm mb-2"
-                                        onclick="openModalTransport('{{ $quote->id }}')">
+                                        onclick="openModalTransport('{{ $quote }}')">
                                         Detalle
                                     </button>
                                 </td>
@@ -478,6 +481,72 @@
                     <div class="form-group">
                         <label for="delivery">Dirección de entrega</label>
                         <input id="delivery" class="form-control" type="text" name="delivery">
+                    </div>
+
+                    <div class="form-group" id="container_return">
+                        <label for="container_return">Devolución de contenedor</label>
+                        <input id="container_return" class="form-control" type="text" name="container_return">
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="gang" class="col-sm-4 col-form-label">Cuadrilla</label>
+                        <div class="col-sm-8 row align-items-center">
+                            <div class="form-check d-inline mx-2">
+                                <input type="radio" id="radioGang" name="gang" value="SI"
+                                    class="form-check-input">
+                                <label for="radioGang" class="form-check-label">
+                                    SI
+                                </label>
+                            </div>
+                            <div class="form-check d-inline mx-2">
+                                <input type="radio" id="radioGang" name="gang" value="NO"
+                                    class="form-check-input">
+                                <label for="radioGang" class="form-check-label">
+                                    NO
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row" id="container-guard">
+                        <label for="guard" class="col-sm-4 col-form-label">Resguardo</label>
+                        <div class="col-sm-8">
+                            <div class="form-check d-inline">
+                                <input type="radio" id="radioGuard" name="guard" value="SI"
+                                    class="form-check-input">
+                                <label for="radioGuard" class="form-check-label">
+                                    SI
+                                </label>
+                            </div>
+                            <div class="form-check d-inline">
+                                <input type="radio" id="radioGuard" name="guard" value="NO"
+                                    class="form-check-input">
+                                <label for="radioGuard" class="form-check-label">
+                                    NO
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group row" id="container-stackable">
+                        <label for="stackable" class="col-sm-4 col-form-label">Apilable</label>
+                        <div class="col-sm-8">
+                            <div class="form-check d-inline">
+                                <input type="radio" id="radioStackable" name="stackable" value="SI"
+                                    class="form-check-input">
+                                <label for="radioStackable" class="form-check-label">
+                                    SI
+                                </label>
+                            </div>
+                            <div class="form-check d-inline">
+                                <input type="radio" id="radioStackable" name="stackable" value="NO"
+                                    class="form-check-input">
+                                <label for="radioStackable" class="form-check-label">
+                                    NO
+                                </label>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -1087,10 +1156,27 @@
 
 
 
-        function openModalTransport(id) {
+        function openModalTransport(quote) {
             let modalTransport = $('#modalTransport');
+            let data = JSON.parse(quote);
 
-            $('#modalTransport form').attr('action', 'quote/transport/' + id);
+            $('#modalTransport form').attr('action', '/quote/transport/complete/' + data.id);
+
+            if (data.lcl_fcl != 'FCL') {
+                $('#container-guard').addClass('d-none');
+                $('#container-guard').find('input').addClass('d-none');
+                $('#container-stackable').removeClass('d-none');
+                $('#container-stackable').find('input').removeClass('d-none');
+                $('#container_return').addClass('d-none');
+                $('#container_return').find('input').addClass('d-none');
+            } else {
+                $('#container-guard').removeClass('d-none');
+                $('#container-guard').find('input').removeClass('d-none');
+                $('#container-stackable').addClass('d-none');
+                $('#container-stackable').find('input').addClass('d-none');
+                $('#container_return').removeClass('d-none');
+                $('#container_return').find('input').removeClass('d-none');
+            }
 
 
             modalTransport.modal('show');
@@ -1104,24 +1190,35 @@
 
             const inputs = Array.from(form.querySelectorAll('input')).filter(input => input.type !== 'hidden');
 
-
             inputs.forEach((input) => {
                 // Ignorar campos ocultos (d-none)
                 if (input.closest('.d-none')) {
                     return;
                 }
 
-                // Validar si el campo está vacío
-                if (input.value.trim() === '') {
-                    input.classList.add('is-invalid');
-                    isValid = false; // Cambiar bandera si algún campo no es válido
-                    showError(input, 'Debe completar este campo');
+                if (input.type === 'radio') {
+                    // Obtener el grupo de radios
+                    let radioGroup = form.querySelectorAll(`input[name="${input.name}"]`);
+                    let isChecked = Array.from(radioGroup).some(radio => radio.checked);
+
+                    if (!isChecked) {
+                        radioGroup.forEach(radio => radio.classList.add('is-invalid'));
+                        isValid = false;
+                    } else {
+                        radioGroup.forEach(radio => radio.classList.remove('is-invalid'));
+                    }
                 } else {
-                    input.classList.remove('is-invalid');
-                    hideError(input);
+                    // Validar si el campo está vacío (excepto radios)
+                    if (input.value.trim() === '') {
+                        input.classList.add('is-invalid');
+                        isValid = false; // Cambiar bandera si algún campo no es válido
+                        showError(input, 'Debe completar este campo');
+                    } else {
+                        input.classList.remove('is-invalid');
+                        hideError(input);
+                    }
                 }
             });
-
 
             if (isValid) {
                 form.submit();

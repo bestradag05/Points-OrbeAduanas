@@ -545,7 +545,7 @@ return [
         [
             'text' => 'Transporte',
             'icon' => 'fas fa-fw fa-truck-moving',
-            'can' => 'transporte.module',
+            /* 'can' => 'transporte.module', */
             'submenu' => [
                 [
                     'text' => 'Puntos pendientes',
@@ -575,7 +575,7 @@ return [
                     'url'  => 'quote/transport',
                     'icon' => 'fas fa-file-import',
                     'active' => ['quote/transport'],
-                    'can' => 'transporte.quote.list'
+                    /* 'can' => 'transporte.quote.list' */
                 ],
                 [
                     'text' => 'Mis Cotizaciones',

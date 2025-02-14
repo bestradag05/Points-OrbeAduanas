@@ -61,8 +61,8 @@
 
             <br>
             <div class="">
-                <p class="text-sm">N° Operacion :
-                    <b class="d-block">{{ $quote->nro_operation }}</b>
+                <p class="text-sm">N° Cotizacion General :
+                    <b class="d-block">{{ $quote->nro_quote_commercial }}</b>
                 </p>
             </div>
 
