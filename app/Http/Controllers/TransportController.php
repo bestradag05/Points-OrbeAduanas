@@ -163,21 +163,12 @@ class TransportController extends Controller
 
         $withdrawal_date = Carbon::createFromFormat('d/m/Y', $request->withdrawal_date)->format('Y-m-d');
 
-        //Calculamos igv del monto del transporte
-
-        $tax_base = $this->parseDouble($transporte->value) + $this->parseDouble($transporte->added);
-        $igv = $tax_base * 0.18;
-        $total = $tax_base * 1.18;
 
         $transport = Transport::create([
 
             'origin' => $request->pick_up,
-            'destination' => $request->delivery,
-            'transport_value' => $this->parseDouble($transporte->value),
             'added_value' => $this->parseDouble($transporte->added),
-            'tax_base' => $tax_base,
-            'igv' => $igv,
-            'total' => $total,
+            'value_transport' => $this->parseDouble($request->total),
             'additional_points' => $transporte->pa,
             'withdrawal_date' => $withdrawal_date,
             'id_quote_transport' => $request->id_quote_transport,
@@ -191,9 +182,9 @@ class TransportController extends Controller
 
         foreach ($concepts as $concept) {
 
-            $net_amount = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
-            $igv = $net_amount * 0.18;
-            $total = $net_amount * 1.18;
+            $total = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
+            $net_amount = $total / 1.18;
+            $igv = $total - $net_amount;
 
             $conceptTransport = ConceptTransport::create([
                 'id_concepts' => $concept->id, // ID del concepto relacionado

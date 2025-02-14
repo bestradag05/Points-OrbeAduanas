@@ -11,7 +11,7 @@ class Transport extends Model
 
     protected $table = 'transport';
 
-    protected $fillable = ['nro_operation_transport', 'nro_orden', 'date_register', 'invoice_number', 'nro_dua', 'origin', 'destination', 'transport_value', 'added_value',  'tax_base', 'igv', 'total', 'additional_points', 'payment_state', 'payment_date',  'weight', 'withdrawal_date', 'state', 'nro_operation', 'id_supplier', 'id_quote_transport'];
+    protected $fillable = ['nro_operation_transport', 'nro_orden', 'date_register', 'invoice_number', 'nro_dua', 'origin', 'destination', 'value_transport', 'additional_points', 'payment_state', 'payment_date',  'weight', 'withdrawal_date', 'state', 'nro_operation', 'id_supplier', 'id_quote_transport'];
 
 
     // Evento que se ejecuta antes de guardar el modelo
@@ -49,7 +49,8 @@ class Transport extends Model
 
     public function concepts()
     {
-        return $this->belongsToMany(Concepts::class, 'concepts_transport', 'id_transport', 'id_concepts')->withPivot('value_concept');;
+        return $this->belongsToMany(Concepts::class, 'concepts_transport', 'id_transport', 'id_concepts')
+            ->withPivot(['value_concept', 'added_value', 'net_amount', 'igv', 'total']);
     }
 
     public function routing()
