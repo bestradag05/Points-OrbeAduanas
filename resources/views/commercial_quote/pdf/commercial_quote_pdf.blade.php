@@ -189,7 +189,7 @@
         .item-detail-quote:last-child {
             position: relative;
             /* Necesario para que el hijo absoluto se posicione dentro */
-            height: 350px;
+            height: 321px;
             /* Ajusta según tu necesidad */
         }
 
@@ -197,6 +197,7 @@
             background: #FFC000;
             position: absolute;
             bottom: 0;
+            left: 0;
             width: 100%;
             height: auto;
             /* Para que ocupe todo el ancho */
@@ -206,6 +207,7 @@
             font-weight: bold;
             text-transform: uppercase;
             /* Espaciado opcional */
+
         }
 
 
@@ -385,7 +387,6 @@
                         TRANSPORTE INTERNACIONAL, REGISTRADA EN EL CONVENIO
                         INTERNACINAL DE VARSOVIA , MONTREAL Y REGISTRO DE
                         COMERCIO INTERNACIONAL DE EEUU.
-
                     </li>
                     <li>
                         3. COTIZACION SUJETA A VARIACION DE ACUERDO A ESTRUCTURA Y CONSOLIDACION DE EMBARQUE GENERADA EN
@@ -394,7 +395,6 @@
                     <li>
                         4. LOS COSTOS QUE SE INDICARON COMO APROXIMADOS EN LA COTIZACION ESTAN SUJETAS A LA FACTURACION
                         FINAL DE LOS OPERADORES DE SERVICIO EN DESTINO PERU.
-
                     </li>
                 </ul>
 
@@ -402,7 +402,7 @@
 
             <div class="item-detail-quote">
                 <div class="total-quote">
-                    TOTAL ADUANA + FLETE
+                    TOTAL COTIZACION: $ {{ number_format($freight->value_freight + $transport->value_transport, 2, '.', ',') }}
                 </div>
             </div>
 

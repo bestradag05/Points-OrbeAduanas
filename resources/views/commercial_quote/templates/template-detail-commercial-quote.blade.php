@@ -389,6 +389,8 @@
     @endif --}}
 
 
+    
+
 
     {{-- Tabla para cotizaciones de Transporte --}}
     @if ($comercialQuote->quote_transport()->exists())
