@@ -20,15 +20,15 @@ return new class extends Migration
             $table->decimal('cif_value', 8, 2)->nullable();
             $table->string('channel')->nullable();
             $table->string('nro_bl')->nullable();
-            $table->decimal('total_custom', 8, 2);
+            $table->decimal('total_custom', 8, 2)->nullable();
             $table->string('regularization_date')->nullable();
             $table->string('state');
-            $table->unsignedBigInteger('id_modality');
+            $table->unsignedBigInteger('id_modality')->nullable();
             /* $table->unsignedBigInteger('id_insurance')->nullable(); */
-            $table->string('nro_operation');
+            $table->string('nro_quote_commercial');
             $table->timestamps();
 
-            $table->foreign('nro_operation')->references('nro_operation')->on('routing');
+            $table->foreign('nro_quote_commercial')->references('nro_quote_commercial')->on('commercial_quote');
             $table->foreign('id_modality')->references('id')->on('modality');
             /* $table->foreign('id_insurance')->references('id')->on('insurance'); */
         });

@@ -277,6 +277,10 @@
                         <td class="title-item-table">Valor de factura</td>
                         <td class="text-item-table">{{ $commercialQuote->load_value }}</td>
                     </tr>
+                    <tr>
+                        <td class="title-item-table">Valor CIF</td>
+                        <td class="text-item-table">{{ $commercialQuote->cif_value }}</td>
+                    </tr>
                     {{--  <tr>
                         <td class="title-item-table">Valor Cif</td>
                         <td class="text-item-table">{{ $commercialQuote->type_shipment->name }}</td>
@@ -402,7 +406,7 @@
 
             <div class="item-detail-quote">
                 <div class="total-quote">
-                    TOTAL COTIZACION: $ {{ number_format($freight->value_freight + $transport->value_transport, 2, '.', ',') }}
+                    TOTAL COTIZACION: $ {{ number_format(($freight->value_freight ?? 0) + ($transport->value_transport ?? 0), 2, '.', ',') }}
                 </div>
             </div>
 

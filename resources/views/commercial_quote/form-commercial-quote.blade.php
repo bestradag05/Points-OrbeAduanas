@@ -404,6 +404,7 @@
                   <h5 class="text-indigo mb-3">Seleccione los servicios que se cotizaran para incluir dentro de este
                       documento</h5>
                   @foreach ($types_services as $type_service)
+                  @if($type_service->name != 'Aduanas')
                       <div class="icheck-danger d-inline mx-4 mt-4">
                           <input type="checkbox" id="type_service_{{ $type_service->id }}"
                               value="{{ $type_service->name }}" name="type_service[]">
@@ -411,6 +412,7 @@
                               {{ $type_service->name }}
                           </label>
                       </div>
+                      @endif
                   @endforeach
 
               </div>

@@ -34,6 +34,7 @@ return new class extends Migration
             $table->decimal('kilogram_volumen', 8, 2)->nullable();
             $table->decimal('tons', 8, 2)->nullable();
             $table->text('measures')->nullable();
+            $table->decimal('cif_value', 8 , 2)->nullable();
             $table->string('observation')->nullable();
             $table->enum('state', ['Activo', 'Inactivo'])->default('Activo');
             $table->timestamps();

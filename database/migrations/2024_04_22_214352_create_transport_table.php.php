@@ -28,6 +28,7 @@ return new class extends Migration
             $table->date('withdrawal_date')->nullable();
             $table->string('state')->nullable();
             $table->string('nro_operation')->nullable();
+            $table->string('nro_quote_commercial')->nullable();
             $table->unsignedBigInteger('id_supplier')->nullable();
             $table->unsignedBigInteger('id_quote_transport')->nullable();
             $table->timestamps();
@@ -35,6 +36,7 @@ return new class extends Migration
             $table->foreign('id_supplier')->references('id')->on('suppliers');
             $table->foreign('id_quote_transport')->references('id')->on('quote_transport');
             $table->foreign('nro_operation')->references('nro_operation')->on('routing');
+            $table->foreign('nro_quote_commercial')->references('nro_quote_commercial')->on('commercial_quote');
         });
     }
 

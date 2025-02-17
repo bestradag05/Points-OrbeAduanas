@@ -34,6 +34,7 @@ class CommercialQuote extends Model
         'kilogram_volumen',
         'tons',
         'measures',
+        'cif_value',
         'observation',
         'state',
   
@@ -69,6 +70,20 @@ class CommercialQuote extends Model
         return $this->belongsToMany(TypeService::class, 'routing_typeservice', 'id_routing', 'id_type_service');
     }
 
+    public function custom()
+    {
+        return $this->hasOne(Custom::class, 'nro_quote_commercial', 'nro_quote_commercial');
+    }
+
+    public function freight()
+    {
+        return $this->hasOne(Freight::class, 'nro_quote_commercial', 'nro_quote_commercial');
+    }
+
+    public function transport()
+    {
+        return $this->hasOne(Transport::class, 'nro_quote_commercial', 'nro_quote_commercial');
+    }
 
     public function quote_freight()
     {

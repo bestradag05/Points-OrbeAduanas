@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CommercialQuote;
 use App\Models\Concepts;
+use App\Models\Custom;
 use App\Models\Incoterms;
 use App\Models\Modality;
 use App\Models\QuoteFreight;
@@ -119,10 +120,6 @@ class CommercialQuoteController extends Controller
                         $this->createQuoteFreight($commercialQuote);
 
                         break;
-                    case 'Aduanas':
-                        # code...
-                        break;
-
                     case 'Transporte':
 
                         $this->createQuoteTransport($commercialQuote);
@@ -204,6 +201,18 @@ class CommercialQuoteController extends Controller
 
 
         $services = [];
+        //Verificamos los servicios que esten dentro de nuestro detalle de la carga y lo agregamos
+        if ($comercialQuote->custom()->exists()) {
+            $services['Aduanas'] = $comercialQuote->custom->load('insurance');
+        }
+
+        if ($comercialQuote->freight()->exists()) {
+            $services['Flete'] = $comercialQuote->freight->load('insurance');
+        }
+
+        if ($comercialQuote->transport()->exists()) {
+            $services['Transporte'] = $comercialQuote->transport;
+        }
 
         $tab = 'detail';
 
@@ -339,7 +348,7 @@ class CommercialQuoteController extends Controller
             $codigo = $prefix . $year . '1';
         } else {
             // Extraer el número y aumentarlo
-            $number = (int) substr($lastCode->nro_operation, 7);
+            $number = (int) substr($lastCode->nro_quote_commercial, 7);
             $number++;
             $codigo = $prefix . $year  . $number;
         }

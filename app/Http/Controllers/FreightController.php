@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdditionalPoints;
+use App\Models\CommercialQuote;
 use App\Models\ConceptFreight;
 use App\Models\Concepts;
 use App\Models\Freight;
@@ -148,8 +149,6 @@ class FreightController extends Controller
      */
     public function store(Request $request)
     {
-
-
         //Convertimos el json a un objeto
         $concepts = json_decode($request->concepts);
 
@@ -167,6 +166,14 @@ class FreightController extends Controller
         //Relacionamos los conceptos que tendra este flete
 
         $this->syncFreightConcepts($freight, $concepts);
+
+        //Actualizamos el valor CIF para la cotizacion:
+
+        $commercial_quote = CommercialQuote::where("nro_quote_commercial", $request->nro_quote_commercial)->first();
+        
+        $cif_value = $this->parseDouble($freight->quoteFreight->total_ocean_freight) + $this->parseDouble($insurance->insurance_sale) + $this->parseDouble($commercial_quote->load_value);
+
+        $commercial_quote->update(['cif_value' => $cif_value]);
 
         return redirect('commercial/quote/' . $freight->commercial_quote->id . '/detail');
     }

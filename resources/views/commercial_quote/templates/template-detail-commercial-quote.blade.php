@@ -225,7 +225,7 @@
             <thead>
                 <th class="text-indigo text-bold">Servicios</th>
                 <th class="text-indigo text-bold">Seguro</th>
-                <th class="text-indigo text-bold">Estado para punto</th>
+                <th class="text-indigo text-bold">Estado</th>
                 <th class="text-indigo text-bold">Acciones</th>
             </thead>
             <tbody>
@@ -248,7 +248,7 @@
                                     <button type="button" class="btn text-indigo"
                                         onclick="openModalInsurance('{{ $service }}', '{{ $index }}')">
 
-                                        <i class="fa-solid fa-plus"></i>
+                                        <i class="fas fa-plus"></i>
                                     @else
                                         -
                                 @endif
@@ -272,7 +272,7 @@
 
 
 
-        {{--  @include('comercialQuote/modals/modalsServices') --}}
+         @include('commercial_quote/modals/modalsServices')
 
     </div>
     {{-- Tabla para cotizaciones de flete --}}
@@ -284,7 +284,6 @@
                 <thead class="thead-dark">
                     <th>#</th>
                     <th>N° cotizacion</th>
-                    <th>Cliente</th>
                     <th>Origen</th>
                     <th>Destino</th>
                     <th>Producto</th>
@@ -301,7 +300,6 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $quote->nro_quote }}</td>
-                            <td>{{ $quote->commercial_quote->customer_company_name }}</td>
                             <td>{{ $quote->origin }}</td>
                             <td>{{ $quote->destination }}</td>
                             <td>{{ $quote->commodity }}</td>
@@ -329,67 +327,6 @@
 
         </div>
     @endif
-
-
-    {{-- Tabla para cotizaciones de aduana --}}
-    {{-- @if ($comercialQuote->quote_freight()->exists())
-        <div class="col-12 mt-4">
-            <h6 class="text-indigo text-uppercase text-center text-bold">Cotizacion de Aduana</h6>
-
-            <table class="table table-sm text-sm">
-                <thead class="thead-dark">
-                    <th>#</th>
-                    <th>N° cotizacion</th>
-                    <th>Cliente</th>
-                    <th>Origen</th>
-                    <th>Destino</th>
-                    <th>Producto</th>
-                    <th>LCL / FCL</th>
-                    <th>Cubicaje-KGV</th>
-                    <th>Tonelada-KG</th>
-                    <th>Asesor</th>
-                    <th>N° de operacion</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </thead>
-                <tbody>
-
-                    @foreach ($comercialQuote->quote_freight as $quote)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $quote->nro_quote }}</td>
-                            <td>{{ $quote->commercial_quote->customer_company_name }}</td>
-                            <td>{{ $quote->origin }}</td>
-                            <td>{{ $quote->destination }}</td>
-                            <td>{{ $quote->commodity }}</td>
-                            <td>{{ $quote->commercial_quote->lcl_fcl }}</td>
-                            <td>{{ $quote->cubage_kgv }}</td>
-                            <td>{{ $quote->ton_kilogram }}</td>
-                            <td>{{ $quote->commercial_quote->personal->names }}</td>
-                            <td>{{ $quote->nro_quote_commercial }}</td>
-                            <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
-                            </td>
-
-
-                            <td>
-                                <a href="{{ url('/quote/freight/' . $quote->id) }}"
-                                    class="btn btn-outline-indigo btn-sm mb-2 ">
-                                    Detalle
-                                </a>
-                            </td>
-
-                        </tr>
-                    @endforeach
-
-                </tbody>
-
-            </table>
-
-        </div>
-    @endif --}}
-
-
-    
 
 
     {{-- Tabla para cotizaciones de Transporte --}}

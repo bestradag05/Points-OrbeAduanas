@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('edt')->nullable();
             $table->date('eta')->nullable();
             $table->string('value_utility')->nullable();
-            $table->string('value_freight')->nullable();
+            $table->decimal('value_freight', 8, 2)->nullable();
             $table->string('state');
             /* $table->unsignedBigInteger('id_insurance')->nullable(); */
             $table->string('nro_operation')->nullable();
