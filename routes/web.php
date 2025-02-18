@@ -55,12 +55,12 @@ Route::get('/link', function () {
     Artisan::call('storage:link');
 });
 
-Route::get('/alert', function () {
+/* Route::get('/alert', function () {
     $userId = auth()->user()->id;  // O cualquier otro ID de usuario al que le quieras enviar la notificación
 
     // Emitir el evento pasando el mensaje y el ID del usuario
     broadcast(new QuoteNotification("Tienes una cotización nueva por responder"));
-});
+}); */
 
 Auth::routes();
 

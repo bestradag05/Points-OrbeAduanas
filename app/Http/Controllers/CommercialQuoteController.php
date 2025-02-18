@@ -20,6 +20,7 @@ use Barryvdh\DomPDF\PDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use stdClass;
 
 class CommercialQuoteController extends Controller
 {
@@ -208,11 +209,28 @@ class CommercialQuoteController extends Controller
 
         if ($comercialQuote->freight()->exists()) {
             $services['Flete'] = $comercialQuote->freight->load('insurance');
+
+            //Calculamos impuestos para la aduana si es que lo llega a usar.
+
+            $customs_taxes_value = $comercialQuote->cif_value * 0.18;
+            $customs_perception_value = ($comercialQuote->cif_value + $customs_taxes_value) * 0.035;
+
+            $customs_taxes = new stdClass();
+
+            $customs_taxes->customs_taxes = number_format($customs_taxes_value, 2);
+            $customs_taxes->customs_perception = number_format($customs_perception_value, 2);
+
+
+
         }
 
         if ($comercialQuote->transport()->exists()) {
             $services['Transporte'] = $comercialQuote->transport;
         }
+
+
+        
+
 
         $tab = 'detail';
 
@@ -225,6 +243,7 @@ class CommercialQuoteController extends Controller
             'tab' => $tab,
             'stateCountrys' => $stateCountrys,
             'type_insurace' => $type_insurace,
+            'customs_taxes' => $customs_taxes
 
         ];
 
