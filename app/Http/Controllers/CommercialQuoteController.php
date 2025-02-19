@@ -195,6 +195,7 @@ class CommercialQuoteController extends Controller
         $modalitys = Modality::all();
         $concepts = Concepts::all()->load('typeService');
         $type_insurace = TypeInsurance::all();
+        $customs_taxes = new stdClass();
 
         $stateCountrys = StateCountry::whereHas('country', function ($query) {
             $query->where('name', 'Perú');
@@ -215,11 +216,8 @@ class CommercialQuoteController extends Controller
             $customs_taxes_value = $comercialQuote->cif_value * 0.18;
             $customs_perception_value = ($comercialQuote->cif_value + $customs_taxes_value) * 0.035;
 
-            $customs_taxes = new stdClass();
-
             $customs_taxes->customs_taxes = number_format($customs_taxes_value, 2);
             $customs_taxes->customs_perception = number_format($customs_perception_value, 2);
-
 
 
         }
@@ -229,7 +227,16 @@ class CommercialQuoteController extends Controller
         }
 
 
+        $customs_agency = 0;
+
+        if($comercialQuote->load_value >= 23000)
+        {
+            $customs_agency  = $comercialQuote->load_value * 0.004;
+        }else{
+            $customs_agency = 100;
+        }
         
+
 
 
         $tab = 'detail';
@@ -243,7 +250,8 @@ class CommercialQuoteController extends Controller
             'tab' => $tab,
             'stateCountrys' => $stateCountrys,
             'type_insurace' => $type_insurace,
-            'customs_taxes' => $customs_taxes
+            'customs_taxes' => $customs_taxes,
+            'customs_agency' => $customs_agency
 
         ];
 

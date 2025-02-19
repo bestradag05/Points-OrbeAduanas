@@ -2,7 +2,7 @@
 
 @section('content_header')
     <div class="d-flex justify-content-between">
-        <h2>Routing Order</h2>
+        <h2>Cotizacion </h2>
         <div>
             <a href="{{ 'routing/create' }}" class="btn btn-primary"> Agregar </a>
         </div>
