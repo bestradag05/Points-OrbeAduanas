@@ -20,6 +20,8 @@ return new class extends Migration
             $table->decimal('cif_value', 8, 2)->nullable();
             $table->string('channel')->nullable();
             $table->string('nro_bl')->nullable();
+            $table->decimal('customs_taxes', 8, 2)->nullable();
+            $table->decimal('customs_perception', 8, 2)->nullable();
             $table->decimal('total_custom', 8, 2)->nullable();
             $table->string('regularization_date')->nullable();
             $table->string('state');

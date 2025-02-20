@@ -5,16 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ConceptTransport extends Model
+class ConceptCustoms extends Model
 {
     use HasFactory;
 
-    protected $table = 'concepts_transport';
+
+    protected $table = 'concepts_customs';
 
     protected $fillable =
     [
         'id_concepts',
-        'id_transport',
+        'id_customs',
         'value_concept',
         'added_value',
         'net_amount',
@@ -29,14 +30,15 @@ class ConceptTransport extends Model
         return $this->belongsTo(Concepts::class, 'id_concepts');
     }
 
-    // Relación con Freight
-    public function transport()
+    // Relación con customs
+    public function customs()
     {
-        return $this->belongsTo(Transport::class, 'id_transport');
+        return $this->belongsTo(Custom::class, 'id_customs');
     }
 
     public function additional_point()
     {
         return $this->morphOne(AdditionalPoints::class, 'additional', 'model_additional_concept_service', 'id_additional_concept_service');
     }
+
 }

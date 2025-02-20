@@ -285,8 +285,6 @@
                     'added': 0,
                 });
 
-                console.log(conceptFreight);
-
             @endif
 
 

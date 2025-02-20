@@ -171,7 +171,7 @@ class FreightController extends Controller
 
         $commercial_quote = CommercialQuote::where("nro_quote_commercial", $request->nro_quote_commercial)->first();
         
-        $cif_value = $this->parseDouble($freight->quoteFreight->total_ocean_freight) + $this->parseDouble($insurance->insurance_sale) + $this->parseDouble($commercial_quote->load_value);
+        $cif_value = $this->parseDouble($freight->quoteFreight->total_ocean_freight) + $this->parseDouble($insurance ? $insurance->insurance_sale : 0) + $this->parseDouble($commercial_quote ? $commercial_quote->load_value : 0);
 
         $commercial_quote->update(['cif_value' => $cif_value]);
 

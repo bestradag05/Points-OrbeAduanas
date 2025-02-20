@@ -511,13 +511,9 @@
             allowClear: true
         });
 
-        let conceptsArray = {};
         let TotalConcepts = 0;
         let total = 0;
         let flete = 0;
-        let value_insurance = 0;
-        let valuea_added_insurance = 0;
-        let countConcepts = 0;
         let containerResult = '';
         let container = '';
         let typeService = '';

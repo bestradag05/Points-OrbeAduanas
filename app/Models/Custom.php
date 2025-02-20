@@ -40,6 +40,13 @@ class Custom extends Model
         return $this->belongsTo(Routing::class, 'nro_operation', 'nro_operation');
     }
 
+
+    public function commercial_quote()
+    {
+        return $this->belongsTo(CommercialQuote::class, 'nro_quote_commercial', 'nro_quote_commercial');
+    }
+
+
     public function modality()
     {
         return $this->belongsTo(Modality::class, 'id_modality', 'id');

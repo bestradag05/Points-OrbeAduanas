@@ -218,8 +218,6 @@ class CommercialQuoteController extends Controller
 
             $customs_taxes->customs_taxes = number_format($customs_taxes_value, 2);
             $customs_taxes->customs_perception = number_format($customs_perception_value, 2);
-
-
         }
 
         if ($comercialQuote->transport()->exists()) {
@@ -229,13 +227,14 @@ class CommercialQuoteController extends Controller
 
         $customs_agency = 0;
 
-        if($comercialQuote->load_value >= 23000)
-        {
-            $customs_agency  = $comercialQuote->load_value * 0.004;
-        }else{
-            $customs_agency = 100;
+        if (isset($comercialQuote->load_value)) {
+
+            if ($comercialQuote->load_value >= 23000) {
+                $customs_agency  = $comercialQuote->load_value * 0.004;
+            } else {
+                $customs_agency = 100;
+            }
         }
-        
 
 
 
@@ -304,7 +303,7 @@ class CommercialQuoteController extends Controller
             }
         ])->find($id);
 
- 
+
         $personal = Auth::user()->personal;
 
 
