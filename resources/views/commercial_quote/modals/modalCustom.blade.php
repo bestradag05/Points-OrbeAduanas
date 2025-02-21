@@ -29,7 +29,7 @@
                                 <input type="text" class="form-control  @error('cif_value') is-invalid @enderror "
                                     {{ isset($comercialQuote->load_value) ? 'readonly' : '' }} name="load_value"
                                     placeholder="Ingrese valor de la carga"
-                                    value="{{ isset($comercialQuote->load_value) ? $comercialQuote->load_value : old('load_value') }}">
+                                    value="{{ isset($comercialQuote->load_value) ?  number_format($comercialQuote->load_value, 2) : old('load_value') }}">
                             </div>
                             @error('load_value')
                                 <span class="invalid-feedback d-block" role="alert">
@@ -48,10 +48,10 @@
 
                             <div class="input-group">
 
-                                <input type="text" class="form-control  @error('cif_value') is-invalid @enderror "
+                                <input type="text" class="form-control "
                                     {{ isset($comercialQuote->cif_value) ? 'readonly' : '' }} name="cif_value"
                                     placeholder="Ingrese valor de la carga"
-                                    value="{{ isset($comercialQuote->cif_value) ? $comercialQuote->cif_value : old('cif_value') }}">
+                                    value="{{ isset($comercialQuote->cif_value) ? number_format($comercialQuote->cif_value, 2) : old('cif_value') }}">
                             </div>
                             @error('cif_value')
                                 <span class="invalid-feedback d-block" role="alert">

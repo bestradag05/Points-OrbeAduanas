@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('nro_bl')->nullable();
             $table->decimal('customs_taxes', 8, 2)->nullable();
             $table->decimal('customs_perception', 8, 2)->nullable();
+            $table->decimal('sub_total', 8, 2)->nullable();
+            $table->decimal('igv', 8, 2)->nullable();
             $table->decimal('total_custom', 8, 2)->nullable();
             $table->string('regularization_date')->nullable();
             $table->string('state');

@@ -136,7 +136,7 @@ class CommercialQuoteController extends Controller
 
 
 
-        return redirect('commercial/quote');
+        return redirect('commercial/quote/' . $commercialQuote->id . '/detail');
     }
 
     public function createQuoteFreight($commercialQuote)
@@ -237,7 +237,6 @@ class CommercialQuoteController extends Controller
         }
 
 
-
         $tab = 'detail';
 
         $data = [
@@ -308,6 +307,7 @@ class CommercialQuoteController extends Controller
 
 
         $freight = [];
+        $custom  = [];
         $transport = [];
 
 
@@ -315,16 +315,19 @@ class CommercialQuoteController extends Controller
             $freight = $commercialQuote->quote_freight->first()?->freight;
         }
 
+        if ($commercialQuote->custom->exists()) {
+            $custom = $commercialQuote->custom;
+        }
+
         if ($commercialQuote->quote_transport->isNotEmpty()) {
             $transport = $commercialQuote->quote_transport->first()?->transport;
         }
-
 
         $commercialQuoteArray = $commercialQuote->toArray(); // Convierte el modelo a un array
 
 
 
-        $pdf = FacadePdf::loadView('commercial_quote.pdf.commercial_quote_pdf', compact('commercialQuote', 'freight', 'transport', 'personal'));
+        $pdf = FacadePdf::loadView('commercial_quote.pdf.commercial_quote_pdf', compact('commercialQuote', 'freight', 'custom', 'transport', 'personal'));
 
         return $pdf->stream('Cotizacion Comercial.pdf'); // Muestra el PDF en el navegador
 

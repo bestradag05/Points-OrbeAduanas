@@ -105,11 +105,19 @@ class CustomController extends Controller
     {
         $custom = $id ? Custom::findOrFail($id) : new Custom();
 
+        $subTotal = $request->totalCustom;
+        $igv = $subTotal * 0.18;
+        $total = $this->parseDouble($subTotal) + $this->parseDouble($igv);
+
+        /* dd($request->all()); */
+
         $custom->fill([
             'id_modality' => $request->modality,
-            'customs_taxes' => $request->customs_taxes,
-            'customs_perception' => $request->customs_perception,
-            'total_custom' => $request->totalCustom,
+            'customs_taxes' => $this->parseDouble($request->customs_taxes),
+            'customs_perception' => $this->parseDouble($request->customs_perception),
+            'sub_total' => $subTotal,
+            'igv' => $igv,
+            'total_custom' => $total,
             'state' => $request->state ?? 'Pendiente',
             'nro_quote_commercial' => $request->nro_quote_commercial,
         ]);

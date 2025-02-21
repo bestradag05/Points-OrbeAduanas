@@ -197,6 +197,8 @@
                 value_transport = @json($quote->cost_transport);
                 conceptTransport = @json($conceptsTransport);
 
+                console.log(conceptTransport);
+
 
                 conceptTransport.forEach(concept => {
                     conceptsArray.push({

@@ -330,17 +330,19 @@ class FreightController extends Controller
 
             return null; // Si no se envía el seguro, no se hace nada
         }
+        
 
-        $sales_price = $request->value_insurance + $request->insurance_added;
+        $sales_price = $this->parseDouble($request->value_insurance) + $this->parseDouble($request->insurance_added);
 
         $insurance = Insurance::where('id_insurable_service', $freight->id)
             ->where('model_insurable_service', Freight::class)
             ->first();
 
+       
         if ($insurance) {
             // Si el seguro existe, actualizarlo
             $insurance->update([
-                'insurance_value' => $request->value_insurance,
+                'insurance_value' => $this->parseDouble($request->value_insurance),
                 'insurance_value_added' => $request->insurance_added,
                 'insurance_sale' => $sales_price,
                 'sales_value' => $sales_price * 0.18,
@@ -352,7 +354,7 @@ class FreightController extends Controller
         } else {
             // Si no existe, crearlo
             $insurance = Insurance::create([
-                'insurance_value' => $request->value_insurance,
+                'insurance_value' => $this->parseDouble($request->value_insurance),
                 'insurance_value_added' => $request->insurance_added,
                 'insurance_sale' => $sales_price,
                 'sales_value' => $sales_price * 0.18,
@@ -429,9 +431,9 @@ class FreightController extends Controller
             $conceptFreight = ConceptFreight::create([
                 'id_concepts' => $concept->id, // ID del concepto relacionado
                 'id_freight' => $freight->id, // Clave foránea al modelo Freight
-                'value_concept' => $concept->value,
+                'value_concept' => $this->parseDouble($concept->value),
                 'value_concept_added' => $concept->added,
-                'total_value_concept' => $concept->value + $concept->added,
+                'total_value_concept' => $this->parseDouble($concept->value) + $this->parseDouble($concept->added),
                 'additional_points' => isset($concept->pa) ? $concept->pa : 0,
             ]);
 

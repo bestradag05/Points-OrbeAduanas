@@ -48,7 +48,7 @@
         }
 
         .detail {
-            width: 100%;
+            width: 90%;
             display: table;
             margin-top: 30px;
 
@@ -120,7 +120,7 @@
         }
 
         .table th {
-            background: #234195;
+            background: #7A9CC7;
             padding: 5px;
             color: white
         }
@@ -132,6 +132,10 @@
         .table td#observation {
             width: 20%;
             text-align: center;
+        }
+
+        th {
+            text-transform: uppercase;
         }
 
         .table td:last-child {
@@ -323,9 +327,9 @@
         <div id="detail-freight" class="container-service">
             <table id="table-freight" class="table">
                 <thead>
-                    <th>Flete Maritimo</th>
-                    <th>Observacion</th>
-                    <th>Total</th>
+                    <th style="width: 45% ; background-color: #234195">Flete Maritimo</th>
+                    <th style="width: 40%">Observacion</th>
+                    <th style="width: 15%">Total</th>
                 </thead>
                 <tbody>
                     @foreach ($freight->concepts as $concept)
@@ -346,15 +350,95 @@
     @endif
 
 
+    @if ($custom)
 
-    @if ($transport)
+        <div id="detail-taxes-custom" class="container-service">
+            <table id="table-taxes-custom" class="table">
+                <thead>
+                    <th style="width: 45%; background-color: #234195">Impuesto de aduanas</th>
+                    <th style="width: 40%">Impuestos</th>
+                    <th style="width: 15%">Total Aprox.</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>IMPUESTOS DE ADUANAS </td>
+                        <td>(ADV. 0% + IGV 16% + IPM 2%) X VALOR CIF</td>
+                        <td>$ {{ $custom->customs_taxes }}</td>
+                    </tr>
+                    <tr>
+                        <td>PERCEPCIÓN ADUANAS </td>
+                        <td>3.5% X ( CIF+ IMPUESTOS DE ADUANAS)</td>
+                        <td>$ {{ $custom->customs_perception }}</td>
+                    </tr>
+
+                    <tr class="total-service">
+                        <td colspan="2" style="text-align: right">Total Aprox:</td>
+                        <td> $ {{ $custom->customs_taxes + $custom->customs_perception }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="detail-custom" class="container-service">
+            <table id="table-custom" class="table">
+                <thead>
+                    <th style="width: 45%; background-color: #234195">Gastos en destino</th>
+                    <th style="width: 40%">Observacion</th>
+                    <th style="width: 15%">Total</th>
+                </thead>
+                <tbody>
+                    @foreach ($custom->concepts as $concept)
+                        <tr>
+                            <td>{{ $concept->name }}</td>
+                            @if ($concept->name === 'AGENCIAMIENTO DE ADUANAS')
+                                <td id="observation"> 0.4 % x fob / min $100.00 </td>
+                            @else
+                                <td id="observation"> - </td>
+                            @endif
+                            <td> $ {{ $concept->pivot->total }}</td>
+                        </tr>
+                    @endforeach
+
+                    @if ($transport)
+
+                        @foreach ($transport->concepts as $concept)
+                            <tr>
+                                <td>{{ $concept->name }}</td>
+                                <td id="observation"> - </td>
+                                <td> $ {{ $concept->pivot->total }}</td>
+                            </tr>
+                        @endforeach
+
+                    @endif
+
+                    <tr class="total-service">
+                        <td colspan="2" style="text-align: right">Sub Total Aduana:</td>
+                        <td> $ {{ $custom->sub_total }}</td>
+                    </tr>
+                    <tr class="">
+                        <td colspan="2" style="text-align: right">IGV:</td>
+                        <td> $ {{ $custom->igv }}</td>
+                    </tr>
+                    <tr class="">
+                        <td colspan="2" style="text-align: right">Total:</td>
+                        <td> $ {{ $custom->total_custom }}</td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+    @endif
+
+
+
+  {{--   @if ($transport)
 
         <div id="detail-transport" class="container-service">
             <table id="table-transport" class="table">
                 <thead>
-                    <th>Transporte</th>
-                    <th>Observacion</th>
-                    <th>Total</th>
+                    <th style="width: 45%; background-color: #234195">Transporte</th>
+                    <th style="width: 40%">Observacion</th>
+                    <th style="width: 15%">Total</th>
                 </thead>
                 <tbody>
                     @foreach ($transport->concepts as $concept)
@@ -371,7 +455,7 @@
                 </tbody>
             </table>
         </div>
-    @endif
+    @endif --}}
 
     <div class="container-footer-quote">
 
@@ -406,7 +490,8 @@
 
             <div class="item-detail-quote">
                 <div class="total-quote">
-                    TOTAL COTIZACION: $ {{ number_format(($freight->value_freight ?? 0) + ($transport->value_transport ?? 0), 2, '.', ',') }}
+                    TOTAL COTIZACION: $
+                    {{ number_format(($freight->value_freight ?? 0) + ($transport->value_transport ?? 0), 2, '.', ',') }}
                 </div>
             </div>
 

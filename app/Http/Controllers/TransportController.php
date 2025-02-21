@@ -108,22 +108,6 @@ class TransportController extends Controller
         $conceptsTransport = [];
 
 
-
-        /*  foreach ($concepts as $concept) {
-
-            foreach ($concepts as $concept) {
-
-                if ($routing->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Flete' && $concept->name === 'OCEAN FREIGHT') {
-                    $conceptFreight = $concept;
-                }
-
-                if ($routing->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Flete' && $concept->name === 'AIR FREIGHT') {
-                    $conceptFreight = $concept;
-                }
-            }
-        } */
-
-
         $conceptsTransport = $concepts->map(function ($concept) use ($quote, $commercial_quote) {
             $data = collect($concept)->only(['id', 'name']); // Atributos que deseas conservar
 
@@ -144,6 +128,8 @@ class TransportController extends Controller
             return null; // Si no cumple ninguna condición, no lo incluye
         })->filter()->values(); // Filtra los `null` y reindexa la colección
 
+        dd($conceptsTransport);
+
         return view('transport.register-transport', compact('quote', 'type_insurace', 'concepts', 'conceptsTransport', 'commercial_quote'));
     }
     /**
@@ -154,6 +140,7 @@ class TransportController extends Controller
         // Obtenemos el concepto llamado TRANSPORTE
         // Debido que en el reporte de transport solo colocan este concepto
 
+        dd($request->all());
         $concepts  = json_decode($request->concepts);
         /*  dd($concepts);
  */

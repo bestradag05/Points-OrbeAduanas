@@ -527,5 +527,102 @@
             element.value = '';
 
         }
+
+
+        /* Transporte */
+
+
+        function openModalTransport(quote) {
+                        let modalTransport = $('#modalTransport');
+                        let data = JSON.parse(quote);
+
+                        $('#modalTransport form').attr('action', '/quote/transport/complete/' + data.id);
+
+                        if (data.lcl_fcl != 'FCL') {
+                            $('#container-guard').addClass('d-none');
+                            $('#container-guard').find('input').addClass('d-none');
+                            $('#container-stackable').removeClass('d-none');
+                            $('#container-stackable').find('input').removeClass('d-none');
+                            $('#container_return').addClass('d-none');
+                            $('#container_return').find('input').addClass('d-none');
+                        } else {
+                            $('#container-guard').removeClass('d-none');
+                            $('#container-guard').find('input').removeClass('d-none');
+                            $('#container-stackable').addClass('d-none');
+                            $('#container-stackable').find('input').addClass('d-none');
+                            $('#container_return').removeClass('d-none');
+                            $('#container_return').find('input').removeClass('d-none');
+                        }
+
+
+                        modalTransport.modal('show');
+                    }
+
+                    function submitTransport(e) {
+                        e.preventDefault();
+
+                        let isValid = true;
+                        let form = $('#modalTransport form')[0];
+
+                        const inputs = Array.from(form.querySelectorAll('input')).filter(input => input.type !== 'hidden');
+
+                        inputs.forEach((input) => {
+                            // Ignorar campos ocultos (d-none)
+                            if (input.closest('.d-none')) {
+                                return;
+                            }
+
+                            if (input.type === 'radio') {
+                                // Obtener el grupo de radios
+                                let radioGroup = form.querySelectorAll(`input[name="${input.name}"]`);
+                                let isChecked = Array.from(radioGroup).some(radio => radio.checked);
+
+                                if (!isChecked) {
+                                    radioGroup.forEach(radio => radio.classList.add('is-invalid'));
+                                    isValid = false;
+                                } else {
+                                    radioGroup.forEach(radio => radio.classList.remove('is-invalid'));
+                                }
+                            } else {
+                                // Validar si el campo está vacío (excepto radios)
+                                if (input.value.trim() === '') {
+                                    input.classList.add('is-invalid');
+                                    isValid = false; // Cambiar bandera si algún campo no es válido
+                                    showError(input, 'Debe completar este campo');
+                                } else {
+                                    input.classList.remove('is-invalid');
+                                    hideError(input);
+                                }
+                            }
+                        });
+
+                        if (isValid) {
+                            form.submit();
+                        }
+
+
+                    }
+
+                    // Mostrar mensaje de error
+                    function showError(input, message) {
+                        let errorSpan = input.nextElementSibling;
+                        if (!errorSpan || !errorSpan.classList.contains('invalid-feedback')) {
+                            errorSpan = document.createElement('span');
+                            errorSpan.classList.add('invalid-feedback');
+                            input.after(errorSpan);
+                        }
+                        errorSpan.textContent = message;
+                        errorSpan.style.display = 'block';
+                    }
+
+
+                    // Ocultar mensaje de error
+                    function hideError(input) {
+                        let errorSpan = input.nextElementSibling;
+                        if (errorSpan && errorSpan.classList.contains('invalid-feedback')) {
+                            errorSpan.style.display = 'none';
+                        }
+                    }
+
     </script>
 @endpush

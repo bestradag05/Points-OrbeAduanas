@@ -13,17 +13,21 @@ class Custom extends Model
     protected $table = 'custom';
 
     protected $fillable = [
-        'nro_orde', 
+        'nro_orde',
         'nro_dua',
-        'nro_dam', 
-        'date_register', 
-        'cif_value', 
-        'channel', 
-        'nro_bl', 
-        'total_custom', 
-        'regularization_date', 
-        'state', 
-        'id_modality', 
+        'nro_dam',
+        'date_register',
+        'cif_value',
+        'channel',
+        'nro_bl',
+        'sub_total',
+        'igv',
+        'total_custom',
+        'customs_taxes',
+        'regularization_date',
+        'customs_perception',
+        'state',
+        'id_modality',
         'nro_quote_commercial'
     ];
 
@@ -32,7 +36,8 @@ class Custom extends Model
 
     public function concepts()
     {
-        return $this->belongsToMany(Concepts::class, 'concepts_customs', 'id_customs', 'id_concepts');
+        return $this->belongsToMany(Concepts::class, 'concepts_customs', 'id_customs', 'id_concepts')
+            ->withPivot(['value_concept', 'added_value', 'net_amount', 'igv', 'total']);
     }
 
     public function routing()
@@ -61,5 +66,4 @@ class Custom extends Model
     {
         return $this->morphMany(AdditionalPoints::class, 'additional', 'model_additional_service', 'id_additional_service');
     }
-
 }
