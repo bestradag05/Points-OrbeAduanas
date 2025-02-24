@@ -408,11 +408,33 @@
                             </tr>
                         @endforeach
 
-                    @endif
+
+                        @php
+                            $subtotal = $custom->sub_total + ($transport->total_transport ?? 0);
+
+                        @endphp
+
+
+                        <tr class="total-service">
+                            <td colspan="2" style="text-align: right">Sub Total:</td>
+                            <td> $ {{ number_format($subtotal, 2) }}</td>
+                        </tr>
+                        <tr class="total-service">
+                            <td colspan="2" style="text-align: right">IGV:</td>
+                            <td> $ {{ $subtotal * 0.18 }}</td>
+                        </tr>
+                        <tr class="total-service">
+                            <td colspan="2" style="text-align: right">Total:</td>
+                            <td> $ {{ $subtotal * 1.18 }}</td>
+                        </tr>
+
+
+                    @else
+
 
                     <tr class="total-service">
-                        <td colspan="2" style="text-align: right">Sub Total Aduana:</td>
-                        <td> $ {{ $custom->sub_total }}</td>
+                        <td colspan="2" style="text-align: right">Sub Total :</td>
+                        <td> $ {{ $custom->sub_total  }}</td>
                     </tr>
                     <tr class="">
                         <td colspan="2" style="text-align: right">IGV:</td>
@@ -423,39 +445,17 @@
                         <td> $ {{ $custom->total_custom }}</td>
                     </tr>
 
+
+                    @endif
+
+
+
                 </tbody>
             </table>
         </div>
 
     @endif
 
-
-
-  {{--   @if ($transport)
-
-        <div id="detail-transport" class="container-service">
-            <table id="table-transport" class="table">
-                <thead>
-                    <th style="width: 45%; background-color: #234195">Transporte</th>
-                    <th style="width: 40%">Observacion</th>
-                    <th style="width: 15%">Total</th>
-                </thead>
-                <tbody>
-                    @foreach ($transport->concepts as $concept)
-                        <tr>
-                            <td>{{ $concept->name }}</td>
-                            <td id="observation"> - </td>
-                            <td> $ {{ $concept->pivot->total }}</td>
-                        </tr>
-                    @endforeach
-                    <tr class="total-service">
-                        <td colspan="2" style="text-align: right">Total Transporte:</td>
-                        <td> $ {{ $transport->value_transport }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    @endif --}}
 
     <div class="container-footer-quote">
 

@@ -16,11 +16,10 @@ class Transport extends Model
         'nro_orden', 
         'date_register', 
         'invoice_number', 
-        'nro_dua', 'origin', 
+        'nro_dua', 
+        'origin', 
         'destination', 
-        'sub_total', 
-        'igv', 
-        'total_custom', 
+        'total_transport', 
         'payment_state', 
         'payment_date',  
         'weight', 
@@ -30,6 +29,11 @@ class Transport extends Model
         'nro_quote_commercial', 
         'id_supplier', 
         'id_quote_transport'
+    ];
+
+
+    protected $casts = [
+        'total_transport' => 'float',
     ];
 
 

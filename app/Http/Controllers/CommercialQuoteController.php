@@ -315,10 +315,10 @@ class CommercialQuoteController extends Controller
             $freight = $commercialQuote->quote_freight->first()?->freight;
         }
 
-        if ($commercialQuote->custom->exists()) {
+        if ($commercialQuote->custom && $commercialQuote->custom->exists()) {
             $custom = $commercialQuote->custom;
         }
-
+        
         if ($commercialQuote->quote_transport->isNotEmpty()) {
             $transport = $commercialQuote->quote_transport->first()?->transport;
         }

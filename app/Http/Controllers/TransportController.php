@@ -128,7 +128,6 @@ class TransportController extends Controller
             return null; // Si no cumple ninguna condición, no lo incluye
         })->filter()->values(); // Filtra los `null` y reindexa la colección
 
-        dd($conceptsTransport);
 
         return view('transport.register-transport', compact('quote', 'type_insurace', 'concepts', 'conceptsTransport', 'commercial_quote'));
     }
@@ -140,13 +139,7 @@ class TransportController extends Controller
         // Obtenemos el concepto llamado TRANSPORTE
         // Debido que en el reporte de transport solo colocan este concepto
 
-        dd($request->all());
         $concepts  = json_decode($request->concepts);
-        /*  dd($concepts);
- */
-        $collection = collect($concepts);
-
-        $transporte = $collection->firstWhere('name', 'TRANSPORTE');
 
         $withdrawal_date = Carbon::createFromFormat('d/m/Y', $request->withdrawal_date)->format('Y-m-d');
 
@@ -154,11 +147,11 @@ class TransportController extends Controller
         $transport = Transport::create([
 
             'origin' => $request->pick_up,
-            'added_value' => $this->parseDouble($transporte->added),
-            'value_transport' => $this->parseDouble($request->total),
-            'additional_points' => $transporte->pa,
+            'destination' => $request->delivery,
+            'total_transport' => $request->total,
             'withdrawal_date' => $withdrawal_date,
             'id_quote_transport' => $request->id_quote_transport,
+            'nro_quote_commercial' => $request->nro_quote_commercial,
             'state' => 'Pendiente'
 
         ]);

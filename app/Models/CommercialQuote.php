@@ -41,6 +41,7 @@ class CommercialQuote extends Model
 
     ];
 
+
     public function type_shipment()
     {
         return $this->belongsTo(TypeShipment::class, 'id_type_shipment', 'id');

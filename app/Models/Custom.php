@@ -20,8 +20,6 @@ class Custom extends Model
         'cif_value',
         'channel',
         'nro_bl',
-        'sub_total',
-        'igv',
         'total_custom',
         'customs_taxes',
         'regularization_date',
@@ -31,6 +29,11 @@ class Custom extends Model
         'nro_quote_commercial'
     ];
 
+
+    
+    protected $casts = [
+        'total_custom' => 'float',
+    ];
 
 
 

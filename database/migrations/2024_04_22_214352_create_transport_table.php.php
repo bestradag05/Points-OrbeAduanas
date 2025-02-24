@@ -20,9 +20,7 @@ return new class extends Migration
             $table->string('nro_dua')->nullable();
             $table->string('origin')->nullable();
             $table->string('destination')->nullable();
-            $table->decimal('sub_total', 8, 2)->nullable();
-            $table->decimal('igv', 8, 2)->nullable();
-            $table->decimal('total_custom', 8, 2)->nullable();
+            $table->decimal('total_transport', 8, 2)->nullable();
             $table->string('payment_state')->nullable();
             $table->date('payment_date')->nullable();
             $table->string('weight')->nullable();

@@ -197,7 +197,12 @@
                 value_transport = @json($quote->cost_transport);
                 conceptTransport = @json($conceptsTransport);
 
-                console.log(conceptTransport);
+
+                //Ordenamos para que transporte siempre vaya primero en el array:
+
+                conceptTransport.sort((a, b) => {
+                    return a.name === "TRANSPORTE" ? -1 : b.name === "TRANSPORTE" ? 1 : 0;
+                });
 
 
                 conceptTransport.forEach(concept => {
