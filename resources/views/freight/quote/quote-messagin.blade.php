@@ -96,7 +96,7 @@
                 </div>
             </div>
             <div class="row text-muted">
-               {{--  <div class="col-6">
+                {{--  <div class="col-6">
                     <p class="text-sm">Tipo de embarque :
                         <b class="d-block">{{ $quote->routing->type_shipment->description }}
                             {{ $quote->routing->lcl_fcl != null ? '(' . $quote->routing->lcl_fcl . ')' : '' }}</b>
@@ -126,7 +126,7 @@
                     </p>
                 </div>
             </div>
-           {{--  @if ($quote->routing->lcl_fcl === 'LCL' || $quote->routing->lcl_fcl === null)
+            {{--  @if ($quote->routing->lcl_fcl === 'LCL' || $quote->routing->lcl_fcl === null)
                 <div class="row text-muted">
                     <div class="col-6">
                         <p class="text-sm">Cubicaje/KGV :
@@ -155,32 +155,32 @@
             @endif --}}
 
             @if ($quote->commercial_quote->lcl_fcl === 'LCL' || $quote->commercial_quote->lcl_fcl === null)
-            <div class="row text-muted">
-                <div class="col-6">
-                    <p class="text-sm">Cubicaje/KGV :
-                        <b class="d-block">{{ $quote->cubage_kgv }}</b>
-                    </p>
+                <div class="row text-muted">
+                    <div class="col-6">
+                        <p class="text-sm">Cubicaje/KGV :
+                            <b class="d-block">{{ $quote->cubage_kgv }}</b>
+                        </p>
+                    </div>
+                    <div class="col-6">
+                        <p class="text-sm">Peso total :
+                            <b class="d-block">{{ $quote->total_weight }}</b>
+                        </p>
+                    </div>
                 </div>
-                <div class="col-6">
-                    <p class="text-sm">Peso total :
-                        <b class="d-block">{{ $quote->total_weight }}</b>
-                    </p>
+            @else
+                <div class="row text-muted">
+                    <div class="col-6">
+                        <p class="text-sm">Tipo de contenedor :
+                            <b class="d-block">{{ $quote->container_type }}</b>
+                        </p>
+                    </div>
+                    <div class="col-6">
+                        <p class="text-sm">Toneladas/Kilogramos :
+                            <b class="d-block">{{ $quote->ton_kilogram }}</b>
+                        </p>
+                    </div>
                 </div>
-            </div>
-        @else
-            <div class="row text-muted">
-                <div class="col-6">
-                    <p class="text-sm">Tipo de contenedor :
-                        <b class="d-block">{{ $quote->container_type }}</b>
-                    </p>
-                </div>
-                <div class="col-6">
-                    <p class="text-sm">Toneladas/Kilogramos :
-                        <b class="d-block">{{ $quote->ton_kilogram }}</b>
-                    </p>
-                </div>
-            </div>
-        @endif
+            @endif
 
             <div class="row text-muted mt-3">
                 <div class="col-6">
@@ -194,12 +194,23 @@
             </div>
 
             <hr>
-            <h5 class="mt-3 text-muted">Archivos :</h5>
+            <div class="row align-items-center">
+                <div class="col-6 align-items-center">
+                    <h5 class="mt-3 text-muted">Archivos : </h5>
+                </div>
+                <div class="col-6 align-items-center">
+                    <button class="btn btn-indigo btn-sm" data-toggle="modal" data-target="#modalQuoteFreightDocuments">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+
             <ul class="list-unstyled">
                 @foreach ($files as $file)
                     <li>
                         <a href="{{ $file['url'] }}" target="_blank" class="btn-link text-secondary"><i
                                 class="far fa-fw fa-file-pdf"></i> {{ $file['name'] }}</a>
+                        <a href="#" class="text-danger mx-2">X</a>
                     </li>
                 @endforeach
             </ul>
@@ -338,6 +349,27 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modalQuoteFreightDocuments" tabindex="-1"
+        aria-labelledby="modalQuoteFleteDocumentsLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalQuoteFleteDocumentsLabel">Documentos de flete</h5>
+                </div>
+                <div class="modal-body">
+                    <form action="quote/freight/file-upload-documents" method="post" enctype="multipart/form-data"
+                        class="dropzone" id="myDropzone">
+                        @csrf
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 @stop
 
 
@@ -406,5 +438,78 @@
                 errorSpan.style.display = 'none';
             }
         }
+    </script>
+
+    <script>
+        let commercial_quote = @json($quote->nro_quote_commercial);
+        let freight_quote = @json($quote->nro_quote);
+
+        Dropzone.options.myDropzone = {
+
+            url: '/quote/freight/file-upload-documents', // Ruta para subir los archivos
+            maxFilesize: 2, // Tamaño máximo en MB
+            acceptedFiles: '.jpg,.jpeg,.png,.gif,.pdf', // Tipos permitidos
+            addRemoveLinks: true,
+            dictRemoveFile: "Remove", // Agregar opción para eliminar archivos
+            autoProcessQueue: true, // Subir automáticamente al añadir
+            params: {
+                commercial_quote: commercial_quote,
+                freight_quote: freight_quote // Envía este dato adicional al servidor
+            },
+
+            init: function() {
+                let uploadedFiles = []; // Array para almacenar los nombres de archivos subidos
+
+
+                this.on('addedfile', function(file) {
+                    console.log(file);
+                    // Si el archivo es PDF, asigna una miniatura personalizada (imagen predeterminada)
+                    if (/\.pdf$/i.test(file.name)) {
+                        // Usamos la URL de la imagen predeterminada para los PDFs
+                        let pdfThumbnailUrl =
+                            'https://static.vecteezy.com/system/resources/previews/023/234/824/non_2x/pdf-icon-red-and-white-color-for-free-png.png'; // Cambia esto por la ruta de tu imagen predeterminada
+                        this.emit("thumbnail", file, pdfThumbnailUrl);
+                    }
+                });
+
+
+                this.on('success', function(file, response) {
+                    uploadedFiles.push(response.filename);
+
+                    // Crear un input oculto para cada archivo subido
+                   /*  let input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'uploaded_files[]'; // Array para nombres de archivos
+                    input.value = response.filename;
+                    document.getElementById('storeQuote').appendChild(input); */
+
+
+                });
+
+                this.on('removedfile', function(file) {
+                    if (file) {
+                        axios.delete('/quote/freight/file-delete-documents', {
+                            data: {
+                                filename: file.name
+                            }
+                        }).then(response => {
+                            console.log('Archivo eliminado:', response.data);
+                        }).catch(error => {
+                            console.error('Error al eliminar el archivo:', error);
+                        });
+                    }
+
+
+                    // Eliminar el input oculto asociado al archivo eliminado
+                    const hiddenInput = document.querySelector(
+                        `input[name="uploaded_files[]"][value="${file.name}"]`);
+                    if (hiddenInput) {
+                        hiddenInput.parentNode.removeChild(hiddenInput);
+                    }
+
+
+                });
+            }
+        };
     </script>
 @endpush

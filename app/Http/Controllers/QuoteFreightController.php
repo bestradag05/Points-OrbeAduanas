@@ -143,7 +143,10 @@ class QuoteFreightController extends Controller
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $filename =  $file->getClientOriginalName();
-            $file->storeAs('uploads/temp', $filename, 'public'); // Guardar temporalmente
+
+            $path = 'commercial_quote/'. $request->commercial_quote .'/quote_freight/'.$request->freight_quote;
+
+            $file->storeAs( $path , $filename, 'public'); // Guardar temporalmente
 
             return response()->json(['success' => true, 'filename' => $filename]);
         }
@@ -174,7 +177,7 @@ class QuoteFreightController extends Controller
 
         $quote = QuoteFreight::findOrFail($id);
 
-        $folderPath = "quote_freight/{$quote->nro_quote}";
+        $folderPath = "commercial_quote/{$quote->commercial_quote->nro_quote_commercial}/quote_freight/{$quote->nro_quote}";
         $files = collect(Storage::disk('public')->files($folderPath))->map(function ($file) {
             return [
                 'name' => basename($file), // Nombre del archivo
@@ -231,6 +234,9 @@ class QuoteFreightController extends Controller
     {
         //
     }
+
+    
+
 
     public function validateForm($request, $id)
     {

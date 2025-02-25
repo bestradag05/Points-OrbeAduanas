@@ -9,10 +9,11 @@
 
     <style>
         body {
-            font-size: 12px;
+            font-size: 10px;
             border: 2px solid #000;
             overflow: hidden;
             position: relative;
+
         }
 
         .title {
@@ -146,7 +147,7 @@
             background: #FFC000;
             font-weight: bold;
             text-transform: uppercase;
-            font-size: 12px;
+            font-size: 10px;
         }
 
         #detail-quote {
@@ -185,7 +186,7 @@
         }
 
         #detail-quote .item-detail-quote:first-child ul li {
-            margin-bottom: 10px;
+            margin-bottom: 5px;
 
         }
 
@@ -193,12 +194,12 @@
         .item-detail-quote:last-child {
             position: relative;
             /* Necesario para que el hijo absoluto se posicione dentro */
-            height: 321px;
+            height: 215px;
             /* Ajusta según tu necesidad */
         }
 
         .total-quote {
-            background: #FFC000;
+            background: #48c759;
             position: absolute;
             bottom: 0;
             left: 0;
@@ -211,6 +212,7 @@
             font-weight: bold;
             text-transform: uppercase;
             /* Espaciado opcional */
+            font-size: 12px;
 
         }
 
@@ -223,14 +225,35 @@
             margin: 0;
             margin-top: 5px;
         }
+
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 110%;
+            height: 100%;
+            background-image: url('{{ public_path('vendor/adminlte/dist/img/logoorbe.png') }}');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.1;
+            z-index: -1;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            /* Rotación en diagonal */
+        }
     </style>
+
+
 </head>
 
 <body>
-
+    {{-- 
     <div class="image">
         <img src="{{ public_path('vendor/adminlte/dist/img/logoorbe.png') }}">
-    </div>
+    </div> --}}
+
+    <div class="watermark"></div>
+
 
     <div class="title">
         <h1>Cotizacion {{ $commercialQuote->type_shipment->description }} </h1>
@@ -341,7 +364,7 @@
                     @endforeach
                     <tr class="total-service">
                         <td colspan="2" style="text-align: right">Total Flete:</td>
-                        <td> $ {{ $freight->value_freight }}</td>
+                        <td> $ {{ number_format($freight->value_freight, 2) }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -373,7 +396,7 @@
 
                     <tr class="total-service">
                         <td colspan="2" style="text-align: right">Total Aprox:</td>
-                        <td> $ {{ $custom->customs_taxes + $custom->customs_perception }}</td>
+                        <td> $ {{ number_format($custom->customs_taxes + $custom->customs_perception, 2) }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -410,7 +433,9 @@
 
 
                         @php
-                            $subtotal = $custom->sub_total + ($transport->total_transport ?? 0);
+                            $subtotal = $custom->total_custom + ($transport->total_transport ?? 0);
+                            $igv = $subtotal * 0.18;
+                            $cats_destinations = $subtotal * 1.18;
 
                         @endphp
 
@@ -421,30 +446,33 @@
                         </tr>
                         <tr class="total-service">
                             <td colspan="2" style="text-align: right">IGV:</td>
-                            <td> $ {{ $subtotal * 0.18 }}</td>
+                            <td> $ {{ number_format($igv, 2) }}</td>
                         </tr>
                         <tr class="total-service">
                             <td colspan="2" style="text-align: right">Total:</td>
-                            <td> $ {{ $subtotal * 1.18 }}</td>
+                            <td> $ {{ number_format($cats_destinations, 2) }}</td>
                         </tr>
-
-
                     @else
+                        @php
+                            $subtotal = $custom->total_custom;
+                            $igv = $subtotal * 0.18;
+                            $cats_destinations = $subtotal * 1.18;
+
+                        @endphp
 
 
-                    <tr class="total-service">
-                        <td colspan="2" style="text-align: right">Sub Total :</td>
-                        <td> $ {{ $custom->sub_total  }}</td>
-                    </tr>
-                    <tr class="">
-                        <td colspan="2" style="text-align: right">IGV:</td>
-                        <td> $ {{ $custom->igv }}</td>
-                    </tr>
-                    <tr class="">
-                        <td colspan="2" style="text-align: right">Total:</td>
-                        <td> $ {{ $custom->total_custom }}</td>
-                    </tr>
-
+                        <tr class="total-service">
+                            <td colspan="2" style="text-align: right">Sub Total:</td>
+                            <td> $ {{ number_format($subtotal, 2) }}</td>
+                        </tr>
+                        <tr class="total-service">
+                            <td colspan="2" style="text-align: right">IGV:</td>
+                            <td> $ {{ number_format($igv, 2) }}</td>
+                        </tr>
+                        <tr class="total-service">
+                            <td colspan="2" style="text-align: right">Total:</td>
+                            <td> $ {{ number_format($cats_destinations, 2) }}</td>
+                        </tr>
 
                     @endif
 
@@ -491,7 +519,7 @@
             <div class="item-detail-quote">
                 <div class="total-quote">
                     TOTAL COTIZACION: $
-                    {{ number_format(($freight->value_freight ?? 0) + ($transport->value_transport ?? 0), 2, '.', ',') }}
+                    {{ number_format(($freight->value_freight ?? 0) + ($cats_destinations ?? 0), 2, '.', ',') }}
                 </div>
             </div>
 

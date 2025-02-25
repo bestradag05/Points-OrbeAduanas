@@ -131,6 +131,7 @@ Route::middleware('auth')->group(function () {
     Route::get('freight/create/{quoteId}', [FreightController::class, 'createFreight']);
 
 
+
     Route::resource('customs', CustomController::class);
 
     Route::get('transport/pending', [TransportController::class, 'getTransportPending']);

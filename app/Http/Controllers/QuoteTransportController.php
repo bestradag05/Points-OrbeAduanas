@@ -600,6 +600,31 @@ class QuoteTransportController extends Controller
 
     public function uploadFilesQuoteTransport(Request $request)
     {
+
+        return response()->json([
+            'data' => $request->all()
+        ]);
+
+       /*  if ($request->uploaded_files) {
+
+            $nroOperationFolder = "quote_transport/$quote->nro_quote";
+            $tempFolder = "uploads/temp";
+
+            if (!Storage::disk('public')->exists($nroOperationFolder)) {
+                Storage::disk('public')->makeDirectory($nroOperationFolder);
+            }
+
+            foreach ($request->uploaded_files as $file) {
+                $tempFilePath = "{$tempFolder}/{$file}";
+                $newFilePath = "{$nroOperationFolder}/{$file}";
+
+
+                if (Storage::disk('public')->exists($tempFilePath)) {
+                    Storage::disk('public')->move($tempFilePath, $newFilePath);
+                }
+            }
+        } */
+
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $filename =  $file->getClientOriginalName();

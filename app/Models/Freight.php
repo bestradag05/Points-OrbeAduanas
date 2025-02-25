@@ -28,6 +28,11 @@ class Freight extends Model
         'nro_quote_commercial'
     ];
 
+    protected $casts = [
+        'value_freight' => 'float',
+    ];
+
+
     public function concepts()
     {
         return $this->belongsToMany(Concepts::class, 'concepts_freight', 'id_freight', 'id_concepts')
