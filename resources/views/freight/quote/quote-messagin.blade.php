@@ -205,12 +205,12 @@
                 </div>
             </div>
 
-            <ul class="list-unstyled">
+            <ul id="list-file-freight-document" class="list-unstyled">
                 @foreach ($files as $file)
                     <li>
                         <a href="{{ $file['url'] }}" target="_blank" class="btn-link text-secondary"><i
                                 class="far fa-fw fa-file-pdf"></i> {{ $file['name'] }}</a>
-                        <a href="#" class="text-danger mx-2">X</a>
+                                <a href="#" class="text-danger mx-2" onclick="handleFileDeletion('{{ $file['name'] }}', this, event)">X</a>
                     </li>
                 @endforeach
             </ul>
@@ -449,8 +449,6 @@
             url: '/quote/freight/file-upload-documents', // Ruta para subir los archivos
             maxFilesize: 2, // Tamaño máximo en MB
             acceptedFiles: '.jpg,.jpeg,.png,.gif,.pdf', // Tipos permitidos
-            addRemoveLinks: true,
-            dictRemoveFile: "Remove", // Agregar opción para eliminar archivos
             autoProcessQueue: true, // Subir automáticamente al añadir
             params: {
                 commercial_quote: commercial_quote,
@@ -458,11 +456,10 @@
             },
 
             init: function() {
-                let uploadedFiles = []; // Array para almacenar los nombres de archivos subidos
-
+                let uploadedFiles = []; // Almacena los nombres de archivos subidos
+                let myDropzone = this;
 
                 this.on('addedfile', function(file) {
-                    console.log(file);
                     // Si el archivo es PDF, asigna una miniatura personalizada (imagen predeterminada)
                     if (/\.pdf$/i.test(file.name)) {
                         // Usamos la URL de la imagen predeterminada para los PDFs
@@ -470,46 +467,103 @@
                             'https://static.vecteezy.com/system/resources/previews/023/234/824/non_2x/pdf-icon-red-and-white-color-for-free-png.png'; // Cambia esto por la ruta de tu imagen predeterminada
                         this.emit("thumbnail", file, pdfThumbnailUrl);
                     }
-                });
 
+
+
+
+                    let existingFile = uploadedFiles.find(item => item.filename === file.name);
+
+
+                    if (existingFile) {
+                        myDropzone.removeFile(existingFile.file);
+                        existingFile.listItem.remove();
+                        uploadedFiles = uploadedFiles.filter(item => item.filename !== file.name);
+                    }
+
+
+
+                })
 
                 this.on('success', function(file, response) {
-                    uploadedFiles.push(response.filename);
-
-                    // Crear un input oculto para cada archivo subido
-                   /*  let input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'uploaded_files[]'; // Array para nombres de archivos
-                    input.value = response.filename;
-                    document.getElementById('storeQuote').appendChild(input); */
 
 
-                });
+                    let list = document.getElementById('list-file-freight-document');
+                    let listItem = document.createElement('li');
 
-                this.on('removedfile', function(file) {
-                    if (file) {
-                        axios.delete('/quote/freight/file-delete-documents', {
-                            data: {
-                                filename: file.name
-                            }
+                    //Creamos el enlace al archivo
+                    let link = document.createElement('a');
+                    link.href = response.url;
+                    link.target = '_blank';
+                    link.className = 'btn-link text-secondary';
+                    link.innerHTML = `<i class="far fa-fw fa-file-pdf"></i> ${response.filename}`;
+
+                    //Creamos el boton de eliminar
+
+                    let removeButton = document.createElement('a');
+                    removeButton.href = '#';
+                    removeButton.className = 'text-danger mx-2';
+                    removeButton.textContent = 'X';
+
+
+                    removeButton.addEventListener('click', function(event) {
+                        event.preventDefault();
+
+                        axios.post('/quote/freight/file-delete-documents', {
+
+                            filename: response.filename,
+                            commercial_quote: commercial_quote,
+                            freight_quote: freight_quote
+
                         }).then(response => {
-                            console.log('Archivo eliminado:', response.data);
+
+                            listItem.remove();
+                            // Eliminar de Dropzone
+                            myDropzone.removeFile(file);
+
                         }).catch(error => {
                             console.error('Error al eliminar el archivo:', error);
                         });
-                    }
+                    });
 
 
-                    // Eliminar el input oculto asociado al archivo eliminado
-                    const hiddenInput = document.querySelector(
-                        `input[name="uploaded_files[]"][value="${file.name}"]`);
-                    if (hiddenInput) {
-                        hiddenInput.parentNode.removeChild(hiddenInput);
-                    }
+                    listItem.appendChild(link);
+                    listItem.appendChild(removeButton);
 
+
+                    list.appendChild(listItem);
+
+
+                    // Guardar en el mapa de archivos subidos
+                    /* uploadedFiles.set(response.filename, listItem); */
+
+
+                    uploadedFiles = [{
+                        "filename": file.name,
+                        "listItem": listItem,
+                        "file": file
+                    }];
+
+                    console.log(uploadedFiles);
 
                 });
+
             }
         };
+
+        function handleFileDeletion(filename, element, e) {
+
+            e.preventDefault();
+
+            axios.post('/quote/freight/file-delete-documents', {
+                filename: filename,
+                commercial_quote: commercial_quote,
+                freight_quote: freight_quote
+            }).then(response => {
+                let listItem = element.parentElement;
+                listItem.remove();
+            }).catch(error => {
+                console.error('Error al eliminar el archivo:', error);
+            });
+        }
     </script>
 @endpush

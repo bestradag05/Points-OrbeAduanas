@@ -156,11 +156,12 @@ class QuoteFreightController extends Controller
 
     public function deleteFilesQuoteFreight(Request $request)
     {
-        $filename = $request->input('filename');
-        $filePath = "uploads/temp/{$filename}";
 
-        if (Storage::disk('public')->exists($filePath)) {
-            Storage::disk('public')->delete($filePath);
+        $fileName = $request->input('filename');
+        $path = "commercial_quote/{$request->commercial_quote}/quote_freight/{$request->freight_quote}/{$fileName}";
+
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
             return response()->json(['success' => true]);
         }
 
