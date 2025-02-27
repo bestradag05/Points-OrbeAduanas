@@ -148,7 +148,9 @@ class QuoteFreightController extends Controller
 
             $file->storeAs( $path , $filename, 'public'); // Guardar temporalmente
 
-            return response()->json(['success' => true, 'filename' => $filename]);
+            $publicUrl = Storage::url($path);
+
+            return response()->json(['success' => true, 'filename' => $filename, 'url' => $publicUrl."/{$filename}"]);
         }
 
         return response()->json(['success' => false], 400);

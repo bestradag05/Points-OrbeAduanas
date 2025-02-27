@@ -204,16 +204,25 @@
                     </button>
                 </div>
             </div>
-
-            <ul id="list-file-freight-document" class="list-unstyled">
-                @foreach ($files as $file)
-                    <li>
-                        <a href="{{ $file['url'] }}" target="_blank" class="btn-link text-secondary"><i
-                                class="far fa-fw fa-file-pdf"></i> {{ $file['name'] }}</a>
-                                <a href="#" class="text-danger mx-2" onclick="handleFileDeletion('{{ $file['name'] }}', this, event)">X</a>
-                    </li>
-                @endforeach
-            </ul>
+            <table id="table-file-freight" class="table">
+                <tbody>
+                    @foreach ($files as $file)
+                        <tr>
+                            <td>
+                                <a href="{{ $file['url'] }}" target="_blank" class="btn-link text-secondary">
+                                    <i class="far fa-fw fa-file-pdf"></i> {{ $file['name'] }}
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="#" class="text-danger"
+                                    onclick="handleFileDeletion('{{ $file['name'] }}', this, event)">
+                                    X
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
             <hr>
             @if ($quote->ocean_freight != null && $quote->state === 'Aceptada')
@@ -451,13 +460,15 @@
             acceptedFiles: '.jpg,.jpeg,.png,.gif,.pdf', // Tipos permitidos
             autoProcessQueue: true, // Subir automáticamente al añadir
             params: {
-                commercial_quote: commercial_quote,
-                freight_quote: freight_quote // Envía este dato adicional al servidor
+                commercial_quote,
+                freight_quote // Envía este dato adicional al servidor
             },
 
             init: function() {
                 let uploadedFiles = []; // Almacena los nombres de archivos subidos
                 let myDropzone = this;
+
+                let tableBody = document.querySelector("#table-file-freight tbody");
 
                 this.on('addedfile', function(file) {
                     // Si el archivo es PDF, asigna una miniatura personalizada (imagen predeterminada)
@@ -472,37 +483,37 @@
 
 
                     let existingFile = uploadedFiles.find(item => item.filename === file.name);
-
-
                     if (existingFile) {
                         myDropzone.removeFile(existingFile.file);
-                        existingFile.listItem.remove();
+                        existingFile.row.remove();
                         uploadedFiles = uploadedFiles.filter(item => item.filename !== file.name);
                     }
-
 
 
                 })
 
                 this.on('success', function(file, response) {
 
+                    let row = document.createElement("tr");
 
-                    let list = document.getElementById('list-file-freight-document');
-                    let listItem = document.createElement('li');
-
-                    //Creamos el enlace al archivo
-                    let link = document.createElement('a');
+                    let fileCell = document.createElement("td");
+                    let link = document.createElement("a");
                     link.href = response.url;
-                    link.target = '_blank';
-                    link.className = 'btn-link text-secondary';
+                    link.target = "_blank";
+                    link.className = "btn-link text-secondary";
                     link.innerHTML = `<i class="far fa-fw fa-file-pdf"></i> ${response.filename}`;
+                    fileCell.appendChild(link);
+
 
                     //Creamos el boton de eliminar
 
-                    let removeButton = document.createElement('a');
-                    removeButton.href = '#';
-                    removeButton.className = 'text-danger mx-2';
-                    removeButton.textContent = 'X';
+                    // Columna del botón eliminar
+                    let actionCell = document.createElement("td");
+                    actionCell.className = "text-center";
+                    let removeButton = document.createElement("a");
+                    removeButton.href = "#";
+                    removeButton.className = "text-danger";
+                    removeButton.textContent = "X";
 
 
                     removeButton.addEventListener('click', function(event) {
@@ -516,7 +527,7 @@
 
                         }).then(response => {
 
-                            listItem.remove();
+                            row.remove();
                             // Eliminar de Dropzone
                             myDropzone.removeFile(file);
 
@@ -526,24 +537,24 @@
                     });
 
 
-                    listItem.appendChild(link);
-                    listItem.appendChild(removeButton);
+                    actionCell.appendChild(removeButton);
+                    row.appendChild(fileCell);
+                    row.appendChild(actionCell);
 
+                    tableBody.appendChild(row);
 
-                    list.appendChild(listItem);
-
+                    console.log(tableBody);
 
                     // Guardar en el mapa de archivos subidos
                     /* uploadedFiles.set(response.filename, listItem); */
 
 
-                    uploadedFiles = [{
+                    uploadedFiles.push({
                         "filename": file.name,
-                        "listItem": listItem,
+                        "row": row,
                         "file": file
-                    }];
+                    });
 
-                    console.log(uploadedFiles);
 
                 });
 
@@ -560,7 +571,7 @@
                 freight_quote: freight_quote
             }).then(response => {
                 let listItem = element.parentElement;
-                listItem.remove();
+                row.remove();
             }).catch(error => {
                 console.error('Error al eliminar el archivo:', error);
             });

@@ -220,18 +220,39 @@
             </div>
 
             <hr>
-            <h5 class="mt-3 text-muted">Archivos :</h5>
-            <ul class="list-unstyled">
-                @foreach ($files as $file)
-                    <li>
-                        <a href="{{ $file['url'] }}" target="_blank" class="btn-link text-secondary"><i
-                                class="far fa-fw fa-file-pdf"></i> {{ $file['name'] }}</a>
-                    </li>
-                @endforeach
-            </ul>
+            <div class="row align-items-center">
+                <div class="col-6 align-items-center">
+                    <h5 class="mt-3 text-muted">Archivos : </h5>
+                </div>
+                <div class="col-6 align-items-center">
+                    <button class="btn btn-indigo btn-sm" data-toggle="modal"
+                        data-target="#modalQuoteTransportDocuments">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <table id="table-file-transport" class="table">
+                <tbody>
+                    @foreach ($files as $file)
+                        <tr>
+                            <td>
+                                <a href="{{ $file['url'] }}" target="_blank" class="btn-link text-secondary">
+                                    <i class="far fa-fw fa-file-pdf"></i> {{ $file['name'] }}
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a href="#" class="text-danger"
+                                    onclick="handleFileDeletion('{{ $file['name'] }}', this, event)">
+                                    X
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
             <hr>
-            @if ($quote->ocean_freight != null && $quote->state === 'Aceptada')
+            @if ($quote->cost_transport != null && $quote->state === 'Aceptada')
                 <div class="row">
 
                     <div class="col-12">
@@ -248,46 +269,42 @@
                                 </p>
                             </div>
                             <div class="col-6">
-                                <b class="d-inline">$ {{ $quote->ocean_freight }}</b>
+                                <b class="d-inline">$ {{ $quote->cost_transport }}</b>
                             </div>
 
                         </div>
-                        <div class="row text-muted">
-                            <div class="col-4">
-                                <p class="text-sm"> Orbe (utilidad) :
-                                </p>
-                            </div>
-                            <div class="col-6">
-                                <b class="d-inline">$ {{ $quote->utility }}</b>
-                            </div>
+                        @if ($quote->gang === 'SI')
+                            <div class="row text-muted">
+                                <div class="col-4">
+                                    <p class="text-sm">Cuadrilla :
+                                    </p>
+                                </div>
+                                <div class="col-6">
+                                    <b class="d-inline">$ {{ $quote->cost_gang }}</b>
+                                </div>
 
-                        </div>
-                        <div class="row text-muted">
-                            <div class="col-4">
-                                <p class="text-sm">Operaciones :
-                                </p>
                             </div>
-                            <div class="col-6">
-                                <b class="d-inline">$ {{ $quote->operations_commission }}</b>
-                            </div>
+                        @endif
+                        @if ($quote->guard === 'SI')
+                            <div class="row text-muted">
+                                <div class="col-4">
+                                    <p class="text-sm">Reguardo :
+                                    </p>
+                                </div>
+                                <div class="col-6">
+                                    <b class="d-inline">$ {{ $quote->cost_guard }}</b>
+                                </div>
 
-                        </div>
-                        <div class="row text-muted">
-                            <div class="col-4">
-                                <p class="text-sm">Pricing :
-                                </p>
                             </div>
-                            <div class="col-6">
-                                <b class="d-inline">$ {{ $quote->pricing_commission }}</b>
-                            </div>
+                        @endif
 
-                        </div>
+
 
                         <div class="row text-muted mt-3 ">
                             <div class="col-12 row justify-content-center">
-                                <p class="text-uppercase text-bold text-lg">Costo del Flete :
+                                <p class="text-uppercase text-bold text-lg">Costo del Transporte :
                                     <b class="status-{{ strtolower($quote->state) }}">$
-                                        {{ $quote->total_ocean_freight }}</b>
+                                        {{ $quote->total_transport }}</b>
                                 </p>
                             </div>
 
@@ -313,7 +330,8 @@
 
                 @if (!$quote->transport()->exists())
                     <a href="{{ url('/transport/create/' . $quote->id) }}"
-                        class="btn btn-sm btn-indigo {{ $quote->state === 'Aceptada' ? '' : 'd-none' }}">Generar Transporte</a>
+                        class="btn btn-sm btn-indigo {{ $quote->state === 'Aceptada' ? '' : 'd-none' }}">Generar
+                        Transporte</a>
                 @endif
             </div>
         </div>
@@ -337,8 +355,8 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="cost_transport">Transporte</label>
-                            <input id="cost_transport" data-type="currency" class="form-control CurrencyInput" type="text"
-                                name="cost_transport">
+                            <input id="cost_transport" data-type="currency" class="form-control CurrencyInput"
+                                type="text" name="cost_transport">
                         </div>
                         @if ($quote->gang && $quote->gang === 'SI')
                             <div class="form-group">
@@ -358,16 +376,37 @@
                         <div class="form-group">
                             <label for="cost_transport">Fecha de retiro</label>
                             <input type="date" class="form-control" id="withdrawal_date" name="withdrawal_date"
-                                    placeholder="Ingrese el destino">
+                                placeholder="Ingrese el destino">
                         </div>
 
-                       
+
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Cerrar Cotización</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="modalQuoteTransportDocuments" tabindex="-1"
+        aria-labelledby="modalQuoteTransportDocumentsLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalQuoteTransportDocumentsLabel">Documentos de transporte</h5>
+                </div>
+                <div class="modal-body">
+                    <form action="quote/transport/file-upload-documents" method="post" enctype="multipart/form-data"
+                        class="dropzone" id="myDropzone">
+                        @csrf
+                    </form>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
             </div>
         </div>
     </div>
@@ -439,6 +478,135 @@
             if (errorSpan && errorSpan.classList.contains('invalid-feedback')) {
                 errorSpan.style.display = 'none';
             }
+        }
+    </script>
+    <script>
+        let commercial_quote = @json($quote->nro_quote_commercial);
+        let transport_quote = @json($quote->nro_quote);
+
+
+        Dropzone.options.myDropzone = {
+
+            url: '/quote/transport/file-upload-documents', // Ruta para subir los archivos
+            maxFilesize: 2, // Tamaño máximo en MB
+            acceptedFiles: '.jpg,.jpeg,.png,.gif,.pdf', // Tipos permitidos
+            autoProcessQueue: true, // Subir automáticamente al añadir
+            params: {
+                commercial_quote,
+                transport_quote // Envía este dato adicional al servidor
+            },
+
+            init: function() {
+                let uploadedFiles = []; // Almacena los nombres de archivos subidos
+                let myDropzone = this;
+
+                let tableBody = document.querySelector("#table-file-transport tbody");
+
+                this.on('addedfile', function(file) {
+                    // Si el archivo es PDF, asigna una miniatura personalizada (imagen predeterminada)
+                    if (/\.pdf$/i.test(file.name)) {
+                        // Usamos la URL de la imagen predeterminada para los PDFs
+                        let pdfThumbnailUrl =
+                            'https://static.vecteezy.com/system/resources/previews/023/234/824/non_2x/pdf-icon-red-and-white-color-for-free-png.png'; // Cambia esto por la ruta de tu imagen predeterminada
+                        this.emit("thumbnail", file, pdfThumbnailUrl);
+                    }
+
+
+
+
+                    let existingFile = uploadedFiles.find(item => item.filename === file.name);
+                    if (existingFile) {
+                        myDropzone.removeFile(existingFile.file);
+                        existingFile.row.remove();
+                        uploadedFiles = uploadedFiles.filter(item => item.filename !== file.name);
+                    }
+
+
+                })
+
+                this.on('success', function(file, response) {
+
+                    let row = document.createElement("tr");
+
+                    let fileCell = document.createElement("td");
+                    let link = document.createElement("a");
+                    link.href = response.url;
+                    link.target = "_blank";
+                    link.className = "btn-link text-secondary";
+                    link.innerHTML = `<i class="far fa-fw fa-file-pdf"></i> ${response.filename}`;
+                    fileCell.appendChild(link);
+
+
+                    //Creamos el boton de eliminar
+
+                    // Columna del botón eliminar
+                    let actionCell = document.createElement("td");
+                    actionCell.className = "text-center";
+                    let removeButton = document.createElement("a");
+                    removeButton.href = "#";
+                    removeButton.className = "text-danger";
+                    removeButton.textContent = "X";
+
+
+                    removeButton.addEventListener('click', function(event) {
+                        event.preventDefault();
+
+                        axios.post('/quote/transport/file-delete-documents', {
+
+                            filename: response.filename,
+                            commercial_quote,
+                            transport_quote
+
+                        }).then(response => {
+
+                            row.remove();
+                            // Eliminar de Dropzone
+                            myDropzone.removeFile(file);
+
+                        }).catch(error => {
+                            console.error('Error al eliminar el archivo:', error);
+                        });
+                    });
+
+
+                    actionCell.appendChild(removeButton);
+                    row.appendChild(fileCell);
+                    row.appendChild(actionCell);
+
+                    tableBody.appendChild(row);
+
+                    console.log(tableBody);
+
+                    // Guardar en el mapa de archivos subidos
+                    /* uploadedFiles.set(response.filename, listItem); */
+
+
+                    uploadedFiles.push({
+                        "filename": file.name,
+                        "row": row,
+                        "file": file
+                    });
+
+
+                });
+
+            }
+        };
+
+        function handleFileDeletion(filename, element, e) {
+
+            e.preventDefault();
+
+            axios.post('/quote/transport/file-delete-documents', {
+                filename: filename,
+                commercial_quote,
+                transport_quote
+            }).then(response => {
+                let listItem = element.parentElement;
+                row.remove();
+            }).catch(error => {
+                console.error('Error al eliminar el archivo:', error);
+            });
         }
     </script>
 @endpush

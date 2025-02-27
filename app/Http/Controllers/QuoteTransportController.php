@@ -601,36 +601,17 @@ class QuoteTransportController extends Controller
     public function uploadFilesQuoteTransport(Request $request)
     {
 
-        return response()->json([
-            'data' => $request->all()
-        ]);
-
-       /*  if ($request->uploaded_files) {
-
-            $nroOperationFolder = "quote_transport/$quote->nro_quote";
-            $tempFolder = "uploads/temp";
-
-            if (!Storage::disk('public')->exists($nroOperationFolder)) {
-                Storage::disk('public')->makeDirectory($nroOperationFolder);
-            }
-
-            foreach ($request->uploaded_files as $file) {
-                $tempFilePath = "{$tempFolder}/{$file}";
-                $newFilePath = "{$nroOperationFolder}/{$file}";
-
-
-                if (Storage::disk('public')->exists($tempFilePath)) {
-                    Storage::disk('public')->move($tempFilePath, $newFilePath);
-                }
-            }
-        } */
-
         if ($request->hasFile('file')) {
             $file = $request->file('file');
             $filename =  $file->getClientOriginalName();
-            $file->storeAs('uploads/temp', $filename, 'public'); // Guardar temporalmente
 
-            return response()->json(['success' => true, 'filename' => $filename]);
+            $path = 'commercial_quote/'. $request->commercial_quote .'/quote_transport/'.$request->transport_quote;
+
+            $file->storeAs( $path , $filename, 'public'); // Guardar temporalmente
+
+            $publicUrl = Storage::url($path);
+
+            return response()->json(['success' => true, 'filename' => $filename, 'url' => $publicUrl."/{$filename}"]);
         }
 
         return response()->json(['success' => false], 400);
@@ -639,11 +620,11 @@ class QuoteTransportController extends Controller
     public function deleteFilesQuoteTransport(Request $request)
     {
 
-        $filename = $request->input('filename');
-        $filePath = "uploads/temp/{$filename}";
+        $fileName = $request->input('filename');
+        $path = "commercial_quote/{$request->commercial_quote}/quote_transport/{$request->transport_quote}/{$fileName}";
 
-        if (Storage::disk('public')->exists($filePath)) {
-            Storage::disk('public')->delete($filePath);
+        if (Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
             return response()->json(['success' => true]);
         }
 
