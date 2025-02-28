@@ -288,6 +288,7 @@
                     <th>Cubicaje-KGV</th>
                     <th>Tonelada-KG</th>
                     <th>N° de operacion</th>
+                    <th>Fecha</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </thead>
@@ -304,6 +305,7 @@
                             <td>{{ $quote->cubage_kgv }}</td>
                             <td>{{ $quote->ton_kilogram }}</td>
                             <td>{{ $quote->nro_quote_commercial }}</td>
+                            <td>{{ \Carbon\Carbon::parse($quote->created_at )->format('d/m/Y') }}</td>
                             <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
                             </td>
 
@@ -342,6 +344,7 @@
                     <th>Cubicaje-KGV</th>
                     <th>Tonelada-KG</th>
                     <th>N° de operacion</th>
+                    <th>Fecha</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </thead>
@@ -358,6 +361,7 @@
                             <td>{{ $quote->cubage_kgv }}</td>
                             <td>{{ $quote->ton_kilogram }}</td>
                             <td>{{ $quote->nro_quote_commercial }}</td>
+                            <td>{{ \Carbon\Carbon::parse($quote->created_at )->format('d/m/Y') }}</td>
                             <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
                             </td>
 
