@@ -408,9 +408,9 @@
       </div>
 
       <div id="multipleProvidersSection" class="d-none">
-          <div class="row justify-content-between px-5">
-              <button type="button" class="btn btn-success" onclick="addProviderRow()">Agregar Proveedor</button>
-              <h4>Lista de Proovedores</h4>
+          <div class="row justify-content-between px-5 mb-3">
+              <button type="button" class="btn btn-indigo" onclick="showItemConsolidated()"><i
+                      class="fas fa-plus"></i></button>
           </div>
 
           <table class="table">
@@ -464,11 +464,200 @@
       <button type="submit" class="btn btn-indigo mt-5" onclick="submitForm()">Guardar</button>
   </div>
 
+
+  <div id="modal-consolidated" class="modal fade" tabindex="-1" role="dialog"
+      aria-labelledby="modal-consolidated-title" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+              <form method="POST" id="formQuoteTransport">
+                  {{ method_field('PATCH') }}
+                  {{ csrf_field() }}
+                  <div class="modal-header">
+                      <h5 class="modal-title" id="modal-consolidated-title">Consolidado</h5>
+                      <button class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+                  <div class="modal-body">
+                      <div class="row">
+
+                          <div class="col-12">
+                              <x-adminlte-select2 name="id_incoterms" label="Incoterms" igroup-size="md"
+                                  data-placeholder="Seleccione una opcion...">
+                                  <option />
+                                  @foreach ($incoterms as $incoter)
+                                      <option value="{{ $incoter->id }}"
+                                          {{ (isset($routing->id_incoterms) && $routing->id_incoterms == $incoter->id) || old('id_incoterms') == $incoter->id ? 'selected' : '' }}>
+                                          {{ $incoter->code }}</option>
+                                  @endforeach
+                              </x-adminlte-select2>
+                          </div>
+                          <div class="col-4">
+                              <div class="form-group">
+                                  <label for="shipper_name">Proveedor:</label>
+                                  <input id="shipper_name" class="form-control" type="text" name="shipper_name">
+                              </div>
+                          </div>
+                          <div class="col-4">
+                              <div class="form-group">
+                                  <label for="shipper_contact">Contacto:</label>
+                                  <input id="shipper_contact" class="form-control" type="text"
+                                      name="shipper_contact">
+                              </div>
+                          </div>
+                          <div class="col-4">
+                              <div class="form-group">
+                                  <label for="shipper_contact_email">Correo de contacto:</label>
+                                  <input id="shipper_contact_email" class="form-control" type="text"
+                                      name="shipper_contact_email">
+                              </div>
+                          </div>
+                          <div class="col-4">
+                              <div class="form-group">
+                                  <label for="shipper_contact_phone">Nro de contacto:</label>
+                                  <input id="shipper_contact_phone" class="form-control" type="text"
+                                      name="shipper_contact_phone">
+                              </div>
+                          </div>
+                          <div class="col-4">
+                              <div class="form-group">
+                                  <label for="shipper_address">Direccion:</label>
+                                  <input id="shipper_address" class="form-control" type="text"
+                                      name="shipper_address">
+                              </div>
+                          </div>
+                      </div>
+                      <hr>
+                      <div class="row">
+                          <div class="col-12">
+                              <div class="form-group">
+                                  <label for="commodity">Descripcion de la carga:</label>
+                                  <input id="commodity" class="form-control" type="text" name="commodity">
+                              </div>
+                          </div>
+                          <div class="col-4">
+                              <div class="form-group">
+                                  <label for="volumen">Volumen:</label>
+                                  <input id="volumen" class="form-control" type="text" name="volumen">
+                              </div>
+                          </div>
+                          <div class="col-4">
+                              <div class="form-group">
+                                  <label for="kilograms">Peso total:</label>
+                                  <input id="kilograms" class="form-control" type="text" name="kilograms">
+                              </div>
+                          </div>
+                          <div class="col-4">
+                              <div class="form-group">
+                                  <label for="nro_packages_consolidated">Nro de Bultos:</label>
+                                  <input id="nro_packages_consolidated" class="form-control" type="text"
+                                      name="nro_packages_consolidated">
+                              </div>
+                          </div>
+
+                          <div id="container-measures-consolidated" class="col-12 mt-2">
+
+                              <div id="div-measures-consolidated" class="row justify-content-center">
+
+                                  <div class="col-2">
+                                      <input type="number" class="form-control" step="1"
+                                          id="amount_package_consolidated" name="amount_package_consolidated"
+                                          placeholder="Ingresa la cantidad">
+                                  </div>
+                                  <div class="col-2">
+                                      <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                          id="width" name="width" placeholder="Ancho(cm)">
+                                  </div>
+                                  <div class="col-2">
+                                      <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                          id="length" name="length" placeholder="Largo(cm)">
+                                  </div>
+                                  <div class="col-2">
+                                      <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                          id="height" name="height" placeholder="Alto(cm)">
+                                  </div>
+                                  <div class="col-2">
+                                      <button id="addRow" class="btn btn-indigo btn-sm"
+                                          onclick="addMeasuresConsolidate()"><i
+                                              class="fa fa-plus"></i>Agregar</button>
+                                  </div>
+
+                              </div>
+
+                              <table id="measures-consolidated" class="table table-bordered mt-3" style="width:100%">
+                                  <thead>
+                                      <tr>
+                                          <th>Cantidad</th>
+                                          <th>Ancho (cm)</th>
+                                          <th>Largo (cm)</th>
+                                          <th>Alto (cm)</th>
+                                          <th>Eliminar</th>
+                                      </tr>
+                                  </thead>
+                              </table>
+                              <input id="value-measures-consolidated" type="hidden"
+                                  name="value_measures_consolidated" />
+                              @error('value_measures_consolidated')
+                                  <span class="invalid-feedback d-block" role="alert">
+                                      <strong>{{ $message }}</strong>
+                                  </span>
+                              @enderror
+
+                          </div>
+
+
+                      </div>
+
+                  </div>
+                  <div class="modal-footer">
+                      <button type="button" onclick="submitTransport(event)"
+                          class="btn btn-primary">Guardar</button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+
+
   @push('scripts')
       <script>
           const dataMeasures = @json(isset($routing->measures) ? $routing->measures : '');
+          let table = null;
+          let tableMeasuresConsolidated = null;
+          let counter = 1;
+
+          // Función para agregar una fila editable
+          let rowIndex = 1; //
+          let currentPackage = 0;
+          let arrayMeasures = {};
+          let arrayMeasuresConsolidated = {};
+
           document.addEventListener('DOMContentLoaded', function() {
 
+
+              //Inicializamos la tabla de medidas
+
+              table = new DataTable('#measures', {
+                  paging: false, // Desactiva la paginación
+                  searching: false, // Oculta el cuadro de búsqueda
+                  info: false, // Oculta la información del estado de la tabla
+                  lengthChange: false, // Oculta el selector de cantidad de registros por página
+                  language: { // Traducciones al español
+                      emptyTable: "No hay medidas registradas"
+                  }
+              });
+
+
+              tableMeasuresConsolidated = new DataTable('#measures-consolidated', {
+                  paging: false, // Desactiva la paginación
+                  searching: false, // Oculta el cuadro de búsqueda
+                  info: false, // Oculta la información del estado de la tabla
+                  lengthChange: false, // Oculta el selector de cantidad de registros por página
+                  language: { // Traducciones al español
+                      emptyTable: "No hay medidas registradas"
+                  }
+              });
 
 
               // Obtener los valores de los campos del formulario (puedes personalizar esto para tu caso)
@@ -614,21 +803,13 @@
               }
           }
 
-          //Borrar si no sirve
-          /* function addProviderRow() {
-                    let table = document.getElementById("providersTable");
-                    let row = table.insertRow();
+          function showItemConsolidated() {
+              $('#modal-consolidated').modal('show');
+          }
 
-                    row.innerHTML = `
-        <td><input type="text" name="providers[]" class="form-control" placeholder="Nombre del proveedor"></td>
-        <td><input type="text" name="projects[]" class="form-control" placeholder="Nombre del proyecto"></td>
-        <td><button type="button" class="btn btn-danger" onclick="removeRow(this)">Eliminar</button></td>
-    `;
-                }
-
-                function removeRow(button) {
-                    button.parentElement.parentElement.remove();
-                } */
+          function removeRow(button) {
+              button.parentElement.parentElement.remove();
+          }
 
 
 
@@ -652,23 +833,21 @@
           });
 
 
-          //Inicializamos la tabla de medidas
 
-          const table = new DataTable('#measures', {
-              paging: false, // Desactiva la paginación
-              searching: false, // Oculta el cuadro de búsqueda
-              info: false, // Oculta la información del estado de la tabla
-              lengthChange: false, // Oculta el selector de cantidad de registros por página
-              language: { // Traducciones al español
-                  emptyTable: "No hay medidas registradas"
-              }
-          });
-          let counter = 1;
+          //Funcion para agregar las medidas en el consolidado: 
 
-          // Función para agregar una fila editable
-          let rowIndex = 1; //
-          let currentPackage = 0;
-          let arrayMeasures = {};
+          function addMeasuresConsolidate() {
+
+              let divMeasures = document.getElementById("div-measures-consolidated");
+              let nroPackageConsolidated = parseInt(document.getElementById("nro_packages_consolidated").value);
+              let valueMeasuresHidden = document.getElementById('value-measures-consolidated');
+
+
+              AddRowMeasures(divMeasures, nroPackageConsolidated, tableMeasuresConsolidated, arrayMeasuresConsolidated, valueMeasuresHidden);
+
+          }
+
+
 
 
           if (dataMeasures != "") {
@@ -795,14 +974,23 @@
           });
 
 
-          function deleteRow(rowId, amount, index) {
-              // Reducir el paquete actual
-              currentPackage -= parseInt(amount);
+          function deleteRow(tableId, rowId, amount, array) {
+
+            console.log(array);
+
+              let table = $(`#${tableId}`).DataTable(); // Obtener la instancia del DataTable
+
               // Eliminar la fila del DataTable
-              const row = document.getElementById(rowId);
-              table.row($(row).closest('tr')).remove().draw();
-              delete arrayMeasures[index];
-              $('#value_measures').val(JSON.stringify(arrayMeasures));
+              table.row(`#${rowId}`).remove().draw();
+
+              // Restar la cantidad eliminada del contador actual
+              currentPackage -= amount_package;
+
+              // Eliminar la entrada del arrayMeasuresConsolidated
+              delete array[rowIndex];
+
+              // Actualizar el valor en el input oculto
+              $('#value-measures-consolidated').val(JSON.stringify(arrayMeasuresConsolidated));
 
           }
 
@@ -817,6 +1005,105 @@
               rowIndex = 1;
 
           }
+
+
+          //Funcion para agregar registros a una tabla de medidas en especifico.
+
+          function AddRowMeasures(container_measures, nroPackage, table, array, valueMeasuresHidden) {
+
+              const inputs = container_measures.querySelectorAll('input');
+
+              validateInputs(inputs);
+
+              const amount_package = parseInt(inputs[0].value);
+              const width = inputs[1].value.replace(/,/g, '');;
+              const length = inputs[2].value.replace(/,/g, '');;
+              const height = inputs[3].value.replace(/,/g, '');;
+
+
+
+
+              if (isNaN(amount_package) || amount_package <= 0) {
+                  inputs[0].classList.add('is-invalid');
+                  return;
+              } else {
+
+                  if (isNaN(nroPackage) || amount_package > nroPackage) {
+                      alert(
+                          'El numero de paquetes / bultos no puede ser menor que la cantidad ingresada'
+                      );
+                      return;
+                  }
+
+                  currentPackage += amount_package;
+
+
+                  if (currentPackage > nroPackage) {
+                      alert(
+                          'No se puede agregar otra fila, por que segun los registros ya completaste el numero de bultos'
+                      );
+                      currentPackage -= amount_package;
+                      return;
+                  }
+
+                  const newRow = table.row.add([
+
+                      // Campo para Cantidad
+                      `<input type="number" class="form-control"  readonly id="amount-${rowIndex}" name="amount-${rowIndex}" value="${amount_package}" placeholder="Cantidad" min="0" step="1">`,
+
+                      // Campo para Ancho
+                      `<input type="number" class="form-control"  readonly id="width-${rowIndex}" name="width-${rowIndex}" value="${width}" placeholder="Ancho" min="0" step="0.0001">`,
+
+                      // Campo para Largo
+                      `<input type="number" class="form-control"  readonly id="length-${rowIndex}" name="length-${rowIndex}" value="${length}" placeholder="Largo" min="0" step="0.0001">`,
+
+                      // Campo para Alto
+                      `<input type="number" class="form-control"  readonly id="height-${rowIndex}" name="height-${rowIndex}" value="${height}" placeholder="Alto" min="0" step="0.0001">`,
+
+                      `<button type="button" class="btn btn-danger btn-sm" id="delete-${rowIndex}" onclick="deleteRow('${table.table().node().id}', 'row-${rowIndex}', ${amount_package}, ${array})"><i class="fa fa-trash"></i></button>`
+                  ]).draw().node();
+                  newRow.id = `row-${rowIndex}`;
+
+                  array[rowIndex] = { // Usamos rowIndex como clave
+                      amount: amount_package,
+                      width,
+                      length,
+                      height
+                  };
+
+                  valueMeasuresHidden.value = JSON.stringify(arrayMeasuresConsolidated);
+
+                  rowIndex++
+
+                  // Opcional: Enfocar el primer campo de la nueva fila
+                  newRow.querySelector('input').focus();
+
+              }
+
+          }
+
+          //Validar inputs de un contenedor: 
+
+          function validateInputs(inputs) {
+              let isValid = true;
+              inputs.forEach(input => {
+
+                  if (input.value.trim() === '' || input.value <= 0) {
+                      isValid = false;
+                      input.classList.add('is-invalid');
+                      return;
+                  } else {
+                      input.classList.remove('is-invalid');
+                      return;
+                  }
+
+              });
+
+              if (!isValid) {
+                  return;
+              }
+          }
+
 
 
           document.querySelectorAll('input[name="lcl_fcl"]').forEach(radio => {
