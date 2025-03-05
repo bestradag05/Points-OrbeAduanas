@@ -222,7 +222,7 @@
                           <input type="number" min="0" step="1"
                               class="form-control @error('nro_package') is-invalid @enderror" id="nro_package"
                               name="nro_package" placeholder="Ingrese el nro de paquetes.."
-                              oninput="validarInputNumber(this)" onchange="cleanMeasures()"
+                              oninput="validarInputNumber(this)"
                               value="{{ isset($routing) ? $routing->nro_package : '' }}">
                           @error('nro_package')
                               <span class="invalid-feedback d-block" role="alert">
@@ -269,7 +269,7 @@
               </div>
               <div id="container_measures" class="col-12 mt-2">
 
-                  <div id="div_measures" class="row justify-content-center">
+                  <div id="div-measures" class="row justify-content-center">
 
                       <div class="col-2">
                           <input type="number" class="form-control" step="1" id="amount_package"
@@ -288,7 +288,7 @@
                               id="height" name="height" placeholder="Alto(cm)">
                       </div>
                       <div class="col-2">
-                          <button id="addRow" class="btn btn-indigo btn-sm"><i
+                          <button type="button" class="btn btn-indigo btn-sm" onclick="addMeasures()"><i
                                   class="fa fa-plus"></i>Agregar</button>
                       </div>
 
@@ -305,7 +305,7 @@
                           </tr>
                       </thead>
                   </table>
-                  <input id="value_measures" type="hidden" name="value_measures" />
+                  <input id="value-measures" type="hidden" name="value-measures" />
                   @error('value_measures')
                       <span class="invalid-feedback d-block" role="alert">
                           <strong>{{ $message }}</strong>
@@ -465,167 +465,16 @@
   </div>
 
 
-  <div id="modal-consolidated" class="modal fade" tabindex="-1" role="dialog"
-      aria-labelledby="modal-consolidated-title" aria-hidden="true">
-      <div class="modal-dialog modal-lg" role="document">
-          <div class="modal-content">
-              <form method="POST" id="formQuoteTransport">
-                  {{ method_field('PATCH') }}
-                  {{ csrf_field() }}
-                  <div class="modal-header">
-                      <h5 class="modal-title" id="modal-consolidated-title">Consolidado</h5>
-                      <button class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                      </button>
-                  </div>
-                  <div class="modal-body">
-                      <div class="row">
 
-                          <div class="col-12">
-                              <x-adminlte-select2 name="id_incoterms" label="Incoterms" igroup-size="md"
-                                  data-placeholder="Seleccione una opcion...">
-                                  <option />
-                                  @foreach ($incoterms as $incoter)
-                                      <option value="{{ $incoter->id }}"
-                                          {{ (isset($routing->id_incoterms) && $routing->id_incoterms == $incoter->id) || old('id_incoterms') == $incoter->id ? 'selected' : '' }}>
-                                          {{ $incoter->code }}</option>
-                                  @endforeach
-                              </x-adminlte-select2>
-                          </div>
-                          <div class="col-4">
-                              <div class="form-group">
-                                  <label for="shipper_name">Proveedor:</label>
-                                  <input id="shipper_name" class="form-control" type="text" name="shipper_name">
-                              </div>
-                          </div>
-                          <div class="col-4">
-                              <div class="form-group">
-                                  <label for="shipper_contact">Contacto:</label>
-                                  <input id="shipper_contact" class="form-control" type="text"
-                                      name="shipper_contact">
-                              </div>
-                          </div>
-                          <div class="col-4">
-                              <div class="form-group">
-                                  <label for="shipper_contact_email">Correo de contacto:</label>
-                                  <input id="shipper_contact_email" class="form-control" type="text"
-                                      name="shipper_contact_email">
-                              </div>
-                          </div>
-                          <div class="col-4">
-                              <div class="form-group">
-                                  <label for="shipper_contact_phone">Nro de contacto:</label>
-                                  <input id="shipper_contact_phone" class="form-control" type="text"
-                                      name="shipper_contact_phone">
-                              </div>
-                          </div>
-                          <div class="col-4">
-                              <div class="form-group">
-                                  <label for="shipper_address">Direccion:</label>
-                                  <input id="shipper_address" class="form-control" type="text"
-                                      name="shipper_address">
-                              </div>
-                          </div>
-                      </div>
-                      <hr>
-                      <div class="row">
-                          <div class="col-12">
-                              <div class="form-group">
-                                  <label for="commodity">Descripcion de la carga:</label>
-                                  <input id="commodity" class="form-control" type="text" name="commodity">
-                              </div>
-                          </div>
-                          <div class="col-4">
-                              <div class="form-group">
-                                  <label for="volumen">Volumen:</label>
-                                  <input id="volumen" class="form-control" type="text" name="volumen">
-                              </div>
-                          </div>
-                          <div class="col-4">
-                              <div class="form-group">
-                                  <label for="kilograms">Peso total:</label>
-                                  <input id="kilograms" class="form-control" type="text" name="kilograms">
-                              </div>
-                          </div>
-                          <div class="col-4">
-                              <div class="form-group">
-                                  <label for="nro_packages_consolidated">Nro de Bultos:</label>
-                                  <input id="nro_packages_consolidated" class="form-control" type="text"
-                                      name="nro_packages_consolidated">
-                              </div>
-                          </div>
-
-                          <div id="container-measures-consolidated" class="col-12 mt-2">
-
-                              <div id="div-measures-consolidated" class="row justify-content-center">
-
-                                  <div class="col-2">
-                                      <input type="number" class="form-control" step="1"
-                                          id="amount_package_consolidated" name="amount_package_consolidated"
-                                          placeholder="Ingresa la cantidad">
-                                  </div>
-                                  <div class="col-2">
-                                      <input type="text" class="form-control CurrencyInput" data-type="currency"
-                                          id="width" name="width" placeholder="Ancho(cm)">
-                                  </div>
-                                  <div class="col-2">
-                                      <input type="text" class="form-control CurrencyInput" data-type="currency"
-                                          id="length" name="length" placeholder="Largo(cm)">
-                                  </div>
-                                  <div class="col-2">
-                                      <input type="text" class="form-control CurrencyInput" data-type="currency"
-                                          id="height" name="height" placeholder="Alto(cm)">
-                                  </div>
-                                  <div class="col-2">
-                                      <button id="addRow" class="btn btn-indigo btn-sm"
-                                          onclick="addMeasuresConsolidate()"><i
-                                              class="fa fa-plus"></i>Agregar</button>
-                                  </div>
-
-                              </div>
-
-                              <table id="measures-consolidated" class="table table-bordered mt-3" style="width:100%">
-                                  <thead>
-                                      <tr>
-                                          <th>Cantidad</th>
-                                          <th>Ancho (cm)</th>
-                                          <th>Largo (cm)</th>
-                                          <th>Alto (cm)</th>
-                                          <th>Eliminar</th>
-                                      </tr>
-                                  </thead>
-                              </table>
-                              <input id="value-measures-consolidated" type="hidden"
-                                  name="value_measures_consolidated" />
-                              @error('value_measures_consolidated')
-                                  <span class="invalid-feedback d-block" role="alert">
-                                      <strong>{{ $message }}</strong>
-                                  </span>
-                              @enderror
-
-                          </div>
-
-
-                      </div>
-
-                  </div>
-                  <div class="modal-footer">
-                      <button type="button" onclick="submitTransport(event)"
-                          class="btn btn-primary">Guardar</button>
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                  </div>
-              </form>
-          </div>
-      </div>
-  </div>
 
 
   @push('scripts')
       <script>
           const dataMeasures = @json(isset($routing->measures) ? $routing->measures : '');
-          let table = null;
+          let tableMeasures = null;
           let tableMeasuresConsolidated = null;
           let counter = 1;
+          let shippers = [];
 
           // Función para agregar una fila editable
           let rowIndex = 1; //
@@ -638,7 +487,7 @@
 
               //Inicializamos la tabla de medidas
 
-              table = new DataTable('#measures', {
+              tableMeasures = new DataTable('#measures', {
                   paging: false, // Desactiva la paginación
                   searching: false, // Oculta el cuadro de búsqueda
                   info: false, // Oculta la información del estado de la tabla
@@ -834,6 +683,18 @@
 
 
 
+          //Funcion para agregar las medidas: 
+
+          function addMeasures() {
+
+
+              let divMeasures = document.getElementById("div-measures");
+              let nroPackage = parseInt(document.getElementById("nro_package").value);
+              let valueMeasuresHidden = document.getElementById('value-measures');
+
+              AddRowMeasures(divMeasures, nroPackage, tableMeasures, arrayMeasures, "arrayMeasures", valueMeasuresHidden);
+
+          }
           //Funcion para agregar las medidas en el consolidado: 
 
           function addMeasuresConsolidate() {
@@ -843,140 +704,13 @@
               let valueMeasuresHidden = document.getElementById('value-measures-consolidated');
 
 
-              AddRowMeasures(divMeasures, nroPackageConsolidated, tableMeasuresConsolidated, arrayMeasuresConsolidated, valueMeasuresHidden);
+              AddRowMeasures(divMeasures, nroPackageConsolidated, tableMeasuresConsolidated, arrayMeasuresConsolidated,
+                  "arrayMeasuresConsolidated", valueMeasuresHidden);
 
           }
 
 
-
-
-          if (dataMeasures != "") {
-
-              const measuresObject = JSON.parse(dataMeasures);
-
-              Object.entries(measuresObject).forEach(([key, item], index) => {
-
-                  const newRow = table.row.add([
-                      `<input type="number" class="form-control" readonly id="amount-${index}" name="amount-${index}" value="${item.amount}" placeholder="Cantidad" min="0" step="1">`,
-                      `<input type="number" class="form-control" readonly id="width-${index}" name="width-${index}" value="${item.width}" placeholder="Ancho" min="0" step="0.0001">`,
-                      `<input type="number" class="form-control" readonly id="length-${index}" name="length-${index}" value="${item.length}" placeholder="Largo" min="0" step="0.0001">`,
-                      `<input type="number" class="form-control" readonly id="height-${index}" name="height-${index}" value="${item.height}" placeholder="Alto" min="0" step="0.0001">`,
-                      `<button type="button" class="btn btn-danger btn-sm" id="delete-${index}" onclick="deleteRow('row-${index}', ${item.amount}, ${index})"><i class="fa fa-trash"></i></button>`
-                  ]).draw().node();
-                  newRow.id = `row-${index}`;
-
-                  // Guardamos las medidas en el objeto `arrayMeasures`
-                  arrayMeasures[index] = {
-                      amount: item.amount,
-                      width: item.width,
-                      length: item.length,
-                      height: item.height
-                  };
-
-                  currentPackage += item.amount; // Sumar al total de paquetes ya cargados
-              });
-
-              $('#value_measures').val(JSON.stringify(arrayMeasures));
-
-          }
-
-
-
-          document.getElementById('addRow').addEventListener('click', () => {
-
-              var measures = document.getElementById("div_measures");
-              const inputs = measures.querySelectorAll('input');
-
-              let isValid = true;
-              inputs.forEach(input => {
-
-                  if (input.value.trim() === '' || input.value <= 0) {
-                      isValid = false;
-                      input.classList.add('is-invalid');
-                      return;
-                  } else {
-                      input.classList.remove('is-invalid');
-                      return;
-                  }
-
-              });
-
-              if (!isValid) {
-                  return;
-              }
-
-              const nro_package = parseInt($('#nro_package').val());
-              const amount_package = parseInt($('#amount_package').val());
-              const width = inputs[1].value.replace(/,/g, '');;
-              const length = inputs[2].value.replace(/,/g, '');;
-              const height = inputs[3].value.replace(/,/g, '');;
-
-
-
-
-              if (isNaN(amount_package) || amount_package <= 0) {
-                  $('#amount_package').addClass('is-invalid');
-                  return;
-              } else {
-                  if (isNaN(nro_package) || amount_package > nro_package) {
-                      alert(
-                          'El numero de paquetes / bultos no puede ser menor que la cantidad ingresada'
-                      );
-                      return;
-                  }
-
-                  currentPackage += amount_package;
-
-
-                  if (currentPackage > nro_package) {
-                      alert(
-                          'No se puede agregar otra fila, por que segun los registros ya completaste el numero de bultos'
-                      );
-                      currentPackage -= amount_package;
-                      return;
-                  }
-
-                  const newRow = table.row.add([
-
-                      // Campo para Cantidad
-                      `<input type="number" class="form-control"  readonly id="amount-${rowIndex}" name="amount-${rowIndex}" value="${amount_package}" placeholder="Cantidad" min="0" step="1">`,
-
-                      // Campo para Ancho
-                      `<input type="number" class="form-control"  readonly id="width-${rowIndex}" name="width-${rowIndex}" value="${width}" placeholder="Ancho" min="0" step="0.0001">`,
-
-                      // Campo para Largo
-                      `<input type="number" class="form-control"  readonly id="length-${rowIndex}" name="length-${rowIndex}" value="${length}" placeholder="Largo" min="0" step="0.0001">`,
-
-                      // Campo para Alto
-                      `<input type="number" class="form-control"  readonly id="height-${rowIndex}" name="height-${rowIndex}" value="${height}" placeholder="Alto" min="0" step="0.0001">`,
-
-                      `<button type="button" class="btn btn-danger btn-sm" id="delete-${rowIndex}" onclick="deleteRow('row-${rowIndex}', ${amount_package}, ${rowIndex})"><i class="fa fa-trash"></i></button>`
-                  ]).draw().node();
-                  newRow.id = `row-${rowIndex}`;
-
-                  arrayMeasures[rowIndex] = { // Usamos rowIndex como clave
-                      amount: amount_package,
-                      width,
-                      length,
-                      height
-                  };
-
-
-                  $('#value_measures').val(JSON.stringify(arrayMeasures));
-
-                  rowIndex++
-
-                  // Opcional: Enfocar el primer campo de la nueva fila
-                  newRow.querySelector('input').focus();
-
-              }
-
-          });
-
-
-          function deleteRow(tableId, rowId, amount, array) {
-
-            console.log(array);
+          function deleteRow(tableId, rowId, amount, array, valueMeasures) {
 
               let table = $(`#${tableId}`).DataTable(); // Obtener la instancia del DataTable
 
@@ -984,32 +718,33 @@
               table.row(`#${rowId}`).remove().draw();
 
               // Restar la cantidad eliminada del contador actual
-              currentPackage -= amount_package;
+              currentPackage -= amount;
 
               // Eliminar la entrada del arrayMeasuresConsolidated
-              delete array[rowIndex];
+
+              const index = rowId.replace("row-", "");
+
+              delete array[index];
+
 
               // Actualizar el valor en el input oculto
-              $('#value-measures-consolidated').val(JSON.stringify(arrayMeasuresConsolidated));
+              $(`#${valueMeasures}`).val(JSON.stringify(array));
 
           }
 
-          function cleanMeasures() {
-              table.clear().draw();
+          function cleanInputMeasures(inputs) {
+              inputs.forEach(input => {
 
-              arrayMeasures = {};
-              $('#value_measures').val("");
+                  input.value = "";
 
-              // Restablecer variables relacionadas
-              currentPackage = 0;
-              rowIndex = 1;
+              });
 
           }
 
 
           //Funcion para agregar registros a una tabla de medidas en especifico.
 
-          function AddRowMeasures(container_measures, nroPackage, table, array, valueMeasuresHidden) {
+          function AddRowMeasures(container_measures, nroPackage, table, array, arrayName, valueMeasuresHidden) {
 
               const inputs = container_measures.querySelectorAll('input');
 
@@ -1019,9 +754,6 @@
               const width = inputs[1].value.replace(/,/g, '');;
               const length = inputs[2].value.replace(/,/g, '');;
               const height = inputs[3].value.replace(/,/g, '');;
-
-
-
 
               if (isNaN(amount_package) || amount_package <= 0) {
                   inputs[0].classList.add('is-invalid');
@@ -1060,9 +792,10 @@
                       // Campo para Alto
                       `<input type="number" class="form-control"  readonly id="height-${rowIndex}" name="height-${rowIndex}" value="${height}" placeholder="Alto" min="0" step="0.0001">`,
 
-                      `<button type="button" class="btn btn-danger btn-sm" id="delete-${rowIndex}" onclick="deleteRow('${table.table().node().id}', 'row-${rowIndex}', ${amount_package}, ${array})"><i class="fa fa-trash"></i></button>`
+                      `<button type="button" class="btn btn-danger btn-sm" id="delete-${rowIndex}" onclick="deleteRow('${table.table().node().id}', 'row-${rowIndex}', ${amount_package}, ${arrayName}, '${valueMeasuresHidden.id}')"><i class="fa fa-trash"></i></button>`
                   ]).draw().node();
                   newRow.id = `row-${rowIndex}`;
+
 
                   array[rowIndex] = { // Usamos rowIndex como clave
                       amount: amount_package,
@@ -1071,15 +804,39 @@
                       height
                   };
 
-                  valueMeasuresHidden.value = JSON.stringify(arrayMeasuresConsolidated);
+
+                  valueMeasuresHidden.value = JSON.stringify(array);
 
                   rowIndex++
 
-                  // Opcional: Enfocar el primer campo de la nueva fila
-                  newRow.querySelector('input').focus();
+                  cleanInputMeasures(inputs)
 
               }
 
+          }
+
+
+          /* Agregar un item del consolidado  */
+
+          function saveConsolidated() {
+
+              let inputs = $('#form-consolidated').find('input, select').toArray()
+              let elements = $('#form-consolidated').find('input.required, select.required').toArray();
+
+              validateInputs(elements);
+
+              let shipper = {
+                'shipper_name' : getValueByName('shipper_name'),
+                
+
+              }
+
+
+          }
+
+          function getValueByName(name) {
+              let element = inputs.find(el => $(el).attr('name') === name);
+              return element ? $(element).val() : null;
           }
 
           //Validar inputs de un contenedor: 
