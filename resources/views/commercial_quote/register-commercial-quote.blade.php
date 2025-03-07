@@ -59,13 +59,14 @@
         aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-consolidated-title">Consolidado</h5>
+                    <button  class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
                 <form id="form-consolidated" method="POST">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modal-consolidated-title">Consolidado</h5>
-                        <button class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
+                   
                     <div class="modal-body">
                         <div class="row">
 
@@ -116,19 +117,36 @@
                         </div>
                         <hr>
                         <div class="row">
-                            <div class="col-6">
+                            <div class="col-12">
                                 <div class="form-group">
                                     <label for="commodity">Descripcion de la carga:</label>
                                     <input id="commodity" class="form-control required" type="text" name="commodity">
                                 </div>
                             </div>
-                            <div class="col-6">
+                            <div class="col-4">
                                 <div class="form-group">
                                     <label for="load_value">Valor de la carga:</label>
                                     <input id="load_value" class="form-control required CurrencyInput" data-type="currency"
                                         type="text" name="load_value">
                                 </div>
                             </div>
+
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label for="nro_packages_consolidated">Nro de Bultos:</label>
+                                    <input id="nro_packages_consolidated" type="number" min="0" step="1"
+                                        class="form-control" type="text" name="nro_packages_consolidated">
+                                </div>
+                            </div>
+
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label for="packaging_type_consolidated">Tipo Embalaje:</label>
+                                    <input id="packaging_type_consolidated" class="form-control"
+                                        type="text" name="packaging_type_consolidated">
+                                </div>
+                            </div>
+
                             <div class="col-4">
                                 <div class="form-group">
                                     <label for="volumen">Volumen:</label>
@@ -143,13 +161,7 @@
                                         type="text" name="kilograms">
                                 </div>
                             </div>
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="nro_packages_consolidated">Nro de Bultos:</label>
-                                    <input id="nro_packages_consolidated" type="number" min="0" step="1"
-                                        class="form-control" type="text" name="nro_packages_consolidated">
-                                </div>
-                            </div>
+                            
 
                             <div id="container-measures-consolidated" class="col-12 mt-2">
 
@@ -190,9 +202,11 @@
                                         </tr>
                                     </thead>
                                 </table>
+                               
                                 <input id="value-measures-consolidated" type="hidden"
-                                    name="value_measures_consolidated" />
-                                @error('value_measures_consolidated')
+                                name="value-measures-consolidated" />
+
+                                @error('value-measures-consolidated')
                                     <span class="invalid-feedback d-block" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -204,11 +218,33 @@
                         </div>
 
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="saveConsolidated()">Guardar</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    </div>
                 </form>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" onclick="saveConsolidated(event)">Guardar</button>
+                        <button class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-detail" tabindex="-1" role="dialog" aria-labelledby="modalDetailLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDetailLabel">Detalles del Shipper</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped">
+                        <tbody id="shipper-details"></tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
             </div>
         </div>
     </div>

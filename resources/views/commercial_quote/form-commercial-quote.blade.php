@@ -417,12 +417,22 @@
               <thead>
                   <tr>
                       <th>Proveedor</th>
-                      <th>Proyecto</th>
-                      <th>Acción</th>
+                      <th>Contacto</th>
+                      <th>Direccion</th>
+                      <th>Producto</th>
+                      <th>Valor de la carga</th>
+                      <th>Bultos</th>
+                      <th>Embalaje</th>
+                      <th>Volumen</th>
+                      <th>Peso</th>
+                      <th>Accion</th>
                   </tr>
               </thead>
               <tbody id="providersTable"></tbody>
           </table>
+
+
+          <input id="shippers-consolidated" type="hidden" name="shippers-consolidated" />
 
       </div>
 
@@ -818,23 +828,153 @@
 
           /* Agregar un item del consolidado  */
 
-          function saveConsolidated() {
+          function saveConsolidated(e) {
 
-              let inputs = $('#form-consolidated').find('input, select').toArray()
+              let tableShipper = $('#providersTable');
               let elements = $('#form-consolidated').find('input.required, select.required').toArray();
 
-              validateInputs(elements);
+              if (!validateInputs(elements)) {
+                  return;
+              }
 
               let shipper = {
-                'shipper_name' : getValueByName('shipper_name'),
-                
+                  'shipper_name': getValueByName('shipper_name'),
+                  'shipper_contact': getValueByName('shipper_contact'),
+                  'shipper_contact_email': getValueByName('shipper_contact_email'),
+                  'shipper_contact_phone': getValueByName('shipper_contact_phone'),
+                  'shipper_address': getValueByName('shipper_address'),
+                  'commodity': getValueByName('commodity'),
+                  'load_value': getValueByName('load_value'),
+                  'nro_packages_consolidated': getValueByName('nro_packages_consolidated'),
+                  'packaging_type_consolidated': getValueByName('packaging_type_consolidated'),
+                  'volumen': getValueByName('volumen'),
+                  'kilograms': getValueByName('kilograms'),
+                  'value_measures': JSON.parse(getValueByName('value-measures-consolidated'))
+              };
 
-              }
+              // Agregar shipper al array y obtener su índice
+              let index = shippers.length;
+              shippers.push(shipper);
+
+              // Actualizar el input hidden con la nueva lista en JSON
+              updateHiddenInput();
+
+              let newRow = `
+                    <tr data-index="${index}">
+                        <td>${shipper.shipper_name}</td>
+                        <td>${shipper.shipper_contact}</td>
+                        <td>${shipper.shipper_address}</td>
+                        <td>${shipper.commodity}</td>
+                        <td>${shipper.load_value}</td>
+                        <td>${shipper.nro_packages_consolidated}</td>
+                        <td>${shipper.packaging_type_consolidated}</td>
+                        <td>${shipper.volumen}</td>
+                        <td>${shipper.kilograms}</td>
+                        <td>
+                            <button class="btn btn-info btn-sm btn-detail"><i class="fas fa-folder-open"></i></button>
+                            <button class="btn btn-danger btn-sm delete-row"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+
+
+              tableShipper.append(newRow);
+
+              $('#modal-consolidated').modal('hide');
+              //Reseteamos el formulario para agregar un shipper
+              $('#form-consolidated')[0].reset();
+              //reseteamos las medidas
+              arrayMeasuresConsolidated = {};
+              document.getElementById('value-measures-consolidated').value = '';
+              tableMeasuresConsolidated.clear().draw();
+              currentPackage = 0;
+              rowIndex = 1;
 
 
           }
 
+          // Función para actualizar el input hidden con el array `shippers`
+          function updateHiddenInput() {
+              $('#shippers-consolidated').val(JSON.stringify(shippers));
+          }
+
+
+          $('#providersTable').on('click', '.delete-row', function() {
+              let row = $(this).closest('tr'); // Obtener la fila
+              let index = row.data('index'); // Obtener el índice del array
+
+              // Eliminar del array si el índice es válido
+              if (index !== undefined && index < shippers.length) {
+                  shippers.splice(index, 1);
+              }
+
+              row.remove(); // Eliminar la fila del DOM
+
+              // Actualizar los índices de las filas restantes
+              $('#providersTable tbody tr').each(function(i) {
+                  $(this).attr('data-index', i);
+              });
+
+              // Actualizar el input hidden con la nueva lista
+              updateHiddenInput();
+          });
+
+          $(document).on('click', '.btn-detail', function() {
+
+              let row = $(this).closest('tr');
+              let index = row.data('index');
+              let shipper = shippers[index];
+              let detailsHtml = `
+                <tr><th>Nombre</th><td>${shipper.shipper_name}</td></tr>
+                <tr><th>Contacto</th><td>${shipper.shipper_contact}</td></tr>
+                <tr><th>Email</th><td>${shipper.shipper_contact_email}</td></tr>
+                <tr><th>Teléfono</th><td>${shipper.shipper_contact_phone}</td></tr>
+                <tr><th>Dirección</th><td>${shipper.shipper_address}</td></tr>
+                <tr><th>Commodity</th><td>${shipper.commodity}</td></tr>
+                <tr><th>Valor de Carga</th><td>${shipper.load_value}</td></tr>
+                <tr><th>Nro. Paquetes</th><td>${shipper.nro_packages_consolidated}</td></tr>
+                <tr><th>Tipo de Empaque</th><td>${shipper.packaging_type_consolidated}</td></tr>
+                <tr><th>Volumen</th><td>${shipper.volumen}</td></tr>
+                <tr><th>Kilogramos</th><td>${shipper.kilograms}</td></tr>
+                <tr><th>Medidas</th><td>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Ítem</th>
+                                <th>Largo</th>
+                                <th>Ancho</th>
+                                <th>Alto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+              // Convertimos el objeto en un array de pares clave-valor y lo recorremos
+              Object.entries(shipper.value_measures).forEach(([key, measure]) => {
+                  detailsHtml += `
+                    <tr>
+                        <td>${measure.amount}</td>
+                        <td>${measure.length}</td>
+                        <td>${measure.width}</td>
+                        <td>${measure.height}</td>
+                    </tr>
+                `;
+              });
+
+              detailsHtml += `
+                        </tbody>
+                    </table>
+                </td></tr>
+            `;
+
+              $('#shipper-details').html(detailsHtml);
+              $('#modal-detail').modal('show');
+          });
+
+
           function getValueByName(name) {
+
+              let inputs = $('#form-consolidated').find('input, select').toArray();
               let element = inputs.find(el => $(el).attr('name') === name);
               return element ? $(element).val() : null;
           }
@@ -856,9 +996,7 @@
 
               });
 
-              if (!isValid) {
-                  return;
-              }
+              return isValid;
           }
 
 
