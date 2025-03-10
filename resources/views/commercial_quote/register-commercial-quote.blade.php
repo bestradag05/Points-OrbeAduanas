@@ -154,6 +154,15 @@
                                         type="text" name="volumen">
                                 </div>
                             </div>
+
+                            <div id="contenedor_kg_vol_consolidated" class="col-4 d-none">
+                                <div class="form-group">
+                                    <label for="kilogram_volumen">KGV:</label>
+                                    <input id="kilogram_volumen" class="form-control CurrencyInput" data-type="currency"
+                                        type="text" name="kilogram_volumen">
+                                </div>
+                            </div>
+
                             <div class="col-4">
                                 <div class="form-group">
                                     <label for="kilograms">Peso total:</label>
@@ -161,7 +170,7 @@
                                         type="text" name="kilograms">
                                 </div>
                             </div>
-                            
+
 
                             <div id="container-measures-consolidated" class="col-12 mt-2">
 

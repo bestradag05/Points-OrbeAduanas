@@ -12,7 +12,8 @@ class ConsolidatedCargos extends Model
     protected $table = 'consolidated_cargos';
 
     protected $fillable =
-    [
+    [       
+            'commercial_quote_id',
             'supplier_id',
             'supplier_temp',
             'commodity',

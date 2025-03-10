@@ -25,7 +25,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_incoterms');
             $table->unsignedBigInteger('id_type_load');
             $table->string('lcl_fcl')->nullable();
-            $table->string('commodity');
+            $table->string('commodity')->nullable();
             $table->string('nro_package')->nullable();
             $table->string('packaging_type')->nullable();
             $table->string('container_type')->nullable();

@@ -12,6 +12,7 @@ use App\Models\QuoteFreight;
 use App\Models\QuoteTransport;
 use App\Models\Regime;
 use App\Models\StateCountry;
+use App\Models\Supplier;
 use App\Models\TypeInsurance;
 use App\Models\TypeLoad;
 use App\Models\TypeService;
@@ -85,16 +86,20 @@ class CommercialQuoteController extends Controller
     public function store(Request $request)
     {
         $shippersConsolidated = json_decode($request->shippers_consolidated);
- 
+
         if ($request->is_consolidated) {
-            
+
+            $totalLoadValue = collect($shippersConsolidated)
+                ->map(fn($shipper) => ['load_value' => $this->parseDouble($shipper->load_value)])
+                ->sum('load_value');
+
             $commercialQuote = CommercialQuote::create([
                 'nro_quote_commercial' => $request->nro_quote_commercial,
                 'origin' => $request->origin,
                 'destination' => $request->destination,
                 'customer_ruc' => $request->customer_ruc != null ?  $request->customer_ruc : null,
                 'customer_company_name' => $request->customer_company_name != null ?  $request->customer_company_name : null,
-                'load_value' => $this->parseDouble($request->load_value),
+                'load_value' => $totalLoadValue,
                 'id_type_shipment' => $request->id_type_shipment,
                 'id_regime' => $request->id_regime,
                 'id_type_load' => $request->id_type_load,
@@ -106,9 +111,9 @@ class CommercialQuoteController extends Controller
                 'id_personal' => auth()->user()->personal->id,
             ]);
 
-            $this->storeConsolidateCarga($shippersConsolidated);
-
-
+            foreach ($shippersConsolidated as $shipper) {
+                $this->storeConsolidateCarga($shipper, $commercialQuote->id);
+            }
         } else {
             $this->validateForm($request, null);
 
@@ -163,26 +168,56 @@ class CommercialQuoteController extends Controller
         }
 
 
-
+        dd("Se registro");
         return redirect('commercial/quote/' . $commercialQuote->id . '/detail');
     }
 
 
-    public function storeConsolidateCarga($shippersConsolidated) {
+    public function storeConsolidateCarga($shipper, $idCommercialQuote)
+    {
 
-        
-        
-        ConsolidatedCargos::create([
-            'supplier_id',
-            'supplier_temp',
-            'commodity',
-            'load_value',
-            'nro_packages',
-            'packaging_type',
-            'volumen',
-            'kilograms',
-            'value_measures',
-        ]);
+        $existSupplier = Supplier::where('name_businessname', $shipper->shipper_name)->first();
+
+
+        if ($existSupplier) {
+
+
+            ConsolidatedCargos::create([
+                'commercial_quote_id' => $idCommercialQuote,
+                'supplier_id' => $existSupplier,
+                'supplier_temp' => null,
+                'commodity' => $shipper->commodity,
+                'load_value' => $this->parseDouble($shipper->load_value),
+                'nro_packages' => $shipper->nro_packages_consolidated,
+                'packaging_type' => $shipper->packaging_type_consolidated,
+                'volumen' => $this->parseDouble($shipper->volumen),
+                'kilograms' => $this->parseDouble($shipper->volumen),
+                'value_measures' => ($shipper->value_measures) ? json_encode($shipper->value_measures) : null,
+            ]);
+        } else {
+
+
+            $tempSupplier = [
+                "shipper_name" =>  $shipper->shipper_name,
+                "shipper_contact" =>  $shipper->shipper_contact,
+                "shipper_contact_email" =>  $shipper->shipper_contact_email,
+                "shipper_contact_phone" =>  $shipper->shipper_contact_phone,
+                "shipper_address" =>  $shipper->shipper_address
+            ];
+
+            ConsolidatedCargos::create([
+                'commercial_quote_id' => $idCommercialQuote,
+                'supplier_id' => null,
+                'supplier_temp' => json_encode($tempSupplier),
+                'commodity' => $shipper->commodity,
+                'load_value' => $this->parseDouble($shipper->load_value),
+                'nro_packages' => $shipper->nro_packages_consolidated,
+                'packaging_type' => $shipper->packaging_type_consolidated,
+                'volumen' => $this->parseDouble($shipper->volumen),
+                'kilograms' => $this->parseDouble($shipper->volumen),
+                'value_measures' => ($shipper->value_measures) ? json_encode($shipper->value_measures) : null,
+            ]);
+        }
     }
 
 

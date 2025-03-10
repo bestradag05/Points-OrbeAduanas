@@ -251,7 +251,7 @@
                   </div>
               </div>
 
-              <div class="col-4 d-none" id="containerTypeWrapper">
+              <div class="col-4 d-none fcl-fields" id="containerTypeWrapper">
                   <div class="form-group row">
                       <label for="container_type" class="col-sm-4 col-form-label">Tipo de contenedor</label>
                       <div class="col-sm-8">
@@ -333,7 +333,7 @@
               </div>
 
               <div class="col-4">
-                  <div id="contenedor_weight" class="form-group row d-none">
+                  <div id="contenedor_weight" class="form-group row lcl-fields d-none">
                       <label for="kilograms" class="col-sm-4 col-form-label">Peso Total : </label>
                       <div class="col-sm-8">
                           <input type="text"
@@ -348,7 +348,7 @@
                       </div>
                   </div>
 
-                  <div id="contenedor_tons" class="form-group row d-none">
+                  <div id="contenedor_tons" class="form-group row fcl-fields d-none">
                       <label for="tons" class="col-sm-4 col-form-label">Toneladas : </label>
                       <div class="col-sm-8">
                           <input type="text"
@@ -408,10 +408,14 @@
       </div>
 
       <div id="multipleProvidersSection" class="d-none">
+
+
           <div class="row justify-content-between px-5 mb-3">
               <button type="button" class="btn btn-indigo" onclick="showItemConsolidated()"><i
                       class="fas fa-plus"></i></button>
           </div>
+
+
 
           <table class="table">
               <thead>
@@ -433,6 +437,26 @@
 
 
           <input id="shippers_consolidated" type="hidden" name="shippers_consolidated" />
+
+          <div class="row">
+              <hr class="w-100">
+              <div class="col-6 mt-4 d-none fcl-fields" id="containerTypeWrapperConsolidated">
+                  <div class="form-group row">
+                      <label for="container_type" class="col-sm-4 col-form-label">Tipo de contenedor</label>
+                      <div class="col-sm-8">
+                          <input type="text" min="0" step="1"
+                              class="form-control @error('container_type') is-invalid @enderror" id="container_type"
+                              name="container_type" placeholder="Ingrese el tipo de contenedor.."
+                              value="{{ isset($routing) ? $routing->container_type : old('container_type') }}">
+                          @error('container_type')
+                              <span class="invalid-feedback d-block" role="alert">
+                                  <strong>{{ $message }}</strong>
+                              </span>
+                          @enderror
+                      </div>
+                  </div>
+              </div>
+          </div>
 
       </div>
 
@@ -491,6 +515,9 @@
           let currentPackage = 0;
           let arrayMeasures = {};
           let arrayMeasuresConsolidated = {};
+
+          //Tipo de embarque de la cotizacion:
+          let typeShipmentCurrent = {};
 
           document.addEventListener('DOMContentLoaded', function() {
 
@@ -604,6 +631,8 @@
                   success: function(respu) {
                       if (respu.description === "Marítima") {
 
+                          typeShipmentCurrent = respu;
+
                           $('#type_shipment_name').val(respu.description);
 
                           $('#lclfcl_content').children().first().removeClass('col-12').addClass('col-8');
@@ -611,9 +640,11 @@
 
                           $('#contenedor_volumen').removeClass('d-none');
                           $('#contenedor_kg_vol').addClass('d-none');
+                          $('#contenedor_kg_vol_consolidated').addClass('d-none');
 
                           $('#contenedor_volumen').find('input').val("");
                           $('#contenedor_kg_vol').find('input').val("");
+                          $('#contenedor_kg_vol_consolidated').find('input').val("");
 
 
 
@@ -629,12 +660,16 @@
 
                           $('#contenedor_volumen').addClass('d-none');
                           $('#contenedor_kg_vol').removeClass('d-none');
+                          $('#contenedor_kg_vol_consolidated').removeClass('d-none');
 
                           $('#contenedor_kg_vol').find('input').val("");
+                          $('#contenedor_kg_vol_consolidated').find('input').val("");
                           $('#contenedor_volumen').find('input').val("");
 
                           $('#containerTypeWrapper').find('input').val("");
                           $('#containerTypeWrapper').addClass('d-none');
+                          $('#containerTypeWrapperConsolidated').find('input').val("");
+                          $('#containerTypeWrapperConsolidated').addClass('d-none');
 
                           $('#contenedor_tons').find('input').val("");
                           $('#contenedor_tons').addClass('d-none');
@@ -653,9 +688,24 @@
           function toggleConsolidatedSection() {
               let isConsolidated = document.querySelector('input[name="is_consolidated"]:checked').value;
 
+
               if (isConsolidated === "1") {
                   document.getElementById("multipleProvidersSection").classList.remove("d-none");
                   document.getElementById("singleProviderSection").classList.add("d-none");
+
+                  let lcl_fcl = document.querySelector('input[name="lcl_fcl"]:checked');
+                  if (lcl_fcl) {
+                      const containerTypeWrapper = document.getElementById('containerTypeWrapperConsolidated');
+
+                      if (lcl_fcl.value === 'FCL') {
+                          containerTypeWrapper.classList.remove('d-none');
+                      } else {
+                          containerTypeWrapper.classList.add('d-none');
+                      }
+
+                  }
+
+
               } else {
                   document.getElementById("multipleProvidersSection").classList.add("d-none");
                   document.getElementById("singleProviderSection").classList.remove("d-none");
@@ -1003,44 +1053,34 @@
 
           document.querySelectorAll('input[name="lcl_fcl"]').forEach(radio => {
               radio.addEventListener('change', function() {
-                  const containerTypeWrapper = document.getElementById('containerTypeWrapper');
-                  const contenedor_tons = document.getElementById('contenedor_tons');
-                  const contenedor_weight = document.getElementById('contenedor_weight');
 
-                  // Si el valor es FCL, mostrar el campo
+                  const fclFields = document.querySelectorAll('.fcl-fields');
+                  const lclFields = document.querySelectorAll('.lcl-fields');
+
+
                   if (this.value === 'FCL') {
-                      containerTypeWrapper.classList.remove('d-none');
-                      contenedor_tons.classList.remove('d-none');
-                      contenedor_weight.classList.add('d-none');
+                      // Mostrar los campos FCL y ocultar los LCL
+                      fclFields.forEach(el => el.classList.remove('d-none'));
+                      lclFields.forEach(el => el.classList.add('d-none'));
 
-
-                      const parentElement = containerTypeWrapper.closest('.row');
+                      // Ajustar columnas de Bootstrap
+                      const parentElement = document.querySelector('.row');
                       if (parentElement) {
-                          const firstChild = parentElement.children[0]; // Primer hijo
-                          const secondChild = parentElement.children[1]; // Segundo hijo
-
-                          // Añade la clase 'col-6' a los dos primeros hijos
-                          if (firstChild) {
-                              firstChild.classList.add('col-4');
-                              firstChild.classList.remove('col-6');
-                          }
-                          if (secondChild) {
-
-                              secondChild.classList.add('col-4');
-                              secondChild.classList.remove('col-6')
-
+                          const children = parentElement.children;
+                          if (children.length > 1) {
+                              children[0].classList.add('col-4');
+                              children[0].classList.remove('col-6');
+                              children[1].classList.add('col-4');
+                              children[1].classList.remove('col-6');
                           }
                       }
-
                   } else {
-                      // Si no es FCL, ocultar el campo
-                      containerTypeWrapper.classList.add('d-none');
-                      contenedor_tons.classList.add('d-none');
-                      contenedor_weight.classList.remove('d-none');
+                      // Mostrar los campos LCL y ocultar los FCL
+                      fclFields.forEach(el => el.classList.add('d-none'));
+                      lclFields.forEach(el => el.classList.remove('d-none'));
 
-                      $('#containerTypeWrapper').find('input').val('');
-
-
+                      // Limpiar inputs dentro de los elementos ocultos
+                      document.querySelectorAll('.fcl-fields input').forEach(input => input.value = '');
                   }
               });
           });
