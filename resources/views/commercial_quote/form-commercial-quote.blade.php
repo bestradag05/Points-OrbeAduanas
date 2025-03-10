@@ -432,7 +432,7 @@
           </table>
 
 
-          <input id="shippers-consolidated" type="hidden" name="shippers-consolidated" />
+          <input id="shippers_consolidated" type="hidden" name="shippers_consolidated" />
 
       </div>
 
@@ -895,7 +895,7 @@
 
           // Función para actualizar el input hidden con el array `shippers`
           function updateHiddenInput() {
-              $('#shippers-consolidated').val(JSON.stringify(shippers));
+              $('#shippers_consolidated').val(JSON.stringify(shippers));
           }
 
 

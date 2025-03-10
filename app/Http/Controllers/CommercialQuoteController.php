@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CommercialQuote;
 use App\Models\Concepts;
+use App\Models\ConsolidatedCargos;
 use App\Models\Custom;
 use App\Models\Incoterms;
 use App\Models\Modality;
@@ -83,33 +84,60 @@ class CommercialQuoteController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validateForm($request, null);
+        $shippersConsolidated = json_decode($request->shippers_consolidated);
+ 
+        if ($request->is_consolidated) {
+            
+            $commercialQuote = CommercialQuote::create([
+                'nro_quote_commercial' => $request->nro_quote_commercial,
+                'origin' => $request->origin,
+                'destination' => $request->destination,
+                'customer_ruc' => $request->customer_ruc != null ?  $request->customer_ruc : null,
+                'customer_company_name' => $request->customer_company_name != null ?  $request->customer_company_name : null,
+                'load_value' => $this->parseDouble($request->load_value),
+                'id_type_shipment' => $request->id_type_shipment,
+                'id_regime' => $request->id_regime,
+                'id_type_load' => $request->id_type_load,
+                'id_incoterms' => $request->id_incoterms,
+                'container_type' => $request->container_type,
+                'lcl_fcl' => $request->lcl_fcl,
+                'nro_operation' => $request->nro_operation,
+                'observation' => $request->observation,
+                'id_personal' => auth()->user()->personal->id,
+            ]);
 
-        $commercialQuote = CommercialQuote::create([
-            'nro_quote_commercial' => $request->nro_quote_commercial,
-            'origin' => $request->origin,
-            'destination' => $request->destination,
-            'customer_ruc' => $request->customer_ruc != null ?  $request->customer_ruc : null,
-            'customer_company_name' => $request->customer_company_name != null ?  $request->customer_company_name : null,
-            'load_value' => $this->parseDouble($request->load_value),
-            'id_type_shipment' => $request->id_type_shipment,
-            'id_regime' => $request->id_regime,
-            'id_type_load' => $request->id_type_load,
-            'id_incoterms' => $request->id_incoterms,
-            'commodity' => $request->commodity,
-            'nro_package' => $request->nro_package,
-            'packaging_type' => $request->packaging_type,
-            'container_type' => $request->container_type,
-            'kilograms' => $request->kilograms != null ? $this->parseDouble($request->kilograms) : null,
-            'volumen' => $request->volumen != null ?  $this->parseDouble($request->volumen) : null,
-            'kilogram_volumen' => $request->kilogram_volumen != null ? $this->parseDouble($request->kilogram_volumen) : null,
-            'tons' => $request->tons != null ?  $this->parseDouble($request->tons) : null,
-            'lcl_fcl' => $request->lcl_fcl,
-            'measures' => $request->value_measures,
-            'nro_operation' => $request->nro_operation,
-            'observation' => $request->observation,
-            'id_personal' => auth()->user()->personal->id,
-        ]);
+            $this->storeConsolidateCarga($shippersConsolidated);
+
+
+        } else {
+            $this->validateForm($request, null);
+
+            $commercialQuote = CommercialQuote::create([
+                'nro_quote_commercial' => $request->nro_quote_commercial,
+                'origin' => $request->origin,
+                'destination' => $request->destination,
+                'customer_ruc' => $request->customer_ruc != null ?  $request->customer_ruc : null,
+                'customer_company_name' => $request->customer_company_name != null ?  $request->customer_company_name : null,
+                'load_value' => $this->parseDouble($request->load_value),
+                'id_type_shipment' => $request->id_type_shipment,
+                'id_regime' => $request->id_regime,
+                'id_type_load' => $request->id_type_load,
+                'id_incoterms' => $request->id_incoterms,
+                'commodity' => $request->commodity,
+                'nro_package' => $request->nro_package,
+                'packaging_type' => $request->packaging_type,
+                'container_type' => $request->container_type,
+                'kilograms' => $request->kilograms != null ? $this->parseDouble($request->kilograms) : null,
+                'volumen' => $request->volumen != null ?  $this->parseDouble($request->volumen) : null,
+                'kilogram_volumen' => $request->kilogram_volumen != null ? $this->parseDouble($request->kilogram_volumen) : null,
+                'tons' => $request->tons != null ?  $this->parseDouble($request->tons) : null,
+                'lcl_fcl' => $request->lcl_fcl,
+                'measures' => $request->value_measures,
+                'nro_operation' => $request->nro_operation,
+                'observation' => $request->observation,
+                'id_personal' => auth()->user()->personal->id,
+            ]);
+        }
 
 
         if (isset($request->type_service) || !empty($request->type_service)) {
@@ -138,6 +166,25 @@ class CommercialQuoteController extends Controller
 
         return redirect('commercial/quote/' . $commercialQuote->id . '/detail');
     }
+
+
+    public function storeConsolidateCarga($shippersConsolidated) {
+
+        
+        
+        ConsolidatedCargos::create([
+            'supplier_id',
+            'supplier_temp',
+            'commodity',
+            'load_value',
+            'nro_packages',
+            'packaging_type',
+            'volumen',
+            'kilograms',
+            'value_measures',
+        ]);
+    }
+
 
     public function createQuoteFreight($commercialQuote)
     {
@@ -318,7 +365,7 @@ class CommercialQuoteController extends Controller
         if ($commercialQuote->custom && $commercialQuote->custom->exists()) {
             $custom = $commercialQuote->custom;
         }
-        
+
         if ($commercialQuote->quote_transport->isNotEmpty()) {
             $transport = $commercialQuote->quote_transport->first()?->transport;
         }
