@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('load_value', 10, 2);
             $table->integer('nro_packages');
             $table->string('packaging_type', 50);
+            $table->decimal('kilogram_volumen', 10, 2)->nullable();
             $table->decimal('volumen', 10, 2)->nullable();
             $table->decimal('kilograms', 10, 2)->nullable();
             $table->json('value_measures')->nullable(); // JSON para medidas

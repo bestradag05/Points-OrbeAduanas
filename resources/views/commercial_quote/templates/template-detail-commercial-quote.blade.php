@@ -44,7 +44,8 @@
 
                 </div>
             </div>
-            <div class="col-12 border-bottom border-bottom-2">
+            <div
+                class="col-12 border-bottom border-bottom-2 {{ $comercialQuote->customer_company_name ? '' : 'd-none' }}">
                 <div class="form-group row">
                     <label class="col-sm-4 col-form-label">Cliente : </label>
                     <div class="col-sm-8">
@@ -54,94 +55,215 @@
 
                 </div>
             </div>
-            <div class="col-12 border-bottom border-bottom-2">
-                <div class="form-group row">
-                    <label class="col-sm-4 col-form-label">Producto / Mercancía : </label>
-                    <div class="col-sm-8">
-
-                        <p class="form-control-plaintext">{{ $comercialQuote->commodity }}</p>
-                    </div>
-
-                </div>
-            </div>
-
-            @if ($comercialQuote->type_shipment->description === 'Aérea')
+            @if ($comercialQuote->is_consolidated)
                 <div class="col-12 border-bottom border-bottom-2">
                     <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Peso KG : </label>
+                        <label class="col-sm-4 col-form-label">Carga Consolidada : </label>
                         <div class="col-sm-8">
 
-                            <p class="form-control-plaintext">{{ $comercialQuote->kilograms }}</p>
+                            <p class="form-control-plaintext">SI</p>
                         </div>
 
                     </div>
                 </div>
+
+                @foreach ($comercialQuote->consolidatedCargos as $consolidated)
+                    @php
+                        $shipper = json_decode($consolidated->supplier_temp);
+                        $measures = json_decode($consolidated->value_measures);
+                    @endphp
+
+
+                    <div class="col-12 border-bottom border-bottom-2">
+                        <div class="accordion" id="accordionConsolidated">
+                            <div>
+                                <h2 class="mb-0">
+                                    <button
+                                        class="btn btn-link btn-block px-0 text-dark text-semibold text-left d-flex align-items-center"
+                                        type="button" data-toggle="collapse"
+                                        data-target="#collapse{{ $consolidated->id }}" aria-expanded="true">
+                                        <span class="text-indigo text-bold">Shipper {{ $loop->iteration }}</span>: {{ $shipper->shipper_name }}
+                                        <i class="fas fa-sort-down mx-3"></i>
+                                    </button>
+                                </h2>
+                            </div>
+
+                            <div id="collapse{{ $consolidated->id }}" class="collapse"
+                                data-parent="#accordionConsolidated">
+
+                                <div class="row text-muted px-5">
+                                    <div class="col-12  {{ $shipper->shipper_name ? '' : 'd-none' }}">
+                                        <p class="text-sm">Proovedor :
+                                            <b class="d-block">{{ $shipper->shipper_name }}</b>
+                                        </p>
+                                    </div>
+
+                                    <div class="col-4">
+                                        <p class="text-sm">Contacto :
+                                            <b class="d-block">{{ $shipper->shipper_contact }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p class="text-sm">Email :
+                                            <b class="d-block">{{ $shipper->shipper_contact_email }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p class="text-sm">Telefono :
+                                            <b class="d-block">{{ $shipper->shipper_contact_phone }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="col-12">
+                                        <p class="text-sm">Direccion :
+                                            <b class="d-block">{{ $shipper->shipper_address }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="col-12">
+                                        <p class="text-sm">Descripcion de carga :
+                                            <b class="d-block">{{ $consolidated->commodity }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="col-12">
+                                        <p class="text-sm">Valor del producto :
+                                            <b class="d-block">{{ $consolidated->load_value }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="text-sm">N° de Bultos :
+                                            <b class="d-block">{{ $consolidated->nro_packages }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="text-sm">Tipo de embalaje :
+                                            <b class="d-block">{{ $consolidated->packaging_type }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="text-sm">Volumen :
+                                            <b class="d-block">{{ $consolidated->volumen }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="text-sm">Peso :
+                                            <b class="d-block">{{ $consolidated->kilograms }}</b>
+                                        </p>
+                                    </div>
+
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <th>Cantidad</th>
+                                            <th>Ancho (cm)</th>
+                                            <th>Largo (cm)</th>
+                                            <th>Alto (cm)</th>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($measures as $measure)
+                                                <tr>
+                                                    <td>{{ $measure->amount }}</td>
+                                                    <td>{{ $measure->width }}</td>
+                                                    <td>{{ $measure->length }}</td>
+                                                    <td>{{ $measure->height }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            @else
                 <div class="col-12 border-bottom border-bottom-2">
                     <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">KGV : </label>
+                        <label class="col-sm-4 col-form-label">Producto / Mercancía : </label>
                         <div class="col-sm-8">
 
-                            <p class="form-control-plaintext">{{ $comercialQuote->kilogram_volumen }}</p>
+                            <p class="form-control-plaintext">{{ $comercialQuote->commodity }}</p>
                         </div>
 
                     </div>
                 </div>
-            @endif
 
-            @if ($comercialQuote->type_shipment->description === 'Marítima')
-                @if ($comercialQuote->lcl_fcl === 'FCL')
+                @if ($comercialQuote->type_shipment->description === 'Aérea')
                     <div class="col-12 border-bottom border-bottom-2">
                         <div class="form-group row">
-                            <label class="col-sm-4 col-form-label">Contenedor : </label>
+                            <label class="col-sm-4 col-form-label">Peso KG : </label>
                             <div class="col-sm-8">
 
-                                <p class="form-control-plaintext">{{ $comercialQuote->container_type }}</p>
+                                <p class="form-control-plaintext">{{ $comercialQuote->kilograms }}</p>
                             </div>
 
                         </div>
                     </div>
                     <div class="col-12 border-bottom border-bottom-2">
                         <div class="form-group row">
-                            <label class="col-sm-4 col-form-label">Toneladas : </label>
+                            <label class="col-sm-4 col-form-label">KGV : </label>
                             <div class="col-sm-8">
 
-                                <p class="form-control-plaintext">{{ $comercialQuote->tons }}</p>
+                                <p class="form-control-plaintext">{{ $comercialQuote->kilogram_volumen }}</p>
                             </div>
 
                         </div>
                     </div>
+                @endif
 
-                @else
+                @if ($comercialQuote->type_shipment->description === 'Marítima')
+                    @if ($comercialQuote->lcl_fcl === 'FCL')
+                        <div class="col-12 border-bottom border-bottom-2">
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Contenedor : </label>
+                                <div class="col-sm-8">
 
-                <div class="col-12 border-bottom border-bottom-2">
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Peso : </label>
-                        <div class="col-sm-8">
+                                    <p class="form-control-plaintext">{{ $comercialQuote->container_type }}</p>
+                                </div>
 
-                            <p class="form-control-plaintext">{{ $comercialQuote->kilograms }}</p>
+                            </div>
                         </div>
+                        <div class="col-12 border-bottom border-bottom-2">
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Toneladas : </label>
+                                <div class="col-sm-8">
 
+                                    <p class="form-control-plaintext">{{ $comercialQuote->tons }}</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    @else
+                        <div class="col-12 border-bottom border-bottom-2">
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Peso : </label>
+                                <div class="col-sm-8">
+
+                                    <p class="form-control-plaintext">{{ $comercialQuote->kilograms }}</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    @endif
+                    <div class="col-12 border-bottom border-bottom-2">
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Volumen : </label>
+                            <div class="col-sm-8">
+
+                                <p class="form-control-plaintext">{{ $comercialQuote->volumen }}</p>
+                            </div>
+
+                        </div>
                     </div>
-                </div>
-
 
                 @endif
-                <div class="col-12 border-bottom border-bottom-2">
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label">Volumen : </label>
-                        <div class="col-sm-8">
 
-                            <p class="form-control-plaintext">{{ $comercialQuote->volumen }}</p>
-                        </div>
 
-                    </div>
-                </div>
 
             @endif
 
+
             <div class="col-12" id="extraFieldsOpen">
-                <a class="btn btn-link btn-block text-center" data-bs-toggle="collapse" data-bs-target="#extraFields">
-                    <i class="fas fa-sort-down fa-lg"></i>
+                <a class="btn btn-link btn-block text-center" data-bs-toggle="collapse"
+                    data-bs-target="#extraFields" onclick="toggleArrows(true)">
+                    <i class="fas fa-sort-down " id="arrowDown"></i>
                 </a>
             </div>
 
@@ -201,8 +323,8 @@
                 </div>
 
                 <div class="col-12 text-center mt-3">
-                    <a class="btn btn-link text-center" data-bs-toggle="collapse" data-bs-target="#extraFields">
-                        <i class="fas fa-sort-up"></i>
+                    <a class="btn btn-link text-center" data-bs-toggle="collapse" data-bs-target="#extraFields" onclick="toggleArrows(false)">
+                        <i class="fas fa-sort-up" id="arrowUp"></i>
                     </a>
                 </div>
 
@@ -299,10 +421,10 @@
                     <th>N° cotizacion</th>
                     <th>Origen</th>
                     <th>Destino</th>
-                    <th>Producto</th>
+                    <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Producto</th>
                     <th>LCL / FCL</th>
-                    <th>Cubicaje-KGV</th>
-                    <th>Tonelada-KG</th>
+                    <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Cubicaje-KGV</th>
+                    <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Tonelada-KG</th>
                     <th>N° de operacion</th>
                     <th>Fecha</th>
                     <th>Estado</th>
@@ -316,10 +438,13 @@
                             <td>{{ $quote->nro_quote }}</td>
                             <td>{{ $quote->origin }}</td>
                             <td>{{ $quote->destination }}</td>
-                            <td>{{ $quote->commodity }}</td>
+                            <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
+                                {{ $quote->commodity }}</td>
                             <td>{{ $quote->commercial_quote->lcl_fcl }}</td>
-                            <td>{{ $quote->cubage_kgv }}</td>
-                            <td>{{ $quote->ton_kilogram }}</td>
+                            <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
+                                {{ $quote->cubage_kgv }}</td>
+                            <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
+                                {{ $quote->ton_kilogram }}</td>
                             <td>{{ $quote->nro_quote_commercial }}</td>
                             <td>{{ \Carbon\Carbon::parse($quote->created_at)->format('d/m/Y') }}</td>
                             <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
@@ -353,12 +478,11 @@
                 <thead class="thead-dark">
                     <th>#</th>
                     <th>N° cotizacion</th>
-                    <th>Cliente</th>
                     <th>Recojo</th>
                     <th>Entrega</th>
                     <th>LCL / FCL</th>
-                    <th>Cubicaje-KGV</th>
-                    <th>Tonelada-KG</th>
+                    <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Cubicaje-KGV</th>
+                    <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Tonelada-KG</th>
                     <th>N° de operacion</th>
                     <th>Fecha</th>
                     <th>Estado</th>
@@ -370,12 +494,13 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $quote->nro_quote }}</td>
-                            <td>{{ $quote->commercial_quote->customer_company_name }}</td>
                             <td>{!! $quote->pick_up ? e($quote->pick_up) : '<span class="text-muted">Falta información</span>' !!}</td>
                             <td>{!! $quote->delivery ? e($quote->delivery) : '<span class="text-muted">Falta información</span>' !!}</td>
                             <td>{{ $quote->commercial_quote->lcl_fcl }}</td>
-                            <td>{{ $quote->cubage_kgv }}</td>
-                            <td>{{ $quote->ton_kilogram }}</td>
+                            <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
+                                {{ $quote->cubage_kgv }}</td>
+                            <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
+                                {{ $quote->ton_kilogram }}</td>
                             <td>{{ $quote->nro_quote_commercial }}</td>
                             <td>{{ \Carbon\Carbon::parse($quote->created_at)->format('d/m/Y') }}</td>
                             <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
@@ -643,5 +768,27 @@
                 errorSpan.style.display = 'none';
             }
         }
+
+        function toggleArrows(isOpening){
+            var arrowDown = document.getElementById('arrowDown');
+            var arrowUp = document.getElementById('arrowUp');
+
+            if(isOpening){
+                arrowDown.style.display = 'none';
+                arrowUp.style.display = 'inline';
+            }else{
+                arrowDown.style.display = 'inline';
+                arrowUp.style.display = 'none';
+            }
+        }
+
+        document.getElementById('extraFields').addEventListener('show.bs.collapse', function() {
+            toggleArrows(true);
+        });
+
+        document.getElementById('extraFields').addEventListener('hide.bs.collapse', function() {
+            toggleArrows(false);
+        });
+
     </script>
 @endpush

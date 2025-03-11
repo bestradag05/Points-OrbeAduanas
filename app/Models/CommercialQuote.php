@@ -25,6 +25,7 @@ class CommercialQuote extends Model
         'id_incoterms',
         'id_type_load',
         'lcl_fcl',
+        'is_consolidated',
         'commodity',
         'nro_package',
         'packaging_type',
@@ -94,6 +95,11 @@ class CommercialQuote extends Model
     public function quote_transport()
     {
         return $this->hasMany(QuoteTransport::class, 'nro_quote_commercial', 'nro_quote_commercial'); // 'routing_id' es la clave foránea en la tabla cotizaciones
+    }
+
+    public function consolidatedCargos()
+    {
+        return $this->hasMany(ConsolidatedCargos::class, 'commercial_quote_id', 'id');
     }
 
 }

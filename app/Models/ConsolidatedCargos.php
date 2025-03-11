@@ -20,10 +20,17 @@ class ConsolidatedCargos extends Model
             'load_value',
             'nro_packages',
             'packaging_type',
+            'kilogram_volumen',
             'volumen',
             'kilograms',
             'value_measures',
     ];
+
+
+    public function commercialQuote()
+    {
+        return $this->belongsTo(CommercialQuote::class, 'commercial_quote_id', 'id');
+    }
 
 
 }
