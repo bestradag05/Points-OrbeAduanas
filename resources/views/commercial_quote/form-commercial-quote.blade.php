@@ -140,13 +140,14 @@
           </div>
 
           <div class="col-6">
-              <x-adminlte-select2 name="id_incoterms" label="Incoterms" igroup-size="md"
+            <label for="customer_company_name">Incoterm</label> <a href=""><i class="fas fa-info-circle"></i></a>
+              <x-adminlte-select2 name="id_incoterms" igroup-size="md"
                   data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($incoterms as $incoter)
                       <option value="{{ $incoter->id }}"
                           {{ (isset($routing->id_incoterms) && $routing->id_incoterms == $incoter->id) || old('id_incoterms') == $incoter->id ? 'selected' : '' }}>
-                          {{ $incoter->code }}</option>
+                          {{ $incoter->code }}  ({{$incoter->name}})</option>
                   @endforeach
               </x-adminlte-select2>
           </div>
@@ -639,6 +640,7 @@
                           $('#lclfcl_content').children().last().removeClass('d-none').addClass('d-flex');
 
                           $('#contenedor_volumen').removeClass('d-none');
+                          $('#contenedor_vol_consolidated').removeClass('d-none');
                           $('#contenedor_kg_vol').addClass('d-none');
                           $('#contenedor_kg_vol_consolidated').addClass('d-none');
 
@@ -659,12 +661,14 @@
                           $('input[name="lcl_fcl"]').prop('checked', false);
 
                           $('#contenedor_volumen').addClass('d-none');
+                          $('#contenedor_vol_consolidated').addClass('d-none');
                           $('#contenedor_kg_vol').removeClass('d-none');
                           $('#contenedor_kg_vol_consolidated').removeClass('d-none');
 
                           $('#contenedor_kg_vol').find('input').val("");
                           $('#contenedor_kg_vol_consolidated').find('input').val("");
                           $('#contenedor_volumen').find('input').val("");
+                          $('#contenedor_vol_consolidated').find('input').val("");
 
                           $('#containerTypeWrapper').find('input').val("");
                           $('#containerTypeWrapper').addClass('d-none');

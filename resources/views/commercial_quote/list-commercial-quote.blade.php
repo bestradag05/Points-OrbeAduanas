@@ -4,7 +4,7 @@
     <div class="d-flex justify-content-between">
         <h2>Cotizacion </h2>
         <div>
-            <a href="{{ 'routing/create' }}" class="btn btn-primary"> Agregar </a>
+            <a href="{{'/commercial/quote/create'}}" class="btn btn-primary"> Agregar </a>
         </div>
     </div>
 
@@ -24,6 +24,8 @@
                 <td class="text-uppercase">{{ $commercial_quote->customer_company_name }}</td>
                 <td>{{ $commercial_quote->type_shipment->description .' '.(($commercial_quote->type_shipment->description  === 'Marítima') ? $commercial_quote->lcl_fcl : '') }}</td>
                 <td>{{ $commercial_quote->personal->names }}</td>
+                <td>{{ $commercial_quote->is_consolidated ? 'SI' : 'NO'}}</td>
+                <td>{{ \Carbon\Carbon::parse($commercial_quote->created_at)->format('d/m/Y') }}</td> 
                 <td class="{{ $commercial_quote->state == 'Activo' ? 'text-success' : 'text-danger' }}">{{ $commercial_quote->state }}</td>
 
                 <td>

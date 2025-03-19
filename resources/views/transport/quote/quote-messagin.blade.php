@@ -71,18 +71,11 @@
                         <b class="d-block">{{ $quote->nro_quote }}</b>
                     </p>
                 </div>
-                {{-- <div class="col-6">
-                    <p class="text-sm">Cliente :
-                        <b class="d-block">{{ $quote->routing->customer->name_businessname }}</b>
-                    </p>
-                </div> --}}
-                <div class="col-6">
+                <div class="col-6 {{ $quote->commercial_quote->customer_company_name ? '' : 'd-none' }}">
                     <p class="text-sm">Cliente :
                         <b class="d-block">{{ $quote->commercial_quote->customer_company_name }}</b>
                     </p>
                 </div>
-            </div>
-            <div class="row text-muted">
                 <div class="col-6">
                     <p class="text-sm">Origen :
                         <b class="d-block">{{ $quote->pick_up }}</b>
@@ -93,14 +86,6 @@
                         <b class="d-block">{{ $quote->delivery }}</b>
                     </p>
                 </div>
-            </div>
-            <div class="row text-muted">
-                {{--  <div class="col-6">
-                    <p class="text-sm">Tipo de embarque :
-                        <b class="d-block">{{ $quote->routing->type_shipment->description }}
-                            {{ $quote->routing->lcl_fcl != null ? '(' . $quote->routing->lcl_fcl . ')' : '' }}</b>
-                    </p>
-                </div> --}}
                 <div class="col-6">
                     <p class="text-sm">Tipo de embarque :
                         <b class="d-block">{{ $quote->commercial_quote->type_shipment->description }}
@@ -112,100 +97,173 @@
                         <b class="d-block">{{ $quote->load_type }}</b>
                     </p>
                 </div>
-            </div>
-            <div class="row text-muted">
-                <div class="col-6">
-                    <p class="text-sm">Descripcion :
-                        <b class="d-block">{{ $quote->commodity }}</b>
-                    </p>
-                </div>
-                <div class="col-6">
-                    <p class="text-sm">Tipo de embalaje :
-                        <b class="d-block">{{ $quote->packaging_type }}</b>
-                    </p>
-                </div>
-            </div>
-            {{--  @if ($quote->routing->lcl_fcl === 'LCL' || $quote->routing->lcl_fcl === null)
-                <div class="row text-muted">
-                    <div class="col-6">
-                        <p class="text-sm">Cubicaje/KGV :
-                            <b class="d-block">{{ $quote->cubage_kgv }}</b>
-                        </p>
-                    </div>
-                    <div class="col-6">
-                        <p class="text-sm">Peso total :
-                            <b class="d-block">{{ $quote->total_weight }}</b>
-                        </p>
-                    </div>
-                </div>
-            @else
-                <div class="row text-muted">
-                    <div class="col-6">
-                        <p class="text-sm">Tipo de contenedor :
-                            <b class="d-block">{{ $quote->container_type }}</b>
-                        </p>
-                    </div>
-                    <div class="col-6">
-                        <p class="text-sm">Toneladas/Kilogramos :
-                            <b class="d-block">{{ $quote->ton_kilogram }}</b>
-                        </p>
-                    </div>
-                </div>
-            @endif --}}
 
-            @if ($quote->commercial_quote->lcl_fcl === 'LCL' || $quote->commercial_quote->lcl_fcl === null)
+                
+                
+            </div>
+
+            @if ($quote->commercial_quote->is_consolidated)
                 <div class="row text-muted">
                     <div class="col-6">
-                        <p class="text-sm">Cubicaje/KGV :
-                            <b class="d-block">{{ $quote->cubage_kgv }}</b>
-                        </p>
-                    </div>
-                    <div class="col-6">
-                        <p class="text-sm">Peso total :
-                            <b class="d-block">{{ $quote->total_weight }}</b>
-                        </p>
-                    </div>
-                </div>
-                <div class="row text-muted">
-                    <div class="col-6">
-                        <p class="text-sm">Cuadrilla :
-                            <b class="d-block">{{ $quote->gang }}</b>
-                        </p>
-                    </div>
-                    <div class="col-6">
-                        <p class="text-sm">Apilable :
-                            <b class="d-block">{{ $quote->stackable }}</b>
-                        </p>
-                    </div>
-                </div>
-            @else
-                <div class="row text-muted">
-                    <div class="col-6">
-                        <p class="text-sm">Tipo de contenedor :
-                            <b class="d-block">{{ $quote->container_type }}</b>
-                        </p>
-                    </div>
-                    <div class="col-6">
-                        <p class="text-sm">Toneladas/Kilogramos :
-                            <b class="d-block">{{ $quote->ton_kilogram }}</b>
+                        <p class="text-sm">Consolidado :
+                            <b class="d-block"> SI </b>
                         </p>
                     </div>
                 </div>
 
+                <h5 class="text-center text-indigo" style="text-decoration: underline;  text-underline-offset: 4px;">Detalle de consolidado</h5>
+
+                @foreach ($quote->commercial_quote->consolidatedCargos as $consolidated)
+                    @php
+                        $shipper = json_decode($consolidated->supplier_temp);
+                        $measures = json_decode($consolidated->value_measures);
+                    @endphp
+
+
+                    <div class="col-12 border-bottom border-bottom-2">
+                        <div class="accordion" id="accordionConsolidated">
+                            <div>
+                                <h2 class="mb-0">
+                                    <button
+                                        class="btn btn-link btn-block px-0 text-muted text-semibold text-left d-flex align-items-center"
+                                        type="button" data-toggle="collapse"
+                                        data-target="#collapse{{ $consolidated->id }}" aria-expanded="true">
+                                        <span class="text-indigo">Shipper {{ $loop->iteration }}</span>: {{ $shipper->shipper_name }}
+                                        <i class="fas fa-sort-down mx-3"></i>
+                                    </button>
+                                </h2>
+                            </div>
+
+                            <div id="collapse{{ $consolidated->id }}" class="collapse"
+                                data-parent="#accordionConsolidated">
+
+                                <div class="row text-muted px-5">
+                                    <div class="col-12  {{ $shipper->shipper_name ? '' : 'd-none' }}">
+                                        <p class="text-sm">Proovedor :
+                                            <b class="d-block">{{ $shipper->shipper_name }}</b>
+                                        </p>
+                                    </div>
+
+                                    <div class="col-4">
+                                        <p class="text-sm">Contacto :
+                                            <b class="d-block">{{ $shipper->shipper_contact }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p class="text-sm">Email :
+                                            <b class="d-block">{{ $shipper->shipper_contact_email }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="col-4">
+                                        <p class="text-sm">Telefono :
+                                            <b class="d-block">{{ $shipper->shipper_contact_phone }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="col-12">
+                                        <p class="text-sm">Direccion :
+                                            <b class="d-block">{{ $shipper->shipper_address }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="col-12">
+                                        <p class="text-sm">Descripcion de carga :
+                                            <b class="d-block">{{ $consolidated->commodity }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="col-12">
+                                        <p class="text-sm">Valor del producto :
+                                            <b class="d-block">{{ $consolidated->load_value }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="text-sm">N° de Bultos :
+                                            <b class="d-block">{{ $consolidated->nro_packages }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="text-sm">Tipo de embalaje :
+                                            <b class="d-block">{{ $consolidated->packaging_type }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="text-sm">Volumen :
+                                            <b class="d-block">{{ $consolidated->volumen }}</b>
+                                        </p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="text-sm">Peso :
+                                            <b class="d-block">{{ $consolidated->kilograms }}</b>
+                                        </p>
+                                    </div>
+
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <th>Cantidad</th>
+                                            <th>Ancho (cm)</th>
+                                            <th>Largo (cm)</th>
+                                            <th>Alto (cm)</th>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($measures as $measure)
+                                                <tr>
+                                                    <td>{{ $measure->amount }}</td>
+                                                    <td>{{ $measure->width }}</td>
+                                                    <td>{{ $measure->length }}</td>
+                                                    <td>{{ $measure->height }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            @else
                 <div class="row text-muted">
                     <div class="col-6">
-                        <p class="text-sm">Cuadrilla :
-                            <b class="d-block">{{ $quote->gang }}</b>
+                        <p class="text-sm">Descripcion :
+                            <b class="d-block">{{ $quote->commodity }}</b>
                         </p>
                     </div>
                     <div class="col-6">
-                        <p class="text-sm">Resguardo :
-                            <b class="d-block">{{ $quote->guard }}</b>
+                        <p class="text-sm">Tipo de embalaje :
+                            <b class="d-block">{{ $quote->packaging_type }}</b>
                         </p>
                     </div>
                 </div>
+
+                @if ($quote->commercial_quote->lcl_fcl === 'LCL' || $quote->commercial_quote->lcl_fcl === null)
+                    <div class="row text-muted">
+                        <div class="col-6">
+                            <p class="text-sm">Cubicaje/KGV :
+                                <b class="d-block">{{ $quote->cubage_kgv }}</b>
+                            </p>
+                        </div>
+                        <div class="col-6">
+                            <p class="text-sm">Peso total :
+                                <b class="d-block">{{ $quote->total_weight }}</b>
+                            </p>
+                        </div>
+                    </div>
+                @else
+                    <div class="row text-muted">
+                        <div class="col-6">
+                            <p class="text-sm">Tipo de contenedor :
+                                <b class="d-block">{{ $quote->container_type }}</b>
+                            </p>
+                        </div>
+                        <div class="col-6">
+                            <p class="text-sm">Toneladas/Kilogramos :
+                                <b class="d-block">{{ $quote->ton_kilogram }}</b>
+                            </p>
+                        </div>
+                    </div>
+                @endif
+
+
             @endif
-
+        
 
 
             <div class="row text-muted mt-3">

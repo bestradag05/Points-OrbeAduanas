@@ -57,6 +57,8 @@ class CommercialQuoteController extends Controller
             'Cliente',
             'Tipo de embarque',
             'Asesor Comercial',
+            'Consolidado',
+            'Fecha',
             'Estado',
             'Acciones'
         ];
@@ -169,8 +171,6 @@ class CommercialQuoteController extends Controller
             }
         }
 
-
-        dd("Se registro");
         return redirect('commercial/quote/' . $commercialQuote->id . '/detail');
     }
 
@@ -247,6 +247,7 @@ class CommercialQuoteController extends Controller
 
     public function createQuoteTransport($commercialQuote)
     {
+        
         QuoteTransport::create([
             /* 'pick_up' => $request->pick_up,
             'delivery' => $request->delivery,
@@ -259,7 +260,7 @@ class CommercialQuoteController extends Controller
             'container_type' => $commercialQuote->container_type,
             'ton_kilogram' => ($commercialQuote->lcl_fcl === 'FCL') ? $commercialQuote->tons : $commercialQuote->kilograms,
             /* 'stackable' => $request->stackable, */
-            'cubage_kgv' => ($commercialQuote->lcl_fcl === 'FCL') ? $commercialQuote->volumen : $commercialQuote->kilogram_volumen,
+            'cubage_kgv' => ($commercialQuote->lcl_fcl === 'FCL' || $commercialQuote->lcl_fcl === 'LCL') ? $commercialQuote->volumen : $commercialQuote->kilogram_volumen,
             'packages' => $commercialQuote->nro_package,
             'measures' => $commercialQuote->measures,
             'lcl_fcl' => $commercialQuote->lcl_fcl,

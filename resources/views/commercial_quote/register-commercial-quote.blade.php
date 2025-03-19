@@ -147,7 +147,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-4">
+                            <div id="contenedor_vol_consolidated" class="col-4">
                                 <div class="form-group">
                                     <label for="volumen">Volumen:</label>
                                     <input id="volumen" class="form-control CurrencyInput" data-type="currency"

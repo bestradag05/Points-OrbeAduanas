@@ -31,7 +31,7 @@ return new class extends Migration
             $table->string('total_weight')->nullable();
             $table->string('packages')->nullable();
             $table->string('measures')->nullable();
-            $table->string('lcl_fcl');
+            $table->string('lcl_fcl')->nullable();
             $table->unsignedBigInteger('id_type_shipment')->nullable();
             $table->text('observations')->nullable();
             $table->decimal('cost_transport', 8, 2)->nullable();

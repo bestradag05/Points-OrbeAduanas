@@ -305,7 +305,8 @@
                         <div class="col-sm-8">
 
                             <p class="form-control-plaintext">
-                                {{ $comercialQuote->type_shipment->description . ' (' . ($comercialQuote->type_shipment->description === 'Marítima' ? $comercialQuote->lcl_fcl : '') . ')' }}
+                                {{ $comercialQuote->type_shipment->description . ($comercialQuote->type_shipment->description === 'Marítima' && $comercialQuote->lcl_fcl ? ' (' . $comercialQuote->lcl_fcl . ')' : '') }}
+
                             </p>
                         </div>
 
@@ -422,7 +423,7 @@
                     <th>Origen</th>
                     <th>Destino</th>
                     <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Producto</th>
-                    <th>LCL / FCL</th>
+                    <th class="{{$comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none'}}">LCL / FCL</th>
                     <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Cubicaje-KGV</th>
                     <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Tonelada-KG</th>
                     <th>N° de operacion</th>
@@ -432,6 +433,7 @@
                 </thead>
                 <tbody>
 
+
                     @foreach ($comercialQuote->quote_freight as $quote)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
@@ -440,7 +442,7 @@
                             <td>{{ $quote->destination }}</td>
                             <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
                                 {{ $quote->commodity }}</td>
-                            <td>{{ $quote->commercial_quote->lcl_fcl }}</td>
+                            <td class="{{$comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none'}}">{{ $quote->commercial_quote->lcl_fcl }}</td>
                             <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
                                 {{ $quote->cubage_kgv }}</td>
                             <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
@@ -480,7 +482,7 @@
                     <th>N° cotizacion</th>
                     <th>Recojo</th>
                     <th>Entrega</th>
-                    <th>LCL / FCL</th>
+                    <th class="{{$comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none'}}">LCL / FCL</th>
                     <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Cubicaje-KGV</th>
                     <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Tonelada-KG</th>
                     <th>N° de operacion</th>
@@ -496,7 +498,7 @@
                             <td>{{ $quote->nro_quote }}</td>
                             <td>{!! $quote->pick_up ? e($quote->pick_up) : '<span class="text-muted">Falta información</span>' !!}</td>
                             <td>{!! $quote->delivery ? e($quote->delivery) : '<span class="text-muted">Falta información</span>' !!}</td>
-                            <td>{{ $quote->commercial_quote->lcl_fcl }}</td>
+                            <td class="{{$comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none'}}">{{ $quote->commercial_quote->lcl_fcl }}</td>
                             <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
                                 {{ $quote->cubage_kgv }}</td>
                             <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
@@ -566,46 +568,6 @@
                     <div class="form-group" id="container_return">
                         <label for="container_return">Devolución de contenedor</label>
                         <input id="container_return" class="form-control" type="text" name="container_return">
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="gang" class="col-sm-4 col-form-label">Cuadrilla</label>
-                        <div class="col-sm-8 row align-items-center">
-                            <div class="form-check d-inline mx-2">
-                                <input type="radio" id="radioGang" name="gang" value="SI"
-                                    class="form-check-input">
-                                <label for="radioGang" class="form-check-label">
-                                    SI
-                                </label>
-                            </div>
-                            <div class="form-check d-inline mx-2">
-                                <input type="radio" id="radioGang" name="gang" value="NO"
-                                    class="form-check-input">
-                                <label for="radioGang" class="form-check-label">
-                                    NO
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group row" id="container-guard">
-                        <label for="guard" class="col-sm-4 col-form-label">Resguardo</label>
-                        <div class="col-sm-8">
-                            <div class="form-check d-inline">
-                                <input type="radio" id="radioGuard" name="guard" value="SI"
-                                    class="form-check-input">
-                                <label for="radioGuard" class="form-check-label">
-                                    SI
-                                </label>
-                            </div>
-                            <div class="form-check d-inline">
-                                <input type="radio" id="radioGuard" name="guard" value="NO"
-                                    class="form-check-input">
-                                <label for="radioGuard" class="form-check-label">
-                                    NO
-                                </label>
-                            </div>
-                        </div>
                     </div>
 
 
