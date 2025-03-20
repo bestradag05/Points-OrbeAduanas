@@ -140,7 +140,10 @@
           </div>
 
           <div class="col-6">
-            <label for="customer_company_name">Incoterm</label> <a href=""><i class="fas fa-info-circle"></i></a>
+            <label for="customer_company_name">Incoterm</label>
+            <a href="#" data-bs-toggle="modal" data-bs-target="#incotermModal">
+                <i class="fas fa-info-circle"></i>
+            </a>
               <x-adminlte-select2 name="id_incoterms" igroup-size="md"
                   data-placeholder="Seleccione una opcion...">
                   <option />
@@ -499,6 +502,17 @@
       <button type="submit" class="btn btn-indigo mt-5" onclick="submitForm()">Guardar</button>
   </div>
 
+
+  <!-- Modal de Bootstrap -->
+<div class="modal fade" id="incotermModal" tabindex="-1" aria-labelledby="incotermModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-body text-center p-0">
+                <img src="{{ asset('storage/incoterms/incoterms.jpg') }}" class="img-fluid" alt="Información sobre Incoterms">
+            </div>
+        </div>
+    </div>
+</div>
 
 
 

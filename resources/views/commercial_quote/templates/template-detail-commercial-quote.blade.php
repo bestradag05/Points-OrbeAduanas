@@ -82,7 +82,8 @@
                                         class="btn btn-link btn-block px-0 text-dark text-semibold text-left d-flex align-items-center"
                                         type="button" data-toggle="collapse"
                                         data-target="#collapse{{ $consolidated->id }}" aria-expanded="true">
-                                        <span class="text-indigo text-bold">Shipper {{ $loop->iteration }}</span>: {{ $shipper->shipper_name }}
+                                        <span class="text-indigo text-bold">Shipper {{ $loop->iteration }}</span>:
+                                        {{ $shipper->shipper_name }}
                                         <i class="fas fa-sort-down mx-3"></i>
                                     </button>
                                 </h2>
@@ -261,8 +262,8 @@
 
 
             <div class="col-12" id="extraFieldsOpen">
-                <a class="btn btn-link btn-block text-center" data-bs-toggle="collapse"
-                    data-bs-target="#extraFields" onclick="toggleArrows(true)">
+                <a class="btn btn-link btn-block text-center" data-bs-toggle="collapse" data-bs-target="#extraFields"
+                    onclick="toggleArrows(true)">
                     <i class="fas fa-sort-down " id="arrowDown"></i>
                 </a>
             </div>
@@ -324,7 +325,8 @@
                 </div>
 
                 <div class="col-12 text-center mt-3">
-                    <a class="btn btn-link text-center" data-bs-toggle="collapse" data-bs-target="#extraFields" onclick="toggleArrows(false)">
+                    <a class="btn btn-link text-center" data-bs-toggle="collapse" data-bs-target="#extraFields"
+                        onclick="toggleArrows(false)">
                         <i class="fas fa-sort-up" id="arrowUp"></i>
                     </a>
                 </div>
@@ -411,128 +413,173 @@
         </table>
 
     </div>
-    {{-- Tabla para cotizaciones de flete --}}
-    @if ($comercialQuote->quote_freight()->exists())
-        <div class="col-12 mt-4">
-            <h6 class="text-indigo text-uppercase text-center text-bold">Cotizacion de flete</h6>
 
-            <table class="table table-sm text-sm">
-                <thead class="thead-dark">
-                    <th>#</th>
-                    <th>N° cotizacion</th>
-                    <th>Origen</th>
-                    <th>Destino</th>
-                    <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Producto</th>
-                    <th class="{{$comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none'}}">LCL / FCL</th>
-                    <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Cubicaje-KGV</th>
-                    <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Tonelada-KG</th>
-                    <th>N° de operacion</th>
-                    <th>Fecha</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </thead>
-                <tbody>
+    <div class="col-12">
+
+        <h4 class="text-indigo text-center text-bold text-uppercase my-4">Cotizaciones </h4>
 
 
-                    @foreach ($comercialQuote->quote_freight as $quote)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $quote->nro_quote }}</td>
-                            <td>{{ $quote->origin }}</td>
-                            <td>{{ $quote->destination }}</td>
-                            <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
-                                {{ $quote->commodity }}</td>
-                            <td class="{{$comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none'}}">{{ $quote->commercial_quote->lcl_fcl }}</td>
-                            <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
-                                {{ $quote->cubage_kgv }}</td>
-                            <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
-                                {{ $quote->ton_kilogram }}</td>
-                            <td>{{ $quote->nro_quote_commercial }}</td>
-                            <td>{{ \Carbon\Carbon::parse($quote->created_at)->format('d/m/Y') }}</td>
-                            <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
-                            </td>
+        <div class="col-4 offset-4">
+
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Agregar Cotizacion : </label>
+                <div class="col-sm-8">
+                    <select name="type_quote_service" id="type_quote_service" class="form-control"
+                        onchange="createTypeQuote(this)">
+                        <option disabled selected></option>
+                        @if ($comercialQuote->quote_freight()->exists())
+                            <option value="Flete" disabled>Flete</option>
+                        @else
+                            <option value="Flete">Flete</option>
+                        @endif
+
+                        @if ($comercialQuote->quote_transport()->exists())
+                            <option value="Transporte" disabled>Transporte</option>
+                        @else
+                            <option value="Transporte">Transporte</option>
+                        @endif
+
+                    </select>
 
 
-                            <td>
-                                <a href="{{ url('/quote/freight/' . $quote->id) }}"
-                                    class="btn btn-outline-indigo btn-sm mb-2 ">
-                                    Detalle
-                                </a>
-                            </td>
+                </div>
 
-                        </tr>
-                    @endforeach
+            </div>
 
-                </tbody>
-
-            </table>
 
         </div>
-    @endif
+
+        {{-- Tabla para cotizaciones de flete --}}
+        @if ($comercialQuote->quote_freight()->exists())
+            <div class="col-12 mt-4">
+                <h5 class="text-indigo  text-center">Flete</h5>
+
+                <table class="table table-sm text-sm">
+                    <thead class="thead-dark">
+                        <th>#</th>
+                        <th>N° cotizacion</th>
+                        <th>Origen</th>
+                        <th>Destino</th>
+                        <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Producto</th>
+                        <th class="{{ $comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none' }}">
+                            LCL / FCL</th>
+                        <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Cubicaje-KGV</th>
+                        <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Tonelada-KG</th>
+                        <th>N° de operacion</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </thead>
+                    <tbody>
 
 
-    {{-- Tabla para cotizaciones de Transporte --}}
-    @if ($comercialQuote->quote_transport()->exists())
-        <div class="col-12 mt-4">
-            <h6 class="text-indigo text-uppercase text-center text-bold">Cotizacion de transporte</h6>
-
-            <table class="table table-sm text-sm">
-                <thead class="thead-dark">
-                    <th>#</th>
-                    <th>N° cotizacion</th>
-                    <th>Recojo</th>
-                    <th>Entrega</th>
-                    <th class="{{$comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none'}}">LCL / FCL</th>
-                    <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Cubicaje-KGV</th>
-                    <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Tonelada-KG</th>
-                    <th>N° de operacion</th>
-                    <th>Fecha</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </thead>
-                <tbody>
-
-                    @foreach ($comercialQuote->quote_transport as $quote)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $quote->nro_quote }}</td>
-                            <td>{!! $quote->pick_up ? e($quote->pick_up) : '<span class="text-muted">Falta información</span>' !!}</td>
-                            <td>{!! $quote->delivery ? e($quote->delivery) : '<span class="text-muted">Falta información</span>' !!}</td>
-                            <td class="{{$comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none'}}">{{ $quote->commercial_quote->lcl_fcl }}</td>
-                            <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
-                                {{ $quote->cubage_kgv }}</td>
-                            <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
-                                {{ $quote->ton_kilogram }}</td>
-                            <td>{{ $quote->nro_quote_commercial }}</td>
-                            <td>{{ \Carbon\Carbon::parse($quote->created_at)->format('d/m/Y') }}</td>
-                            <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
-                            </td>
-
-                            @if (!$quote->pick_up || !$quote->delivery)
-                                <td>
-                                    <button type="button" class="btn btn-outline-indigo btn-sm mb-2"
-                                        onclick="openModalTransport('{{ $quote }}')">
-                                        Detalle
-                                    </button>
+                        @foreach ($comercialQuote->quote_freight as $quote)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $quote->nro_quote }}</td>
+                                <td>{{ $quote->origin }}</td>
+                                <td>{{ $quote->destination }}</td>
+                                <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
+                                    {{ $quote->commodity }}</td>
+                                <td
+                                    class="{{ $comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none' }}">
+                                    {{ $quote->commercial_quote->lcl_fcl }}</td>
+                                <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
+                                    {{ $quote->cubage_kgv }}</td>
+                                <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
+                                    {{ $quote->ton_kilogram }}</td>
+                                <td>{{ $quote->nro_quote_commercial }}</td>
+                                <td>{{ \Carbon\Carbon::parse($quote->created_at)->format('d/m/Y') }}</td>
+                                <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
                                 </td>
-                            @else
+
+
                                 <td>
-                                    <a href="{{ url('/quote/transport/' . $quote->id) }}"
+                                    <a href="{{ url('/quote/freight/' . $quote->id) }}"
                                         class="btn btn-outline-indigo btn-sm mb-2 ">
                                         Detalle
                                     </a>
                                 </td>
-                            @endif
 
-                        </tr>
-                    @endforeach
+                            </tr>
+                        @endforeach
 
-                </tbody>
+                    </tbody>
 
-            </table>
+                </table>
 
-        </div>
-    @endif
+            </div>
+        @endif
+
+
+        {{-- Tabla para cotizaciones de Transporte --}}
+        @if ($comercialQuote->quote_transport()->exists())
+            <div class="col-12 mt-4">
+                <h5 class="text-indigo text-center">Transporte</h5>
+
+                <table class="table table-sm text-sm">
+                    <thead class="thead-dark">
+                        <th>#</th>
+                        <th>N° cotizacion</th>
+                        <th>Recojo</th>
+                        <th>Entrega</th>
+                        <th class="{{ $comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none' }}">
+                            LCL / FCL</th>
+                        <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Cubicaje-KGV</th>
+                        <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Tonelada-KG</th>
+                        <th>N° de operacion</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </thead>
+                    <tbody>
+
+                        @foreach ($comercialQuote->quote_transport as $quote)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $quote->nro_quote }}</td>
+                                <td>{!! $quote->pick_up ? e($quote->pick_up) : '<span class="text-muted">Falta información</span>' !!}</td>
+                                <td>{!! $quote->delivery ? e($quote->delivery) : '<span class="text-muted">Falta información</span>' !!}</td>
+                                <td
+                                    class="{{ $comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none' }}">
+                                    {{ $quote->commercial_quote->lcl_fcl }}</td>
+                                <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
+                                    {{ $quote->cubage_kgv }}</td>
+                                <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
+                                    {{ $quote->ton_kilogram }}</td>
+                                <td>{{ $quote->nro_quote_commercial }}</td>
+                                <td>{{ \Carbon\Carbon::parse($quote->created_at)->format('d/m/Y') }}</td>
+                                <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
+                                </td>
+
+                                @if (!$quote->pick_up || !$quote->delivery)
+                                    <td>
+                                        <button type="button" class="btn btn-outline-indigo btn-sm mb-2"
+                                            onclick="openModalTransport('{{ $quote }}')">
+                                            Detalle
+                                        </button>
+                                    </td>
+                                @else
+                                    <td>
+                                        <a href="{{ url('/quote/transport/' . $quote->id) }}"
+                                            class="btn btn-outline-indigo btn-sm mb-2 ">
+                                            Detalle
+                                        </a>
+                                    </td>
+                                @endif
+
+                            </tr>
+                        @endforeach
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        @endif
+
+
+    </div>
 
 
 </div>
@@ -731,14 +778,39 @@
             }
         }
 
-        function toggleArrows(isOpening){
+
+        //Confirmacion para crear una nueva cotizacion de Transporte - Flete
+
+        function createTypeQuote(select) {
+   
+            Swal.fire({
+                title: `Crearas una cotizacion para ${select.value}`,
+                text: "Se enviara una nueva cotizacion para el area correspondiente",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Si, crear cotización",
+                cancelButtonText: "Cancelar",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: "Your file has been deleted.",
+                        icon: "success"
+                    });
+                }
+            });
+        }
+
+        function toggleArrows(isOpening) {
             var arrowDown = document.getElementById('arrowDown');
             var arrowUp = document.getElementById('arrowUp');
 
-            if(isOpening){
+            if (isOpening) {
                 arrowDown.style.display = 'none';
                 arrowUp.style.display = 'inline';
-            }else{
+            } else {
                 arrowDown.style.display = 'inline';
                 arrowUp.style.display = 'none';
             }
@@ -751,6 +823,5 @@
         document.getElementById('extraFields').addEventListener('hide.bs.collapse', function() {
             toggleArrows(false);
         });
-
     </script>
 @endpush
