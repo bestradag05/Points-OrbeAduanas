@@ -342,6 +342,28 @@ class CommercialQuoteController extends Controller
         return view('commercial_quote/detail-commercial-quote', $data);
     }
 
+
+    public function createQuote(String $nro_quote_commercial, Request $request){
+        
+
+        $commercialQuote = CommercialQuote::where('nro_quote_commercial', $nro_quote_commercial)->first();
+
+        if($request->type_quote === 'Flete'){
+
+            $this->createQuoteFreight($commercialQuote);
+
+
+        }else{
+            $this->createQuoteTransport($commercialQuote);
+        }
+        
+
+        return response()->json([
+            'message' => "Cotizacion creada"
+        ], 200);
+
+    }
+
     /**
      * Display the specified resource.
      */

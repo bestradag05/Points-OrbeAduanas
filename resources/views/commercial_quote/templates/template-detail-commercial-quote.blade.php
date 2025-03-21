@@ -12,7 +12,7 @@
                 <div class="form-group row">
                     <label class="col-sm-4 col-form-label">Nro Cotización: </label>
                     <div class="col-sm-8 d-inline">
-                        <p class="form-control-plaintext text-indigo d-inline">
+                        <p id="nro_quote_commercial" class="form-control-plaintext text-indigo d-inline">
                             {{ $comercialQuote->nro_quote_commercial }}</p>
                         <a href="{{ url('/commercial/quote/getPDF/' . $comercialQuote->id) }}"
                             class="text-indigo d-inline">
@@ -552,7 +552,7 @@
                                 <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
                                 </td>
 
-                                @if (!$quote->pick_up || !$quote->delivery)
+                                {{-- @if (!$quote->pick_up || !$quote->delivery)
                                     <td>
                                         <button type="button" class="btn btn-outline-indigo btn-sm mb-2"
                                             onclick="openModalTransport('{{ $quote }}')">
@@ -566,7 +566,17 @@
                                             Detalle
                                         </a>
                                     </td>
-                                @endif
+                                @endif --}}
+
+                                <td>
+                                    <x-adminlte-select2 name="acction_transport" igroup-size="sm"
+                                        data-placeholder="Seleccione una accion...">
+                                        <option />
+                                        <option>Detalle</option>
+                                        <option>Anular</option>
+                                    </x-adminlte-select2>
+            
+                                </td>
 
                             </tr>
                         @endforeach
@@ -782,7 +792,9 @@
         //Confirmacion para crear una nueva cotizacion de Transporte - Flete
 
         function createTypeQuote(select) {
-   
+
+            let nro_quote_commercial = $('#nro_quote_commercial').text().trim();
+
             Swal.fire({
                 title: `Crearas una cotizacion para ${select.value}`,
                 text: "Se enviara una nueva cotizacion para el area correspondiente",
@@ -793,13 +805,27 @@
                 confirmButtonText: "Si, crear cotización",
                 cancelButtonText: "Cancelar",
             }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        title: "Deleted!",
-                        text: "Your file has been deleted.",
-                        icon: "success"
-                    });
-                }
+
+                $.ajax({
+                    type: "GET",
+                    url: `/commercial/createQuote/${nro_quote_commercial}`,
+                    data: {
+                        type_quote: select.value
+                    },
+                    dataType: "JSON",
+                    success: function(response) {
+
+                        Swal.fire({
+                            title: `${response.message}`,
+                            icon: "success",
+                            allowOutsideClick: false // Evita que se cierre al hacer clic fuera
+                        }).then((result) => {
+                            location.reload(); // Recarga la página
+                        });
+
+                    }
+                });
+
             });
         }
 
