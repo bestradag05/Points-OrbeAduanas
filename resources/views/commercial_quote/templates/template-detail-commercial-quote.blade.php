@@ -568,13 +568,12 @@
                                     </td>
                                 @endif --}}
 
-                                <td>
-                                    <x-adminlte-select2 name="acction_transport" igroup-size="sm"
-                                        data-placeholder="Seleccione una accion...">
-                                        <option />
+                                <td style="width: 150px">
+                                    <select name="acction_transport"  class="form-control form-control-sm">
+                                        <option value="" disabled selected>Seleccione una acción...</option>
                                         <option>Detalle</option>
                                         <option>Anular</option>
-                                    </x-adminlte-select2>
+                                    </select>
             
                                 </td>
 
@@ -806,7 +805,9 @@
                 cancelButtonText: "Cancelar",
             }).then((result) => {
 
-                $.ajax({
+                if (result.isConfirmed) {
+
+                    $.ajax({
                     type: "GET",
                     url: `/commercial/createQuote/${nro_quote_commercial}`,
                     data: {
@@ -823,8 +824,14 @@
                             location.reload(); // Recarga la página
                         });
 
-                    }
-                });
+                        }
+                    });
+
+
+                }else{
+                    select.value = '';
+                }
+
 
             });
         }

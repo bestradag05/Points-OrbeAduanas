@@ -446,13 +446,13 @@
               <hr class="w-100">
               <div class="col-6 mt-4 d-none fcl-fields" id="containerTypeWrapperConsolidated">
                   <div class="form-group row">
-                      <label for="container_type" class="col-sm-4 col-form-label">Tipo de contenedor</label>
+                      <label for="container_type_consolidated" class="col-sm-4 col-form-label">Tipo de contenedor</label>
                       <div class="col-sm-8">
                           <input type="text" min="0" step="1"
-                              class="form-control @error('container_type') is-invalid @enderror" id="container_type"
-                              name="container_type" placeholder="Ingrese el tipo de contenedor.."
-                              value="{{ isset($routing) ? $routing->container_type : old('container_type') }}">
-                          @error('container_type')
+                              class="form-control @error('container_type_consolidated') is-invalid @enderror" id="container_type_consolidated"
+                              name="container_type_consolidated" placeholder="Ingrese el tipo de contenedor.."
+                              value="{{ isset($routing) ? $routing->container_type_consolidated : old('container_type_consolidated') }}">
+                          @error('container_type_consolidated')
                               <span class="invalid-feedback d-block" role="alert">
                                   <strong>{{ $message }}</strong>
                               </span>

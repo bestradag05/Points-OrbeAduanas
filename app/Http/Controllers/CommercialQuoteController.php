@@ -87,6 +87,8 @@ class CommercialQuoteController extends Controller
      */
     public function store(Request $request)
     {
+
+
         $shippersConsolidated = json_decode($request->shippers_consolidated);
 
         if ($request->is_consolidated) {
@@ -106,7 +108,7 @@ class CommercialQuoteController extends Controller
                 'id_regime' => $request->id_regime,
                 'id_type_load' => $request->id_type_load,
                 'id_incoterms' => $request->id_incoterms,
-                'container_type' => $request->container_type,
+                'container_type' => ($request->is_consolidated) ? $request->container_type_consolidated :  $request->container_type,
                 'lcl_fcl' => $request->lcl_fcl,
                 'is_consolidated' => $request->is_consolidated,
                 'nro_operation' => $request->nro_operation,
