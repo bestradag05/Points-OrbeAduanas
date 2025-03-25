@@ -595,6 +595,15 @@ class QuoteTransportController extends Controller
     public function destroy(string $id)
     {
         //
+
+        $quoteTransport = QuoteTransport::findOrFail($id)->first();
+
+        $quoteTransport->update(['state' => 'Rechazada']);
+
+
+        return response()->json([
+            'message' => 'Cotización anulada con éxito'
+        ]);
     }
 
 

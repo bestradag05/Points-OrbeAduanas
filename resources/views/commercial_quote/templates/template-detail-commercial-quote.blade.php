@@ -569,12 +569,13 @@
                                 @endif --}}
 
                                 <td style="width: 150px">
-                                    <select name="acction_transport"  class="form-control form-control-sm">
+                                    <select name="acction_transport" class="form-control form-control-sm"
+                                        onchange="changeAcction(this, {{ $quote }}, 'Transporte')">
                                         <option value="" disabled selected>Seleccione una acción...</option>
                                         <option>Detalle</option>
                                         <option>Anular</option>
                                     </select>
-            
+
                                 </td>
 
                             </tr>
@@ -697,11 +698,10 @@
 
         function openModalTransport(quote) {
             let modalTransport = $('#modalTransport');
-            let data = JSON.parse(quote);
 
-            $('#modalTransport form').attr('action', '/quote/transport/complete/' + data.id);
+            $('#modalTransport form').attr('action', '/quote/transport/complete/' + quote.id);
 
-            if (data.lcl_fcl != 'FCL') {
+            if (quote.lcl_fcl != 'FCL') {
                 $('#container-guard').addClass('d-none');
                 $('#container-guard').find('input').addClass('d-none');
                 $('#container-stackable').removeClass('d-none');
@@ -808,32 +808,96 @@
                 if (result.isConfirmed) {
 
                     $.ajax({
-                    type: "GET",
-                    url: `/commercial/createQuote/${nro_quote_commercial}`,
-                    data: {
-                        type_quote: select.value
-                    },
-                    dataType: "JSON",
-                    success: function(response) {
+                        type: "GET",
+                        url: `/commercial/createQuote/${nro_quote_commercial}`,
+                        data: {
+                            type_quote: select.value
+                        },
+                        dataType: "JSON",
+                        success: function(response) {
 
-                        Swal.fire({
-                            title: `${response.message}`,
-                            icon: "success",
-                            allowOutsideClick: false // Evita que se cierre al hacer clic fuera
-                        }).then((result) => {
-                            location.reload(); // Recarga la página
-                        });
+                            Swal.fire({
+                                title: `${response.message}`,
+                                icon: "success",
+                                allowOutsideClick: false // Evita que se cierre al hacer clic fuera
+                            }).then((result) => {
+                                location.reload(); // Recarga la página
+                            });
 
                         }
                     });
 
 
-                }else{
+                } else {
                     select.value = '';
                 }
 
 
             });
+        }
+
+
+        //Ejecutar acciones de las cotizaciones
+
+        function changeAcction(select, quote, typeQuote) {
+
+            if (select.value === 'Detalle') {
+
+                if (!quote.pick_up || !quote.delivery) {
+                    openModalTransport(quote);
+                } else {
+                    window.location.href = `/quote/transport/${quote.id}`;
+                }
+
+
+            } else {
+
+                if (typeQuote === 'Flete') {
+
+                } else {
+
+                    Swal.fire({
+                        title: `¿ Seguro que deseas anular la cotizacion ${quote.nro_quote} ?`,
+                        text: "esta accion cambiara de estado la cotización",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Si, anular",
+                        cancelButtonText: "Cancelar",
+                    }).then((result) => {
+
+                        if (result.isConfirmed) {
+
+                            $.ajax({
+                                type: "DELETE",
+                                url: `/quote/transport/${quote.id}`,
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                        .getAttribute('content')
+                                },
+                                dataType: "JSON",
+                                success: function(response) {
+                                    Swal.fire({
+                                        title: `${response.message}`,
+                                        icon: "success",
+                                        allowOutsideClick: false // Evita que se cierre al hacer clic fuera
+                                    }).then((result) => {
+                                        location.reload(); // Recarga la página
+                                    });
+
+                                }
+                            });
+                        }
+
+
+                    });
+
+                }
+
+
+            }
+
         }
 
         function toggleArrows(isOpening) {
