@@ -167,31 +167,7 @@
 
             @if (isset($formMode) && $formMode === 'edit')
 
-                conceptTransport = @json($conceptTransport);
-                //Obtenemos los valores del seguro para sumarlo al total
-
-                @if (isset($freight->concepts))
-
-
-                    let concepts = @json($freight->concepts)
-
-                    concepts.forEach((concept, index) => {
-
-                        if (concept.name != "SEGURO") {
-
-                            conceptsArray.push({
-                                'id': concept.id,
-                                'name': concept.name,
-                                'value': formatValue(concept.concept_freight.value_concept),
-                                'added': formatValue(concept.concept_freight.value_concept_added),
-                                'pa': concept.concept_freight.additional_points > 0 ? concept.concept_freight
-                                    .additional_points : 0
-                            });
-
-                        }
-
-                    });
-                @endif
+              
             @else
 
                 value_transport = @json($quote->cost_transport);

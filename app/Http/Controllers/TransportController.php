@@ -115,14 +115,6 @@ class TransportController extends Controller
                 if ($concept->name === 'TRANSPORTE') {
                     return $data->merge(['cost' => $quote->cost_transport]);
                 }
-
-                if ($quote->gang === 'SI' && $concept->name === 'CUADRILLA') {
-                    return $data->merge(['cost' => $quote->cost_gang]);
-                }
-
-                if ($quote->guard === 'SI' && $concept->name === 'RESGUARDO') {
-                    return $data->merge(['cost' => $quote->cost_guard]);
-                }
             }
 
             return null; // Si no cumple ninguna condición, no lo incluye

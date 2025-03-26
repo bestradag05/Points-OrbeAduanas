@@ -16,7 +16,6 @@ class FreightService
         $freight = Freight::with('concepts.concept_freight.additional_point')->find($id);
 
         $commercial_quote = $freight->commercial_quote;
-        $value_freight = 0;
         $insurance = null;
 
         if ($freight->insurance()->exists()) {

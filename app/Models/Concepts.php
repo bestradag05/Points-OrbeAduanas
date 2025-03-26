@@ -28,6 +28,11 @@ class Concepts extends Model
         return $this->hasOne(ConceptFreight::class, 'id_concepts');
     }
 
+    public function concept_transport()
+    {
+        return $this->hasOne(ConceptTransport::class, 'id_concepts');
+    }
+
     public function custom()
     {
         return $this->belongsToMany(Custom::class);
