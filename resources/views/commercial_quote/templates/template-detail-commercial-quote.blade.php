@@ -388,23 +388,18 @@
                             @else
                                 @if ($index != 'Transporte')
                                     Sin seguro
-                                    <button type="button" class="btn text-indigo"
-                                        onclick="openModalInsurance('{{ $service }}', '{{ $index }}')">
-
-                                        <i class="fas fa-plus"></i>
-                                    @else
-                                        -
+                                @else
+                                    -
                                 @endif
-                                </button>
                             @endif
                         </td>
-                        <td class="text-bold  {{ $service->state == 'Pendiente' ? 'text-danger' : 'text-success' }}">
+                        <td class="text-bold  status-{{ strtolower($service->state) }}">
                             {{ $service->state }}
                         </td>
 
 
                         <td>
-                            <a href="#"></a>
+                            <a href="{{ url('/commercial/service/' . strtolower($index). '/'. $service->id) }}" class="text-indigo"><i class="fas fa-edit"></i></a>
                         </td>
                     </tr>
                 @endforeach
@@ -494,11 +489,17 @@
                                 </td>
 
 
-                                <td>
-                                    <a href="{{ url('/quote/freight/' . $quote->id) }}"
-                                        class="btn btn-outline-indigo btn-sm mb-2 ">
-                                        Detalle
-                                    </a>
+                                <td style="width: 150px">
+                                    <select name="acction_transport" class="form-control form-control-sm"
+                                        onchange="changeAcction(this, {{ $quote }}, 'Flete')">
+                                        <option value="" disabled selected>Seleccione una acción...</option>
+                                        <option>Detalle</option>
+                                        <option class="{{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">Anular
+                                        </option>
+                                        <option class="{{ $quote->state != 'Aceptado' ? 'd-none' : '' }}">Rechazar
+                                        </option>
+                                    </select>
+
                                 </td>
 
                             </tr>
@@ -552,28 +553,15 @@
                                 <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
                                 </td>
 
-                                {{-- @if (!$quote->pick_up || !$quote->delivery)
-                                    <td>
-                                        <button type="button" class="btn btn-outline-indigo btn-sm mb-2"
-                                            onclick="openModalTransport('{{ $quote }}')">
-                                            Detalle
-                                        </button>
-                                    </td>
-                                @else
-                                    <td>
-                                        <a href="{{ url('/quote/transport/' . $quote->id) }}"
-                                            class="btn btn-outline-indigo btn-sm mb-2 ">
-                                            Detalle
-                                        </a>
-                                    </td>
-                                @endif --}}
-
                                 <td style="width: 150px">
                                     <select name="acction_transport" class="form-control form-control-sm"
                                         onchange="changeAcction(this, {{ $quote }}, 'Transporte')">
                                         <option value="" disabled selected>Seleccione una acción...</option>
                                         <option>Detalle</option>
-                                        <option>Anular</option>
+                                        <option class="{{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">Anular
+                                        </option>
+                                        <option class="{{ $quote->state != 'Aceptado' ? 'd-none' : '' }}">Rechazar
+                                        </option>
                                     </select>
 
                                 </td>
@@ -841,62 +829,77 @@
 
         function changeAcction(select, quote, typeQuote) {
 
-            if (select.value === 'Detalle') {
+            const actionText = select.value === 'Anular' ? 'anular' : 'rechazar';
 
-                if (!quote.pick_up || !quote.delivery) {
-                    openModalTransport(quote);
-                } else {
-                    window.location.href = `/quote/transport/${quote.id}`;
-                }
+            switch (select.value) {
+                case 'Detalle':
+                    // Para ver el detalle
+                    if (typeQuote === 'Transporte') {
+                        if (!quote.pick_up || !quote.delivery) {
+                            openModalTransport(quote);
+                        } else {
+                            window.location.href = `/quote/transport/${quote.id}`;
+                        }
+                    } else {
+                        window.location.href = `/quote/freight/${quote.id}`;
+                    }
+                    break;
+
+                case 'Anular':
+
+                    toggleAction(actionText, quote, typeQuote);
+                    break;
 
 
-            } else {
+                case 'Rechazar': // Puedes agrupar ambos si tienen una lógica similar
 
-                if (typeQuote === 'Flete') {
+                    toggleAction(actionText, quote, typeQuote);
+                    break;
 
-                } else {
+                default:
+                    console.warn("Acción no reconocida:", select.value);
+            }
 
-                    Swal.fire({
-                        title: `¿ Seguro que deseas anular la cotizacion ${quote.nro_quote} ?`,
-                        text: "esta accion cambiara de estado la cotización",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#3085d6",
-                        cancelButtonColor: "#d33",
-                        confirmButtonText: "Si, anular",
-                        cancelButtonText: "Cancelar",
-                    }).then((result) => {
+        }
 
-                        if (result.isConfirmed) {
 
-                            $.ajax({
-                                type: "DELETE",
-                                url: `/quote/transport/${quote.id}`,
-                                headers: {
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                        .getAttribute('content')
-                                },
-                                dataType: "JSON",
-                                success: function(response) {
-                                    Swal.fire({
-                                        title: `${response.message}`,
-                                        icon: "success",
-                                        allowOutsideClick: false // Evita que se cierre al hacer clic fuera
-                                    }).then((result) => {
-                                        location.reload(); // Recarga la página
-                                    });
+        function toggleAction(actionText, quote, typeQuote) {
 
-                                }
+
+            Swal.fire({
+                title: `¿Seguro que deseas ${actionText} la cotización ${quote.nro_quote}?`,
+                text: "Esta acción cambiará el estado de la cotización.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: `Sí, ${actionText}`,
+                cancelButtonText: "Cancelar",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: typeQuote === 'Flete' ?
+                            `/quote/freight/${quote.id}/${actionText}` :
+                            `/quote/transport/${quote.id}/${actionText}`,
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                .getAttribute('content')
+                        },
+                        dataType: "JSON",
+                        success: function(response) {
+                            Swal.fire({
+                                title: `${response.message}`,
+                                icon: "success",
+                                allowOutsideClick: false
+                            }).then(() => {
+                                location.reload();
                             });
                         }
-
-
                     });
-
                 }
+            });
 
-
-            }
 
         }
 

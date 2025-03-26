@@ -6,6 +6,7 @@ use App\Models\CommercialQuote;
 use App\Models\Concepts;
 use App\Models\ConsolidatedCargos;
 use App\Models\Custom;
+use App\Models\Freight;
 use App\Models\Incoterms;
 use App\Models\Modality;
 use App\Models\QuoteFreight;
@@ -17,6 +18,8 @@ use App\Models\TypeInsurance;
 use App\Models\TypeLoad;
 use App\Models\TypeService;
 use App\Models\TypeShipment;
+use App\Services\FreightService;
+use App\Services\TransportService;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Barryvdh\DomPDF\PDF;
 use Carbon\Carbon;
@@ -29,6 +32,16 @@ class CommercialQuoteController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+     protected $freightService;
+     protected $transportService;
+
+     public function __construct(FreightService $freightService, TransportService $transportService)
+     {
+         $this->freightService = $freightService;
+         $this->transportService = $transportService;
+     }
+
     public function index()
     {
         // Obtener el ID del personal del usuario autenticado
@@ -249,7 +262,7 @@ class CommercialQuoteController extends Controller
 
     public function createQuoteTransport($commercialQuote)
     {
-        
+
         QuoteTransport::create([
             /* 'pick_up' => $request->pick_up,
             'delivery' => $request->delivery,
@@ -345,25 +358,23 @@ class CommercialQuoteController extends Controller
     }
 
 
-    public function createQuote(String $nro_quote_commercial, Request $request){
-        
+    public function createQuote(String $nro_quote_commercial, Request $request)
+    {
+
 
         $commercialQuote = CommercialQuote::where('nro_quote_commercial', $nro_quote_commercial)->first();
 
-        if($request->type_quote === 'Flete'){
+        if ($request->type_quote === 'Flete') {
 
             $this->createQuoteFreight($commercialQuote);
-
-
-        }else{
+        } else {
             $this->createQuoteTransport($commercialQuote);
         }
-        
+
 
         return response()->json([
             'message' => "Cotizacion creada"
         ], 200);
-
     }
 
     /**
@@ -398,16 +409,50 @@ class CommercialQuoteController extends Controller
         //
     }
 
+    public function editCommercialQuoteService(string $service, string $id)
+    {
+        switch ($service) {
+            case 'flete':
+                # code...
+
+                $data = $this->freightService->editFreight($id);
+
+                return view('freight/edit-freight', $data);
+
+                break;
+
+            case 'aduanas':
+                # code...
+                break;
+
+            case 'transporte':
+                # code...
+
+                $data = $this->transportService->editTransport($id);
+                return view('transport/edit-transport', $data);
+
+                break;
+
+            default:
+                # code...
+                break;
+        }
+
+        return $service;
+    }
+
+
 
     public function getPDF($id)
     {
 
+        //TODO: Falta ver el caso de cuando no es por medio de cotizacion.
         $commercialQuote = CommercialQuote::with([
             'quote_freight' => function ($query) {
-                $query->where('state', 'Aceptada');
+                $query->where('state', 'Aceptado');
             },
             'quote_transport' => function ($query) {
-                $query->where('state', 'Aceptada');
+                $query->where('state', 'Aceptado');
             }
         ])->find($id);
 
@@ -432,7 +477,7 @@ class CommercialQuoteController extends Controller
             $transport = $commercialQuote->quote_transport->first()?->transport;
         }
 
-        $commercialQuoteArray = $commercialQuote->toArray(); // Convierte el modelo a un array
+        /*   dd($transport->concepts[0]); */
 
 
 

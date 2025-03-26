@@ -481,6 +481,52 @@
                 </tbody>
             </table>
         </div>
+    @else
+        @if ($transport)
+
+            <div id="detail-transport" class="container-service">
+                <table id="table-transport" class="table">
+                    <thead>
+                        <th style="width: 45% ; background-color: #234195">Gastos en destino</th>
+                        <th style="width: 40%">Observacion</th>
+                        <th style="width: 15%">Total</th>
+                    </thead>
+                    <tbody>
+                        @foreach ($transport->concepts as $concept)
+                            <tr>
+                                <td>{{ $concept->name }}</td>
+                                <td id="observation"> - </td>
+                                <td> $ {{ $concept->pivot->total }}</td>
+                            </tr>
+                        @endforeach
+
+
+                        @php
+                            $subtotal =  ($transport->total_transport ?? 0);
+                            $igv = $subtotal * 0.18;
+                            $cats_destinations = $subtotal * 1.18;
+
+                        @endphp
+
+
+                        <tr class="total-service">
+                            <td colspan="2" style="text-align: right">Sub Total:</td>
+                            <td> $ {{ number_format($subtotal, 2) }}</td>
+                        </tr>
+                        <tr class="total-service">
+                            <td colspan="2" style="text-align: right">IGV:</td>
+                            <td> $ {{ number_format($igv, 2) }}</td>
+                        </tr>
+                        <tr class="total-service">
+                            <td colspan="2" style="text-align: right">Total:</td>
+                            <td> $ {{ number_format($cats_destinations, 2) }}</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        @endif
 
     @endif
 

@@ -25,7 +25,7 @@ return new class extends Migration
             $table->date('payment_date')->nullable();
             $table->string('weight')->nullable();
             $table->date('withdrawal_date')->nullable();
-            $table->string('state')->nullable();
+            $table->enum('state', ['Pendiente', 'Aceptado', 'Anulado', 'Rechazado'])->default('Pendiente');
             $table->string('nro_operation')->nullable();
             $table->string('nro_quote_commercial')->nullable();
             $table->unsignedBigInteger('id_supplier')->nullable();

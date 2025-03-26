@@ -43,13 +43,13 @@ class QuoteFreightController extends Controller
      */
     public function create()
     {
-         // Obtener el ID del personal del usuario autenticado
-         $personalId = Auth::user()->personal->id;
+        // Obtener el ID del personal del usuario autenticado
+        $personalId = Auth::user()->personal->id;
 
- 
- 
-         $showModal = session('showModal', true);
-         return view('freight.quote.register-quote')->with('showModal', $showModal);
+
+
+        $showModal = session('showModal', true);
+        return view('freight.quote.register-quote')->with('showModal', $showModal);
     }
 
     /**
@@ -110,7 +110,7 @@ class QuoteFreightController extends Controller
         }
 
 
-        return redirect('/quote/freight/'. $quote->id);
+        return redirect('/quote/freight/' . $quote->id);
     }
 
 
@@ -119,10 +119,10 @@ class QuoteFreightController extends Controller
 
         $quote = QuoteFreight::findOrFail($id);
 
-        $ocean_freight = $this->parseDouble($request->ocean_freight); 
-        $utility = $this->parseDouble($request->utility); 
-        $operations_commission = $this->parseDouble($request->operations_commission); 
-        $pricing_commission = $this->parseDouble($request->pricing_commission); 
+        $ocean_freight = $this->parseDouble($request->ocean_freight);
+        $utility = $this->parseDouble($request->utility);
+        $operations_commission = $this->parseDouble($request->operations_commission);
+        $pricing_commission = $this->parseDouble($request->pricing_commission);
         $total_ocean_freight = $ocean_freight + $utility + $operations_commission +  $pricing_commission;
 
 
@@ -132,10 +132,10 @@ class QuoteFreightController extends Controller
             'operations_commission' =>   $operations_commission,
             'pricing_commission' =>  $pricing_commission,
             'total_ocean_freight' => $total_ocean_freight,
-            'state' => 'Aceptada'
+            'state' => 'Aceptado'
         ]);
 
-        return redirect('/freight/create/'. $quote->id);
+        return redirect('/freight/create/' . $quote->id);
     }
 
     public function uploadFilesQuoteFreight(Request $request)
@@ -144,13 +144,13 @@ class QuoteFreightController extends Controller
             $file = $request->file('file');
             $filename =  $file->getClientOriginalName();
 
-            $path = 'commercial_quote/'. $request->commercial_quote .'/quote_freight/'.$request->freight_quote;
+            $path = 'commercial_quote/' . $request->commercial_quote . '/quote_freight/' . $request->freight_quote;
 
-            $file->storeAs( $path , $filename, 'public'); // Guardar temporalmente
+            $file->storeAs($path, $filename, 'public'); // Guardar temporalmente
 
             $publicUrl = Storage::url($path);
 
-            return response()->json(['success' => true, 'filename' => $filename, 'url' => $publicUrl."/{$filename}"]);
+            return response()->json(['success' => true, 'filename' => $filename, 'url' => $publicUrl . "/{$filename}"]);
         }
 
         return response()->json(['success' => false], 400);
@@ -188,8 +188,8 @@ class QuoteFreightController extends Controller
                 'url' => asset('storage/' . $file), // URL del archivo
             ];
         });
-        
-        
+
+
         $messages = QuoteFreight::findOrFail($id)->messages;
 
 
@@ -197,8 +197,9 @@ class QuoteFreightController extends Controller
     }
 
 
-    public function sendQuote(string $id){
-        
+    public function sendQuote(string $id)
+    {
+
 
         $quote = QuoteFreight::findOrFail($id);
 
@@ -209,8 +210,7 @@ class QuoteFreightController extends Controller
 
         toastr()->success('Ahora la cotizacion esta en proceso, envia un mensaje al area de Pricing');
 
-        return redirect('/quote/freight/'.$quote->id);
-        
+        return redirect('/quote/freight/' . $quote->id);
     }
 
 
@@ -235,10 +235,43 @@ class QuoteFreightController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $quoteFreight = QuoteFreight::findOrFail($id)->first();
+
+        $quoteFreight->update(['state' => 'Rechazada']);
+
+
+        return response()->json([
+            'message' => 'Cotización anulada con éxito'
+        ]);
     }
 
-    
+
+    public function updateStateQuoteFreight(string $id, string $action)
+    {
+
+        $quoteFreight = QuoteFreight::findOrFail($id)->first();
+
+        if ($action === 'anular') {
+            $quoteFreight->update(['state' => 'Anulado']);
+            return response()->json([
+                'message' => 'Cotización anulada'
+            ]);
+        }
+
+        if ($action === 'rechazar') {
+            $quoteFreight->update(['state' => 'Rechazado']);
+
+            if($quoteFreight->freight->exists()){
+                $quoteFreight->freight->update(['state' => 'Rechazado']);
+            }
+
+            return response()->json([
+                'message' => 'Cotización rechazada'
+            ]);
+        }
+    }
+
+
 
 
     public function validateForm($request, $id)
@@ -269,5 +302,4 @@ class QuoteFreightController extends Controller
 
         return $valorDecimal;
     }
-
 }

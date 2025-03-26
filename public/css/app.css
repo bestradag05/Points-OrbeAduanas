@@ -191,22 +191,22 @@
 .status-pendiente {
     color: orange;
 }
-.status-respondido {
+/* .status-respondido {
     color: blue;
-}
-.status-aceptada {
+} */
+.status-aceptado {
     color: green;
 }
-.status-reajuste {
+/* .status-reajuste {
     color: rgb(5, 61, 165);
-}
-.status-observado {
+} */
+/* .status-observado {
     color: purple;
-}
-.status-rechazada {
+} */
+.status-rechazado {
     color: red;
 }
-.status-borrador {
+.status-anulado {
     color: gray;
 }
 

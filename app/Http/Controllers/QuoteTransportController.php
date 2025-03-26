@@ -273,7 +273,8 @@ class QuoteTransportController extends Controller
         return view('transport.quote.edit-quote', compact('quote', 'files', 'customers'))->with('showModal', $showModal);
     }
 
-    public function updateQuoteTransport(Request $request, string $id){
+    public function updateQuoteTransport(Request $request, string $id)
+    {
         $quote = QuoteTransport::findOrFail($id);
 
         $quote->update($request->all());
@@ -286,13 +287,12 @@ class QuoteTransportController extends Controller
                 'url' => asset('storage/' . $file), // URL del archivo
             ];
         });
-        
+
 
 
         $messages = $quote->messages;
 
         return view('transport/quote/quote-messagin', compact('quote', 'messages', 'files'));
-
     }
 
     /**
@@ -480,60 +480,14 @@ class QuoteTransportController extends Controller
     }
 
 
-   /*  public function acceptQuoteTransport(string $id)
+    public function acceptQuoteTransport(Request $request, string $id)
     {
 
-        $quote = QuoteTransport::with('routing')->findOrFail($id);
-
-
-        $params = [
-            'id_routing' => $quote->routing->id,
-            'cost_transport' => $quote->cost_transport,
-            'origin' => $quote->pick_up,
-            'destination' => $quote->delivery,
-            'withdrawal_date' => $quote->withdrawal_date,
-            'id_quote_transport' => $quote->id
-        ];
-
-        // Agregar cost_gang solo si no es null
-        if ($quote->cost_gang !== null) {
-            $concept = Concepts::where('name', 'CUADRILLA')
-                ->where('id_type_shipment', $quote->routing->id_type_shipment)
-                ->get()->first();
-
-            $params['id_gang_concept'] = $concept->id;
-            $params['cost_gang'] = $quote->cost_gang;
-        }
-
-        if ($quote->cost_guard !== null) {
-
-            $concept = Concepts::where('name', 'RESGUARDO')
-                ->where('id_type_shipment', $quote->routing->id_type_shipment)
-                ->get()->first();
-
-            $params['id_guard_concept'] = $concept->id;
-            $params['cost_guard'] = $quote->cost_guard;
-        }
-
-
-        $quote->update([
-            'withdrawal_date' => $quote->withdrawal_date,
-            'state' => 'Aceptada'
-        ]);
-
-
-        // Redirigir con los parámetros
-        return redirect()->route('routing.detail', $params);
-    } */
-
-
-    public function acceptQuoteTransport(Request $request, string $id){
- 
         $quote = QuoteTransport::findOrFail($id);
 
-        $cost_transport = $this->parseDouble($request->cost_transport); 
-        $cost_gang = $this->parseDouble($request->cost_gang); 
-        $cost_guard = $this->parseDouble($request->cost_guard); 
+        $cost_transport = $this->parseDouble($request->cost_transport);
+        $cost_gang = $this->parseDouble($request->cost_gang);
+        $cost_guard = $this->parseDouble($request->cost_guard);
         $total_transport = $cost_transport + $cost_gang + $cost_guard;
 
 
@@ -543,11 +497,10 @@ class QuoteTransportController extends Controller
             'cost_guard' =>   $cost_guard,
             'total_transport' =>  $total_transport,
             'withdrawal_date' => $request->withdrawal_date,
-            'state' => 'Aceptada'
+            'state' => 'Aceptado'
         ]);
 
-        return redirect('/transport/create/'. $quote->id);
-
+        return redirect('/transport/create/' . $quote->id);
     }
 
     public function correctedQuoteTransport(string $id)
@@ -596,14 +549,38 @@ class QuoteTransportController extends Controller
     {
         //
 
+     
+    }
+
+
+    public function updateStateQuoteTransport(string $id, string $action)
+    {
+
         $quoteTransport = QuoteTransport::findOrFail($id)->first();
 
-        $quoteTransport->update(['state' => 'Rechazada']);
+        if ($action === 'anular') {
+            $quoteTransport->update(['state' => 'Anulado']);
+            return response()->json([
+                'message' => 'Cotización anulada'
+            ]);
+        }
+
+        if ($action === 'rechazar') {
 
 
-        return response()->json([
-            'message' => 'Cotización anulada con éxito'
-        ]);
+            $quoteTransport->update(['state' => 'Rechazado']);
+
+            //Cambiamos de estado al transporte si es que tiene alguno relacionado
+            if($quoteTransport->transport->exists()){
+                $quoteTransport->transport->update(['state' => 'Rechazado']);
+            }
+            
+
+            return response()->json([
+                'message' => 'Cotización rechazada'
+            ]);
+        }
+
     }
 
 
@@ -614,13 +591,13 @@ class QuoteTransportController extends Controller
             $file = $request->file('file');
             $filename =  $file->getClientOriginalName();
 
-            $path = 'commercial_quote/'. $request->commercial_quote .'/quote_transport/'.$request->transport_quote;
+            $path = 'commercial_quote/' . $request->commercial_quote . '/quote_transport/' . $request->transport_quote;
 
-            $file->storeAs( $path , $filename, 'public'); // Guardar temporalmente
+            $file->storeAs($path, $filename, 'public'); // Guardar temporalmente
 
             $publicUrl = Storage::url($path);
 
-            return response()->json(['success' => true, 'filename' => $filename, 'url' => $publicUrl."/{$filename}"]);
+            return response()->json(['success' => true, 'filename' => $filename, 'url' => $publicUrl . "/{$filename}"]);
         }
 
         return response()->json(['success' => false], 400);
@@ -679,5 +656,4 @@ class QuoteTransportController extends Controller
 
         return $valorDecimal;
     }
-
 }

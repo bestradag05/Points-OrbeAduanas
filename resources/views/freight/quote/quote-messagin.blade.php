@@ -286,7 +286,7 @@
                 <div class="col-6 align-items-center">
                     <h5 class="mt-3 text-muted">Archivos : </h5>
                 </div>
-                <div class="col-6 align-items-center">
+                <div class="col-6 align-items-center {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}" >
                     <button class="btn btn-indigo btn-sm" data-toggle="modal" data-target="#modalQuoteFreightDocuments">
                         <i class="fas fa-plus"></i>
                     </button>
@@ -384,19 +384,10 @@
 
 
             <div class="text-center mt-5 mb-3">
-                <a href="{{ url('/quote/freight/sendQuote/' . $quote->id) }}"
-                    class="btn btn-sm btn-indigo {{ $quote->state != 'Borrador' ? 'd-none' : '' }}">Enviar Cotización</a>
-                <a href="{{ url('/quote/freight/message/' . $quote->id . '/edit') }}"
-                    class="btn btn-sm btn-secondary {{ $quote->state != 'Borrador' ? 'd-none' : '' }}">Editar
-                    Cotización</a>
                 <button
-                    class="btn btn-sm btn-success {{ $quote->state === 'Borrador' || $quote->state === 'Aceptada' ? 'd-none' : '' }}"
+                    class="btn btn-sm btn-success {{$quote->state === 'Aceptado' ? 'd-none' : '' }}"
                     type="button" data-toggle="modal" data-target="#quote-freight">Cotización Aceptada</button>
 
-                @if (!$quote->freight()->exists())
-                    <a href="{{ url('/freight/create/' . $quote->id) }}"
-                        class="btn btn-sm btn-indigo {{ $quote->state === 'Aceptada' ? '' : 'd-none' }}">Generar Flete</a>
-                @endif
             </div>
         </div>
     </div>

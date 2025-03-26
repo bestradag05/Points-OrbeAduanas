@@ -30,7 +30,7 @@
     <form action={{ url('/transport/' . $transport->id) }} method="POST" enctype="multipart/form-data">
         {{ method_field('PATCH') }}
         {{ csrf_field() }}
-        @include ('transport.form-point-transport', ['formMode' => 'edit'])
+        @include ('transport.form-transport', ['formMode' => 'edit'])
     </form>
 
 

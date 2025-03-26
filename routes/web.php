@@ -169,6 +169,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('quote/search-routing/{nro_operation}', [QuoteTransportController::class, 'searchRouting']);
     Route::patch('quote/transport/cost/{id}', [QuoteTransportController::class, 'costTransport']);
+    Route::delete('quote/transport/{id}/{action}', [QuoteTransportController::class, 'updateStateQuoteTransport']);
   /*   Route::patch('quote/transport/cost/{action}/{id}', [QuoteTransportController::class, 'handleTransportAction']); */
     Route::get('quote/transport/cost/reject/{id}', [QuoteTransportController::class, 'rejectQuoteTransport']);
     Route::get('quote/transport/cost/keep/{id}', [QuoteTransportController::class, 'keepQuoteTransport']);
@@ -185,6 +186,7 @@ Route::middleware('auth')->group(function () {
     Route::post('quote/freight/file-upload-documents', [QuoteFreightController::class, 'uploadFilesQuoteFreight']);
     Route::post('quote/freight/file-delete-documents', [QuoteFreightController::class, 'deleteFilesQuoteFreight']);
     Route::get('quote/freight/sendQuote/{id}', [QuoteFreightController::class, 'sendQuote']);
+    Route::delete('quote/freight/{id}/{action}', [QuoteFreightController::class, 'updateStateQuoteFreight']);
 
     /* Mensaje de cotizaciones de flete */
 
@@ -196,6 +198,7 @@ Route::middleware('auth')->group(function () {
     Route::get('commercial/quote/{id_quote}/detail', [CommercialQuoteController::class, 'getTemplateDetailCommercialQuote'])->name('commercial.quote.detail');
     Route::get('commercial/createQuote/{nro_quote_commercial}', [CommercialQuoteController::class, 'createQuote']);
     Route::get('commercial/quote/getPDF/{id}', [CommercialQuoteController::class, 'getPDF']);
+    Route::get('commercial/service/{service}/{id}', [CommercialQuoteController::class, 'editCommercialQuoteService']);
     Route::resource('commercial/quote', CommercialQuoteController::class);
 
 
