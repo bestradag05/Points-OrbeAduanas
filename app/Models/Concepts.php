@@ -22,7 +22,7 @@ class Concepts extends Model
     {
         return $this->belongsTo(TypeShipment::class, 'id_type_shipment', 'id');
     }
-    
+
     public function concept_freight()
     {
         return $this->hasOne(ConceptFreight::class, 'id_concepts');
@@ -30,7 +30,7 @@ class Concepts extends Model
 
     public function concept_transport()
     {
-        return $this->hasOne(ConceptTransport::class, 'id_concepts');
+        return $this->hasMany(ConceptTransport::class, 'id_concepts');
     }
 
     public function custom()
@@ -41,11 +41,12 @@ class Concepts extends Model
     public function freights()
     {
         return $this->belongsToMany(Freight::class, 'concepts_freight', 'id_concepts', 'id_freight')
-                    ->withPivot(['value_concept', 'value_concept_added', 'total_value_concept', 'additional_points']);
+            ->withPivot(['value_concept', 'value_concept_added', 'total_value_concept', 'additional_points']);
     }
 
     public function transport()
     {
-        return $this->belongsToMany(Transport::class);
+        return $this->belongsToMany(Transport::class)
+            ->withPivot(['value_concept', 'added_value', 'net_amount', 'igv', 'total', 'additional_points']);
     }
 }

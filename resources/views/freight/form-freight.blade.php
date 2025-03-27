@@ -254,7 +254,7 @@
 
 
                     let concepts = @json($freight->concepts)
-
+                                        
                     concepts.forEach((concept, index) => {
 
                         if (concept.name != "SEGURO") {
@@ -262,9 +262,9 @@
                             conceptsArray.push({
                                 'id': concept.id,
                                 'name': concept.name,
-                                'value': formatValue(concept.concept_freight.value_concept),
-                                'added': formatValue(concept.concept_freight.value_concept_added),
-                                'pa': concept.concept_freight.additional_points > 0 ? concept.concept_freight
+                                'value': formatValue(concept.pivot.value_concept),
+                                'added': formatValue(concept.pivot.value_concept_added),
+                                'pa': concept.pivot.additional_points > 0 ? concept.pivot
                                     .additional_points : 0
                             });
 

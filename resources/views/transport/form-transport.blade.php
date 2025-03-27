@@ -167,7 +167,29 @@
 
             @if (isset($formMode) && $formMode === 'edit')
 
-              
+                conceptTransport = @json($conceptsTransport);
+
+
+                @if (isset($transport->concepts))
+
+                    let concepts = @json($transport->concepts);
+
+
+                    concepts.forEach((concept, index) => {
+
+                        console.log(concept);
+                        conceptsArray.push({
+                            'id': concept.id,
+                            'name': concept.name,
+                            'value': formatValue(concept.pivot.value_concept),
+                            'added': formatValue(concept.pivot.added_value),
+                            'pa': concept.pivot.additional_points > 0 ? concept.pivot
+                                .additional_points : 0
+                        })
+
+                    });
+
+                @endif
             @else
 
                 value_transport = @json($quote->cost_transport);
@@ -433,8 +455,10 @@
 
                 let form = $('#formTransport');
                 let conceptops = JSON.stringify(conceptsArray);
+                
 
                 form.append(`<input type="hidden" name="concepts" value='${conceptops}' />`);
+
 
                 form[0].submit();
 

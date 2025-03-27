@@ -2,7 +2,7 @@
 
 @section('content_header')
     <div class="d-flex justify-content-between">
-        <h2>Generar punto de flete</h2>
+        <h2>Editar un flete</h2>
         <div>
             <button class="btn btn-primary"> Atras </button>
         </div>

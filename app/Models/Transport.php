@@ -73,7 +73,7 @@ class Transport extends Model
     public function concepts()
     {
         return $this->belongsToMany(Concepts::class, 'concepts_transport', 'id_transport', 'id_concepts')
-            ->withPivot(['value_concept', 'added_value', 'net_amount', 'igv', 'total']);
+            ->withPivot(['value_concept', 'added_value', 'net_amount', 'igv', 'total', 'additional_points']);
     }
 
     public function routing()
@@ -89,6 +89,11 @@ class Transport extends Model
     public function additional_point()
     {
         return $this->morphMany(AdditionalPoints::class, 'additional', 'model_additional_service', 'id_additional_service');
+    }
+
+    public function concept_transports()
+    {
+        return $this->hasMany(ConceptTransport::class, 'id_transport');
     }
 
 

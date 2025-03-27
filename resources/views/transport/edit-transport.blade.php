@@ -2,7 +2,7 @@
 
 @section('content_header')
     <div class="d-flex justify-content-between">
-        <h2>Generar punto de aduana</h2>
+        <h2>Editar un transporte</h2>
         <div>
             <button class="btn btn-primary"> Atras </button>
         </div>
@@ -11,23 +11,7 @@
 @stop
 @section('dinamic-content')
 
-    {{-- @section('plugins.BsCustomFileInput', true)
-
-<form action="{{ url('/custom/load') }}" id="formLoadFile" method="post" enctype="multipart/form-data">
-    @csrf
-    <div class="col-12">
-        <x-adminlte-input-file name="doc_custom" igroup-size="md" placeholder="Suba el archivo...">
-            <x-slot name="prependSlot">
-                <div class="input-group-text bg-lightblue">
-                    <i class="fas fa-upload"></i>
-                </div>
-            </x-slot>
-        </x-adminlte-input-file>
-        <hr>
-    </div>
-</form> --}}
-
-    <form action={{ url('/transport/' . $transport->id) }} method="POST" enctype="multipart/form-data">
+    <form action={{ url('/transport/' . $transport->id) }}  method="POST" id="formTransport" enctype="multipart/form-data">
         {{ method_field('PATCH') }}
         {{ csrf_field() }}
         @include ('transport.form-transport', ['formMode' => 'edit'])
