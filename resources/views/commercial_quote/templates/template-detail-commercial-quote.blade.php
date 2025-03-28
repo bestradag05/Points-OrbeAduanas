@@ -22,6 +22,7 @@
                     </div>
 
                 </div>
+                
             </div>
 
             <div class="col-12 border-bottom border-bottom-2">

@@ -422,7 +422,7 @@
                         @endif
 
                         <div class="form-group">
-                            <label for="cost_transport">Fecha de retiro</label>
+                            <label for="cost_transport">Fecha aproximada de retiro</label>
                             <input type="date" class="form-control" id="withdrawal_date" name="withdrawal_date"
                                 placeholder="Ingrese el destino">
                         </div>
