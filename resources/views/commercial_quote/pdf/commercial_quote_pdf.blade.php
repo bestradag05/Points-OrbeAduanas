@@ -322,7 +322,7 @@
             <table>
                 <tbody>
                     <tr>
-                        <td class="title-item-table">Fecha</td>
+                        <td class="title-item-table">Fecha de Creacion</td>
                         <td class="text-item-table" style="font-weight: bold">
                             {{ $commercialQuote->created_at->format('d/m/Y') }}</td>
                     </tr>
@@ -334,7 +334,7 @@
                     <tr>
                         <td class="title-item-table">Fecha de Validez</td>
                         <td class="text-item-table" style="font-weight: bold">
-                            {{ $commercialQuote->created_at->format('d/m/Y') }}</td>
+                            {{ $valid_quote_date->format('d/m/Y') }}</td>
 
                     </tr>
 

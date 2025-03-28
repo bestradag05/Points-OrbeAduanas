@@ -10,19 +10,42 @@
 
             <div class="col-12 border-bottom border-bottom-2">
                 <div class="form-group row">
+                    <label class="col-sm-4 col-form-label">Fecha de validez: </label>
+                    <div class="col-sm-6 d-inline">
+                        @php
+                            $config = [
+                                'format' => 'DD/MM/YY',
+                                'minDate' => now()->format('Y-m-d'),
+                                'language' => 'es', // Configurar en español
+                            ];
+
+                        @endphp
+                        <x-adminlte-input-date id="valid_quote_date" name="valid_quote_date" :config="$config"
+                            placeholder="Selecciona la fecha de validez..." />
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-12 border-bottom border-bottom-2">
+                <div class="form-group row">
                     <label class="col-sm-4 col-form-label">Nro Cotización: </label>
                     <div class="col-sm-8 d-inline">
                         <p id="nro_quote_commercial" class="form-control-plaintext text-indigo d-inline">
                             {{ $comercialQuote->nro_quote_commercial }}</p>
-                        <a href="{{ url('/commercial/quote/getPDF/' . $comercialQuote->id) }}"
+                        {{--  <a href="{{ url('/commercial/quote/getPDF/' . $comercialQuote->id) }}"
                             class="text-indigo d-inline">
                             <i class="fas fa-file-pdf"></i>
-                        </a>
+                        </a> --}}
+                        <button  id="linkPdf" class="btn text-indigo d-inline">
+                            <i class="fas fa-file-pdf"></i>
+                        </button>
 
                     </div>
 
                 </div>
-                
+
             </div>
 
             <div class="col-12 border-bottom border-bottom-2">
@@ -400,7 +423,8 @@
 
 
                         <td>
-                            <a href="{{ url('/commercial/service/' . strtolower($index). '/'. $service->id) }}" class="text-indigo"><i class="fas fa-edit"></i></a>
+                            <a href="{{ url('/commercial/service/' . strtolower($index) . '/' . $service->id) }}"
+                                class="text-indigo"><i class="fas fa-edit"></i></a>
                         </td>
                     </tr>
                 @endforeach
@@ -709,6 +733,29 @@
 
             modalTransport.modal('show');
         }
+
+
+        //Obtener el pdf
+        $('#linkPdf').on('click', (e) => {
+            e.preventDefault();
+
+            let valid_quote_date = $('#valid_quote_date').val().trim();
+
+
+            if (!valid_quote_date) {
+                valid_quote_date = moment().format('YYYY-MM-DD');
+
+            }else{
+                valid_quote_date = moment(valid_quote_date, "DD/MM/YY").format("YYYY-MM-DD");
+            }
+
+            let quoteId = "{{$comercialQuote->id}}";
+
+            let pdfUrl = `/commercial/quote/getPDF/${quoteId}?valid_quote_date=${valid_quote_date}`;
+
+            window.open(pdfUrl, '_blank');
+
+        });
 
         function submitTransport(e) {
             e.preventDefault();

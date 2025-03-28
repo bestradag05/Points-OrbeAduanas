@@ -451,8 +451,10 @@ class CommercialQuoteController extends Controller
 
 
 
-    public function getPDF($id)
+    public function getPDF($id, Request $request)
     {
+
+        $valid_quote_date = Carbon::parse($request->valid_quote_date);
 
         //TODO: Falta ver el caso de cuando no es por medio de cotizacion.
         $commercialQuote = CommercialQuote::with([
@@ -489,7 +491,7 @@ class CommercialQuoteController extends Controller
 
 
 
-        $pdf = FacadePdf::loadView('commercial_quote.pdf.commercial_quote_pdf', compact('commercialQuote', 'freight', 'custom', 'transport', 'personal'));
+        $pdf = FacadePdf::loadView('commercial_quote.pdf.commercial_quote_pdf', compact('commercialQuote', 'freight', 'custom', 'transport', 'personal', 'valid_quote_date'));
 
         return $pdf->stream('Cotizacion Comercial.pdf'); // Muestra el PDF en el navegador
 
