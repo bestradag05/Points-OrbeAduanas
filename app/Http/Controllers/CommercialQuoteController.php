@@ -18,6 +18,7 @@ use App\Models\TypeInsurance;
 use App\Models\TypeLoad;
 use App\Models\TypeService;
 use App\Models\TypeShipment;
+use App\Services\CustomService;
 use App\Services\FreightService;
 use App\Services\TransportService;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
@@ -34,12 +35,14 @@ class CommercialQuoteController extends Controller
      */
 
      protected $freightService;
+     protected $customService;
      protected $transportService;
 
-     public function __construct(FreightService $freightService, TransportService $transportService)
+     public function __construct(FreightService $freightService, TransportService $transportService, CustomService $customService)
      {
          $this->freightService = $freightService;
          $this->transportService = $transportService;
+         $this->customService = $customService;
      }
 
     public function index()
@@ -423,6 +426,11 @@ class CommercialQuoteController extends Controller
 
             case 'aduanas':
                 # code...
+
+                $data = $this->customService->editCustom($id);
+
+                return view('custom/edit-custom', $data);
+                
                 break;
 
             case 'transporte':

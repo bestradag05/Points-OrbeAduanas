@@ -409,8 +409,8 @@
                             let botonEliminar = document.createElement('a');
                             botonEliminar.href = '#';
                             botonEliminar.innerHTML = '<p class="text-danger">X</p>';
-                            botonEliminar.addEventListener('click', function() {
-
+                            botonEliminar.addEventListener('click', function(event) {
+                                event.preventDefault();
                                 // Eliminar la fila correspondiente al hacer clic en el botón
                                 let fila = this.parentNode.parentNode;
                                 let indice = fila.rowIndex -

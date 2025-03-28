@@ -2,7 +2,7 @@
 
 @section('content_header')
     <div class="d-flex justify-content-between">
-        <h2>Generar punto de aduana</h2>
+        <h2>Editar una aduana</h2>
         <div>
             <button class="btn btn-primary"> Atras </button>
         </div>
@@ -11,26 +11,11 @@
 @stop
 @section('dinamic-content')
 
-{{-- @section('plugins.BsCustomFileInput', true)
 
-<form action="{{ url('/custom/load') }}" id="formLoadFile" method="post" enctype="multipart/form-data">
-    @csrf
-    <div class="col-12">
-        <x-adminlte-input-file name="doc_custom" igroup-size="md" placeholder="Suba el archivo...">
-            <x-slot name="prependSlot">
-                <div class="input-group-text bg-lightblue">
-                    <i class="fas fa-upload"></i>
-                </div>
-            </x-slot>
-        </x-adminlte-input-file>
-        <hr>
-    </div>
-</form> --}}
-
-<form action={{ url('/custom/' . $custom->id) }} method="POST" enctype="multipart/form-data">
+<form action={{ url('/custom/' . $custom->id) }} id="formCustom" method="POST" enctype="multipart/form-data">
     {{ method_field('PATCH') }}
     {{ csrf_field() }}
-    @include ('custom.form-point-custom', ['formMode' => 'edit'])
+    @include ('custom.form-custom', ['formMode' => 'edit'])
 </form>
 
 
