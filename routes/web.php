@@ -34,6 +34,8 @@ use App\Http\Controllers\UserController;
 use App\Models\MessageQuoteTransport;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\ContainerController;
+use App\Http\Controllers\TypeContainerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -122,6 +124,8 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('regimes', RegimeController::class);
 
+    Route::resource('containers', ContainerController::class);
+    Route::resource('type_containers', TypeContainerController::class);
 
     Route::get('freight/pending', [FreightController::class, 'getFreightPending']);
     Route::get('freight/personal', [FreightController::class, 'getFreightPersonal']);

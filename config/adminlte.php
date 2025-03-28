@@ -676,6 +676,27 @@ return [
             'can' => 'type_load.list',
         ],
         [
+            'text' => 'Contenedores',
+            'icon' => 'fas fa-fw fa-box',
+            
+            'submenu' => [
+                [
+                    'text' => 'Contenedores',
+                    'url' => 'containers',
+                    'icon'  => 'fas fa-box-open',
+                    'active' => ['containers'],
+                ],
+                [
+                    'text' => 'Tipo de contenedores',
+                    'url'  => 'type_containers',
+                    'icon' => 'fas fa-cubes',
+                    'active' => ['type_containers.*'],
+                ],
+
+            ]
+
+        ],
+        [
             'text' => 'Incoterms',
             'url'  => 'incoterms',
             'icon' => 'fas fa-list',
