@@ -69,7 +69,7 @@ class CommercialQuote extends Model
 
     public function typeService()
     {
-        return $this->belongsToMany(TypeService::class, 'routing_typeservice', 'id_routing', 'id_type_service');
+        return $this->belongsToMany(TypeService::class, 'commercialquote_typeservice', 'id_commercial_quote', 'id_type_service');
     }
 
     public function custom()

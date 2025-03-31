@@ -37,8 +37,16 @@ return new class extends Migration
             $table->text('measures')->nullable();
             $table->decimal('cif_value', 8 , 2)->nullable();
             $table->string('observation')->nullable();
-            $table->enum('state', ['Activo', 'Inactivo'])->default('Activo');
+            $table->enum('state', ['Activo', 'Inactivo', 'Aceptado', 'Rechazado', 'Sin respuesta'])->default('Activo');
             $table->timestamps();
+
+            $table->foreign('id_personal')->references('id')->on('personal');
+            $table->foreign('id_type_shipment')->references('id')->on('type_shipment');
+            $table->foreign('id_regime')->references('id')->on('regime');
+            $table->foreign('id_incoterms')->references('id')->on('incoterms');
+            $table->foreign('id_type_load')->references('id')->on('type_load');
+
+
         });
     }
 

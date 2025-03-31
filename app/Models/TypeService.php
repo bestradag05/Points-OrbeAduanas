@@ -17,4 +17,9 @@ class TypeService extends Model
     {
         return $this->belongsToMany(Routing::class);
     }
+
+    public function commercialQuote()
+    {
+        return $this->belongsToMany(CommercialQuote::class);
+    }
 }

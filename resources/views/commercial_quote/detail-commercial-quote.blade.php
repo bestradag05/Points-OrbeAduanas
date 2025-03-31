@@ -15,11 +15,18 @@
         <div class="card-header p-0 border-bottom-0">
             <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link {{ $tab == 'detail' ? 'active' : '' }}" href="{{ url('/commercial/quote/' . $comercialQuote->id . '/detail') }}">
+                    <a class="nav-link {{ $tab == 'detail' ? 'active' : '' }}"
+                        href="{{ url('/commercial/quote/' . $comercialQuote->id . '/detail') }}">
                         Detalle</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ $tab == 'detail' ? '' : 'active' }}" href="{{ url('/commercial/quote/' . $comercialQuote->id . '/documents') }}">
+                    <a class="nav-link {{ $tab == 'quote' ? 'active' : '' }}"
+                        href="{{ url('/commercial/quote/' . $comercialQuote->id . '/quotes') }}">
+                        Cotizaciones</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $tab == 'document' ? 'active' : '' }}"
+                        href="{{ url('/commercial/quote/' . $comercialQuote->id . '/documents') }}">
                         Documentos
                     </a>
                 </li>
@@ -30,11 +37,27 @@
                 <div class="tab-pane fade show active" id="custom-tabs-four-detail" role="tabpanel"
                     aria-labelledby="custom-tabs-four-detail-tab">
 
-                    @if ($tab == 'detail')
+                    {{--                     @if ($tab == 'detail')
                         @include('commercial_quote/templates/template-detail-commercial-quote')
                     @else
                         @include('commercial/quote/templates/template-documents-commercial-quote')
                     @endif
+ --}}
+                    @switch($tab)
+                        @case('detail')
+                            @include('commercial_quote/templates/template-detail-commercial-quote')
+                        @break
+
+                        @case('quote')
+                            @include('commercial_quote/templates/template-quote-commercial-quote')
+                        @break
+
+                        @case('document')
+                            @include('commercial/quote/templates/template-documents-commercial-quote')
+                        @break
+
+                        @default
+                    @endswitch
 
                 </div>
 

@@ -200,6 +200,9 @@ Route::middleware('auth')->group(function () {
     /* Cotizaciones comerciales */
 
     Route::get('commercial/quote/{id_quote}/detail', [CommercialQuoteController::class, 'getTemplateDetailCommercialQuote'])->name('commercial.quote.detail');
+    Route::get('commercial/quote/{id_quote}/quotes', [CommercialQuoteController::class, 'getTemplateQuoteCommercialQuote']);
+    Route::get('commercial/quote/{id_quote}/document', [CommercialQuoteController::class, 'getTemplateDocmentCommercialQuote']);
+
     Route::get('commercial/createQuote/{nro_quote_commercial}', [CommercialQuoteController::class, 'createQuote']);
     Route::get('commercial/quote/getPDF/{id}', [CommercialQuoteController::class, 'getPDF']);
     Route::get('commercial/service/{service}/{id}', [CommercialQuoteController::class, 'editCommercialQuoteService']);

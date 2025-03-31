@@ -104,7 +104,6 @@ class CommercialQuoteController extends Controller
     public function store(Request $request)
     {
 
-
         $shippersConsolidated = json_decode($request->shippers_consolidated);
 
         if ($request->is_consolidated) {
@@ -353,6 +352,23 @@ class CommercialQuoteController extends Controller
             'type_insurace' => $type_insurace,
             'customs_taxes' => $customs_taxes,
             'customs_agency' => $customs_agency
+
+        ];
+
+
+        return view('commercial_quote/detail-commercial-quote', $data);
+    }
+
+
+    public function getTemplateQuoteCommercialQuote(string $id){
+
+        $comercialQuote = CommercialQuote::find($id);
+
+        $tab = 'quote';
+
+        $data = [
+            'comercialQuote' => $comercialQuote,
+            'tab' => $tab,
 
         ];
 

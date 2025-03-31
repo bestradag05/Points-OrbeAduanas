@@ -10,6 +10,7 @@ use App\Models\Freight;
 use App\Models\Insurance;
 use App\Models\QuoteFreight;
 use App\Models\TypeInsurance;
+use App\Models\TypeService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -54,7 +55,7 @@ class FreightService
         ];
 
 
-       return compact("freights", "heads");
+        return compact("freights", "heads");
     }
 
     public function getFreightPersonal()
@@ -88,26 +89,26 @@ class FreightService
 
 
 
-       return  compact("freights", "heads");
+        return  compact("freights", "heads");
     }
 
 
 
-    public function getTemplateGeneratePointFreight($id){
+    public function getTemplateGeneratePointFreight($id)
+    {
 
-         // Obtenemos el registro que se va editar
+        // Obtenemos el registro que se va editar
 
-         $freight = Freight::find($id);
-         $value_freight = 0;
- 
-         /* $freight->load('concepts'); */
- 
-         foreach ($freight->concepts as $concept) {
-             $value_freight += $concept->pivot->value_concept;
-         }
+        $freight = Freight::find($id);
+        $value_freight = 0;
 
-         return compact('freight', 'value_freight');
+        /* $freight->load('concepts'); */
 
+        foreach ($freight->concepts as $concept) {
+            $value_freight += $concept->pivot->value_concept;
+        }
+
+        return compact('freight', 'value_freight');
     }
 
 
@@ -130,12 +131,12 @@ class FreightService
 
         $freight->fill($request->all());
         $freight->save();
-
     }
 
-    
 
-    public function createFreight($quoteId){
+
+    public function createFreight($quoteId)
+    {
 
         $quote = QuoteFreight::findOrFail($quoteId);
         $commercial_quote = $quote->commercial_quote;
@@ -155,38 +156,37 @@ class FreightService
         }
 
         return compact('quote', 'type_insurace', 'concepts', 'conceptFreight', 'commercial_quote');
-
     }
 
 
-    public function storeFreight($request){
-         //Convertimos el json a un objeto
-         $concepts = json_decode($request->concepts);
+    public function storeFreight($request)
+    {
+        //Convertimos el json a un objeto
+        $concepts = json_decode($request->concepts);
 
-         $freight = $this->createOrUpdateFreight($request);
- 
- 
-         $insurance = $this->createOrUpdateInsurance($request, $freight);
- 
- 
-         if ($insurance) {
-             $concepts = $this->updateConceptInsurance($concepts, $freight, $request);
-         }
- 
- 
-         //Relacionamos los conceptos que tendra este flete
- 
-         $this->syncFreightConcepts($freight, $concepts);
- 
-         //Actualizamos el valor CIF para la cotizacion:
- 
-         $commercial_quote = CommercialQuote::where("nro_quote_commercial", $request->nro_quote_commercial)->first();
-         
-         $cif_value = $this->parseDouble($freight->value_freight) + $this->parseDouble($insurance ? $insurance->insurance_sale : 0) + $this->parseDouble($commercial_quote ? $commercial_quote->load_value : 0);
- 
-         $commercial_quote->update(['cif_value' => $cif_value]);
+        $freight = $this->createOrUpdateFreight($request);
 
-         return $freight;
+        $insurance = $this->createOrUpdateInsurance($request, $freight);
+
+
+        if ($insurance) {
+            $concepts = $this->updateConceptInsurance($concepts, $freight, $request);
+        }
+
+
+        //Relacionamos los conceptos que tendra este flete
+
+        $this->syncFreightConcepts($freight, $concepts);
+
+        //Actualizamos el valor CIF para la cotizacion:
+
+        $commercial_quote = CommercialQuote::where("nro_quote_commercial", $request->nro_quote_commercial)->first();
+
+        $cif_value = $this->parseDouble($freight->value_freight) + $this->parseDouble($insurance ? $insurance->insurance_sale : 0) + $this->parseDouble($commercial_quote ? $commercial_quote->load_value : 0);
+
+        $commercial_quote->update(['cif_value' => $cif_value]);
+
+        return $freight;
     }
 
     public function editFreight(string $id)
@@ -240,7 +240,7 @@ class FreightService
         $this->syncFreightConcepts($freight, $concepts);
 
         $commercial_quote = CommercialQuote::where("nro_quote_commercial", $request->nro_quote_commercial)->first();
-         
+
         $cif_value = $this->parseDouble($freight->value_freight) + $this->parseDouble($insurance ? $insurance->insurance_sale : 0) + $this->parseDouble($commercial_quote ? $commercial_quote->load_value : 0);
 
         $commercial_quote->update(['cif_value' => $cif_value]);
@@ -254,6 +254,20 @@ class FreightService
     public function createOrUpdateFreight(Request $request, $id = null)
     {
         $freight = $id ? Freight::findOrFail($id) : new Freight();
+        //Para vincular el servicio de flete a la tabla
+        $commercial = CommercialQuote::where('nro_quote_commercial', $request->nro_quote_commercial)->first();
+
+        $typeService = TypeService::where('name', 'Flete')->first();
+
+        if ($commercial && $typeService) {
+            if ($id) {
+                // Si es una edición, aseguramos que la relación exista sin duplicarse
+                $commercial->typeService()->syncWithoutDetaching([$typeService->id]);
+            } else {
+                // Si es una creación, simplemente la agregamos
+                $commercial->typeService()->attach($typeService->id);
+            }
+        }
 
         $freight->fill([
             'value_freight' => $request->total,
