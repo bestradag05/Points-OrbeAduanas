@@ -36,10 +36,14 @@ class CommercialQuote extends Model
         'tons',
         'measures',
         'cif_value',
-        'observation',
+        'valid_date',
         'state',
   
 
+    ];
+
+    protected $casts = [
+        'valid_date' => 'date', // Convierte 'valid_date' en un objeto Carbon
     ];
 
 

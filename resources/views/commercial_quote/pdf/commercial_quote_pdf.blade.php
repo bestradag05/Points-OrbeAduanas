@@ -334,7 +334,7 @@
                     <tr>
                         <td class="title-item-table">Fecha de Validez</td>
                         <td class="text-item-table" style="font-weight: bold">
-                            {{ $valid_quote_date->format('d/m/Y') }}</td>
+                            {{ $commercialQuote->valid_date->format('d/m/Y') }}</td>
 
                     </tr>
 

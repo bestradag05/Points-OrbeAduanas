@@ -11,18 +11,42 @@
             <div class="col-12 border-bottom border-bottom-2">
                 <div class="form-group row">
                     <label class="col-sm-4 col-form-label">Fecha de validez: </label>
-                    <div class="col-sm-6 d-inline">
+                    <div class="col-sm-6">
+
                         @php
                             $config = [
-                                'format' => 'DD/MM/YY',
+                                'format' => 'DD/MM/YYYY',
                                 'minDate' => now()->format('Y-m-d'),
                                 'language' => 'es', // Configurar en español
                             ];
 
-                            $currentDate = now()->format('d/m/Y'); // Formato compatible con el picker
+                            $currentDate = \Carbon\Carbon::parse($comercialQuote->valid_date)->format('d/m/Y'); // Formato compatible con el picker
                         @endphp
-                        <x-adminlte-input-date id="valid_quote_date" name="valid_quote_date" value="{{$currentDate}}" :config="$config"
-                            placeholder="Selecciona la fecha de validez..." />
+
+                        @if ($comercialQuote->state === 'Pendiente')
+                            <form action={{ url('/commercial/quote/updatedate/' . $comercialQuote->id) }} method="POST"
+                                class="row align-items-center" enctype="multipart/form-data">
+                                {{ method_field('PATCH') }}
+                                {{ csrf_field() }}
+
+
+                                <div class="col-8">
+                                    <x-adminlte-input-date id="valid_date" name="valid_date" value="{{ $currentDate }}"
+                                        :config="$config" placeholder="Selecciona la fecha de validez..." />
+                                </div>
+
+                                <div class="col-2">
+                                    <button type="submit" class="btn"><i
+                                            class="fas fa-sync mb-3 text-indigo"></i></button>
+                                </div>
+                            </form>
+                        @else
+                            <p id="valid_date" class="form-control-plaintext text-indigo d-inline">
+                                {{ $currentDate }}</p>
+                        @endif
+
+
+
                     </div>
 
                 </div>
@@ -39,9 +63,10 @@
                             class="text-indigo d-inline">
                             <i class="fas fa-file-pdf"></i>
                         </a> --}}
-                        <button id="linkPdf" class="btn text-indigo d-inline">
+                        <a href="{{ url('commercial/quote/getPDF/' . $comercialQuote->id) }}" target="_blank"
+                            class=" text-indigo d-inline">
                             <i class="fas fa-file-pdf"></i>
-                        </button>
+                        </a>
 
                     </div>
 
@@ -423,26 +448,44 @@
                         </td>
 
 
-                        <td>
-                            <a href="{{ url('/commercial/service/' . strtolower($index) . '/' . $service->id) }}"
-                                class="text-indigo"><i class="fas fa-edit"></i></a>
-                        </td>
+                        @if ($comercialQuote->state === 'Pendiente')
+                            <td>
+                                <a href="{{ url('/commercial/service/' . strtolower($index) . '/' . $service->id) }}"
+                                    class="text-indigo"><i class="fas fa-edit"></i></a>
+                            </td>
+                        @endif
                     </tr>
                 @endforeach
 
             </tbody>
         </table>
 
-    </div>
+        <div class="row justify-content-center text-bold mt-5">
+            <div class="col-6">
+                <p class="text-uppercase ">Estado :
+                    <b class="status-{{ strtolower($comercialQuote->state) }}">{{ $comercialQuote->state }}</b>
+                    <b class="status-{{ strtolower($comercialQuote->state) }}"><i class="fas fa-circle"></i></b>
 
-    @if($comercialQuote->typeService->count() > 0)
+                </p>
+            </div>
 
-    <div class="col-12">
-        <div class="row justify-content-center mt-5">
-            <button class="btn btn-indigo mx-2 text-bold">ACEPTAR <i class="fas fa-check"></i></button>
-            <button class="btn btn-secondary mx-2 text-bold">RECHAZAR <i class="fas fa-times"></i></button>
         </div>
+
     </div>
+
+    @if ($comercialQuote->typeService->count() > 0)
+        @if ($comercialQuote->state === 'Pendiente')
+            <div class="col-12">
+                <div class="row justify-content-center mt-5">
+                    <button class="btn btn-indigo mx-2 text-bold"
+                        onclick="handleActionCommercialQuote('accept', '{{ $comercialQuote->id }}')">ACEPTAR <i
+                            class="fas fa-check"></i></button>
+                    <button class="btn btn-secondary mx-2 text-bold"
+                        onclick="handleActionCommercialQuote('decline', '{{ $comercialQuote->id }}')">RECHAZAR <i
+                            class="fas fa-times"></i></button>
+                </div>
+            </div>
+        @endif
 
     @endif
 
@@ -483,29 +526,35 @@
         }
 
 
-        //Obtener el pdf
-        $('#linkPdf').on('click', (e) => {
-            e.preventDefault();
 
-            let valid_quote_date = $('#valid_quote_date').val().trim();
+        function handleActionCommercialQuote(action, id) {
 
-            if (!valid_quote_date) {
-                valid_quote_date = moment().format('YYYY-MM-DD');
+            let textAction = (action === 'accept') ? 'aceptar' : 'rechazar';
 
-            } else {
-                valid_quote_date = moment(valid_quote_date, "DD/MM/YYYY").format("YYYY-MM-DD");
-            }
+            Swal.fire({
+                title: `¿Estas seguro que deseas ${textAction} esta cotización?`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#2e37a4",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: `Si, ${textAction}!`,
+                cancelButtonText: 'No, cancelar',
+                allowOutsideClick: false // Evita que se cierre al hacer clic fuera
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: "Listo!",
+                        text: `tu cotizacion se acaba de ${textAction} .`,
+                        icon: "success",
+                        allowOutsideClick: false
+                    }).then((result) => {
+                        window.location.href = `/commercial/quote/state/${action}/${id}`;
+                    })
+                }
+            });
 
+        }
 
-            let quoteId = "{{ $comercialQuote->id }}";
-
-            let pdfUrl = `/commercial/quote/getPDF/${quoteId}?valid_quote_date=${valid_quote_date}`;
-
-            window.open(pdfUrl, '_blank');
-
-        });
-
-       
 
         // Mostrar mensaje de error
         function showError(input, message) {
@@ -530,7 +579,7 @@
 
 
 
-    
+
         function toggleArrows(isOpening) {
             var arrowDown = document.getElementById('arrowDown');
             var arrowUp = document.getElementById('arrowUp');

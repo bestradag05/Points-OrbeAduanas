@@ -301,7 +301,7 @@
                                     <i class="far fa-fw fa-file-pdf"></i> {{ $file['name'] }}
                                 </a>
                             </td>
-                            <td class="text-center">
+                            <td class="text-center {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}"">
                                 <a href="#" class="text-danger"
                                     onclick="handleFileDeletion('{{ $file['name'] }}', this, event)">
                                     X
@@ -419,13 +419,13 @@
                         </div>
                         <div class="form-group">
                             <label for="operations_commission">Comision de operaciones</label>
-                            <input id="operations_commission" data-type="currency" class="form-control CurrencyInput"
-                                type="text" name="operations_commission">
+                            <input id="operations_commission" data-type="currency" @readonly(true) class="form-control CurrencyInput"
+                                type="text" name="operations_commission" value="10.00">
                         </div>
                         <div class="form-group">
                             <label for="pricing_commission">Comision de pricing</label>
-                            <input id="pricing_commission" data-type="currency" class="form-control CurrencyInput"
-                                type="text" name="pricing_commission">
+                            <input id="pricing_commission" data-type="currency" @readonly(true) class="form-control CurrencyInput"
+                                type="text" name="pricing_commission" value="10.00">
                         </div>
                     </div>
                     <div class="modal-footer">

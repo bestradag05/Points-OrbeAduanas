@@ -298,7 +298,7 @@
                                     <i class="far fa-fw fa-file-pdf"></i> {{ $file['name'] }}
                                 </a>
                             </td>
-                            <td class="text-center">
+                            <td class="text-center {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}"">
                                 <a href="#" class="text-danger"
                                     onclick="handleFileDeletion('{{ $file['name'] }}', this, event)">
                                     X

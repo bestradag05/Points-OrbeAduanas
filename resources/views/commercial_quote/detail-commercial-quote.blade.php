@@ -22,7 +22,7 @@
                 <li class="nav-item">
                     <a class="nav-link {{ $tab == 'quote' ? 'active' : '' }}"
                         href="{{ url('/commercial/quote/' . $comercialQuote->id . '/quotes') }}">
-                        Cotizaciones</a>
+                        Cotizaciones ({{$comercialQuote->quote_freight()->count() + $comercialQuote->quote_transport()->count()}})</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ $tab == 'document' ? 'active' : '' }}"
@@ -53,7 +53,7 @@
                         @break
 
                         @case('document')
-                            @include('commercial/quote/templates/template-documents-commercial-quote')
+                            @include('commercial_quote/templates/template-documents-commercial-quote')
                         @break
 
                         @default

@@ -36,8 +36,8 @@ return new class extends Migration
             $table->decimal('tons', 8, 2)->nullable();
             $table->text('measures')->nullable();
             $table->decimal('cif_value', 8 , 2)->nullable();
-            $table->string('observation')->nullable();
-            $table->enum('state', ['Activo', 'Inactivo', 'Aceptado', 'Rechazado', 'Sin respuesta'])->default('Activo');
+            $table->date('valid_date')->nullable();
+            $table->enum('state', ['Pendiente', 'Inactivo', 'Aceptado', 'Rechazado', 'Sin respuesta'])->default('Pendiente');
             $table->timestamps();
 
             $table->foreign('id_personal')->references('id')->on('personal');

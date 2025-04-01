@@ -5,30 +5,35 @@
 
     <div class="col-4 offset-4">
 
-        <div class="form-group row">
-            <label class="col-sm-4 col-form-label">Agregar Cotizacion : </label>
-            <div class="col-sm-8">
-                <select name="type_quote_service" id="type_quote_service" class="form-control"
-                    onchange="createTypeQuote(this)">
-                    <option disabled selected></option>
-                    @if ($comercialQuote->quote_freight()->exists())
-                        <option value="Flete" disabled>Flete</option>
-                    @else
-                        <option value="Flete">Flete</option>
-                    @endif
+        @if ($comercialQuote->state === 'Pendiente')
 
-                    @if ($comercialQuote->quote_transport()->exists())
-                        <option value="Transporte" disabled>Transporte</option>
-                    @else
-                        <option value="Transporte">Transporte</option>
-                    @endif
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Agregar Cotizacion : </label>
+                <div class="col-sm-8">
+                    <select name="type_quote_service" id="type_quote_service" class="form-control"
+                        onchange="createTypeQuote(this)">
+                        <option disabled selected></option>
+                        @if ($comercialQuote->quote_freight()->exists())
+                            <option value="Flete" disabled>Flete</option>
+                        @else
+                            <option value="Flete">Flete</option>
+                        @endif
 
-                </select>
+                        @if ($comercialQuote->quote_transport()->exists())
+                            <option value="Transporte" disabled>Transporte</option>
+                        @else
+                            <option value="Transporte">Transporte</option>
+                        @endif
 
+                    </select>
+
+
+                </div>
 
             </div>
 
-        </div>
+        @endif
+
 
 
     </div>
@@ -85,8 +90,10 @@
                                     <option>Detalle</option>
                                     <option class="{{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">Anular
                                     </option>
-                                    <option class="{{ $quote->state != 'Aceptado' ? 'd-none' : '' }}">Rechazar
-                                    </option>
+                                    @if ($comercialQuote->state === 'Pendiente')
+                                        <option class="{{ $quote->state != 'Aceptado' ? 'd-none' : '' }}">Rechazar
+                                        </option>
+                                    @endif
                                 </select>
 
                             </td>
@@ -149,8 +156,11 @@
                                     <option>Detalle</option>
                                     <option class="{{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">Anular
                                     </option>
-                                    <option class="{{ $quote->state != 'Aceptado' ? 'd-none' : '' }}">Rechazar
-                                    </option>
+                                    @if ($comercialQuote->state === 'Pendiente')
+                                        <option class="{{ $quote->state != 'Aceptado' ? 'd-none' : '' }}">Rechazar
+                                        </option>
+                                    @endif
+
                                 </select>
 
                             </td>

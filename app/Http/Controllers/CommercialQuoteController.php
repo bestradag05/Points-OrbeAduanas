@@ -26,6 +26,7 @@ use Barryvdh\DomPDF\PDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use stdClass;
 
 class CommercialQuoteController extends Controller
@@ -34,16 +35,16 @@ class CommercialQuoteController extends Controller
      * Display a listing of the resource.
      */
 
-     protected $freightService;
-     protected $customService;
-     protected $transportService;
+    protected $freightService;
+    protected $customService;
+    protected $transportService;
 
-     public function __construct(FreightService $freightService, TransportService $transportService, CustomService $customService)
-     {
-         $this->freightService = $freightService;
-         $this->transportService = $transportService;
-         $this->customService = $customService;
-     }
+    public function __construct(FreightService $freightService, TransportService $transportService, CustomService $customService)
+    {
+        $this->freightService = $freightService;
+        $this->transportService = $transportService;
+        $this->customService = $customService;
+    }
 
     public function index()
     {
@@ -127,7 +128,7 @@ class CommercialQuoteController extends Controller
                 'lcl_fcl' => $request->lcl_fcl,
                 'is_consolidated' => $request->is_consolidated,
                 'nro_operation' => $request->nro_operation,
-                'observation' => $request->observation,
+                'valid_date' => now()->format('Y-m-d'),
                 'id_personal' => auth()->user()->personal->id,
             ]);
 
@@ -160,7 +161,7 @@ class CommercialQuoteController extends Controller
                 'is_consolidated' => $request->is_consolidated,
                 'measures' => $request->value_measures,
                 'nro_operation' => $request->nro_operation,
-                'observation' => $request->observation,
+                'valid_date' => now()->format('Y-m-d'),
                 'id_personal' => auth()->user()->personal->id,
             ]);
         }
@@ -360,7 +361,8 @@ class CommercialQuoteController extends Controller
     }
 
 
-    public function getTemplateQuoteCommercialQuote(string $id){
+    public function getTemplateQuoteCommercialQuote(string $id)
+    {
 
         $comercialQuote = CommercialQuote::find($id);
 
@@ -375,6 +377,52 @@ class CommercialQuoteController extends Controller
 
         return view('commercial_quote/detail-commercial-quote', $data);
     }
+
+
+    public function getTemplateDocmentCommercialQuote(string $id)
+    {
+        $comercialQuote = CommercialQuote::find($id);
+
+        $nroQuoteCommercial = $comercialQuote->nro_quote_commercial;
+
+        $basePath = "public/commercial_quote/{$nroQuoteCommercial}";
+
+        // Verificamos si la carpeta principal existe
+        if (Storage::exists($basePath)) {
+
+            // Obtenemos los archivos y subcarpetas dentro de la carpeta principal
+            $documents = Storage::allFiles($basePath);  // Devuelve todos los archivos, incluyendo los de subcarpetas
+            $directories = Storage::allDirectories($basePath); // Devuelve las subcarpetas
+            // Organizar los archivos y subcarpetas de manera jerárquica
+            $folders = [];
+            foreach ($directories as $directory) {
+                // Obtener los archivos dentro de cada subcarpeta
+                $folderFiles = Storage::files($directory);
+                if (count($folderFiles) > 0) {
+                    $folders[] = [
+                        'folder' => basename($directory), // Nombre de la subcarpeta
+                        'files' => $folderFiles
+                    ];
+                }
+            }
+        } else {
+            $folders = []; // No se encontró la carpeta
+        }
+
+
+        $tab = 'document';
+
+        $data = [
+            'comercialQuote' => $comercialQuote,
+            'tab' => $tab,
+            'folders' => $folders
+
+        ];
+
+
+        return view('commercial_quote/detail-commercial-quote', $data);
+    }
+
 
 
     public function createQuote(String $nro_quote_commercial, Request $request)
@@ -394,6 +442,49 @@ class CommercialQuoteController extends Controller
         return response()->json([
             'message' => "Cotizacion creada"
         ], 200);
+    }
+
+
+    public function handleActionCommercialQuote(string $action, string $id)
+    {
+
+
+        $commercialQuote = CommercialQuote::findOrFail($id)->first();
+
+        switch ($action) {
+            case 'accept':
+                # code...
+
+                $commercialQuote->update(['state' => 'Aceptado']);
+
+                break;
+
+            case 'decline':
+                # code...
+
+                $commercialQuote->update(['state' => 'Rechazado']);
+
+                break;
+
+            default:
+                # code...
+                break;
+        }
+
+        return redirect('commercial/quote/' . $commercialQuote->id . '/detail');
+    }
+
+
+    public function updateDate(Request $request, string $id)
+    {
+
+        $commercialQuote = CommercialQuote::findOrFail($id)->first();
+
+        $validDate = Carbon::createFromFormat('d/m/Y', $request->valid_date)->format('Y-m-d');
+
+        $commercialQuote->update(['valid_date' =>  $validDate]);
+
+        return redirect('commercial/quote/' . $commercialQuote->id . '/detail');
     }
 
     /**
@@ -446,7 +537,7 @@ class CommercialQuoteController extends Controller
                 $data = $this->customService->editCustom($id);
 
                 return view('custom/edit-custom', $data);
-                
+
                 break;
 
             case 'transporte':
@@ -467,10 +558,9 @@ class CommercialQuoteController extends Controller
 
 
 
-    public function getPDF($id, Request $request)
+    public function getPDF($id)
     {
 
-        $valid_quote_date = Carbon::parse($request->valid_quote_date);
 
         //TODO: Falta ver el caso de cuando no es por medio de cotizacion.
         $commercialQuote = CommercialQuote::with([
@@ -507,7 +597,7 @@ class CommercialQuoteController extends Controller
 
 
 
-        $pdf = FacadePdf::loadView('commercial_quote.pdf.commercial_quote_pdf', compact('commercialQuote', 'freight', 'custom', 'transport', 'personal', 'valid_quote_date'));
+        $pdf = FacadePdf::loadView('commercial_quote.pdf.commercial_quote_pdf', compact('commercialQuote', 'freight', 'custom', 'transport', 'personal'));
 
         return $pdf->stream('Cotizacion Comercial.pdf'); // Muestra el PDF en el navegador
 
