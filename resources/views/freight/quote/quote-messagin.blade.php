@@ -77,7 +77,7 @@
                         <b class="d-block">{{ $quote->routing->customer->name_businessname }}</b>
                     </p>
                 </div> --}}
-                <div class="col-6 {{$quote->commercial_quote->customer_company_name ? '' : 'd-none'}}">
+                <div class="col-6 {{ $quote->commercial_quote->customer_company_name ? '' : 'd-none' }}">
                     <p class="text-sm">Cliente :
                         <b class="d-block">{{ $quote->commercial_quote->customer_company_name }}</b>
                     </p>
@@ -115,7 +115,8 @@
                     </div>
                 </div>
 
-                <h5 class="text-center text-indigo" style="text-decoration: underline;  text-underline-offset: 4px;">Detalle de consolidado</h5>
+                <h5 class="text-center text-indigo" style="text-decoration: underline;  text-underline-offset: 4px;">Detalle
+                    de consolidado</h5>
 
                 @foreach ($quote->commercial_quote->consolidatedCargos as $consolidated)
                     @php
@@ -132,7 +133,8 @@
                                         class="btn btn-link btn-block px-0 text-muted text-semibold text-left d-flex align-items-center"
                                         type="button" data-toggle="collapse"
                                         data-target="#collapse{{ $consolidated->id }}" aria-expanded="true">
-                                        <span class="text-indigo">Shipper {{ $loop->iteration }}</span>: {{ $shipper->shipper_name }}
+                                        <span class="text-indigo">Shipper {{ $loop->iteration }}</span>:
+                                        {{ $shipper->shipper_name }}
                                         <i class="fas fa-sort-down mx-3"></i>
                                     </button>
                                 </h2>
@@ -198,26 +200,26 @@
                                             <b class="d-block">{{ $consolidated->kilograms }}</b>
                                         </p>
                                     </div>
-
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <th>Cantidad</th>
-                                            <th>Ancho (cm)</th>
-                                            <th>Largo (cm)</th>
-                                            <th>Alto (cm)</th>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($measures as $measure)
-                                                <tr>
-                                                    <td>{{ $measure->amount }}</td>
-                                                    <td>{{ $measure->width }}</td>
-                                                    <td>{{ $measure->length }}</td>
-                                                    <td>{{ $measure->height }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-
+                                    @if ($measures)
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <th>Cantidad</th>
+                                                <th>Ancho (cm)</th>
+                                                <th>Largo (cm)</th>
+                                                <th>Alto (cm)</th>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($measures as $measure)
+                                                    <tr>
+                                                        <td>{{ $measure->amount }}</td>
+                                                        <td>{{ $measure->width }}</td>
+                                                        <td>{{ $measure->length }}</td>
+                                                        <td>{{ $measure->height }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -286,7 +288,7 @@
                 <div class="col-6 align-items-center">
                     <h5 class="mt-3 text-muted">Archivos : </h5>
                 </div>
-                <div class="col-6 align-items-center {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}" >
+                <div class="col-6 align-items-center {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}">
                     <button class="btn btn-indigo btn-sm" data-toggle="modal" data-target="#modalQuoteFreightDocuments">
                         <i class="fas fa-plus"></i>
                     </button>
@@ -384,9 +386,8 @@
 
 
             <div class="text-center mt-5 mb-3">
-                <button
-                    class="btn btn-sm btn-success {{$quote->state === 'Aceptado' ? 'd-none' : '' }}"
-                    type="button" data-toggle="modal" data-target="#quote-freight">Cotización Aceptada</button>
+                <button class="btn btn-sm btn-success {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}" type="button"
+                    data-toggle="modal" data-target="#quote-freight">Cotización Aceptada</button>
 
             </div>
         </div>
@@ -419,13 +420,15 @@
                         </div>
                         <div class="form-group">
                             <label for="operations_commission">Comision de operaciones</label>
-                            <input id="operations_commission" data-type="currency" @readonly(true) class="form-control CurrencyInput"
-                                type="text" name="operations_commission" value="10.00">
+                            <input id="operations_commission" data-type="currency" @readonly(true)
+                                class="form-control CurrencyInput" type="text" name="operations_commission"
+                                value="10.00">
                         </div>
                         <div class="form-group">
                             <label for="pricing_commission">Comision de pricing</label>
-                            <input id="pricing_commission" data-type="currency" @readonly(true) class="form-control CurrencyInput"
-                                type="text" name="pricing_commission" value="10.00">
+                            <input id="pricing_commission" data-type="currency" @readonly(true)
+                                class="form-control CurrencyInput" type="text" name="pricing_commission"
+                                value="10.00">
                         </div>
                     </div>
                     <div class="modal-footer">

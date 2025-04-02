@@ -98,8 +98,8 @@
                     </p>
                 </div>
 
-                
-                
+
+
             </div>
 
             @if ($quote->commercial_quote->is_consolidated)
@@ -111,7 +111,8 @@
                     </div>
                 </div>
 
-                <h5 class="text-center text-indigo" style="text-decoration: underline;  text-underline-offset: 4px;">Detalle de consolidado</h5>
+                <h5 class="text-center text-indigo" style="text-decoration: underline;  text-underline-offset: 4px;">Detalle
+                    de consolidado</h5>
 
                 @foreach ($quote->commercial_quote->consolidatedCargos as $consolidated)
                     @php
@@ -128,7 +129,8 @@
                                         class="btn btn-link btn-block px-0 text-muted text-semibold text-left d-flex align-items-center"
                                         type="button" data-toggle="collapse"
                                         data-target="#collapse{{ $consolidated->id }}" aria-expanded="true">
-                                        <span class="text-indigo">Shipper {{ $loop->iteration }}</span>: {{ $shipper->shipper_name }}
+                                        <span class="text-indigo">Shipper {{ $loop->iteration }}</span>:
+                                        {{ $shipper->shipper_name }}
                                         <i class="fas fa-sort-down mx-3"></i>
                                     </button>
                                 </h2>
@@ -194,26 +196,26 @@
                                             <b class="d-block">{{ $consolidated->kilograms }}</b>
                                         </p>
                                     </div>
-
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <th>Cantidad</th>
-                                            <th>Ancho (cm)</th>
-                                            <th>Largo (cm)</th>
-                                            <th>Alto (cm)</th>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($measures as $measure)
-                                                <tr>
-                                                    <td>{{ $measure->amount }}</td>
-                                                    <td>{{ $measure->width }}</td>
-                                                    <td>{{ $measure->length }}</td>
-                                                    <td>{{ $measure->height }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-
+                                    @if ($measures)
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <th>Cantidad</th>
+                                                <th>Ancho (cm)</th>
+                                                <th>Largo (cm)</th>
+                                                <th>Alto (cm)</th>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($measures as $measure)
+                                                    <tr>
+                                                        <td>{{ $measure->amount }}</td>
+                                                        <td>{{ $measure->width }}</td>
+                                                        <td>{{ $measure->length }}</td>
+                                                        <td>{{ $measure->height }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -263,7 +265,7 @@
 
 
             @endif
-        
+
 
 
             <div class="row text-muted mt-3">
@@ -377,9 +379,8 @@
 
 
             <div class="text-center mt-5 mb-3">
-                <button
-                    class="btn btn-sm btn-success {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}"
-                    type="button" data-toggle="modal" data-target="#quote-transport">Cotización Aceptada</button>
+                <button class="btn btn-sm btn-success {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}" type="button"
+                    data-toggle="modal" data-target="#quote-transport">Cotización Aceptada</button>
 
             </div>
         </div>

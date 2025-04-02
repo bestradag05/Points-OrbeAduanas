@@ -109,9 +109,9 @@ class CommercialQuoteController extends Controller
 
         if ($request->is_consolidated) {
 
-            $totalLoadValue = collect($shippersConsolidated)
-                ->map(fn($shipper) => ['load_value' => $this->parseDouble($shipper->load_value)])
-                ->sum('load_value');
+            $totals = [];
+
+            $totals = $this->calculateDataConsolidated($shippersConsolidated);
 
             $commercialQuote = CommercialQuote::create([
                 'nro_quote_commercial' => $request->nro_quote_commercial,
@@ -119,7 +119,7 @@ class CommercialQuoteController extends Controller
                 'destination' => $request->destination,
                 'customer_ruc' => $request->customer_ruc != null ?  $request->customer_ruc : null,
                 'customer_company_name' => $request->customer_company_name != null ?  $request->customer_company_name : null,
-                'load_value' => $totalLoadValue,
+                'load_value' => $totals['total_load_values'],
                 'id_type_shipment' => $request->id_type_shipment,
                 'id_regime' => $request->id_regime,
                 'id_type_load' => $request->id_type_load,
@@ -127,6 +127,10 @@ class CommercialQuoteController extends Controller
                 'container_type' => ($request->is_consolidated) ? $request->container_type_consolidated :  $request->container_type,
                 'lcl_fcl' => $request->lcl_fcl,
                 'is_consolidated' => $request->is_consolidated,
+                'total_nro_package_consolidated' => $totals['total_bultos'],
+                'total_volumen_consolidated' => ($totals['total_volumen'] > 0) ? $totals['total_volumen'] : null,
+                'total_kilogram_volumen_consolidated' => ($totals['total_kilogram_volumen'] > 0) ? $totals['total_kilogram_volumen'] : null,
+                'total_kilogram_consolidated' => $totals['total_kilogram'],
                 'nro_operation' => $request->nro_operation,
                 'valid_date' => now()->format('Y-m-d'),
                 'id_personal' => auth()->user()->personal->id,
@@ -193,6 +197,35 @@ class CommercialQuoteController extends Controller
     }
 
 
+    public function calculateDataConsolidated($shippersConsolidated)
+    {
+
+        $totalVolumen = 0;
+        $totalKilogramVolumen = 0;
+        $totalKilogram = 0;
+        $totalBultos = 0;
+        $totalLoadValue = 0;
+
+
+        foreach ($shippersConsolidated as $consolidated) {
+            $totalVolumen += (float) $consolidated->volumen;
+            $totalKilogramVolumen += (float) $consolidated->kilogram_volumen;
+            $totalKilogram += (float) $consolidated->kilograms;
+            $totalBultos += (int) $consolidated->nro_packages_consolidated;
+            $totalLoadValue += $this->parseDouble($consolidated->load_value);
+        }
+
+        return [
+            'total_volumen' => $totalVolumen,
+            'total_kilogram_volumen' => $totalKilogramVolumen,
+            'total_kilogram' => $totalKilogram,
+            'total_bultos' => $totalBultos,
+            'total_load_values' => $totalLoadValue
+
+        ];
+    }
+
+
     public function storeConsolidateCarga($shipper, $idCommercialQuote)
     {
 
@@ -211,7 +244,8 @@ class CommercialQuoteController extends Controller
                 'nro_packages' => $shipper->nro_packages_consolidated,
                 'packaging_type' => $shipper->packaging_type_consolidated,
                 'volumen' => $this->parseDouble($shipper->volumen),
-                'kilograms' => $this->parseDouble($shipper->volumen),
+                'kilogram_volumen' => $this->parseDouble($shipper->kilogram_volumen),
+                'kilograms' => $this->parseDouble($shipper->kilograms),
                 'value_measures' => ($shipper->value_measures) ? json_encode($shipper->value_measures) : null,
             ]);
         } else {
@@ -234,7 +268,8 @@ class CommercialQuoteController extends Controller
                 'nro_packages' => $shipper->nro_packages_consolidated,
                 'packaging_type' => $shipper->packaging_type_consolidated,
                 'volumen' => $this->parseDouble($shipper->volumen),
-                'kilograms' => $this->parseDouble($shipper->volumen),
+                'kilogram_volumen' => $this->parseDouble($shipper->kilogram_volumen),
+                'kilograms' => $this->parseDouble($shipper->kilograms),
                 'value_measures' => ($shipper->value_measures) ? json_encode($shipper->value_measures) : null,
             ]);
         }
@@ -573,6 +608,7 @@ class CommercialQuoteController extends Controller
         ])->find($id);
 
 
+
         $personal = Auth::user()->personal;
 
 
@@ -602,6 +638,9 @@ class CommercialQuoteController extends Controller
         return $pdf->stream('Cotizacion Comercial.pdf'); // Muestra el PDF en el navegador
 
     }
+
+
+
 
     public function validateForm($request, $id)
     {

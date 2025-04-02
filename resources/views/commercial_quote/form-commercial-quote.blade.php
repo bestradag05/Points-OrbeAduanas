@@ -140,17 +140,16 @@
           </div>
 
           <div class="col-6">
-            <label for="customer_company_name">Incoterm</label>
-            <a href="#" data-bs-toggle="modal" data-bs-target="#incotermModal">
-                <i class="fas fa-info-circle"></i>
-            </a>
-              <x-adminlte-select2 name="id_incoterms" igroup-size="md"
-                  data-placeholder="Seleccione una opcion...">
+              <label for="customer_company_name">Incoterm</label>
+              <a href="#" data-bs-toggle="modal" data-bs-target="#incotermModal">
+                  <i class="fas fa-info-circle"></i>
+              </a>
+              <x-adminlte-select2 name="id_incoterms" igroup-size="md" data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($incoterms as $incoter)
                       <option value="{{ $incoter->id }}"
                           {{ (isset($routing->id_incoterms) && $routing->id_incoterms == $incoter->id) || old('id_incoterms') == $incoter->id ? 'selected' : '' }}>
-                          {{ $incoter->code }}  ({{$incoter->name}})</option>
+                          {{ $incoter->code }} ({{ $incoter->name }})</option>
                   @endforeach
               </x-adminlte-select2>
           </div>
@@ -165,8 +164,8 @@
       <div class="form-group">
           <label>¿Es consolidado?</label>
           <div class="form-check form-check-inline">
-              <input type="radio" id="consolidadoSi" name="is_consolidated" value="1" class="form-check-input"
-                  onchange="toggleConsolidatedSection()">
+              <input type="radio" id="consolidadoSi" name="is_consolidated" value="1"
+                  class="form-check-input" onchange="toggleConsolidatedSection()">
               <label for="consolidadoSi" class="form-check-label">Sí</label>
           </div>
           <div class="form-check form-check-inline">
@@ -432,6 +431,7 @@
                       <th>Bultos</th>
                       <th>Embalaje</th>
                       <th>Volumen</th>
+                      <th>KGV</th>
                       <th>Peso</th>
                       <th>Accion</th>
                   </tr>
@@ -446,11 +446,13 @@
               <hr class="w-100">
               <div class="col-6 mt-4 d-none fcl-fields" id="containerTypeWrapperConsolidated">
                   <div class="form-group row">
-                      <label for="container_type_consolidated" class="col-sm-4 col-form-label">Tipo de contenedor</label>
+                      <label for="container_type_consolidated" class="col-sm-4 col-form-label">Tipo de
+                          contenedor</label>
                       <div class="col-sm-8">
                           <input type="text" min="0" step="1"
-                              class="form-control @error('container_type_consolidated') is-invalid @enderror" id="container_type_consolidated"
-                              name="container_type_consolidated" placeholder="Ingrese el tipo de contenedor.."
+                              class="form-control @error('container_type_consolidated') is-invalid @enderror"
+                              id="container_type_consolidated" name="container_type_consolidated"
+                              placeholder="Ingrese el tipo de contenedor.."
                               value="{{ isset($routing) ? $routing->container_type_consolidated : old('container_type_consolidated') }}">
                           @error('container_type_consolidated')
                               <span class="invalid-feedback d-block" role="alert">
@@ -504,15 +506,17 @@
 
 
   <!-- Modal de Bootstrap -->
-<div class="modal fade" id="incotermModal" tabindex="-1" aria-labelledby="incotermModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
-        <div class="modal-content">
-            <div class="modal-body text-center p-0">
-                <img src="{{ asset('storage/incoterms/incoterms.jpg') }}" class="img-fluid" alt="Información sobre Incoterms">
-            </div>
-        </div>
-    </div>
-</div>
+  <div class="modal fade" id="incotermModal" tabindex="-1" aria-labelledby="incotermModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-xl">
+          <div class="modal-content">
+              <div class="modal-body text-center p-0">
+                  <img src="{{ asset('storage/incoterms/incoterms.jpg') }}" class="img-fluid"
+                      alt="Información sobre Incoterms">
+              </div>
+          </div>
+      </div>
+  </div>
 
 
 
@@ -905,6 +909,8 @@
                   return;
               }
 
+              let rawValueMeasures = getValueByName('value-measures-consolidated');
+
               let shipper = {
                   'shipper_name': getValueByName('shipper_name'),
                   'shipper_contact': getValueByName('shipper_contact'),
@@ -916,8 +922,9 @@
                   'nro_packages_consolidated': getValueByName('nro_packages_consolidated'),
                   'packaging_type_consolidated': getValueByName('packaging_type_consolidated'),
                   'volumen': getValueByName('volumen'),
+                  'kilogram_volumen': getValueByName('kilogram_volumen'),
                   'kilograms': getValueByName('kilograms'),
-                  'value_measures': JSON.parse(getValueByName('value-measures-consolidated'))
+                  'value_measures': rawValueMeasures ? JSON.parse(rawValueMeasures) : null
               };
 
               // Agregar shipper al array y obtener su índice
@@ -937,6 +944,7 @@
                         <td>${shipper.nro_packages_consolidated}</td>
                         <td>${shipper.packaging_type_consolidated}</td>
                         <td>${shipper.volumen}</td>
+                        <td>${shipper.kilogram_volumen}</td>
                         <td>${shipper.kilograms}</td>
                         <td>
                             <button class="btn btn-info btn-sm btn-detail"><i class="fas fa-folder-open"></i></button>
@@ -947,6 +955,9 @@
 
 
               tableShipper.append(newRow);
+
+              // Llamar a la función para ocultar columnas si es necesario
+              checkColumnVisibility();
 
               $('#modal-consolidated').modal('hide');
               //Reseteamos el formulario para agregar un shipper
@@ -960,6 +971,25 @@
 
 
           }
+
+
+          function checkColumnVisibility() {
+              let hideVolumen = shippers.every(shipper => !shipper.volumen);
+              let hideKGV = shippers.every(shipper => !shipper.kilogram_volumen);
+
+              if (hideVolumen) {
+                  $('th:nth-child(8), td:nth-child(8)').hide(); // Oculta la columna Volumen
+              } else {
+                  $('th:nth-child(8), td:nth-child(8)').show(); // Muestra la columna Volumen
+              }
+
+              if (hideKGV) {
+                  $('th:nth-child(9), td:nth-child(9)').hide(); // Oculta la columna KGV
+              } else {
+                  $('th:nth-child(9), td:nth-child(9)').show(); // Muestra la columna KGV
+              }
+          }
+
 
           // Función para actualizar el input hidden con el array `shippers`
           function updateHiddenInput() {
@@ -1018,8 +1048,9 @@
             `;
 
               // Convertimos el objeto en un array de pares clave-valor y lo recorremos
-              Object.entries(shipper.value_measures).forEach(([key, measure]) => {
-                  detailsHtml += `
+              if (shipper.value_measures) {
+                  Object.entries(shipper.value_measures).forEach(([key, measure]) => {
+                      detailsHtml += `
                     <tr>
                         <td>${measure.amount}</td>
                         <td>${measure.length}</td>
@@ -1027,7 +1058,9 @@
                         <td>${measure.height}</td>
                     </tr>
                 `;
-              });
+                  });
+              }
+
 
               detailsHtml += `
                         </tbody>

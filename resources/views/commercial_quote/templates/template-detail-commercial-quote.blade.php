@@ -199,26 +199,27 @@
                                             <b class="d-block">{{ $consolidated->kilograms }}</b>
                                         </p>
                                     </div>
+                                    @if ($measures)
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <th>Cantidad</th>
+                                                <th>Ancho (cm)</th>
+                                                <th>Largo (cm)</th>
+                                                <th>Alto (cm)</th>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($measures as $measure)
+                                                    <tr>
+                                                        <td>{{ $measure->amount }}</td>
+                                                        <td>{{ $measure->width }}</td>
+                                                        <td>{{ $measure->length }}</td>
+                                                        <td>{{ $measure->height }}</td>
+                                                    </tr>
+                                                @endforeach
 
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <th>Cantidad</th>
-                                            <th>Ancho (cm)</th>
-                                            <th>Largo (cm)</th>
-                                            <th>Alto (cm)</th>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($measures as $measure)
-                                                <tr>
-                                                    <td>{{ $measure->amount }}</td>
-                                                    <td>{{ $measure->width }}</td>
-                                                    <td>{{ $measure->length }}</td>
-                                                    <td>{{ $measure->height }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-
+                                            </tbody>
+                                        </table>
+                                    @endif
                                 </div>
                             </div>
                         </div>

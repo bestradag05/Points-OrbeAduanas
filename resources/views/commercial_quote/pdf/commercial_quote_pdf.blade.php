@@ -289,17 +289,43 @@
                         <td class="text-item-table">{{ $commercialQuote->type_shipment->name }}</td>
                     </tr>
                     <tr>
-                        <td class="title-item-table">Bultos</td>
-                        <td class="text-item-table">{{ $commercialQuote->nro_package }}</td>
+                        <td class="title-item-table">Tipo de carga</td>
+                        <td class="text-item-table">{{ $commercialQuote->type_load->name }}</td>
                     </tr>
-                    <tr>
-                        <td class="title-item-table">Volumen</td>
-                        <td class="text-item-table">{{ $commercialQuote->volumen }}</td>
-                    </tr>
-                    <tr>
-                        <td class="title-item-table">Peso total</td>
-                        <td class="text-item-table">{{ $commercialQuote->tons }}</td>
-                    </tr>
+                    @if ($commercialQuote->is_consolidated)
+
+                        <tr>
+                            <td class="title-item-table">Bultos</td>
+                            <td class="text-item-table">{{ $commercialQuote->total_nro_package_consolidated }}</td>
+                        </tr>
+                        <tr>
+                            <td class="title-item-table">Volumen / KGV</td>
+                            @if ($commercialQuote->total_volumen_consolidated)
+                                <td class="text-item-table">{{ $commercialQuote->total_volumen_consolidated }} CBM</td>
+                            @else
+                            <td class="text-item-table">{{ $commercialQuote->total_kilogram_volumen_consolidated }} KGV</td>
+                            @endif
+                        </tr>
+                        <tr>
+                            <td class="title-item-table">Peso total</td>
+                            <td class="text-item-table">{{ $commercialQuote->total_kilogram_consolidated }}</td>
+                        </tr>
+                    @else
+                        <tr>
+                            <td class="title-item-table">Bultos</td>
+                            <td class="text-item-table">{{ $commercialQuote->nro_package }}</td>
+                        </tr>
+                        <tr>
+                            <td class="title-item-table">Volumen</td>
+                            <td class="text-item-table">{{ $commercialQuote->volumen }}</td>
+                        </tr>
+                        <tr>
+                            <td class="title-item-table">Peso total</td>
+                            <td class="text-item-table">{{ $commercialQuote->tons }}</td>
+                        </tr>
+
+                    @endif
+
                     <tr>
                         <td class="title-item-table">Valor de factura</td>
                         <td class="text-item-table">{{ $commercialQuote->load_value }}</td>
@@ -502,7 +528,7 @@
 
 
                         @php
-                            $subtotal =  ($transport->total_transport ?? 0);
+                            $subtotal = $transport->total_transport ?? 0;
                             $igv = $subtotal * 0.18;
                             $cats_destinations = $subtotal * 1.18;
 
