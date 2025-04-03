@@ -403,7 +403,7 @@
 
         function createTypeQuote(select) {
 
-            let nro_quote_commercial = $('#nro_quote_commercial').text().trim();
+            let nro_quote_commercial =  @json($comercialQuote->nro_quote_commercial);
 
             Swal.fire({
                 title: `Crearas una cotizacion para ${select.value}`,

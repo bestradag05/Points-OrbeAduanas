@@ -203,9 +203,10 @@
                                         <table class="table table-striped">
                                             <thead>
                                                 <th>Cantidad</th>
-                                                <th>Ancho (cm)</th>
-                                                <th>Largo (cm)</th>
-                                                <th>Alto (cm)</th>
+                                                <th>Ancho</th>
+                                                <th>Largo</th>
+                                                <th>Alto</th>
+                                                <th>Unidad</th>
                                             </thead>
                                             <tbody>
                                                 @foreach ($measures as $measure)
@@ -214,6 +215,7 @@
                                                         <td>{{ $measure->width }}</td>
                                                         <td>{{ $measure->length }}</td>
                                                         <td>{{ $measure->height }}</td>
+                                                        <td>{{ $measure->unit_measurement }}</td>
                                                     </tr>
                                                 @endforeach
 

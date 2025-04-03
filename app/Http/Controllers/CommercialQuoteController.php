@@ -107,6 +107,7 @@ class CommercialQuoteController extends Controller
 
         $shippersConsolidated = json_decode($request->shippers_consolidated);
 
+
         if ($request->is_consolidated) {
 
             $totals = [];
@@ -462,7 +463,6 @@ class CommercialQuoteController extends Controller
 
     public function createQuote(String $nro_quote_commercial, Request $request)
     {
-
 
         $commercialQuote = CommercialQuote::where('nro_quote_commercial', $nro_quote_commercial)->first();
 

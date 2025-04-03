@@ -280,15 +280,22 @@
                       </div>
                       <div class="col-2">
                           <input type="text" class="form-control CurrencyInput" data-type="currency"
-                              id="width" name="width" placeholder="Ancho(cm)">
+                              id="width" name="width" placeholder="Ancho">
                       </div>
                       <div class="col-2">
                           <input type="text" class="form-control CurrencyInput" data-type="currency"
-                              id="length" name="length" placeholder="Largo(cm)">
+                              id="length" name="length" placeholder="Largo">
                       </div>
                       <div class="col-2">
                           <input type="text" class="form-control CurrencyInput" data-type="currency"
-                              id="height" name="height" placeholder="Alto(cm)">
+                              id="height" name="height" placeholder="Alto">
+                      </div>
+                      <div class="col-2">
+                          <select class="form-control" id="units_measurements" name="units_measurements">
+                              <option value="cm">cm</option>
+                              <option value="in">in</option>
+                              <option value="lbs">lbs</option>
+                          </select>
                       </div>
                       <div class="col-2">
                           <button type="button" class="btn btn-indigo btn-sm" onclick="addMeasures()"><i
@@ -301,14 +308,15 @@
                       <thead>
                           <tr>
                               <th>Cantidad</th>
-                              <th>Ancho (cm)</th>
-                              <th>Largo (cm)</th>
-                              <th>Alto (cm)</th>
+                              <th>Ancho</th>
+                              <th>Largo</th>
+                              <th>Alto</th>
+                              <th>Unidad</th>
                               <th>Eliminar</th>
                           </tr>
                       </thead>
                   </table>
-                  <input id="value-measures" type="hidden" name="value-measures" />
+                  <input id="value_measures" type="hidden" name="value_measures" />
                   @error('value_measures')
                       <span class="invalid-feedback d-block" role="alert">
                           <strong>{{ $message }}</strong>
@@ -772,7 +780,7 @@
 
               let divMeasures = document.getElementById("div-measures");
               let nroPackage = parseInt(document.getElementById("nro_package").value);
-              let valueMeasuresHidden = document.getElementById('value-measures');
+              let valueMeasuresHidden = document.getElementById('value_measures');
 
               AddRowMeasures(divMeasures, nroPackage, tableMeasures, arrayMeasures, "arrayMeasures", valueMeasuresHidden);
 
@@ -828,14 +836,15 @@
 
           function AddRowMeasures(container_measures, nroPackage, table, array, arrayName, valueMeasuresHidden) {
 
-              const inputs = container_measures.querySelectorAll('input');
+              const inputs = container_measures.querySelectorAll('input, select');
 
               validateInputs(inputs);
 
               const amount_package = parseInt(inputs[0].value);
-              const width = inputs[1].value.replace(/,/g, '');;
-              const length = inputs[2].value.replace(/,/g, '');;
-              const height = inputs[3].value.replace(/,/g, '');;
+              const width = inputs[1].value.replace(/,/g, '');
+              const length = inputs[2].value.replace(/,/g, '');
+              const height = inputs[3].value.replace(/,/g, '');
+              const unit_measurement = inputs[4].value;
 
               if (isNaN(amount_package) || amount_package <= 0) {
                   inputs[0].classList.add('is-invalid');
@@ -873,6 +882,8 @@
 
                       // Campo para Alto
                       `<input type="number" class="form-control"  readonly id="height-${rowIndex}" name="height-${rowIndex}" value="${height}" placeholder="Alto" min="0" step="0.0001">`,
+                      
+                      `<input type="text" class="form-control text-indigo text-bold"  readonly id="unit-measurement-${rowIndex}" name="unit-measurement-${rowIndex}" value="${unit_measurement}" placeholder="medida" >`,
 
                       `<button type="button" class="btn btn-danger btn-sm" id="delete-${rowIndex}" onclick="deleteRow('${table.table().node().id}', 'row-${rowIndex}', ${amount_package}, ${arrayName}, '${valueMeasuresHidden.id}')"><i class="fa fa-trash"></i></button>`
                   ]).draw().node();
@@ -883,7 +894,8 @@
                       amount: amount_package,
                       width,
                       length,
-                      height
+                      height,
+                      unit_measurement
                   };
 
 
@@ -1042,6 +1054,7 @@
                                 <th>Largo</th>
                                 <th>Ancho</th>
                                 <th>Alto</th>
+                                <th>Medida</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1056,6 +1069,7 @@
                         <td>${measure.length}</td>
                         <td>${measure.width}</td>
                         <td>${measure.height}</td>
+                        <td>${measure.unit_measurement}</td>
                     </tr>
                 `;
                   });

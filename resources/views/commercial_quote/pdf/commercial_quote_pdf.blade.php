@@ -319,10 +319,22 @@
                             <td class="title-item-table">Volumen</td>
                             <td class="text-item-table">{{ $commercialQuote->volumen }}</td>
                         </tr>
+
+                        @if($commercialQuote->lcl_fcl === 'FCL')
+
                         <tr>
                             <td class="title-item-table">Peso total</td>
-                            <td class="text-item-table">{{ $commercialQuote->tons }}</td>
+                            <td class="text-item-table">{{ $commercialQuote->tons }} TONS</td>
                         </tr>
+
+                        @else
+                        <tr>
+                            <td class="title-item-table">Peso total</td>
+                            <td class="text-item-table">{{ $commercialQuote->kilograms }} KG</td>
+                        </tr>
+
+                        @endif
+
 
                     @endif
 

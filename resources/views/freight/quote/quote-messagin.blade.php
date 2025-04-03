@@ -60,23 +60,18 @@
             <h5 class="text-indigo text-center"><i class="fas fa-file-alt"></i> Detalle de carga</h5>
 
             <br>
-            <div class="">
-                <p class="text-sm">N° Cotizacion General :
-                    <b class="d-block">{{ $quote->nro_quote_commercial }}</b>
-                </p>
-            </div>
 
             <div class="row text-muted">
                 <div class="col-6">
-                    <p class="text-sm">N° Cotizacion :
+                    <p class="text-sm">N° Cotizacion General :
+                        <b class="d-block">{{ $quote->nro_quote_commercial }}</b>
+                    </p>
+                </div>
+                <div class="col-6">
+                    <p class="text-sm">N° Cotizacion Flete :
                         <b class="d-block">{{ $quote->nro_quote }}</b>
                     </p>
                 </div>
-                {{-- <div class="col-6">
-                    <p class="text-sm">Cliente :
-                        <b class="d-block">{{ $quote->routing->customer->name_businessname }}</b>
-                    </p>
-                </div> --}}
                 <div class="col-6 {{ $quote->commercial_quote->customer_company_name ? '' : 'd-none' }}">
                     <p class="text-sm">Cliente :
                         <b class="d-block">{{ $quote->commercial_quote->customer_company_name }}</b>
@@ -204,9 +199,10 @@
                                         <table class="table table-striped">
                                             <thead>
                                                 <th>Cantidad</th>
-                                                <th>Ancho (cm)</th>
-                                                <th>Largo (cm)</th>
-                                                <th>Alto (cm)</th>
+                                                <th>Ancho</th>
+                                                <th>Largo</th>
+                                                <th>Alto</th>
+                                                <th>Unidad</th>
                                             </thead>
                                             <tbody>
                                                 @foreach ($measures as $measure)
@@ -215,6 +211,7 @@
                                                         <td>{{ $measure->width }}</td>
                                                         <td>{{ $measure->length }}</td>
                                                         <td>{{ $measure->height }}</td>
+                                                        <td>{{ $measure->unit_measurement }}</td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
@@ -267,6 +264,33 @@
                     </div>
                 @endif
 
+
+                @if ($quote->commercial_quote->measures)
+
+                <div class="col-6">
+                    <p class="text-sm">Medidas : </p>
+                </div>
+                    <table class="table table-striped">
+                        <thead>
+                            <th>Cantidad</th>
+                            <th>Ancho</th>
+                            <th>Largo</th>
+                            <th>Alto</th>
+                            <th>Unidad</th>
+                        </thead>
+                        <tbody>
+                            @foreach (json_decode($quote->commercial_quote->measures) as $measure)
+                                <tr>
+                                    <td>{{ $measure->amount }}</td>
+                                    <td>{{ $measure->width }}</td>
+                                    <td>{{ $measure->length }}</td>
+                                    <td>{{ $measure->height }}</td>
+                                    <td>{{ $measure->unit_measurement }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
 
             @endif
 
