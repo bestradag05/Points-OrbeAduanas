@@ -267,9 +267,9 @@
 
                 @if ($quote->commercial_quote->measures)
 
-                <div class="col-6">
-                    <p class="text-sm">Medidas : </p>
-                </div>
+                    <div class="col-6">
+                        <p class="text-sm">Medidas : </p>
+                    </div>
                     <table class="table table-striped">
                         <thead>
                             <th>Cantidad</th>
@@ -413,6 +413,12 @@
                 <button class="btn btn-sm btn-success {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}" type="button"
                     data-toggle="modal" data-target="#quote-freight">Cotización Aceptada</button>
 
+
+                <button onclick="copieDetailQuote()" class="btn btn-sm btn-secondary">
+                    <i class="fas fa-copy"></i>
+                    Copiar detalle
+                </button>
+
             </div>
         </div>
     </div>
@@ -483,6 +489,207 @@
             </div>
         </div>
     </div>
+
+
+    {{-- Template para copiar y enviar por Outlook --}}
+
+
+    @if ($quote->commercial_quote->is_consolidated)
+
+        <div id="plantilla-cotizacion">
+            @foreach ($quote->commercial_quote->consolidatedCargos as $consolidated)
+                <table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse;">
+                    <thead>
+                        <th colspan="2" class="text-center" style="background-color: #E2EFD9">ORBE ADUANAS S.A.C</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Tipo de embarque</strong></td>
+                            <td>{{ $quote->commercial_quote->type_shipment->name }}
+                                {{ $quote->commercial_quote->lcl_fcl != null ? "({$quote->commercial_quote->lcl_fcl})" : '' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Incoterm</strong></td>
+                            <td>{{ $quote->commercial_quote->incoterm->code }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Origen</strong></td>
+                            <td>{{ $quote->origin }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Destino</strong></td>
+                            <td>{{ $quote->destination }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Producto</strong></td>
+                            <td>{{ $quote->commodity }}</td>
+                        </tr>
+                        @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+                            <tr>
+                                <td><strong>Tipo de contenedor</strong></td>
+                                <td>{{ $quote->container_type }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Volumen</strong></td>
+                                <td>{{ $quote->cubage_kgv }} CBM</td>
+                            </tr>
+
+                            @if ($quote->commercial_quote->lcl_fcl === 'FCL')
+                                <tr>
+                                    <td><strong>TONELADAS</strong></td>
+                                    <td>{{ $quote->ton_kilogram }} TON</td>
+                                </tr>
+                            @else
+                                <tr>
+                                    <td><strong>Peso</strong></td>
+                                    <td>{{ $quote->ton_kilogram }} KG</td>
+                                </tr>
+                            @endif
+                        @else
+                            <tr>
+                                <td><strong>KGV</strong></td>
+                                <td>{{ $quote->cubage_kgv }} KGV</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>Peso</strong></td>
+                                <td>{{ $quote->ton_kilogram }} KG</td>
+                            </tr>
+                        @endif
+
+                        @php
+                            $measures = json_decode($quote->measures);
+                        @endphp
+
+                        @if (!empty($measures))
+                            <tr>
+                                <td><strong>Medidas</strong></td>
+                                <td>
+                                    @foreach ($measures as $item)
+                                        <p><span class="text-bold">{{ $item->amount }}</span> = {{ $item->width }}
+                                            {{ $item->unit_measurement }} x {{ $item->length }}
+                                            {{ $item->unit_measurement }}
+                                            x
+                                            {{ $item->height }} {{ $item->unit_measurement }}</p>
+                                    @endforeach
+                                </td>
+                            </tr>
+                        @endif
+                        <tr>
+                            <td><strong>Bulto</strong></td>
+                            <td>{{ $quote->packages }} {{ $quote->packaging_type }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tipo de carga</strong></td>
+                            <td>{{ $quote->load_type }}</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+            @endforeach
+
+        </div>
+    @else
+        <div id="plantilla-cotizacion">
+            <table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse;">
+                <thead>
+                    <th colspan="2" class="text-center" style="background-color: #E2EFD9">ORBE ADUANAS S.A.C</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Tipo de embarque</strong></td>
+                        <td>{{ $quote->commercial_quote->type_shipment->name }}
+                            {{ $quote->commercial_quote->lcl_fcl != null ? "({$quote->commercial_quote->lcl_fcl})" : '' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incoterm</strong></td>
+                        <td>{{ $quote->commercial_quote->incoterm->code }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Origen</strong></td>
+                        <td>{{ $quote->origin }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Destino</strong></td>
+                        <td>{{ $quote->destination }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Producto</strong></td>
+                        <td>{{ $quote->commodity }}</td>
+                    </tr>
+                    @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+                        <tr>
+                            <td><strong>Tipo de contenedor</strong></td>
+                            <td>{{ $quote->container_type }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Volumen</strong></td>
+                            <td>{{ $quote->cubage_kgv }} CBM</td>
+                        </tr>
+
+                        @if ($quote->commercial_quote->lcl_fcl === 'FCL')
+                            <tr>
+                                <td><strong>TONELADAS</strong></td>
+                                <td>{{ $quote->ton_kilogram }} TON</td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td><strong>Peso</strong></td>
+                                <td>{{ $quote->ton_kilogram }} KG</td>
+                            </tr>
+                        @endif
+                    @else
+                        <tr>
+                            <td><strong>KGV</strong></td>
+                            <td>{{ $quote->cubage_kgv }} KGV</td>
+                        </tr>
+
+                        <tr>
+                            <td><strong>Peso</strong></td>
+                            <td>{{ $quote->ton_kilogram }} KG</td>
+                        </tr>
+
+                    @endif
+
+                    @php
+                        $measures = json_decode($quote->measures);
+                    @endphp
+
+                    @if (!empty($measures))
+                        <tr>
+                            <td><strong>Medidas</strong></td>
+                            <td>
+                                @foreach ($measures as $item)
+                                    <p><span class="text-bold">{{ $item->amount }}</span> = {{ $item->width }}
+                                        {{ $item->unit_measurement }} x {{ $item->length }}
+                                        {{ $item->unit_measurement }}
+                                        x
+                                        {{ $item->height }} {{ $item->unit_measurement }}</p>
+                                @endforeach
+                            </td>
+                        </tr>
+                    @endif
+                    <tr>
+                        <td><strong>Bulto</strong></td>
+                        <td>{{ $quote->packages }} {{ $quote->packaging_type }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tipo de carga</strong></td>
+                        <td>{{ $quote->load_type }}</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+        </div>
+
+    @endif
+
+
+
 
 
 @stop
@@ -681,6 +888,27 @@
             }).catch(error => {
                 console.error('Error al eliminar el archivo:', error);
             });
+        }
+
+
+        /* Copiar informacion en portapapeles */
+
+        function copieDetailQuote() {
+            let quote = @json($quote);
+
+
+            const plantilla = document.getElementById("plantilla-cotizacion").innerHTML;
+            const blob = new Blob([plantilla], {
+                type: "text/html"
+            });
+            const item = new ClipboardItem({
+                "text/html": blob
+            });
+
+            navigator.clipboard.write([item])
+                .then(() => alert("📋 Tabla copiada al portapapeles. Pégala en Outlook."))
+                .catch(() => alert("❌ No se pudo copiar al portapapeles."));
+
         }
     </script>
 @endpush
