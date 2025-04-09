@@ -105,8 +105,8 @@ class CommercialQuoteController extends Controller
     public function store(Request $request)
     {
 
+        
         $shippersConsolidated = json_decode($request->shippers_consolidated);
-
 
         if ($request->is_consolidated) {
 
@@ -238,6 +238,7 @@ class CommercialQuoteController extends Controller
 
             ConsolidatedCargos::create([
                 'commercial_quote_id' => $idCommercialQuote,
+                'id_incoterms' => $shipper->id_incoterms,
                 'supplier_id' => $existSupplier,
                 'supplier_temp' => null,
                 'commodity' => $shipper->commodity,
@@ -262,6 +263,7 @@ class CommercialQuoteController extends Controller
 
             ConsolidatedCargos::create([
                 'commercial_quote_id' => $idCommercialQuote,
+                'id_incoterms' => $shipper->id_incoterms,
                 'supplier_id' => null,
                 'supplier_temp' => json_encode($tempSupplier),
                 'commodity' => $shipper->commodity,

@@ -14,6 +14,7 @@ class ConsolidatedCargos extends Model
     protected $fillable =
     [       
             'commercial_quote_id',
+            'id_incoterms',
             'supplier_id',
             'supplier_temp',
             'commodity',
@@ -30,6 +31,11 @@ class ConsolidatedCargos extends Model
     public function commercialQuote()
     {
         return $this->belongsTo(CommercialQuote::class, 'commercial_quote_id', 'id');
+    }
+
+    public function incoterm()
+    {
+        return $this->belongsTo(Incoterms::class, 'id_incoterms', 'id');
     }
 
 

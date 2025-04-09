@@ -882,7 +882,7 @@
 
                       // Campo para Alto
                       `<input type="number" class="form-control"  readonly id="height-${rowIndex}" name="height-${rowIndex}" value="${height}" placeholder="Alto" min="0" step="0.0001">`,
-                      
+
                       `<input type="text" class="form-control text-indigo text-bold"  readonly id="unit-measurement-${rowIndex}" name="unit-measurement-${rowIndex}" value="${unit_measurement}" placeholder="medida" >`,
 
                       `<button type="button" class="btn btn-danger btn-sm" id="delete-${rowIndex}" onclick="deleteRow('${table.table().node().id}', 'row-${rowIndex}', ${amount_package}, ${arrayName}, '${valueMeasuresHidden.id}')"><i class="fa fa-trash"></i></button>`
@@ -924,6 +924,7 @@
               let rawValueMeasures = getValueByName('value-measures-consolidated');
 
               let shipper = {
+                  'id_incoterms': getValueByName('id_incoterms'),
                   'shipper_name': getValueByName('shipper_name'),
                   'shipper_contact': getValueByName('shipper_contact'),
                   'shipper_contact_email': getValueByName('shipper_contact_email'),

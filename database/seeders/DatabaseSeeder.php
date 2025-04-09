@@ -208,7 +208,7 @@ class DatabaseSeeder extends Seeder
         TypeShipment::create(['code' => '127', 'name' => 'Pisco', 'description' => 'Marítima']);
         TypeShipment::create(['code' => '163', 'name' => 'Ilo', 'description' => 'Marítima']);
         TypeShipment::create(['code' => '145', 'name' => 'Mollendo', 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '118', 'name' => 'Maritima del Callao', 'description' => 'Marítima']);
+        TypeShipment::create(['code' => '118', 'name' => 'Marítima del Callao', 'description' => 'Marítima']);
         TypeShipment::create(['code' => '019', 'name' => 'Tumbes', 'description' => 'Marítima']);
         TypeShipment::create(['code' => '055', 'name' => 'IAT Lambayeque', 'description' => 'Marítima']);
         TypeShipment::create(['code' => '154', 'name' => 'Arequipa', 'description' => 'Terrestre']);

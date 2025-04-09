@@ -494,13 +494,16 @@
     {{-- Template para copiar y enviar por Outlook --}}
 
 
-    @if ($quote->commercial_quote->is_consolidated)
+    <div id="plantilla-cotizacion" class="d-none">
+        @if ($quote->commercial_quote->is_consolidated)
 
-        <div id="plantilla-cotizacion">
             @foreach ($quote->commercial_quote->consolidatedCargos as $consolidated)
-                <table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse;">
+                <p>• SHIPPER {{ $loop->iteration }} :</p>
+
+                <table border="1" cellpadding="4" cellspacing="0"
+                    style="border-collapse: collapse;min-width: 500px">
                     <thead>
-                        <th colspan="2" class="text-center" style="background-color: #E2EFD9">ORBE ADUANAS S.A.C</th>
+                        <th colspan="2" class="text-center" style="background-color: #e2efd9">ORBE ADUANAS S.A.C</th>
                     </thead>
                     <tbody>
                         <tr>
@@ -511,7 +514,7 @@
                         </tr>
                         <tr>
                             <td><strong>Incoterm</strong></td>
-                            <td>{{ $quote->commercial_quote->incoterm->code }}</td>
+                            <td>{{ $consolidated->incoterm->code }}</td>
                         </tr>
                         <tr>
                             <td><strong>Origen</strong></td>
@@ -521,9 +524,32 @@
                             <td><strong>Destino</strong></td>
                             <td>{{ $quote->destination }}</td>
                         </tr>
+                        @if ($consolidated->supplier_id)
+                            //TODO:: Aqui tenemos que obtener segun la relacion si es que tiene
+                        @else
+                            @php
+                                $supplier = json_decode($consolidated->supplier_temp);
+                            @endphp
+
+                            <tr>
+                                <td><strong>Shipper</strong></td>
+                                <td>{{ $supplier->shipper_name }}</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>Direccion</strong></td>
+                                <td>{{ $supplier->shipper_address }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Contacto</strong></td>
+                                <td>{{ $supplier->shipper_contact }} // {{ $supplier->shipper_contact_email }} //
+                                    {{ $supplier->shipper_contact_phone }} </td>
+                            </tr>
+                        @endif
+
                         <tr>
                             <td><strong>Producto</strong></td>
-                            <td>{{ $quote->commodity }}</td>
+                            <td>{{ $consolidated->commodity }}</td>
                         </tr>
                         @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
                             <tr>
@@ -532,34 +558,22 @@
                             </tr>
                             <tr>
                                 <td><strong>Volumen</strong></td>
-                                <td>{{ $quote->cubage_kgv }} CBM</td>
+                                <td>{{ $consolidated->volumen }} CBM</td>
                             </tr>
-
-                            @if ($quote->commercial_quote->lcl_fcl === 'FCL')
-                                <tr>
-                                    <td><strong>TONELADAS</strong></td>
-                                    <td>{{ $quote->ton_kilogram }} TON</td>
-                                </tr>
-                            @else
-                                <tr>
-                                    <td><strong>Peso</strong></td>
-                                    <td>{{ $quote->ton_kilogram }} KG</td>
-                                </tr>
-                            @endif
                         @else
                             <tr>
                                 <td><strong>KGV</strong></td>
-                                <td>{{ $quote->cubage_kgv }} KGV</td>
-                            </tr>
-
-                            <tr>
-                                <td><strong>Peso</strong></td>
-                                <td>{{ $quote->ton_kilogram }} KG</td>
+                                <td>{{ $consolidated->kilogram_volumen }} KGV</td>
                             </tr>
                         @endif
 
+                        <tr>
+                            <td><strong>Peso</strong></td>
+                            <td>{{ $consolidated->kilograms }} KG</td>
+                        </tr>
+
                         @php
-                            $measures = json_decode($quote->measures);
+                            $measures = json_decode($consolidated->value_measures);
                         @endphp
 
                         @if (!empty($measures))
@@ -578,7 +592,7 @@
                         @endif
                         <tr>
                             <td><strong>Bulto</strong></td>
-                            <td>{{ $quote->packages }} {{ $quote->packaging_type }}</td>
+                            <td>{{ $consolidated->nro_packages }} {{ $consolidated->packaging_type }}</td>
                         </tr>
                         <tr>
                             <td><strong>Tipo de carga</strong></td>
@@ -588,14 +602,12 @@
                     </tbody>
 
                 </table>
+                <br>
             @endforeach
-
-        </div>
-    @else
-        <div id="plantilla-cotizacion">
-            <table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse;">
+        @else
+            <table border="1" cellpadding="4" cellspacing="0" style="border-collapse: collapse;min-width: 500px">
                 <thead>
-                    <th colspan="2" class="text-center" style="background-color: #E2EFD9">ORBE ADUANAS S.A.C</th>
+                    <th colspan="2" class="text-center" style="background-color: #e2efd9">ORBE ADUANAS S.A.C</th>
                 </thead>
                 <tbody>
                     <tr>
@@ -684,10 +696,9 @@
                 </tbody>
 
             </table>
-        </div>
 
-    @endif
-
+        @endif
+    </div>
 
 
 
@@ -894,8 +905,6 @@
         /* Copiar informacion en portapapeles */
 
         function copieDetailQuote() {
-            let quote = @json($quote);
-
 
             const plantilla = document.getElementById("plantilla-cotizacion").innerHTML;
             const blob = new Blob([plantilla], {
@@ -906,8 +915,8 @@
             });
 
             navigator.clipboard.write([item])
-                .then(() => alert("📋 Tabla copiada al portapapeles. Pégala en Outlook."))
-                .catch(() => alert("❌ No se pudo copiar al portapapeles."));
+                .then(() => toastr.success("Detalle copiado en portapapeles !"))
+                .catch(() => toastr.error("❌ No se pudo copiar al portapapeles."));
 
         }
     </script>
