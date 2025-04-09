@@ -3,6 +3,8 @@ import './bootstrap';
 
 import Chart from 'chart.js/auto';
 import toastr from 'toastr';
+import * as htmlToImage from 'html-to-image';
+
 /* import Echo from 'laravel-echo';
 import Pusher from 'pusher-js'; */
 
@@ -17,6 +19,7 @@ toastr.options = {
 };
 
 window.toastr = toastr;
+window.htmlToImage = htmlToImage;
 /* window.Pusher = Pusher; */
 /* window.tinymce = tinymce;
 

@@ -906,13 +906,24 @@
 
         function copieDetailQuote() {
 
-            const plantilla = document.getElementById("plantilla-cotizacion").innerHTML;
-            const blob = new Blob([plantilla], {
+            const plantilla = document.getElementById("plantilla-cotizacion");
+            const blob = new Blob([plantilla.innerHTML], {
                 type: "text/html"
             });
             const item = new ClipboardItem({
                 "text/html": blob
             });
+
+            htmlToImage.toPng(plantilla)
+                .then(function(dataUrl) {
+                    var img = new Image();
+                    img.src = dataUrl;
+                    document.body.appendChild(img);
+                })
+                .catch(function(error) {
+                    console.error('Oops, something went wrong!', error);
+                });
+
 
             navigator.clipboard.write([item])
                 .then(() => toastr.success("Detalle copiado en portapapeles !"))
