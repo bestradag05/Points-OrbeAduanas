@@ -57,7 +57,21 @@
             </div>
         </div>
         <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2 px-4">
-            <h5 class="text-indigo text-center"><i class="fas fa-file-alt"></i> Detalle de carga</h5>
+
+            <div class="row justify-content-center align-items-center">
+                <div class="col-8 col-lg-6">
+                    <h5 class="text-indigo text-center"> <i class="fas fa-file-alt"></i> Detalle de carga</h5>
+                </div>
+                <div class="col-4 col-lg-6">
+                    <button onclick="copieHtmlDetailQuote()" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <button onclick="downloadImageDetailQuote()" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+
 
             <br>
 
@@ -412,13 +426,6 @@
             <div class="text-center mt-5 mb-3">
                 <button class="btn btn-sm btn-success {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}" type="button"
                     data-toggle="modal" data-target="#quote-freight">Cotización Aceptada</button>
-
-
-                <button onclick="copieDetailQuote()" class="btn btn-sm btn-secondary">
-                    <i class="fas fa-copy"></i>
-                    Copiar detalle
-                </button>
-
             </div>
         </div>
     </div>
@@ -494,14 +501,13 @@
     {{-- Template para copiar y enviar por Outlook --}}
 
 
-    <div id="plantilla-cotizacion" class="d-none">
+    <div id="plantilla-cotizacion" class="row justify-content-center flex-column p-5 d-none" style="width: 600px">
         @if ($quote->commercial_quote->is_consolidated)
 
             @foreach ($quote->commercial_quote->consolidatedCargos as $consolidated)
                 <p>• SHIPPER {{ $loop->iteration }} :</p>
 
-                <table border="1" cellpadding="4" cellspacing="0"
-                    style="border-collapse: collapse;min-width: 500px">
+                <table border="1" cellpadding="4" cellspacing="0" style="border-collapse: collapse;width: 500px">
                     <thead>
                         <th colspan="2" class="text-center" style="background-color: #e2efd9">ORBE ADUANAS S.A.C</th>
                     </thead>
@@ -605,7 +611,7 @@
                 <br>
             @endforeach
         @else
-            <table border="1" cellpadding="4" cellspacing="0" style="border-collapse: collapse;min-width: 500px">
+            <table border="1" cellpadding="4" cellspacing="0" style="border-collapse: collapse;width: 500px">
                 <thead>
                     <th colspan="2" class="text-center" style="background-color: #e2efd9">ORBE ADUANAS S.A.C</th>
                 </thead>
@@ -904,31 +910,45 @@
 
         /* Copiar informacion en portapapeles */
 
-        function copieDetailQuote() {
+        function copieHtmlDetailQuote() {
 
             const plantilla = document.getElementById("plantilla-cotizacion");
             const blob = new Blob([plantilla.innerHTML], {
                 type: "text/html"
             });
-            const item = new ClipboardItem({
+            const itemText = new ClipboardItem({
                 "text/html": blob
             });
 
-            htmlToImage.toPng(plantilla)
-                .then(function(dataUrl) {
-                    var img = new Image();
-                    img.src = dataUrl;
-                    document.body.appendChild(img);
-                })
-                .catch(function(error) {
-                    console.error('Oops, something went wrong!', error);
-                });
-
-
-            navigator.clipboard.write([item])
+            navigator.clipboard.write([itemText])
                 .then(() => toastr.success("Detalle copiado en portapapeles !"))
                 .catch(() => toastr.error("❌ No se pudo copiar al portapapeles."));
 
+        }
+
+        function downloadImageDetailQuote() {
+            const plantilla = document.getElementById("plantilla-cotizacion");
+
+            
+            //TODO::Agregar logica para que funcione cuando la plantilla este con d-none
+
+            
+            html2canvas(plantilla, {
+                useCORS: true, // Esto ayuda a evitar problemas con imágenes externas
+                scrollX: 0, // Evita desplazamiento horizontal durante la captura
+                scrollY: -window.scrollY, // Evita desplazamiento vertical
+            }).then(function(canvas) {
+                const dataUrl = canvas.toDataURL("image/png");
+
+                // Crear un enlace para descargar la imagen
+                const link = document.createElement('a');
+                link.download = 'detalle-cotizacion.png'; // Nombre del archivo a descargar
+                link.href = dataUrl;
+                link.click(); // Simula el clic para descargar la imagen
+            }).catch(function(error) {
+                console.error('Oops, something went wrong!', error);
+                toastr.error("❌ No se pudo generar la imagen.");
+            });
         }
     </script>
 @endpush
