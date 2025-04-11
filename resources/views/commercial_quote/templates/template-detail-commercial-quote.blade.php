@@ -116,6 +116,23 @@
 
                     </div>
                 </div>
+                @if ($comercialQuote->type_shipment->description === 'Marítima')
+
+                    @if ($comercialQuote->lcl_fcl === 'FCL')
+                        <div class="col-12 border-bottom border-bottom-2">
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Contenedor : </label>
+                                <div class="col-sm-8">
+
+                                    <p class="form-control-plaintext">
+                                        {{ $comercialQuote->container_quantity }}x{{ $comercialQuote->container->name }}
+                                    </p>
+                                </div>
+
+                            </div>
+                        </div>
+                    @endif
+                @endif
 
                 @foreach ($comercialQuote->consolidatedCargos as $consolidated)
                     @php
@@ -277,7 +294,9 @@
                                 <label class="col-sm-4 col-form-label">Contenedor : </label>
                                 <div class="col-sm-8">
 
-                                    <p class="form-control-plaintext">{{ $comercialQuote->container_type }}</p>
+                                    <p class="form-control-plaintext">
+                                        {{ $comercialQuote->container_quantity }}x{{ $comercialQuote->container->name }}
+                                    </p>
                                 </div>
 
                             </div>

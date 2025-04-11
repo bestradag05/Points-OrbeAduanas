@@ -276,7 +276,7 @@
                             </div>
                             <div class="col-6">
                                 <p class="text-sm">Tipo de contenedor :
-                                    <b class="d-block">{{ $quote->container_type }}</b>
+                                    <b class="d-block">{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }}</b>
                                 </p>
                             </div>
                         @else
@@ -587,7 +587,7 @@
                             @if ($quote->commercial_quote->lcl_fcl === 'FCL')
                                 <tr>
                                     <td><strong>Tipo de contenedor</strong></td>
-                                    <td>{{ $quote->container_type }}</td>
+                                    <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }}</td>
                                 </tr>
                             @endif
 
@@ -677,7 +677,7 @@
                         @if ($quote->commercial_quote->lcl_fcl === 'FCL')
                             <tr>
                                 <td><strong>Tipo de contenedor</strong></td>
-                                <td>{{ $quote->container_type }}</td>
+                                <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }}</td>
                             </tr>
                             <tr>
                                 <td><strong>TONELADAS</strong></td>

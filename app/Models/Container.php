@@ -24,10 +24,7 @@ class Container extends Model
         'updated_at'
     ];
 
-    public function typeContainer()
-    {
-        return $this->belongsTo(TypeContainer::class, 'type_container_id');
-    }
+
     protected static function booted()
     {
         static::saving(function ($container) {
@@ -42,5 +39,19 @@ class Container extends Model
         'max_load' => 'decimal:2',
         'volume' => 'decimal:2'
     ];
+
+
+
+    public function typeContainer()
+    {
+        return $this->belongsTo(TypeContainer::class, 'type_container_id');
+    }
+
+    public function commercialQuotes()
+    {
+        return $this->hasMany(CommercialQuote::class, 'id');
+    }
+
+
 }
 

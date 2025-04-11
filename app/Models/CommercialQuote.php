@@ -76,6 +76,11 @@ class CommercialQuote extends Model
         return $this->belongsTo(Regime::class, 'id_regime', 'id');
     }
 
+    public function container()
+    {
+        return $this->belongsTo(Container::class, 'id_containers');
+    }
+
     public function typeService()
     {
         return $this->belongsToMany(TypeService::class, 'commercialquote_typeservice', 'id_commercial_quote', 'id_type_service');

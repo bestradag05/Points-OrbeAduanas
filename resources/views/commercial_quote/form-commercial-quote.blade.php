@@ -6,7 +6,7 @@
               placeholder="Ingrese el numero de operacion" @readonly(true)
               value="{{ isset($quote_commercial->nro_quote_commercial) ? $quote_commercial->nro_quote_commercial : $nro_quote_commercial }}">
           @error('nro_quote_commercial')
-          <div class="text-danger">{{ $message }}</div>
+              <div class="text-danger">{{ $message }}</div>
           @enderror
       </div>
 
@@ -18,10 +18,10 @@
                   data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($stateCountrys as $stateCountry)
-                  <option
-                      {{ (isset($routing->origin) && $routing->origin == $stateCountry->country->name . ' - ' . $stateCountry->name) || old('origin') == $stateCountry->country->name . ' - ' . $stateCountry->name ? 'selected' : '' }}>
-                      {{ $stateCountry->country->name . ' - ' . $stateCountry->name }}
-                  </option>
+                      <option
+                          {{ (isset($routing->origin) && $routing->origin == $stateCountry->country->name . ' - ' . $stateCountry->name) || old('origin') == $stateCountry->country->name . ' - ' . $stateCountry->name ? 'selected' : '' }}>
+                          {{ $stateCountry->country->name . ' - ' . $stateCountry->name }}
+                      </option>
                   @endforeach
               </x-adminlte-select2>
 
@@ -32,10 +32,10 @@
                   data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($stateCountrys as $stateCountry)
-                  <option
-                      {{ (isset($routing->destination) && $routing->destination == $stateCountry->country->name . ' - ' . $stateCountry->name) || old('destination') == $stateCountry->country->name . ' - ' . $stateCountry->name ? 'selected' : '' }}>
-                      {{ $stateCountry->country->name . ' - ' . $stateCountry->name }}
-                  </option>
+                      <option
+                          {{ (isset($routing->destination) && $routing->destination == $stateCountry->country->name . ' - ' . $stateCountry->name) || old('destination') == $stateCountry->country->name . ' - ' . $stateCountry->name ? 'selected' : '' }}>
+                          {{ $stateCountry->country->name . ' - ' . $stateCountry->name }}
+                      </option>
                   @endforeach
               </x-adminlte-select2>
 
@@ -53,9 +53,9 @@
                           value="{{ isset($routing->customer_ruc) ? $routing->customer_ruc : old('customer_ruc') }}">
                   </div>
                   @error('customer_ruc')
-                  <span class="invalid-feedback d-block" role="alert">
-                      <strong>{{ $message }}</strong>
-                  </span>
+                      <span class="invalid-feedback d-block" role="alert">
+                          <strong>{{ $message }}</strong>
+                      </span>
                   @enderror
 
               </div>
@@ -71,9 +71,9 @@
                           value="{{ isset($routing->customer_company_name) ? $routing->customer_company_name : old('customer_company_name') }}">
                   </div>
                   @error('customer_company_name')
-                  <span class="invalid-feedback d-block" role="alert">
-                      <strong>{{ $message }}</strong>
-                  </span>
+                      <span class="invalid-feedback d-block" role="alert">
+                          <strong>{{ $message }}</strong>
+                      </span>
                   @enderror
 
               </div>
@@ -85,13 +85,13 @@
                       data-placeholder="Seleccione una opcion...">
                       <option />
                       @foreach ($type_shipments as $type_shipment)
-                      <option value="{{ $type_shipment->id }}"
-                          {{ (isset($routing->id_type_shipment) && $routing->id_type_shipment == $type_shipment->id) || old('id_type_shipment') == $type_shipment->id ? 'selected' : '' }}>
-                          {{ $type_shipment->code . ' - ' . $type_shipment->name }}
-                      </option>
+                          <option value="{{ $type_shipment->id }}"
+                              {{ (isset($routing->id_type_shipment) && $routing->id_type_shipment == $type_shipment->id) || old('id_type_shipment') == $type_shipment->id ? 'selected' : '' }}>
+                              {{ $type_shipment->code . ' - ' . $type_shipment->name }}
+                          </option>
                       @endforeach
                   </x-adminlte-select2>
-                </div>
+              </div>
 
               <div id="contenedor_radio_lcl_fcl" class="col-4 d-none align-items-center">
                   <div class="form-check d-inline">
@@ -115,15 +115,15 @@
           </div>
 
           <div class="col-6">
-            
+
               <x-adminlte-select2 name="id_type_load" label="Tipo de carga" igroup-size="md"
                   data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($type_loads as $type_load)
-                  <option value="{{ $type_load->id }}"
-                      {{ (isset($routing->id_type_load) && $routing->id_type_load == $type_load->id) || old('id_type_load') == $type_load->id ? 'selected' : '' }}>
-                      {{ $type_load->name }}
-                  </option>
+                      <option value="{{ $type_load->id }}"
+                          {{ (isset($routing->id_type_load) && $routing->id_type_load == $type_load->id) || old('id_type_load') == $type_load->id ? 'selected' : '' }}>
+                          {{ $type_load->name }}
+                      </option>
                   @endforeach
               </x-adminlte-select2>
           </div>
@@ -133,10 +133,10 @@
                   data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($regimes as $regime)
-                  <option value="{{ $regime->id }}"
-                      {{ (isset($routing->id_regime) && $routing->id_regime == $regime->id) || old('id_regime') == $regime->id ? 'selected' : '' }}>
-                      {{ $regime->code . ' - ( ' . $regime->description . ' )' }}
-                  </option>
+                      <option value="{{ $regime->id }}"
+                          {{ (isset($routing->id_regime) && $routing->id_regime == $regime->id) || old('id_regime') == $regime->id ? 'selected' : '' }}>
+                          {{ $regime->code . ' - ( ' . $regime->description . ' )' }}
+                      </option>
                   @endforeach
               </x-adminlte-select2>
           </div>
@@ -146,15 +146,13 @@
               <a href="#" data-bs-toggle="modal" data-bs-target="#incotermModal">
                   <i class="fas fa-info-circle"></i>
               </a>
-              <x-adminlte-select2 name="id_incoterms" igroup-size="md"
-                  data-placeholder="Seleccione una opcion...">
+              <x-adminlte-select2 name="id_incoterms" igroup-size="md" data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($incoterms as $incoter)
-                  <option value="{{ $incoter->id }}"
-                      {{ (isset($routing->id_incoterms) && $routing->id_incoterms == $incoter->id) || old('id_incoterms') == $incoter->id ? 'selected' : '' }}>
-                      {{ $incoter->code }} ({{$incoter->name}})
-                  </option>
-
+                      <option value="{{ $incoter->id }}"
+                          {{ (isset($routing->id_incoterms) && $routing->id_incoterms == $incoter->id) || old('id_incoterms') == $incoter->id ? 'selected' : '' }}>
+                          {{ $incoter->code }} ({{ $incoter->name }})
+                      </option>
                   @endforeach
               </x-adminlte-select2>
           </div>
@@ -189,9 +187,9 @@
                       name="commodity" placeholder="Ingrese el producto.."
                       value="{{ isset($routing->commodity) ? $routing->commodity : old('commodity') }}">
                   @error('commodity')
-                  <span class="invalid-feedback d-block" role="alert">
-                      <strong>{{ $message }}</strong>
-                  </span>
+                      <span class="invalid-feedback d-block" role="alert">
+                          <strong>{{ $message }}</strong>
+                      </span>
                   @enderror
               </div>
           </div>
@@ -215,9 +213,9 @@
                           </div>
                       </div>
                       @error('load_value')
-                      <span class="invalid-feedback d-block" role="alert">
-                          <strong>{{ $message }}</strong>
-                      </span>
+                          <span class="invalid-feedback d-block" role="alert">
+                              <strong>{{ $message }}</strong>
+                          </span>
                       @enderror
 
                   </div>
@@ -233,9 +231,9 @@
                               oninput="validarInputNumber(this)"
                               value="{{ isset($routing) ? $routing->nro_package : '' }}">
                           @error('nro_package')
-                          <span class="invalid-feedback d-block" role="alert">
-                              <strong>{{ $message }}</strong>
-                          </span>
+                              <span class="invalid-feedback d-block" role="alert">
+                                  <strong>{{ $message }}</strong>
+                              </span>
                           @enderror
                       </div>
                   </div>
@@ -251,9 +249,9 @@
                               name="packaging_type" placeholder="Ingrese el tipo de embalaje.."
                               value="{{ isset($routing) ? $routing->packaging_type : '' }}">
                           @error('packaging_type')
-                          <span class="invalid-feedback d-block" role="alert">
-                              <strong>{{ $message }}</strong>
-                          </span>
+                              <span class="invalid-feedback d-block" role="alert">
+                                  <strong>{{ $message }}</strong>
+                              </span>
                           @enderror
                       </div>
                   </div>
@@ -263,20 +261,20 @@
                   <div class="form-group row">
                       <label for="id_containers" class="col-sm-4 col-form-label">Tipo de contenedor</label>
                       <div class="col-sm-8">
-                          <select class="form-control @error('id_containers') is-invalid @enderror"
-                              id="id_containers" name="id_containers">
+                          <select class="form-control @error('id_containers') is-invalid @enderror" id="id_containers"
+                              name="id_containers">
                               <option value="">Seleccione un tipo</option>
-                              @foreach($containers as $container)
-                              <option value="{{ $container->id }}"
-                                  {{ old('id_containers') == $container->id ? 'selected' : '' }}>
-                                  {{ $container->typeContainer->name }} - {{ $container->name }}
-                              </option>
+                              @foreach ($containers as $container)
+                                  <option value="{{ $container->id }}"
+                                      {{ old('id_containers') == $container->id ? 'selected' : '' }}>
+                                      {{ $container->typeContainer->name }} - {{ $container->name }}
+                                  </option>
                               @endforeach
                           </select>
                           @error('id_containers')
-                          <span class="invalid-feedback d-block" role="alert">
-                              <strong>{{ $message }}</strong>
-                          </span>
+                              <span class="invalid-feedback d-block" role="alert">
+                                  <strong>{{ $message }}</strong>
+                              </span>
                           @enderror
                       </div>
                   </div>
@@ -286,21 +284,21 @@
                       <label for="container_quantity" class="col-sm-4 col-form-label">Nº Contenedor</label>
                       <div class="col-sm-8">
                           <input type="number" min="0" step="1"
-                              class="form-control @error('container_quantity') is-invalid @enderror" id="container_quantity"
-                              name="container_quantity" placeholder="Ingrese el nro de contenedores.."
-                              oninput="validarInputNumber(this)"
+                              class="form-control @error('container_quantity') is-invalid @enderror"
+                              id="container_quantity" name="container_quantity"
+                              placeholder="Ingrese el nro de contenedores.." oninput="validarInputNumber(this)"
                               value="{{ isset($routing) ? $routing->container_quantity : '' }}">
                           @error('container_quantity')
-                          <span class="invalid-feedback d-block" role="alert">
-                              <strong>{{ $message }}</strong>
-                          </span>
+                              <span class="invalid-feedback d-block" role="alert">
+                                  <strong>{{ $message }}</strong>
+                              </span>
                           @enderror
                       </div>
                   </div>
               </div>
 
 
-              
+
               <div id="container_measures" class="col-12 mt-2">
 
                   <div id="div-measures" class="row justify-content-center">
@@ -349,9 +347,9 @@
                   </table>
                   <input id="value_measures" type="hidden" name="value_measures" />
                   @error('value_measures')
-                  <span class="invalid-feedback d-block" role="alert">
-                      <strong>{{ $message }}</strong>
-                  </span>
+                      <span class="invalid-feedback d-block" role="alert">
+                          <strong>{{ $message }}</strong>
+                      </span>
                   @enderror
 
               </div>
@@ -368,7 +366,7 @@
                               data-type="currency" placeholder="Ingrese las libras"
                               value="{{ isset($routing) ? $routing->pounds : '' }}" @readonly(true)>
                           @error('pounds')
-                          <div class="text-danger">{{ $message }}</div>
+                              <div class="text-danger">{{ $message }}</div>
                           @enderror
                       </div>
                   </div>
@@ -383,9 +381,9 @@
                               id="kilograms" name="kilograms" data-type="currency" placeholder="Ingrese el peso.."
                               value="{{ isset($routing->kilograms) ? $routing->kilograms : old('kilograms') }}">
                           @error('kilograms')
-                          <span class="invalid-feedback d-block" role="alert">
-                              <strong>{{ $message }}</strong>
-                          </span>
+                              <span class="invalid-feedback d-block" role="alert">
+                                  <strong>{{ $message }}</strong>
+                              </span>
                           @enderror
                       </div>
                   </div>
@@ -399,9 +397,9 @@
                               value="{{ isset($routing->tons) ? $routing->tons : old('tons') }}">
                       </div>
                       @error('tons')
-                      <span class="invalid-feedback d-block" role="alert">
-                          <strong>{{ $message }}</strong>
-                      </span>
+                          <span class="invalid-feedback d-block" role="alert">
+                              <strong>{{ $message }}</strong>
+                          </span>
                       @enderror
                   </div>
 
@@ -421,9 +419,9 @@
                       </div>
 
                       @error('volumen')
-                      <span class="invalid-feedback d-block" role="alert">
-                          <strong>{{ $message }}</strong>
-                      </span>
+                          <span class="invalid-feedback d-block" role="alert">
+                              <strong>{{ $message }}</strong>
+                          </span>
                       @enderror
                   </div>
                   <div id="contenedor_kg_vol" class="form-group row d-none">
@@ -438,9 +436,9 @@
                               value="{{ isset($routing->kilogram_volumen) ? $routing->kilogram_volumen : old('kilogram_volumen') }}">
                       </div>
                       @error('kilogram_volumen')
-                      <span class="invalid-feedback d-block" role="alert">
-                          <strong>{{ $message }}</strong>
-                      </span>
+                          <span class="invalid-feedback d-block" role="alert">
+                              <strong>{{ $message }}</strong>
+                          </span>
                       @enderror
                   </div>
 
@@ -485,45 +483,47 @@
               <hr class="w-100">
               <div class="col-6 mt-4 d-none fcl-fields" id="containerTypeWrapperConsolidated">
                   <div class="form-group row">
-                      <label for="id_containers_consolidated" class="col-sm-4 col-form-label">Tipo de contenedor</label>
+                      <label for="id_containers_consolidated" class="col-sm-4 col-form-label">Tipo de
+                          contenedor</label>
                       <div class="col-sm-8">
                           <select class="form-control @error('id_containers_consolidated') is-invalid @enderror"
                               id="id_containers_consolidated" name="id_containers_consolidated">
                               <option value="">Seleccione un tipo</option>
-                              @foreach($containers as $container)
-                              <option value="{{ $container->id }}"
-                                  {{ old('id_containers_consolidated') == $container->id ? 'selected' : '' }}>
-                                  {{ $container->typeContainer->name }} - {{ $container->name }}
-                              </option>
+                              @foreach ($containers as $container)
+                                  <option value="{{ $container->id }}"
+                                      {{ old('id_containers_consolidated') == $container->id ? 'selected' : '' }}>
+                                      {{ $container->typeContainer->name }} - {{ $container->name }}
+                                  </option>
                               @endforeach
                           </select>
                           @error('id_containers_consolidated')
-                          <span class="invalid-feedback d-block" role="alert">
-                              <strong>{{ $message }}</strong>
-                          </span>
+                              <span class="invalid-feedback d-block" role="alert">
+                                  <strong>{{ $message }}</strong>
+                              </span>
                           @enderror
                       </div>
                   </div>
               </div>
               <div class="col-6 mt-4 d-none fcl-fields" id="containerQuantityWrapperConsolidated">
                   <div class="form-group row">
-                      <label for="container_quantity_consolidated" class="col-sm-4 col-form-label">Nº Contenedor</label>
+                      <label for="container_quantity_consolidated" class="col-sm-4 col-form-label">Nº
+                          Contenedor</label>
                       <div class="col-sm-8">
                           <input type="number" min="0" step="1"
-                              class="form-control @error('container_quantity_consolidated') is-invalid @enderror" id="container_quantity_consolidated"
-                              name="container_quantity_consolidated" placeholder="Ingrese el nro de contenedores.."
-                              oninput="validarInputNumber(this)"
+                              class="form-control @error('container_quantity_consolidated') is-invalid @enderror"
+                              id="container_quantity_consolidated" name="container_quantity_consolidated"
+                              placeholder="Ingrese el nro de contenedores.." oninput="validarInputNumber(this)"
                               value="{{ isset($routing) ? $routing->container_quantity_consolidated : '' }}">
                           @error('container_quantity_consolidated')
-                          <span class="invalid-feedback d-block" role="alert">
-                              <strong>{{ $message }}</strong>
-                          </span>
+                              <span class="invalid-feedback d-block" role="alert">
+                                  <strong>{{ $message }}</strong>
+                              </span>
                           @enderror
                       </div>
                   </div>
               </div>
           </div>
-          
+
 
       </div>
 
@@ -544,15 +544,15 @@
                   <h5 class="text-indigo mb-3">Seleccione los servicios que se cotizaran para incluir dentro de este
                       documento</h5>
                   @foreach ($types_services as $type_service)
-                  @if ($type_service->name != 'Aduanas')
-                  <div class="icheck-danger d-inline mx-4 mt-4">
-                      <input type="checkbox" id="type_service_{{ $type_service->id }}"
-                          value="{{ $type_service->name }}" name="type_service[]">
-                      <label for="type_service_{{ $type_service->id }}">
-                          {{ $type_service->name }}
-                      </label>
-                  </div>
-                  @endif
+                      @if ($type_service->name != 'Aduanas')
+                          <div class="icheck-danger d-inline mx-4 mt-4">
+                              <input type="checkbox" id="type_service_{{ $type_service->id }}"
+                                  value="{{ $type_service->name }}" name="type_service[]">
+                              <label for="type_service_{{ $type_service->id }}">
+                                  {{ $type_service->name }}
+                              </label>
+                          </div>
+                      @endif
                   @endforeach
 
               </div>
@@ -567,11 +567,13 @@
 
 
   <!-- Modal de Bootstrap -->
-  <div class="modal fade" id="incotermModal" tabindex="-1" aria-labelledby="incotermModalLabel" aria-hidden="true">
+  <div class="modal fade" id="incotermModal" tabindex="-1" aria-labelledby="incotermModalLabel"
+      aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-xl">
           <div class="modal-content">
               <div class="modal-body text-center p-0">
-                  <img src="{{ asset('storage/incoterms/incoterms.jpg') }}" class="img-fluid" alt="Información sobre Incoterms">
+                  <img src="{{ asset('storage/incoterms/incoterms.jpg') }}" class="img-fluid"
+                      alt="Información sobre Incoterms">
 
               </div>
           </div>
@@ -582,427 +584,435 @@
 
 
   @push('scripts')
-  <script>
-      const dataMeasures = @json(isset($routing->measures) ? $routing->measures : '');
-      let tableMeasures = null;
-      let tableMeasuresConsolidated = null;
-      let counter = 1;
-      let shippers = [];
+      <script>
+          let tableMeasures = null;
+          let tableMeasuresConsolidated = null;
+          let counter = 1;
+          let shippers = [];
 
-      // Función para agregar una fila editable
-      let rowIndex = 1; //
-      let currentPackage = 0;
-      let arrayMeasures = {};
-      let arrayMeasuresConsolidated = {};
+          // Función para agregar una fila editable
+          let rowIndex = 1; //
+          let currentPackage = 0;
+          let arrayMeasures = {};
+          let arrayMeasuresConsolidated = {};
 
-      //Tipo de embarque de la cotizacion:
-      let typeShipmentCurrent = {};
+          //Tipo de embarque de la cotizacion:
+          let typeShipmentCurrent = {};
 
-      document.addEventListener('DOMContentLoaded', function() {
-
-
-          //Inicializamos la tabla de medidas
-
-          tableMeasures = new DataTable('#measures', {
-              paging: false, // Desactiva la paginación
-              searching: false, // Oculta el cuadro de búsqueda
-              info: false, // Oculta la información del estado de la tabla
-              lengthChange: false, // Oculta el selector de cantidad de registros por página
-              language: { // Traducciones al español
-                  emptyTable: "No hay medidas registradas"
-              }
-          });
+          document.addEventListener('DOMContentLoaded', function() {
 
 
-          tableMeasuresConsolidated = new DataTable('#measures-consolidated', {
-              paging: false, // Desactiva la paginación
-              searching: false, // Oculta el cuadro de búsqueda
-              info: false, // Oculta la información del estado de la tabla
-              lengthChange: false, // Oculta el selector de cantidad de registros por página
-              language: { // Traducciones al español
-                  emptyTable: "No hay medidas registradas"
-              }
-          });
+              //Inicializamos la tabla de medidas
 
-
-          // Obtener los valores de los campos del formulario (puedes personalizar esto para tu caso)
-          let volumenValue = document.getElementById('volumen');
-          let kilogramoVolumenValue = document.getElementById('kilogram_volumen');
-          let toneladasValue = document.getElementById('tons');
-          let totalWeight = document.getElementById('kilograms');
-          let lcl_fcl = document.getElementsByName('lcl_fcl');
-          let id_containers = document.getElementById('id_containers');
-
-          let lclfclSelected = Array.from(document.getElementsByName('lcl_fcl')).find(radio => radio.checked)
-              ?.value;
-
-
-
-          // Mostrar/ocultar los campos según los valores
-          if (volumenValue.value !== '' || volumenValue.classList.contains('is-invalid')) {
-              $('#contenedor_volumen').removeClass('d-none');
-              $('#contenedor_kg_vol').addClass('d-none');
-
-          }
-
-          if (kilogramoVolumenValue.value !== '' || kilogramoVolumenValue.classList.contains('is-invalid')) {
-              $('#contenedor_kg_vol').removeClass('d-none');
-              $('#contenedor_volumen').addClass('d-none');
-          }
-
-          if (totalWeight.value !== '' || totalWeight.classList.contains('is-invalid')) {
-              $('#contenedor_weight').removeClass('d-none');
-              $('#contenedor_tons').addClass('d-none');
-
-          }
-
-          if (toneladasValue.value !== '' || toneladasValue.classList.contains('is-invalid')) {
-              $('#contenedor_tons').removeClass('d-none');
-              $('#contenedor_weight').addClass('d-none');
-
-
-          }
-
-          if (id_containers.value !== '' || id_containers.classList.contains('is-invalid')) {
-              $('#containerTypeWrapper').removeClass('d-none');
-
-              const parentElement = document.getElementById('containerTypeWrapper').closest('.row');
-
-              if (parentElement) {
-                  const firstChild = parentElement.children[0]; // Primer hijo
-                  const secondChild = parentElement.children[1]; // Segundo hijo
-
-
-                  // Añade la clase 'col-6' a los dos primeros hijos
-                  if (firstChild) {
-                      firstChild.classList.add('col-4');
-                      firstChild.classList.remove('col-6');
-
+              tableMeasures = new DataTable('#measures', {
+                  paging: false, // Desactiva la paginación
+                  searching: false, // Oculta el cuadro de búsqueda
+                  info: false, // Oculta la información del estado de la tabla
+                  lengthChange: false, // Oculta el selector de cantidad de registros por página
+                  language: { // Traducciones al español
+                      emptyTable: "No hay medidas registradas"
                   }
-                  if (secondChild) {
+              });
 
-                      secondChild.classList.add('col-4');
-                      secondChild.classList.remove('col-6')
 
+              tableMeasuresConsolidated = new DataTable('#measures-consolidated', {
+                  paging: false, // Desactiva la paginación
+                  searching: false, // Oculta el cuadro de búsqueda
+                  info: false, // Oculta la información del estado de la tabla
+                  lengthChange: false, // Oculta el selector de cantidad de registros por página
+                  language: { // Traducciones al español
+                      emptyTable: "No hay medidas registradas"
                   }
+              });
+
+
+              // Obtener los valores de los campos del formulario (puedes personalizar esto para tu caso)
+              let volumenValue = document.getElementById('volumen');
+              let kilogramoVolumenValue = document.getElementById('kilogram_volumen');
+              let toneladasValue = document.getElementById('tons');
+              let totalWeight = document.getElementById('kilograms');
+              let lcl_fcl = document.getElementsByName('lcl_fcl');
+              let id_containers = document.getElementById('id_containers');
+
+              let lclfclSelected = Array.from(document.getElementsByName('lcl_fcl')).find(radio => radio.checked)
+                  ?.value;
+
+
+
+              // Mostrar/ocultar los campos según los valores
+              if (volumenValue.value !== '' || volumenValue.classList.contains('is-invalid')) {
+                  $('#contenedor_volumen').removeClass('d-none');
+                  $('#contenedor_kg_vol').addClass('d-none');
 
               }
 
-          }
-
-          let isChecked = Array.from(lcl_fcl).some(radio => radio.checked);
-          let hasInvalidClass = Array.from(lcl_fcl).some(radio => radio.classList.contains('is-invalid'));
-
-
-          if (isChecked || hasInvalidClass) {
-              $('#lclfcl_content').children().first().removeClass('col-12').addClass('col-8');
-              $('#lclfcl_content').children().last().removeClass('d-none').addClass('d-flex');
-              document.getElementById('contenedor_radio_lcl_fcl').classList.remove('d-none');
-          }
-      })
-
-      $('#id_type_shipment').on('change', (e) => {
-
-          var idShipment = $(e.target).find("option:selected").val();
-
-          $.ajax({
-              type: "GET",
-              url: "/getLCLFCL",
-              data: {
-                  idShipment
-              },
-              dataType: "JSON",
-              success: function(respu) {
-                  if (respu.description === "Marítima") {
-
-                      typeShipmentCurrent = respu;
-
-                      $('#type_shipment_name').val(respu.description);
-
-                      $('#lclfcl_content').children().first().removeClass('col-12').addClass('col-8');
-                      $('#lclfcl_content').children().last().removeClass('d-none').addClass('d-flex');
-
-                      $('#contenedor_volumen').removeClass('d-none');
-                      $('#contenedor_vol_consolidated').removeClass('d-none');
-                      $('#contenedor_kg_vol').addClass('d-none');
-                      $('#contenedor_kg_vol_consolidated').addClass('d-none');
-
-                      $('#contenedor_volumen').find('input').val("");
-                      $('#contenedor_kg_vol').find('input').val("");
-                      $('#contenedor_kg_vol_consolidated').find('input').val("");
-
-
-
-
-                  } else {
-
-
-                      $('#type_shipment_name').val(respu.description);
-
-                      $('#lclfcl_content').children().first().removeClass('col-8').addClass('col-12');
-                      $('#lclfcl_content').children().last().removeClass('d-flex').addClass('d-none');
-                      $('input[name="lcl_fcl"]').prop('checked', false);
-
-                      $('#contenedor_volumen').addClass('d-none');
-                      $('#contenedor_vol_consolidated').addClass('d-none');
-                      $('#contenedor_kg_vol').removeClass('d-none');
-                      $('#contenedor_kg_vol_consolidated').removeClass('d-none');
-
-                      $('#contenedor_kg_vol').find('input').val("");
-                      $('#contenedor_kg_vol_consolidated').find('input').val("");
-                      $('#contenedor_volumen').find('input').val("");
-                      $('#contenedor_vol_consolidated').find('input').val("");
-
-                      $('#containerTypeWrapper').find('input').val("");
-                      $('#containerTypeWrapper').addClass('d-none');
-                      $('#containerQuantityWrapper').find('input').val("");
-                      $('#containerQuantityWrapper').addClass('d-none');
-
-                      $('#containerTypeWrapperConsolidated').find('input').val("");
-                      $('#containerTypeWrapperConsolidated').addClass('d-none');
-                      $('#containerQuantityWrapperConsolidated').find('input').val("");
-                      $('#containerQuantityWrapperConsolidated').addClass('d-none');
-
-                      $('#contenedor_tons').find('input').val("");
-                      $('#contenedor_tons').addClass('d-none');
-                      $('#contenedor_weight').removeClass('d-none');
-
-
-
-                  }
+              if (kilogramoVolumenValue.value !== '' || kilogramoVolumenValue.classList.contains('is-invalid')) {
+                  $('#contenedor_kg_vol').removeClass('d-none');
+                  $('#contenedor_volumen').addClass('d-none');
               }
-          });
+
+              if (totalWeight.value !== '' || totalWeight.classList.contains('is-invalid')) {
+                  $('#contenedor_weight').removeClass('d-none');
+                  $('#contenedor_tons').addClass('d-none');
+
+              }
+
+              if (toneladasValue.value !== '' || toneladasValue.classList.contains('is-invalid')) {
+                  $('#contenedor_tons').removeClass('d-none');
+                  $('#contenedor_weight').addClass('d-none');
 
 
-      });
+              }
+
+              if (id_containers.value !== '' || id_containers.classList.contains('is-invalid')) {
+                  $('#containerTypeWrapper').removeClass('d-none');
+
+                  const parentElement = document.getElementById('containerTypeWrapper').closest('.row');
+
+                  if (parentElement) {
+                      const firstChild = parentElement.children[0]; // Primer hijo
+                      const secondChild = parentElement.children[1]; // Segundo hijo
 
 
-      function toggleConsolidatedSection() {
-          let isConsolidated = document.querySelector('input[name="is_consolidated"]:checked').value;
+                      // Añade la clase 'col-6' a los dos primeros hijos
+                      if (firstChild) {
+                          firstChild.classList.add('col-4');
+                          firstChild.classList.remove('col-6');
 
+                      }
+                      if (secondChild) {
 
-          if (isConsolidated === "1") {
-              document.getElementById("multipleProvidersSection").classList.remove("d-none");
-              document.getElementById("singleProviderSection").classList.add("d-none");
+                          secondChild.classList.add('col-4');
+                          secondChild.classList.remove('col-6')
 
-              let lcl_fcl = document.querySelector('input[name="lcl_fcl"]:checked');
-              if (lcl_fcl) {
-                  const containerTypeWrapper = document.getElementById('containerTypeWrapperConsolidated');
+                      }
 
-                  if (lcl_fcl.value === 'FCL') {
-                      containerTypeWrapper.classList.remove('d-none');
-                  } else {
-                      containerTypeWrapper.classList.add('d-none');
                   }
 
               }
 
-
-          } else {
-              document.getElementById("multipleProvidersSection").classList.add("d-none");
-              document.getElementById("singleProviderSection").classList.remove("d-none");
-          }
-      }
-
-      function showItemConsolidated() {
-          $('#modal-consolidated').modal('show');
-      }
-
-      function removeRow(button) {
-          button.parentElement.parentElement.remove();
-      }
+              let isChecked = Array.from(lcl_fcl).some(radio => radio.checked);
+              let hasInvalidClass = Array.from(lcl_fcl).some(radio => radio.classList.contains('is-invalid'));
 
 
+              if (isChecked || hasInvalidClass) {
+                  $('#lclfcl_content').children().first().removeClass('col-12').addClass('col-8');
+                  $('#lclfcl_content').children().last().removeClass('d-none').addClass('d-flex');
+                  document.getElementById('contenedor_radio_lcl_fcl').classList.remove('d-none');
+              }
+          })
 
-      $('#kilograms').on('change', (e) => {
+          $('#id_type_shipment').on('change', (e) => {
 
-          let kilogramsVal = $(e.target).val();
-          let kilograms = kilogramsVal.replace(/,/g, '');
-          let numberValue = parseFloat(kilograms);
+              var idShipment = $(e.target).find("option:selected").val();
 
-          if (!kilogramsVal || isNaN(numberValue)) {
+              $.ajax({
+                  type: "GET",
+                  url: "/getLCLFCL",
+                  data: {
+                      idShipment
+                  },
+                  dataType: "JSON",
+                  success: function(respu) {
+                      if (respu.description === "Marítima") {
 
-              $('#pounds').val(0);
+                          typeShipmentCurrent = respu;
 
-          } else {
+                          $('#type_shipment_name').val(respu.description);
 
-              $('#pounds').val(numberValue * 2.21);
+                          $('#lclfcl_content').children().first().removeClass('col-12').addClass('col-8');
+                          $('#lclfcl_content').children().last().removeClass('d-none').addClass('d-flex');
 
-          }
+                          $('#contenedor_volumen').removeClass('d-none');
+                          $('#contenedor_vol_consolidated').removeClass('d-none');
+                          $('#contenedor_kg_vol').addClass('d-none');
+                          $('#contenedor_kg_vol_consolidated').addClass('d-none');
 
-
-      });
-
-
-
-      //Funcion para agregar las medidas: 
-
-      function addMeasures() {
-
-
-          let divMeasures = document.getElementById("div-measures");
-          let nroPackage = parseInt(document.getElementById("nro_package").value);
-          let valueMeasuresHidden = document.getElementById('value-measures');
-
-          AddRowMeasures(divMeasures, nroPackage, tableMeasures, arrayMeasures, "arrayMeasures", valueMeasuresHidden);
-
-      }
-      //Funcion para agregar las medidas en el consolidado: 
-
-      function addMeasuresConsolidate() {
-
-          let divMeasures = document.getElementById("div-measures-consolidated");
-          let nroPackageConsolidated = parseInt(document.getElementById("nro_packages_consolidated").value);
-          let valueMeasuresHidden = document.getElementById('value-measures-consolidated');
+                          $('#contenedor_volumen').find('input').val("");
+                          $('#contenedor_kg_vol').find('input').val("");
+                          $('#contenedor_kg_vol_consolidated').find('input').val("");
 
 
-          AddRowMeasures(divMeasures, nroPackageConsolidated, tableMeasuresConsolidated, arrayMeasuresConsolidated,
-              "arrayMeasuresConsolidated", valueMeasuresHidden);
-
-      }
 
 
-      function deleteRow(tableId, rowId, amount, array, valueMeasures) {
-
-          let table = $(`#${tableId}`).DataTable(); // Obtener la instancia del DataTable
-
-          // Eliminar la fila del DataTable
-          table.row(`#${rowId}`).remove().draw();
-
-          // Restar la cantidad eliminada del contador actual
-          currentPackage -= amount;
-
-          // Eliminar la entrada del arrayMeasuresConsolidated
-
-          const index = rowId.replace("row-", "");
-
-          delete array[index];
+                      } else {
 
 
-          // Actualizar el valor en el input oculto
-          $(`#${valueMeasures}`).val(JSON.stringify(array));
+                          $('#type_shipment_name').val(respu.description);
 
-      }
+                          $('#lclfcl_content').children().first().removeClass('col-8').addClass('col-12');
+                          $('#lclfcl_content').children().last().removeClass('d-flex').addClass('d-none');
+                          $('input[name="lcl_fcl"]').prop('checked', false);
 
-      function cleanInputMeasures(inputs) {
-          inputs.forEach(input => {
+                          $('#contenedor_volumen').addClass('d-none');
+                          $('#contenedor_vol_consolidated').addClass('d-none');
+                          $('#contenedor_kg_vol').removeClass('d-none');
+                          $('#contenedor_kg_vol_consolidated').removeClass('d-none');
 
-              input.value = "";
+                          $('#contenedor_kg_vol').find('input').val("");
+                          $('#contenedor_kg_vol_consolidated').find('input').val("");
+                          $('#contenedor_volumen').find('input').val("");
+                          $('#contenedor_vol_consolidated').find('input').val("");
+
+                          $('#containerTypeWrapper').find('input').val("");
+                          $('#containerTypeWrapper').addClass('d-none');
+                          $('#containerQuantityWrapper').find('input').val("");
+                          $('#containerQuantityWrapper').addClass('d-none');
+
+                          $('#containerTypeWrapperConsolidated').find('input').val("");
+                          $('#containerTypeWrapperConsolidated').addClass('d-none');
+                          $('#containerQuantityWrapperConsolidated').find('input').val("");
+                          $('#containerQuantityWrapperConsolidated').addClass('d-none');
+
+                          $('#contenedor_tons').find('input').val("");
+                          $('#contenedor_tons').addClass('d-none');
+                          $('#contenedor_weight').removeClass('d-none');
+
+
+
+                      }
+                  }
+              });
+
 
           });
 
-      }
+
+          function toggleConsolidatedSection() {
+              let isConsolidated = document.querySelector('input[name="is_consolidated"]:checked').value;
 
 
-      //Funcion para agregar registros a una tabla de medidas en especifico.
+              if (isConsolidated === "1") {
+                  document.getElementById("multipleProvidersSection").classList.remove("d-none");
+                  document.getElementById("singleProviderSection").classList.add("d-none");
 
-      function AddRowMeasures(container_measures, nroPackage, table, array, arrayName, valueMeasuresHidden) {
+                  let lcl_fcl = document.querySelector('input[name="lcl_fcl"]:checked');
+                  if (lcl_fcl) {
+                      const containerTypeWrapper = document.getElementById('containerTypeWrapperConsolidated');
 
-          const inputs = container_measures.querySelectorAll('input');
+                      if (lcl_fcl.value === 'FCL') {
+                          containerTypeWrapper.classList.remove('d-none');
+                      } else {
+                          containerTypeWrapper.classList.add('d-none');
+                      }
 
-          validateInputs(inputs);
+                  }
 
-          const amount_package = parseInt(inputs[0].value);
-          const width = inputs[1].value.replace(/,/g, '');;
-          const length = inputs[2].value.replace(/,/g, '');;
-          const height = inputs[3].value.replace(/,/g, '');;
 
-          if (isNaN(amount_package) || amount_package <= 0) {
-              inputs[0].classList.add('is-invalid');
-              return;
-          } else {
+              } else {
+                  document.getElementById("multipleProvidersSection").classList.add("d-none");
+                  document.getElementById("singleProviderSection").classList.remove("d-none");
+              }
+          }
 
-              if (isNaN(nroPackage) || amount_package > nroPackage) {
-                  alert(
-                      'El numero de paquetes / bultos no puede ser menor que la cantidad ingresada'
-                  );
+          function showItemConsolidated() {
+              $('#modal-consolidated').modal('show');
+          }
+
+          function removeRow(button) {
+              button.parentElement.parentElement.remove();
+          }
+
+
+
+          $('#kilograms').on('change', (e) => {
+
+              let kilogramsVal = $(e.target).val();
+              let kilograms = kilogramsVal.replace(/,/g, '');
+              let numberValue = parseFloat(kilograms);
+
+              if (!kilogramsVal || isNaN(numberValue)) {
+
+                  $('#pounds').val(0);
+
+              } else {
+
+                  $('#pounds').val(numberValue * 2.21);
+
+              }
+
+
+          });
+
+
+
+          //Funcion para agregar las medidas: 
+
+          function addMeasures() {
+
+
+              let divMeasures = document.getElementById("div-measures");
+              let nroPackage = parseInt(document.getElementById("nro_package").value);
+              let valueMeasuresHidden = document.getElementById('value_measures');
+
+              AddRowMeasures(divMeasures, nroPackage, tableMeasures, arrayMeasures, "arrayMeasures", valueMeasuresHidden);
+
+          }
+          //Funcion para agregar las medidas en el consolidado: 
+
+          function addMeasuresConsolidate() {
+
+              let divMeasures = document.getElementById("div-measures-consolidated");
+              let nroPackageConsolidated = parseInt(document.getElementById("nro_packages_consolidated").value);
+              let valueMeasuresHidden = document.getElementById('value-measures-consolidated');
+
+
+              AddRowMeasures(divMeasures, nroPackageConsolidated, tableMeasuresConsolidated, arrayMeasuresConsolidated,
+                  "arrayMeasuresConsolidated", valueMeasuresHidden);
+
+          }
+
+
+          function deleteRow(tableId, rowId, amount, array, valueMeasures) {
+
+              let table = $(`#${tableId}`).DataTable(); // Obtener la instancia del DataTable
+
+              // Eliminar la fila del DataTable
+              table.row(`#${rowId}`).remove().draw();
+
+              // Restar la cantidad eliminada del contador actual
+              currentPackage -= amount;
+
+              // Eliminar la entrada del arrayMeasuresConsolidated
+
+              const index = rowId.replace("row-", "");
+
+              delete array[index];
+
+
+              // Actualizar el valor en el input oculto
+              $(`#${valueMeasures}`).val(JSON.stringify(array));
+
+          }
+
+          function cleanInputMeasures(inputs) {
+              inputs.forEach(input => {
+
+                  input.value = "";
+
+              });
+
+          }
+
+
+          //Funcion para agregar registros a una tabla de medidas en especifico.
+
+          function AddRowMeasures(container_measures, nroPackage, table, array, arrayName, valueMeasuresHidden) {
+
+              const inputs = container_measures.querySelectorAll('input, select');
+
+              if (!validateInputs(inputs)) {
                   return;
               }
 
+              const amount_package = parseInt(inputs[0].value);
+              const width = inputs[1].value.replace(/,/g, '');
+              const length = inputs[2].value.replace(/,/g, '');
+              const height = inputs[3].value.replace(/,/g, '');
+              const unit_measurement = inputs[4].value;
 
-              currentPackage += amount_package;
+              if (isNaN(amount_package) || amount_package <= 0) {
+                  inputs[0].classList.add('is-invalid');
+                  return;
+              } else {
+
+                  if (isNaN(nroPackage) || amount_package > nroPackage) {
+                      alert(
+                          'El numero de paquetes / bultos no puede ser menor que la cantidad ingresada'
+                      );
+                      return;
+                  }
 
 
-              if (currentPackage > nroPackage) {
-                  alert(
-                      'No se puede agregar otra fila, por que segun los registros ya completaste el numero de bultos'
-                  );
-                  currentPackage -= amount_package;
+                  currentPackage += amount_package;
+
+
+                  if (currentPackage > nroPackage) {
+                      alert(
+                          'No se puede agregar otra fila, por que segun los registros ya completaste el numero de bultos'
+                      );
+                      currentPackage -= amount_package;
+                      return;
+                  }
+
+                  const newRow = table.row.add([
+
+                      // Campo para Cantidad
+                      `<input type="number" class="form-control"  readonly id="amount-${rowIndex}" name="amount-${rowIndex}" value="${amount_package}" placeholder="Cantidad" min="0" step="1">`,
+
+                      // Campo para Ancho
+                      `<input type="number" class="form-control"  readonly id="width-${rowIndex}" name="width-${rowIndex}" value="${width}" placeholder="Ancho" min="0" step="0.0001">`,
+
+                      // Campo para Largo
+                      `<input type="number" class="form-control"  readonly id="length-${rowIndex}" name="length-${rowIndex}" value="${length}" placeholder="Largo" min="0" step="0.0001">`,
+
+                      // Campo para Alto
+                      `<input type="number" class="form-control"  readonly id="height-${rowIndex}" name="height-${rowIndex}" value="${height}" placeholder="Alto" min="0" step="0.0001">`,
+                      // Campo para unidad de medida
+                      `<input type="text" class="form-control"  readonly id="unit-measurement-${rowIndex}" name="unit_measurement-${rowIndex}" value="${unit_measurement}">`,
+
+                      `<button type="button" class="btn btn-danger btn-sm" id="delete-${rowIndex}" onclick="deleteRow('${table.table().node().id}', 'row-${rowIndex}', ${amount_package}, ${arrayName}, '${valueMeasuresHidden.id}')"><i class="fa fa-trash"></i></button>`
+                  ]).draw().node();
+                  newRow.id = `row-${rowIndex}`;
+
+
+                  array[rowIndex] = { // Usamos rowIndex como clave
+                      amount: amount_package,
+                      width,
+                      length,
+                      height,
+                      unit_measurement
+                  };
+
+
+                  valueMeasuresHidden.value = JSON.stringify(array);
+
+                  rowIndex++
+
+                  cleanInputMeasures(inputs)
+
+              }
+
+          }
+
+
+          /* Agregar un item del consolidado  */
+
+          function saveConsolidated(e) {
+
+              let tableShipper = $('#providersTable');
+              let elements = $('#form-consolidated').find('input.required, select.required').toArray();
+
+              if (!validateInputs(elements)) {
                   return;
               }
 
-              const newRow = table.row.add([
-
-                  // Campo para Cantidad
-                  `<input type="number" class="form-control"  readonly id="amount-${rowIndex}" name="amount-${rowIndex}" value="${amount_package}" placeholder="Cantidad" min="0" step="1">`,
-
-                  // Campo para Ancho
-                  `<input type="number" class="form-control"  readonly id="width-${rowIndex}" name="width-${rowIndex}" value="${width}" placeholder="Ancho" min="0" step="0.0001">`,
-
-                  // Campo para Largo
-                  `<input type="number" class="form-control"  readonly id="length-${rowIndex}" name="length-${rowIndex}" value="${length}" placeholder="Largo" min="0" step="0.0001">`,
-
-                  // Campo para Alto
-                  `<input type="number" class="form-control"  readonly id="height-${rowIndex}" name="height-${rowIndex}" value="${height}" placeholder="Alto" min="0" step="0.0001">`,
-
-                  `<button type="button" class="btn btn-danger btn-sm" id="delete-${rowIndex}" onclick="deleteRow('${table.table().node().id}', 'row-${rowIndex}', ${amount_package}, ${arrayName}, '${valueMeasuresHidden.id}')"><i class="fa fa-trash"></i></button>`
-              ]).draw().node();
-              newRow.id = `row-${rowIndex}`;
-
-
-              array[rowIndex] = { // Usamos rowIndex como clave
-                  amount: amount_package,
-                  width,
-                  length,
-                  height
+              let shipper = {
+                  'id_incoterms': getValueByName('id_incoterms'),
+                  'shipper_name': getValueByName('shipper_name'),
+                  'shipper_contact': getValueByName('shipper_contact'),
+                  'shipper_contact_email': getValueByName('shipper_contact_email'),
+                  'shipper_contact_phone': getValueByName('shipper_contact_phone'),
+                  'shipper_address': getValueByName('shipper_address'),
+                  'commodity': getValueByName('commodity'),
+                  'load_value': getValueByName('load_value'),
+                  'nro_packages_consolidated': getValueByName('nro_packages_consolidated'),
+                  'packaging_type_consolidated': getValueByName('packaging_type_consolidated'),
+                  'volumen': getValueByName('volumen'),
+                  'kilogram_volumen': getValueByName('kilogram_volumen'),
+                  'kilograms': getValueByName('kilograms'),
+                  'value_measures': getValueByName('value-measures-consolidated') ? JSON.parse(getValueByName(
+                      'value-measures-consolidated')) : ''
               };
 
+              // Agregar shipper al array y obtener su índice
+              let index = shippers.length;
+              shippers.push(shipper);
 
-              valueMeasuresHidden.value = JSON.stringify(array);
+              // Actualizar el input hidden con la nueva lista en JSON
+              updateHiddenInput();
 
-              rowIndex++
-
-              cleanInputMeasures(inputs)
-
-          }
-
-      }
-
-
-      /* Agregar un item del consolidado  */
-
-      function saveConsolidated(e) {
-
-          let tableShipper = $('#providersTable');
-          let elements = $('#form-consolidated').find('input.required, select.required').toArray();
-
-          if (!validateInputs(elements)) {
-              return;
-          }
-
-          let shipper = {
-              'shipper_name': getValueByName('shipper_name'),
-              'shipper_contact': getValueByName('shipper_contact'),
-              'shipper_contact_email': getValueByName('shipper_contact_email'),
-              'shipper_contact_phone': getValueByName('shipper_contact_phone'),
-              'shipper_address': getValueByName('shipper_address'),
-              'commodity': getValueByName('commodity'),
-              'load_value': getValueByName('load_value'),
-              'nro_packages_consolidated': getValueByName('nro_packages_consolidated'),
-              'packaging_type_consolidated': getValueByName('packaging_type_consolidated'),
-              'volumen': getValueByName('volumen'),
-              'kilograms': getValueByName('kilograms'),
-              'value_measures': JSON.parse(getValueByName('value-measures-consolidated'))
-          };
-
-          // Agregar shipper al array y obtener su índice
-          let index = shippers.length;
-          shippers.push(shipper);
-
-          // Actualizar el input hidden con la nueva lista en JSON
-          updateHiddenInput();
-
-          let newRow = `
+              let newRow = `
                     <tr data-index="${index}">
                         <td>${shipper.shipper_name}</td>
                         <td>${shipper.shipper_contact}</td>
@@ -1022,57 +1032,57 @@
                 `;
 
 
-          tableShipper.append(newRow);
+              tableShipper.append(newRow);
 
 
-          $('#modal-consolidated').modal('hide');
-          //Reseteamos el formulario para agregar un shipper
-          $('#form-consolidated')[0].reset();
-          //reseteamos las medidas
-          arrayMeasuresConsolidated = {};
-          document.getElementById('value-measures-consolidated').value = '';
-          tableMeasuresConsolidated.clear().draw();
-          currentPackage = 0;
-          rowIndex = 1;
+              $('#modal-consolidated').modal('hide');
+              //Reseteamos el formulario para agregar un shipper
+              $('#form-consolidated')[0].reset();
+              //reseteamos las medidas
+              arrayMeasuresConsolidated = {};
+              document.getElementById('value-measures-consolidated').value = '';
+              tableMeasuresConsolidated.clear().draw();
+              currentPackage = 0;
+              rowIndex = 1;
 
 
 
-      }
+          }
 
-      // Función para actualizar el input hidden con el array `shippers`
-      function updateHiddenInput() {
-          $('#shippers_consolidated').val(JSON.stringify(shippers));
-      }
-
-
-      $('#providersTable').on('click', '.delete-row', function() {
-          let row = $(this).closest('tr'); // Obtener la fila
-          let index = row.data('index'); // Obtener el índice del array
-
-          // Eliminar del array si el índice es válido
-          if (index !== undefined && index < shippers.length) {
-              shippers.splice(index, 1);
+          // Función para actualizar el input hidden con el array `shippers`
+          function updateHiddenInput() {
+              $('#shippers_consolidated').val(JSON.stringify(shippers));
           }
 
 
-          row.remove(); // Eliminar la fila del DOM
+          $('#providersTable').on('click', '.delete-row', function() {
+              let row = $(this).closest('tr'); // Obtener la fila
+              let index = row.data('index'); // Obtener el índice del array
+
+              // Eliminar del array si el índice es válido
+              if (index !== undefined && index < shippers.length) {
+                  shippers.splice(index, 1);
+              }
 
 
-          // Actualizar los índices de las filas restantes
-          $('#providersTable tbody tr').each(function(i) {
-              $(this).attr('data-index', i);
+              row.remove(); // Eliminar la fila del DOM
+
+
+              // Actualizar los índices de las filas restantes
+              $('#providersTable tbody tr').each(function(i) {
+                  $(this).attr('data-index', i);
+              });
+
+              // Actualizar el input hidden con la nueva lista
+              updateHiddenInput();
           });
 
-          // Actualizar el input hidden con la nueva lista
-          updateHiddenInput();
-      });
+          $(document).on('click', '.btn-detail', function() {
 
-      $(document).on('click', '.btn-detail', function() {
-
-          let row = $(this).closest('tr');
-          let index = row.data('index');
-          let shipper = shippers[index];
-          let detailsHtml = `
+              let row = $(this).closest('tr');
+              let index = row.data('index');
+              let shipper = shippers[index];
+              let detailsHtml = `
                 <tr><th>Nombre</th><td>${shipper.shipper_name}</td></tr>
                 <tr><th>Contacto</th><td>${shipper.shipper_contact}</td></tr>
                 <tr><th>Email</th><td>${shipper.shipper_contact_email}</td></tr>
@@ -1098,9 +1108,9 @@
                         <tbody>
             `;
 
-          // Convertimos el objeto en un array de pares clave-valor y lo recorremos
-          Object.entries(shipper.value_measures).forEach(([key, measure]) => {
-              detailsHtml += `
+              // Convertimos el objeto en un array de pares clave-valor y lo recorremos
+              Object.entries(shipper.value_measures).forEach(([key, measure]) => {
+                  detailsHtml += `
                     <tr>
                         <td>${measure.amount}</td>
                         <td>${measure.length}</td>
@@ -1109,152 +1119,163 @@
                         <td>${measure.unit_measurement}</td>
                     </tr>
                 `;
-          });
+              });
 
 
-          detailsHtml += `
+              detailsHtml += `
                         </tbody>
                     </table>
                 </td></tr>
             `;
 
-          $('#shipper-details').html(detailsHtml);
-          $('#modal-detail').modal('show');
-      });
-
-
-      function getValueByName(name) {
-
-          let inputs = $('#form-consolidated').find('input, select').toArray();
-          let element = inputs.find(el => $(el).attr('name') === name);
-          return element ? $(element).val() : null;
-      }
-
-      //Validar inputs de un contenedor: 
-
-      function validateInputs(inputs) {
-          let isValid = true;
-          inputs.forEach(input => {
-
-              if (input.value.trim() === '' || input.value <= 0) {
-                  isValid = false;
-                  input.classList.add('is-invalid');
-                  return;
-              } else {
-                  input.classList.remove('is-invalid');
-                  return;
-              }
-
+              $('#shipper-details').html(detailsHtml);
+              $('#modal-detail').modal('show');
           });
 
-          return isValid;
-      }
 
+          function getValueByName(name) {
 
+              let inputs = $('#form-consolidated').find('input, select').toArray();
+              let element = inputs.find(el => $(el).attr('name') === name);
+              return element ? $(element).val() : null;
+          }
 
-      document.querySelectorAll('input[name="lcl_fcl"]').forEach(radio => {
-          radio.addEventListener('change', function() {
+          //Validar inputs de un contenedor: 
 
-              const fclFields = document.querySelectorAll('.fcl-fields');
-              const lclFields = document.querySelectorAll('.lcl-fields');
+          function validateInputs(inputs) {
+              let isValid = true;
 
+              inputs.forEach(input => {
+                  const value = input.value;
 
-              if (this.value === 'FCL') {
-                  // Mostrar los campos FCL y ocultar los LCL
-                  fclFields.forEach(el => el.classList.remove('d-none'));
-                  lclFields.forEach(el => el.classList.add('d-none'));
-
-                  // Ajustar columnas de Bootstrap
-                  const parentElement = document.querySelector('.row');
-                  if (parentElement) {
-                      const children = parentElement.children;
-                      if (children.length > 1) {
-                          children[0].classList.add('col-4');
-                          children[0].classList.remove('col-6');
-                          children[1].classList.add('col-4');
-                          children[1].classList.remove('col-6');
+                  if (input.tagName === 'SELECT') {
+                      // Valida selects: evitar valores vacíos o "0" si eso significa "ninguna opción"
+                      if (value === '' || value === '0') {
+                          isValid = false;
+                          input.classList.add('is-invalid');
+                          return;
+                      }
+                  } else {
+                      // Para otros inputs, como text o number
+                      if (value.trim() === '' || (input.type === 'number' && parseFloat(value) <= 0)) {
+                          isValid = false;
+                          input.classList.add('is-invalid');
+                          return;
                       }
                   }
-              } else {
-                  // Mostrar los campos LCL y ocultar los FCL
-                  fclFields.forEach(el => el.classList.add('d-none'));
-                  lclFields.forEach(el => el.classList.remove('d-none'));
 
-                  // Limpiar inputs dentro de los elementos ocultos
-                  document.querySelectorAll('.fcl-fields input').forEach(input => input.value = '');
+                  // Todo bien
+                  input.classList.remove('is-invalid');
+              });
+
+              return isValid;
+          }
+
+
+
+          document.querySelectorAll('input[name="lcl_fcl"]').forEach(radio => {
+              radio.addEventListener('change', function() {
+
+                  const fclFields = document.querySelectorAll('.fcl-fields');
+                  const lclFields = document.querySelectorAll('.lcl-fields');
+
+
+                  if (this.value === 'FCL') {
+                      // Mostrar los campos FCL y ocultar los LCL
+                      fclFields.forEach(el => el.classList.remove('d-none'));
+                      lclFields.forEach(el => el.classList.add('d-none'));
+
+                      // Ajustar columnas de Bootstrap
+                      const parentElement = document.querySelector('.row');
+                      if (parentElement) {
+                          const children = parentElement.children;
+                          if (children.length > 1) {
+                              children[0].classList.add('col-4');
+                              children[0].classList.remove('col-6');
+                              children[1].classList.add('col-4');
+                              children[1].classList.remove('col-6');
+                          }
+                      }
+                  } else {
+                      // Mostrar los campos LCL y ocultar los FCL
+                      fclFields.forEach(el => el.classList.add('d-none'));
+                      lclFields.forEach(el => el.classList.remove('d-none'));
+
+                      // Limpiar inputs dentro de los elementos ocultos
+                      document.querySelectorAll('.fcl-fields input').forEach(input => input.value = '');
+                  }
+              });
+          });
+      </script>
+
+
+      {{-- Stepper --}}
+
+
+      <script>
+          document.addEventListener("DOMContentLoaded", (event) => {
+
+              var form = document.getElementById('formRouting');
+
+              if (form.querySelectorAll(".is-invalid").length > 0) {
+
+                  var invalidInputs = form.querySelectorAll(".is-invalid");
+                  if (form.querySelectorAll(".is-invalid")) {
+                      // Encuentra el contenedor del paso que contiene el campo de entrada inválido
+                      var stepContainer = invalidInputs[0].parentNode.parentNode.closest('.bs-stepper-pane')
+                      /*  console.log(invalidInputs[0].parentNode.parentNode.closest('.bs-stepper-pane')); */
+
+                      // Encuentra el índice del paso correspondiente
+                      var stepIndex = Array.from(stepContainer.parentElement.children).indexOf(stepContainer);
+
+                      // Cambia el stepper al paso correspondiente
+                      stepper.to(stepIndex);
+
+                      // Enfoca el primer campo de entrada inválido
+                      invalidInputs[0].focus();
+                  }
+
+
               }
           });
-      });
-  </script>
 
 
-  {{-- Stepper --}}
+          var stepper1Node = document.querySelector('#stepper');
+          var stepper = new Stepper(document.querySelector('#stepper'));
 
 
-  <script>
-      document.addEventListener("DOMContentLoaded", (event) => {
-
-          var form = document.getElementById('formRouting');
-
-          if (form.querySelectorAll(".is-invalid").length > 0) {
-
-              var invalidInputs = form.querySelectorAll(".is-invalid");
-              if (form.querySelectorAll(".is-invalid")) {
-                  // Encuentra el contenedor del paso que contiene el campo de entrada inválido
-                  var stepContainer = invalidInputs[0].parentNode.parentNode.closest('.bs-stepper-pane')
-                  /*  console.log(invalidInputs[0].parentNode.parentNode.closest('.bs-stepper-pane')); */
-
-                  // Encuentra el índice del paso correspondiente
-                  var stepIndex = Array.from(stepContainer.parentElement.children).indexOf(stepContainer);
-
-                  // Cambia el stepper al paso correspondiente
-                  stepper.to(stepIndex);
-
-                  // Enfoca el primer campo de entrada inválido
-                  invalidInputs[0].focus();
-              }
+          function submitForm() {
+              var form = document.getElementById('formRouting');
 
 
-          }
-      });
+              if (form.checkValidity()) {
+                  // Aquí puedes enviar el formulario si la validación pasa
+                  form.submit();
+              } else {
 
 
-      var stepper1Node = document.querySelector('#stepper');
-      var stepper = new Stepper(document.querySelector('#stepper'));
+                  var invalidInputs = form.querySelectorAll(":invalid");
+                  if (form.querySelectorAll("invalid")) {
+                      // Encuentra el contenedor del paso que contiene el campo de entrada inválido
+                      var stepContainer = invalidInputs[0].closest('.content');
 
+                      // Encuentra el índice del paso correspondiente
+                      var stepIndex = Array.from(stepContainer.parentElement.children).indexOf(stepContainer);
 
-      function submitForm() {
-          var form = document.getElementById('formRouting');
+                      // Cambia el stepper al paso correspondiente
+                      stepper.to(stepIndex);
 
-
-          if (form.checkValidity()) {
-              // Aquí puedes enviar el formulario si la validación pasa
-              form.submit();
-          } else {
-
-
-              var invalidInputs = form.querySelectorAll(":invalid");
-              if (form.querySelectorAll("invalid")) {
-                  // Encuentra el contenedor del paso que contiene el campo de entrada inválido
-                  var stepContainer = invalidInputs[0].closest('.content');
-
-                  // Encuentra el índice del paso correspondiente
-                  var stepIndex = Array.from(stepContainer.parentElement.children).indexOf(stepContainer);
-
-                  // Cambia el stepper al paso correspondiente
-                  stepper.to(stepIndex);
-
-                  // Enfoca el primer campo de entrada inválido
-                  invalidInputs[0].focus();
+                      // Enfoca el primer campo de entrada inválido
+                      invalidInputs[0].focus();
+                  }
               }
           }
-      }
 
 
-      function validarInputNumber(input) {
-          if (input.value < 0) {
-              input.value = '';
+          function validarInputNumber(input) {
+              if (input.value < 0) {
+                  input.value = '';
+              }
           }
-      }
-  </script>
+      </script>
   @endpush
