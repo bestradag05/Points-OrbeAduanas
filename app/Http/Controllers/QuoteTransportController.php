@@ -223,7 +223,7 @@ class QuoteTransportController extends Controller
         $quote = QuoteTransport::findOrFail($id);
         $messages = $quote->messages;
 
-        $folderPath = "quote_transport/{$quote->nro_quote}";
+        $folderPath = "commercial_quote/{$quote->commercial_quote->nro_quote_commercial}/quote_transport/{$quote->nro_quote}";
         $files = collect(Storage::disk('public')->files($folderPath))->map(function ($file) {
             return [
                 'name' => basename($file), // Nombre del archivo
@@ -231,6 +231,7 @@ class QuoteTransportController extends Controller
                 'url' => asset('storage/' . $file), // URL del archivo
             ];
         });
+
 
         return view('transport/quote/quote-messagin', compact('quote', 'files', 'messages'));
     }

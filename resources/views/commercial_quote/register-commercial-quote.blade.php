@@ -183,15 +183,22 @@
                                     </div>
                                     <div class="col-2">
                                         <input type="text" class="form-control CurrencyInput" data-type="currency"
-                                            id="width" name="width" placeholder="Ancho(cm)">
+                                            id="width" name="width" placeholder="Ancho">
                                     </div>
                                     <div class="col-2">
                                         <input type="text" class="form-control CurrencyInput" data-type="currency"
-                                            id="length" name="length" placeholder="Largo(cm)">
+                                            id="length" name="length" placeholder="Largo">
                                     </div>
                                     <div class="col-2">
                                         <input type="text" class="form-control CurrencyInput" data-type="currency"
-                                            id="height" name="height" placeholder="Alto(cm)">
+                                            id="height" name="height" placeholder="Alto">
+                                    </div>
+                                    <div class="col-2">
+                                        <select class="form-control" id="units_measurements" name="units_measurements">
+                                            <option value="cm">cm</option>
+                                            <option value="in">in</option>
+                                            <option value="lbs">lbs</option>
+                                        </select>
                                     </div>
                                     <div class="col-2">
                                         <button type="button" class="btn btn-indigo btn-sm" onclick="addMeasuresConsolidate()"><i
@@ -204,9 +211,10 @@
                                     <thead>
                                         <tr>
                                             <th>Cantidad</th>
-                                            <th>Ancho (cm)</th>
-                                            <th>Largo (cm)</th>
-                                            <th>Alto (cm)</th>
+                                            <th>Ancho</th>
+                                            <th>Largo</th>
+                                            <th>Alto</th>
+                                            <th>Unidad</th>
                                             <th>Eliminar</th>
                                         </tr>
                                     </thead>

@@ -2,10 +2,25 @@ import './bootstrap';
 
 
 import Chart from 'chart.js/auto';
+import toastr from 'toastr';
+import html2canvas from 'html2canvas';
 /* import Echo from 'laravel-echo';
 import Pusher from 'pusher-js'; */
 
 window.Chart = Chart;
+
+
+toastr.options = {
+    closeButton: true,
+    progressBar: true,
+    positionClass: 'toast-top-right',
+    timeOut: '5000'
+};
+
+
+window.toastr = toastr;
+window.html2canvas = html2canvas;
+
 /* window.Pusher = Pusher; */
 /* window.tinymce = tinymce;
 

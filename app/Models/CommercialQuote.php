@@ -26,6 +26,10 @@ class CommercialQuote extends Model
         'id_type_load',
         'lcl_fcl',
         'is_consolidated',
+        'total_nro_package_consolidated',
+        'total_volumen_consolidated',
+        'total_kilogram_consolidated',
+        'total_kilogram_volumen_consolidated',
         'commodity',
         'nro_package',
         'packaging_type',
@@ -37,10 +41,14 @@ class CommercialQuote extends Model
         'tons',
         'measures',
         'cif_value',
-        'observation',
+        'valid_date',
         'state',
   
 
+    ];
+
+    protected $casts = [
+        'valid_date' => 'date', // Convierte 'valid_date' en un objeto Carbon
     ];
 
 
@@ -70,7 +78,7 @@ class CommercialQuote extends Model
 
     public function typeService()
     {
-        return $this->belongsToMany(TypeService::class, 'routing_typeservice', 'id_routing', 'id_type_service');
+        return $this->belongsToMany(TypeService::class, 'commercialquote_typeservice', 'id_commercial_quote', 'id_type_service');
     }
 
     public function custom()

@@ -28,6 +28,14 @@ return new class extends Migration
             $table->integer('container_quantity')->nullable();
             $table->string('lcl_fcl')->nullable();
             $table->boolean('is_consolidated')->nullable();
+            /* Si es consolidado */
+            $table->integer('total_nro_package_consolidated')->nullable();
+            $table->decimal('total_volumen_consolidated')->nullable();
+            $table->decimal('total_kilogram_consolidated')->nullable();
+            $table->decimal('total_kilogram_volumen_consolidated')->nullable();
+
+            /* Fin si es consolidado */
+
             $table->string('commodity')->nullable();
             $table->string('nro_package')->nullable();
             $table->string('packaging_type')->nullable();
@@ -37,15 +45,15 @@ return new class extends Migration
             $table->decimal('tons', 8, 2)->nullable();
             $table->text('measures')->nullable();
             $table->decimal('cif_value', 8 , 2)->nullable();
-            $table->string('observation')->nullable();
-            $table->enum('state', ['Activo', 'Inactivo'])->default('Activo');
+            $table->date('valid_date')->nullable();
+            $table->enum('state', ['Pendiente', 'Inactivo', 'Aceptado', 'Rechazado', 'Sin respuesta'])->default('Pendiente');
             $table->timestamps();
-
-
             $table->foreign('id_containers')->references('id') ->on('containers');
-
-
-
+            $table->foreign('id_personal')->references('id')->on('personal');
+            $table->foreign('id_type_shipment')->references('id')->on('type_shipment');
+            $table->foreign('id_regime')->references('id')->on('regime');
+            $table->foreign('id_incoterms')->references('id')->on('incoterms');
+            $table->foreign('id_type_load')->references('id')->on('type_load');
 
 
         });

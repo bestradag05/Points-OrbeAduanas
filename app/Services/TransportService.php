@@ -3,12 +3,14 @@
 namespace App\Services;
 
 use App\Models\AdditionalPoints;
+use App\Models\CommercialQuote;
 use App\Models\Concepts;
 use App\Models\ConceptTransport;
 use App\Models\QuoteTransport;
 use App\Models\Supplier;
 use App\Models\Transport;
 use App\Models\TypeInsurance;
+use App\Models\TypeService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -179,6 +181,20 @@ class TransportService {
     private function createOrUpdateTransport(Request $request, $id = null)
     {
         $transport = $id ? Transport::findOrFail($id) : new Transport();
+
+        $commercial = CommercialQuote::where('nro_quote_commercial', $request->nro_quote_commercial)->first();
+
+        $typeService = TypeService::where('name', 'Transporte')->first();
+
+        if ($commercial && $typeService) {
+            if ($id) {
+                // Si es una edición, aseguramos que la relación exista sin duplicarse
+                $commercial->typeService()->syncWithoutDetaching([$typeService->id]);
+            } else {
+                // Si es una creación, simplemente la agregamos
+                $commercial->typeService()->attach($typeService->id);
+            }
+        }
 
 
         $dateRegisterFormat = Carbon::createFromFormat('d/m/Y', $request->withdrawal_date)->toDateString();

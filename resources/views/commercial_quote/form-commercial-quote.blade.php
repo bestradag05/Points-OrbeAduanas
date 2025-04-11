@@ -154,6 +154,7 @@
                       {{ (isset($routing->id_incoterms) && $routing->id_incoterms == $incoter->id) || old('id_incoterms') == $incoter->id ? 'selected' : '' }}>
                       {{ $incoter->code }} ({{$incoter->name}})
                   </option>
+
                   @endforeach
               </x-adminlte-select2>
           </div>
@@ -168,8 +169,8 @@
       <div class="form-group">
           <label>¿Es consolidado?</label>
           <div class="form-check form-check-inline">
-              <input type="radio" id="consolidadoSi" name="is_consolidated" value="1" class="form-check-input"
-                  onchange="toggleConsolidatedSection()">
+              <input type="radio" id="consolidadoSi" name="is_consolidated" value="1"
+                  class="form-check-input" onchange="toggleConsolidatedSection()">
               <label for="consolidadoSi" class="form-check-label">Sí</label>
           </div>
           <div class="form-check form-check-inline">
@@ -310,15 +311,22 @@
                       </div>
                       <div class="col-2">
                           <input type="text" class="form-control CurrencyInput" data-type="currency"
-                              id="width" name="width" placeholder="Ancho(cm)">
+                              id="width" name="width" placeholder="Ancho">
                       </div>
                       <div class="col-2">
                           <input type="text" class="form-control CurrencyInput" data-type="currency"
-                              id="length" name="length" placeholder="Largo(cm)">
+                              id="length" name="length" placeholder="Largo">
                       </div>
                       <div class="col-2">
                           <input type="text" class="form-control CurrencyInput" data-type="currency"
-                              id="height" name="height" placeholder="Alto(cm)">
+                              id="height" name="height" placeholder="Alto">
+                      </div>
+                      <div class="col-2">
+                          <select class="form-control" id="units_measurements" name="units_measurements">
+                              <option value="cm">cm</option>
+                              <option value="in">in</option>
+                              <option value="lbs">lbs</option>
+                          </select>
                       </div>
                       <div class="col-2">
                           <button type="button" class="btn btn-indigo btn-sm" onclick="addMeasures()"><i
@@ -331,14 +339,15 @@
                       <thead>
                           <tr>
                               <th>Cantidad</th>
-                              <th>Ancho (cm)</th>
-                              <th>Largo (cm)</th>
-                              <th>Alto (cm)</th>
+                              <th>Ancho</th>
+                              <th>Largo</th>
+                              <th>Alto</th>
+                              <th>Unidad</th>
                               <th>Eliminar</th>
                           </tr>
                       </thead>
                   </table>
-                  <input id="value-measures" type="hidden" name="value-measures" />
+                  <input id="value_measures" type="hidden" name="value_measures" />
                   @error('value_measures')
                   <span class="invalid-feedback d-block" role="alert">
                       <strong>{{ $message }}</strong>
@@ -461,6 +470,7 @@
                       <th>Bultos</th>
                       <th>Embalaje</th>
                       <th>Volumen</th>
+                      <th>KGV</th>
                       <th>Peso</th>
                       <th>Accion</th>
                   </tr>
@@ -562,6 +572,7 @@
           <div class="modal-content">
               <div class="modal-body text-center p-0">
                   <img src="{{ asset('storage/incoterms/incoterms.jpg') }}" class="img-fluid" alt="Información sobre Incoterms">
+
               </div>
           </div>
       </div>
@@ -626,10 +637,12 @@
               ?.value;
 
 
+
           // Mostrar/ocultar los campos según los valores
           if (volumenValue.value !== '' || volumenValue.classList.contains('is-invalid')) {
               $('#contenedor_volumen').removeClass('d-none');
               $('#contenedor_kg_vol').addClass('d-none');
+
           }
 
           if (kilogramoVolumenValue.value !== '' || kilogramoVolumenValue.classList.contains('is-invalid')) {
@@ -659,10 +672,12 @@
                   const firstChild = parentElement.children[0]; // Primer hijo
                   const secondChild = parentElement.children[1]; // Segundo hijo
 
+
                   // Añade la clase 'col-6' a los dos primeros hijos
                   if (firstChild) {
                       firstChild.classList.add('col-4');
                       firstChild.classList.remove('col-6');
+
                   }
                   if (secondChild) {
 
@@ -670,6 +685,7 @@
                       secondChild.classList.remove('col-6')
 
                   }
+
               }
 
           }
@@ -903,6 +919,7 @@
                   return;
               }
 
+
               currentPackage += amount_package;
 
 
@@ -995,6 +1012,7 @@
                         <td>${shipper.nro_packages_consolidated}</td>
                         <td>${shipper.packaging_type_consolidated}</td>
                         <td>${shipper.volumen}</td>
+                        <td>${shipper.kilogram_volumen}</td>
                         <td>${shipper.kilograms}</td>
                         <td>
                             <button class="btn btn-info btn-sm btn-detail"><i class="fas fa-folder-open"></i></button>
@@ -1006,6 +1024,7 @@
 
           tableShipper.append(newRow);
 
+
           $('#modal-consolidated').modal('hide');
           //Reseteamos el formulario para agregar un shipper
           $('#form-consolidated')[0].reset();
@@ -1015,6 +1034,7 @@
           tableMeasuresConsolidated.clear().draw();
           currentPackage = 0;
           rowIndex = 1;
+
 
 
       }
@@ -1034,7 +1054,9 @@
               shippers.splice(index, 1);
           }
 
+
           row.remove(); // Eliminar la fila del DOM
+
 
           // Actualizar los índices de las filas restantes
           $('#providersTable tbody tr').each(function(i) {
@@ -1070,6 +1092,7 @@
                                 <th>Largo</th>
                                 <th>Ancho</th>
                                 <th>Alto</th>
+                                <th>Medida</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1083,9 +1106,11 @@
                         <td>${measure.length}</td>
                         <td>${measure.width}</td>
                         <td>${measure.height}</td>
+                        <td>${measure.unit_measurement}</td>
                     </tr>
                 `;
           });
+
 
           detailsHtml += `
                         </tbody>

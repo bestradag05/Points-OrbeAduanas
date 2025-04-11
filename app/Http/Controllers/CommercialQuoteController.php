@@ -27,6 +27,7 @@ use Barryvdh\DomPDF\PDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use stdClass;
 
 class CommercialQuoteController extends Controller
@@ -35,16 +36,16 @@ class CommercialQuoteController extends Controller
      * Display a listing of the resource.
      */
 
-     protected $freightService;
-     protected $customService;
-     protected $transportService;
+    protected $freightService;
+    protected $customService;
+    protected $transportService;
 
-     public function __construct(FreightService $freightService, TransportService $transportService, CustomService $customService)
-     {
-         $this->freightService = $freightService;
-         $this->transportService = $transportService;
-         $this->customService = $customService;
-     }
+    public function __construct(FreightService $freightService, TransportService $transportService, CustomService $customService)
+    {
+        $this->freightService = $freightService;
+        $this->transportService = $transportService;
+        $this->customService = $customService;
+    }
 
     public function index()
     {
@@ -106,14 +107,14 @@ class CommercialQuoteController extends Controller
     public function store(Request $request)
     {
 
-
+        
         $shippersConsolidated = json_decode($request->shippers_consolidated);
 
         if ($request->is_consolidated) {
 
-            $totalLoadValue = collect($shippersConsolidated)
-                ->map(fn($shipper) => ['load_value' => $this->parseDouble($shipper->load_value)])
-                ->sum('load_value');
+            $totals = [];
+
+            $totals = $this->calculateDataConsolidated($shippersConsolidated);
 
             $commercialQuote = CommercialQuote::create([
                 'nro_quote_commercial' => $request->nro_quote_commercial,
@@ -121,7 +122,7 @@ class CommercialQuoteController extends Controller
                 'destination' => $request->destination,
                 'customer_ruc' => $request->customer_ruc != null ?  $request->customer_ruc : null,
                 'customer_company_name' => $request->customer_company_name != null ?  $request->customer_company_name : null,
-                'load_value' => $totalLoadValue,
+                'load_value' => $totals['total_load_values'],
                 'id_type_shipment' => $request->id_type_shipment,
                 'id_regime' => $request->id_regime,
                 'id_type_load' => $request->id_type_load,
@@ -130,8 +131,12 @@ class CommercialQuoteController extends Controller
                 'container_quantity'=> $request->container_quantity_consolidated,
                 'lcl_fcl' => $request->lcl_fcl,
                 'is_consolidated' => $request->is_consolidated,
+                'total_nro_package_consolidated' => $totals['total_bultos'],
+                'total_volumen_consolidated' => ($totals['total_volumen'] > 0) ? $totals['total_volumen'] : null,
+                'total_kilogram_volumen_consolidated' => ($totals['total_kilogram_volumen'] > 0) ? $totals['total_kilogram_volumen'] : null,
+                'total_kilogram_consolidated' => $totals['total_kilogram'],
                 'nro_operation' => $request->nro_operation,
-                'observation' => $request->observation,
+                'valid_date' => now()->format('Y-m-d'),
                 'id_personal' => auth()->user()->personal->id,
             ]);
 
@@ -165,7 +170,7 @@ class CommercialQuoteController extends Controller
                 'is_consolidated' => $request->is_consolidated,
                 'measures' => $request->value_measures,
                 'nro_operation' => $request->nro_operation,
-                'observation' => $request->observation,
+                'valid_date' => now()->format('Y-m-d'),
                 'id_personal' => auth()->user()->personal->id,
             ]);
         }
@@ -197,6 +202,35 @@ class CommercialQuoteController extends Controller
     }
 
 
+    public function calculateDataConsolidated($shippersConsolidated)
+    {
+
+        $totalVolumen = 0;
+        $totalKilogramVolumen = 0;
+        $totalKilogram = 0;
+        $totalBultos = 0;
+        $totalLoadValue = 0;
+
+
+        foreach ($shippersConsolidated as $consolidated) {
+            $totalVolumen += (float) $consolidated->volumen;
+            $totalKilogramVolumen += (float) $consolidated->kilogram_volumen;
+            $totalKilogram += (float) $consolidated->kilograms;
+            $totalBultos += (int) $consolidated->nro_packages_consolidated;
+            $totalLoadValue += $this->parseDouble($consolidated->load_value);
+        }
+
+        return [
+            'total_volumen' => $totalVolumen,
+            'total_kilogram_volumen' => $totalKilogramVolumen,
+            'total_kilogram' => $totalKilogram,
+            'total_bultos' => $totalBultos,
+            'total_load_values' => $totalLoadValue
+
+        ];
+    }
+
+
     public function storeConsolidateCarga($shipper, $idCommercialQuote)
     {
 
@@ -208,6 +242,7 @@ class CommercialQuoteController extends Controller
 
             ConsolidatedCargos::create([
                 'commercial_quote_id' => $idCommercialQuote,
+                'id_incoterms' => $shipper->id_incoterms,
                 'supplier_id' => $existSupplier,
                 'supplier_temp' => null,
                 'commodity' => $shipper->commodity,
@@ -215,7 +250,8 @@ class CommercialQuoteController extends Controller
                 'nro_packages' => $shipper->nro_packages_consolidated,
                 'packaging_type' => $shipper->packaging_type_consolidated,
                 'volumen' => $this->parseDouble($shipper->volumen),
-                'kilograms' => $this->parseDouble($shipper->volumen),
+                'kilogram_volumen' => $this->parseDouble($shipper->kilogram_volumen),
+                'kilograms' => $this->parseDouble($shipper->kilograms),
                 'value_measures' => ($shipper->value_measures) ? json_encode($shipper->value_measures) : null,
             ]);
         } else {
@@ -231,6 +267,7 @@ class CommercialQuoteController extends Controller
 
             ConsolidatedCargos::create([
                 'commercial_quote_id' => $idCommercialQuote,
+                'id_incoterms' => $shipper->id_incoterms,
                 'supplier_id' => null,
                 'supplier_temp' => json_encode($tempSupplier),
                 'commodity' => $shipper->commodity,
@@ -238,7 +275,8 @@ class CommercialQuoteController extends Controller
                 'nro_packages' => $shipper->nro_packages_consolidated,
                 'packaging_type' => $shipper->packaging_type_consolidated,
                 'volumen' => $this->parseDouble($shipper->volumen),
-                'kilograms' => $this->parseDouble($shipper->volumen),
+                'kilogram_volumen' => $this->parseDouble($shipper->kilogram_volumen),
+                'kilograms' => $this->parseDouble($shipper->kilograms),
                 'value_measures' => ($shipper->value_measures) ? json_encode($shipper->value_measures) : null,
             ]);
         }
@@ -365,9 +403,72 @@ class CommercialQuoteController extends Controller
     }
 
 
-    public function createQuote(String $nro_quote_commercial, Request $request)
+    public function getTemplateQuoteCommercialQuote(string $id)
     {
 
+        $comercialQuote = CommercialQuote::find($id);
+
+        $tab = 'quote';
+
+        $data = [
+            'comercialQuote' => $comercialQuote,
+            'tab' => $tab,
+
+        ];
+
+
+        return view('commercial_quote/detail-commercial-quote', $data);
+    }
+
+
+    public function getTemplateDocmentCommercialQuote(string $id)
+    {
+        $comercialQuote = CommercialQuote::find($id);
+
+        $nroQuoteCommercial = $comercialQuote->nro_quote_commercial;
+
+        $basePath = "public/commercial_quote/{$nroQuoteCommercial}";
+
+        // Verificamos si la carpeta principal existe
+        if (Storage::exists($basePath)) {
+
+            // Obtenemos los archivos y subcarpetas dentro de la carpeta principal
+            $documents = Storage::allFiles($basePath);  // Devuelve todos los archivos, incluyendo los de subcarpetas
+            $directories = Storage::allDirectories($basePath); // Devuelve las subcarpetas
+            // Organizar los archivos y subcarpetas de manera jerárquica
+            $folders = [];
+            foreach ($directories as $directory) {
+                // Obtener los archivos dentro de cada subcarpeta
+                $folderFiles = Storage::files($directory);
+                if (count($folderFiles) > 0) {
+                    $folders[] = [
+                        'folder' => basename($directory), // Nombre de la subcarpeta
+                        'files' => $folderFiles
+                    ];
+                }
+            }
+        } else {
+            $folders = []; // No se encontró la carpeta
+        }
+
+
+        $tab = 'document';
+
+        $data = [
+            'comercialQuote' => $comercialQuote,
+            'tab' => $tab,
+            'folders' => $folders
+
+        ];
+
+
+        return view('commercial_quote/detail-commercial-quote', $data);
+    }
+
+
+
+    public function createQuote(String $nro_quote_commercial, Request $request)
+    {
 
         $commercialQuote = CommercialQuote::where('nro_quote_commercial', $nro_quote_commercial)->first();
 
@@ -382,6 +483,49 @@ class CommercialQuoteController extends Controller
         return response()->json([
             'message' => "Cotizacion creada"
         ], 200);
+    }
+
+
+    public function handleActionCommercialQuote(string $action, string $id)
+    {
+
+
+        $commercialQuote = CommercialQuote::findOrFail($id)->first();
+
+        switch ($action) {
+            case 'accept':
+                # code...
+
+                $commercialQuote->update(['state' => 'Aceptado']);
+
+                break;
+
+            case 'decline':
+                # code...
+
+                $commercialQuote->update(['state' => 'Rechazado']);
+
+                break;
+
+            default:
+                # code...
+                break;
+        }
+
+        return redirect('commercial/quote/' . $commercialQuote->id . '/detail');
+    }
+
+
+    public function updateDate(Request $request, string $id)
+    {
+
+        $commercialQuote = CommercialQuote::findOrFail($id)->first();
+
+        $validDate = Carbon::createFromFormat('d/m/Y', $request->valid_date)->format('Y-m-d');
+
+        $commercialQuote->update(['valid_date' =>  $validDate]);
+
+        return redirect('commercial/quote/' . $commercialQuote->id . '/detail');
     }
 
     /**
@@ -434,7 +578,7 @@ class CommercialQuoteController extends Controller
                 $data = $this->customService->editCustom($id);
 
                 return view('custom/edit-custom', $data);
-                
+
                 break;
 
             case 'transporte':
@@ -458,6 +602,7 @@ class CommercialQuoteController extends Controller
     public function getPDF($id)
     {
 
+
         //TODO: Falta ver el caso de cuando no es por medio de cotizacion.
         $commercialQuote = CommercialQuote::with([
             'quote_freight' => function ($query) {
@@ -467,6 +612,7 @@ class CommercialQuoteController extends Controller
                 $query->where('state', 'Aceptado');
             }
         ])->find($id);
+
 
 
         $personal = Auth::user()->personal;
@@ -498,6 +644,9 @@ class CommercialQuoteController extends Controller
         return $pdf->stream('Cotizacion Comercial.pdf'); // Muestra el PDF en el navegador
 
     }
+
+
+
 
     public function validateForm($request, $id)
     {

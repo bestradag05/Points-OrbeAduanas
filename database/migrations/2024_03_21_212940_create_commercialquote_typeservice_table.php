@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('routing_typeservice', function (Blueprint $table) {
+        Schema::create('commercialquote_typeservice', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_routing');
+            $table->unsignedBigInteger('id_commercial_quote');
             $table->unsignedBigInteger('id_type_service');
             $table->timestamps();
 
-            $table->foreign('id_routing')->references('id')->on('routing');
+            $table->foreign('id_commercial_quote')->references('id')->on('commercial_quote');
             $table->foreign('id_type_service')->references('id')->on('type_service');
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('routing_typeservice');
+        Schema::dropIfExists('commercialquote_typeservice');
     }
 };

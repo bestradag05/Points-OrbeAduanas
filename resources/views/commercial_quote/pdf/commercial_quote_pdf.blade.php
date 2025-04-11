@@ -289,17 +289,55 @@
                         <td class="text-item-table">{{ $commercialQuote->type_shipment->name }}</td>
                     </tr>
                     <tr>
-                        <td class="title-item-table">Bultos</td>
-                        <td class="text-item-table">{{ $commercialQuote->nro_package }}</td>
+                        <td class="title-item-table">Tipo de carga</td>
+                        <td class="text-item-table">{{ $commercialQuote->type_load->name }}</td>
                     </tr>
-                    <tr>
-                        <td class="title-item-table">Volumen</td>
-                        <td class="text-item-table">{{ $commercialQuote->volumen }}</td>
-                    </tr>
-                    <tr>
-                        <td class="title-item-table">Peso total</td>
-                        <td class="text-item-table">{{ $commercialQuote->tons }}</td>
-                    </tr>
+                    @if ($commercialQuote->is_consolidated)
+
+                        <tr>
+                            <td class="title-item-table">Bultos</td>
+                            <td class="text-item-table">{{ $commercialQuote->total_nro_package_consolidated }}</td>
+                        </tr>
+                        <tr>
+                            <td class="title-item-table">Volumen / KGV</td>
+                            @if ($commercialQuote->total_volumen_consolidated)
+                                <td class="text-item-table">{{ $commercialQuote->total_volumen_consolidated }} CBM</td>
+                            @else
+                            <td class="text-item-table">{{ $commercialQuote->total_kilogram_volumen_consolidated }} KGV</td>
+                            @endif
+                        </tr>
+                        <tr>
+                            <td class="title-item-table">Peso total</td>
+                            <td class="text-item-table">{{ $commercialQuote->total_kilogram_consolidated }}</td>
+                        </tr>
+                    @else
+                        <tr>
+                            <td class="title-item-table">Bultos</td>
+                            <td class="text-item-table">{{ $commercialQuote->nro_package }}</td>
+                        </tr>
+                        <tr>
+                            <td class="title-item-table">Volumen</td>
+                            <td class="text-item-table">{{ $commercialQuote->volumen }}</td>
+                        </tr>
+
+                        @if($commercialQuote->lcl_fcl === 'FCL')
+
+                        <tr>
+                            <td class="title-item-table">Peso total</td>
+                            <td class="text-item-table">{{ $commercialQuote->tons }} TONS</td>
+                        </tr>
+
+                        @else
+                        <tr>
+                            <td class="title-item-table">Peso total</td>
+                            <td class="text-item-table">{{ $commercialQuote->kilograms }} KG</td>
+                        </tr>
+
+                        @endif
+
+
+                    @endif
+
                     <tr>
                         <td class="title-item-table">Valor de factura</td>
                         <td class="text-item-table">{{ $commercialQuote->load_value }}</td>
@@ -322,7 +360,7 @@
             <table>
                 <tbody>
                     <tr>
-                        <td class="title-item-table">Fecha</td>
+                        <td class="title-item-table">Fecha de Creacion</td>
                         <td class="text-item-table" style="font-weight: bold">
                             {{ $commercialQuote->created_at->format('d/m/Y') }}</td>
                     </tr>
@@ -334,7 +372,7 @@
                     <tr>
                         <td class="title-item-table">Fecha de Validez</td>
                         <td class="text-item-table" style="font-weight: bold">
-                            {{ $commercialQuote->created_at->format('d/m/Y') }}</td>
+                            {{ $commercialQuote->valid_date->format('d/m/Y') }}</td>
 
                     </tr>
 
@@ -502,7 +540,7 @@
 
 
                         @php
-                            $subtotal =  ($transport->total_transport ?? 0);
+                            $subtotal = $transport->total_transport ?? 0;
                             $igv = $subtotal * 0.18;
                             $cats_destinations = $subtotal * 1.18;
 

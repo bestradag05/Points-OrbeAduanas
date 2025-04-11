@@ -59,13 +59,14 @@
             <h5 class="text-indigo text-center"><i class="fas fa-file-alt"></i> Detalle de carga</h5>
 
             <br>
-            <div class="">
-                <p class="text-sm">N° Cotizacion General :
-                    <b class="d-block">{{ $quote->nro_quote_commercial }}</b>
-                </p>
-            </div>
+
 
             <div class="row text-muted">
+                <div class="col-6">
+                    <p class="text-sm">N° Cotizacion General :
+                        <b class="d-block">{{ $quote->nro_quote_commercial }}</b>
+                    </p>
+                </div>
                 <div class="col-6">
                     <p class="text-sm">N° Cotizacion :
                         <b class="d-block">{{ $quote->nro_quote }}</b>
@@ -98,8 +99,6 @@
                     </p>
                 </div>
 
-                
-                
             </div>
 
             @if ($quote->commercial_quote->is_consolidated)
@@ -109,9 +108,11 @@
                             <b class="d-block"> SI </b>
                         </p>
                     </div>
+
                 </div>
 
-                <h5 class="text-center text-indigo" style="text-decoration: underline;  text-underline-offset: 4px;">Detalle de consolidado</h5>
+                <h5 class="text-center text-indigo" style="text-decoration: underline;  text-underline-offset: 4px;">Detalle
+                    de consolidado</h5>
 
                 @foreach ($quote->commercial_quote->consolidatedCargos as $consolidated)
                     @php
@@ -128,7 +129,8 @@
                                         class="btn btn-link btn-block px-0 text-muted text-semibold text-left d-flex align-items-center"
                                         type="button" data-toggle="collapse"
                                         data-target="#collapse{{ $consolidated->id }}" aria-expanded="true">
-                                        <span class="text-indigo">Shipper {{ $loop->iteration }}</span>: {{ $shipper->shipper_name }}
+                                        <span class="text-indigo">Shipper {{ $loop->iteration }}</span>:
+                                        {{ $shipper->shipper_name }}
                                         <i class="fas fa-sort-down mx-3"></i>
                                     </button>
                                 </h2>
@@ -138,23 +140,23 @@
                                 data-parent="#accordionConsolidated">
 
                                 <div class="row text-muted px-5">
-                                    <div class="col-12  {{ $shipper->shipper_name ? '' : 'd-none' }}">
+                                    <div class="col-6  {{ $shipper->shipper_name ? '' : 'd-none' }}">
                                         <p class="text-sm">Proovedor :
                                             <b class="d-block">{{ $shipper->shipper_name }}</b>
                                         </p>
                                     </div>
 
-                                    <div class="col-4">
+                                    <div class="col-6">
                                         <p class="text-sm">Contacto :
                                             <b class="d-block">{{ $shipper->shipper_contact }}</b>
                                         </p>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-6">
                                         <p class="text-sm">Email :
                                             <b class="d-block">{{ $shipper->shipper_contact_email }}</b>
                                         </p>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-6">
                                         <p class="text-sm">Telefono :
                                             <b class="d-block">{{ $shipper->shipper_contact_phone }}</b>
                                         </p>
@@ -184,36 +186,60 @@
                                             <b class="d-block">{{ $consolidated->packaging_type }}</b>
                                         </p>
                                     </div>
-                                    <div class="col-6">
-                                        <p class="text-sm">Volumen :
-                                            <b class="d-block">{{ $consolidated->volumen }}</b>
-                                        </p>
-                                    </div>
+                                    @if ($consolidated->commercialQuote->type_shipment->description === 'Marítima')
+                                        <div class="col-6">
+                                            <p class="text-sm">Volumen :
+                                                <b class="d-block">{{ $consolidated->volumen }} CBM</b>
+                                            </p>
+                                        </div>
+
+                                        @if ($quote->commercial_quote->lcl_fcl === 'LCL')
+                                            <div class="col-6">
+                                                <p class="text-sm">Apilable :
+                                                    <b class="d-block">{{ $quote->stackable }}</b>
+                                                </p>
+                                            </div>
+                                        @endif
+                                    @else
+                                        <div class="col-6">
+                                            <p class="text-sm">KGV :
+                                                <b class="d-block">{{ $consolidated->kilogram_volumen }} KGV</b>
+                                            </p>
+                                        </div>
+
+                                        <div class="col-6">
+                                            <p class="text-sm">Apilable :
+                                                <b class="d-block">{{ $quote->stackable }}</b>
+                                            </p>
+                                        </div>
+                                    @endif
                                     <div class="col-6">
                                         <p class="text-sm">Peso :
                                             <b class="d-block">{{ $consolidated->kilograms }}</b>
                                         </p>
                                     </div>
-
-                                    <table class="table table-striped">
-                                        <thead>
-                                            <th>Cantidad</th>
-                                            <th>Ancho (cm)</th>
-                                            <th>Largo (cm)</th>
-                                            <th>Alto (cm)</th>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($measures as $measure)
-                                                <tr>
-                                                    <td>{{ $measure->amount }}</td>
-                                                    <td>{{ $measure->width }}</td>
-                                                    <td>{{ $measure->length }}</td>
-                                                    <td>{{ $measure->height }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-
+                                    @if ($measures)
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <th>Cantidad</th>
+                                                <th>Ancho</th>
+                                                <th>Largo</th>
+                                                <th>Alto</th>
+                                                <th>Unidad</th>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($measures as $measure)
+                                                    <tr>
+                                                        <td>{{ $measure->amount }}</td>
+                                                        <td>{{ $measure->width }}</td>
+                                                        <td>{{ $measure->length }}</td>
+                                                        <td>{{ $measure->height }}</td>
+                                                        <td>{{ $measure->unit_measurement }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -233,37 +259,93 @@
                     </div>
                 </div>
 
-                @if ($quote->commercial_quote->lcl_fcl === 'LCL' || $quote->commercial_quote->lcl_fcl === null)
+                @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+
                     <div class="row text-muted">
                         <div class="col-6">
-                            <p class="text-sm">Cubicaje/KGV :
-                                <b class="d-block">{{ $quote->cubage_kgv }}</b>
+                            <p class="text-sm">Volumen :
+                                <b class="d-block">{{ $quote->ton_kilogram }} CBM</b>
                             </p>
                         </div>
-                        <div class="col-6">
-                            <p class="text-sm">Peso total :
-                                <b class="d-block">{{ $quote->total_weight }}</b>
-                            </p>
-                        </div>
+
+                        @if ($quote->commercial_quote->lcl_fcl === 'FCL')
+                            <div class="col-6">
+                                <p class="text-sm">Toneladas :
+                                    <b class="d-block">{{ $quote->ton_kilogram }} TON</b>
+                                </p>
+                            </div>
+                            <div class="col-6">
+                                <p class="text-sm">Tipo de contenedor :
+                                    <b class="d-block">{{ $quote->container_type }}</b>
+                                </p>
+                            </div>
+                        @else
+                            <div class="col-6">
+                                <p class="text-sm">Peso total :
+                                    <b class="d-block">{{ $quote->ton_kilogram }} KG</b>
+                                </p>
+                            </div>
+
+                            <div class="col-6">
+                                <p class="text-sm">Apilable :
+                                    <b class="d-block">{{ $quote->stackable }}</b>
+                                </p>
+                            </div>
+                        @endif
+
                     </div>
                 @else
                     <div class="row text-muted">
                         <div class="col-6">
-                            <p class="text-sm">Tipo de contenedor :
-                                <b class="d-block">{{ $quote->container_type }}</b>
+                            <p class="text-sm">Kilogramo volumen / KGV :
+                                <b class="d-block">{{ $quote->cubage_kgv }} KGV</b>
                             </p>
                         </div>
                         <div class="col-6">
-                            <p class="text-sm">Toneladas/Kilogramos :
-                                <b class="d-block">{{ $quote->ton_kilogram }}</b>
+                            <p class="text-sm">Peso total :
+                                <b class="d-block">{{ $quote->ton_kilogram }} KG</b>
                             </p>
                         </div>
+                        <div class="col-6">
+                            <p class="text-sm">Apilable :
+                                <b class="d-block">{{ $quote->stackable }}</b>
+                            </p>
+                        </div>
+
                     </div>
                 @endif
 
 
+
+                @if ($quote->commercial_quote->measures)
+
+                    <div class="col-6">
+                        <p class="text-sm">Medidas : </p>
+                    </div>
+                    <table class="table table-striped">
+                        <thead>
+                            <th>Cantidad</th>
+                            <th>Ancho</th>
+                            <th>Largo</th>
+                            <th>Alto</th>
+                            <th>Unidad</th>
+                        </thead>
+                        <tbody>
+                            @foreach (json_decode($quote->commercial_quote->measures) as $measure)
+                                <tr>
+                                    <td>{{ $measure->amount }}</td>
+                                    <td>{{ $measure->width }}</td>
+                                    <td>{{ $measure->length }}</td>
+                                    <td>{{ $measure->height }}</td>
+                                    <td>{{ $measure->unit_measurement }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
+
             @endif
-        
+
 
 
             <div class="row text-muted mt-3">
@@ -298,7 +380,7 @@
                                     <i class="far fa-fw fa-file-pdf"></i> {{ $file['name'] }}
                                 </a>
                             </td>
-                            <td class="text-center">
+                            <td class="text-center {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}"">
                                 <a href="#" class="text-danger"
                                     onclick="handleFileDeletion('{{ $file['name'] }}', this, event)">
                                     X
@@ -377,9 +459,8 @@
 
 
             <div class="text-center mt-5 mb-3">
-                <button
-                    class="btn btn-sm btn-success {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}"
-                    type="button" data-toggle="modal" data-target="#quote-transport">Cotización Aceptada</button>
+                <button class="btn btn-sm btn-success {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}" type="button"
+                    data-toggle="modal" data-target="#quote-transport">Cotización Aceptada</button>
 
             </div>
         </div>
@@ -458,6 +539,219 @@
             </div>
         </div>
     </div>
+
+
+    {{-- Template para copiar y enviar por Outlook --}}
+
+
+    <div id="plantilla-cotizacion" class="row justify-content-center flex-column p-5 d-none" style="width: 600px">
+        @if ($quote->commercial_quote->is_consolidated)
+
+            @foreach ($quote->commercial_quote->consolidatedCargos as $consolidated)
+                <p>• SHIPPER {{ $loop->iteration }} :</p>
+
+                <table border="1" cellpadding="4" cellspacing="0" style="border-collapse: collapse;width: 500px">
+                    <thead>
+                        <th colspan="2" class="text-center" style="background-color: #e2efd9">ORBE ADUANAS S.A.C</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Tipo de embarque</strong></td>
+                            <td>{{ $quote->commercial_quote->type_shipment->name }}
+                                {{ $quote->commercial_quote->lcl_fcl != null ? "({$quote->commercial_quote->lcl_fcl})" : '' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Incoterm</strong></td>
+                            <td>{{ $consolidated->incoterm->code }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Origen</strong></td>
+                            <td>{{ $quote->pick_up }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Destino</strong></td>
+                            <td>{{ $quote->delivery }}</td>
+                        </tr>
+                        @if ($consolidated->supplier_id)
+                            //TODO:: Aqui tenemos que obtener segun la relacion si es que tiene
+                        @else
+                            @php
+                                $supplier = json_decode($consolidated->supplier_temp);
+                            @endphp
+
+                            <tr>
+                                <td><strong>Shipper</strong></td>
+                                <td>{{ $supplier->shipper_name }}</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>Direccion</strong></td>
+                                <td>{{ $supplier->shipper_address }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Contacto</strong></td>
+                                <td>{{ $supplier->shipper_contact }} // {{ $supplier->shipper_contact_email }} //
+                                    {{ $supplier->shipper_contact_phone }} </td>
+                            </tr>
+                        @endif
+
+                        <tr>
+                            <td><strong>Producto</strong></td>
+                            <td>{{ $consolidated->commodity }}</td>
+                        </tr>
+                        @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+                            @if ($quote->commercial_quote->lcl_fcl === 'FCL')
+                                <tr>
+                                    <td><strong>Tipo de contenedor</strong></td>
+                                    <td>{{ $quote->container_type }}</td>
+                                </tr>
+                            @endif
+                            <tr>
+                                <td><strong>Volumen</strong></td>
+                                <td>{{ $consolidated->volumen }} CBM</td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td><strong>KGV</strong></td>
+                                <td>{{ $consolidated->kilogram_volumen }} KGV</td>
+                            </tr>
+                        @endif
+
+                        <tr>
+                            <td><strong>Peso</strong></td>
+                            <td>{{ $consolidated->kilograms }} KG</td>
+                        </tr>
+
+                        @php
+                            $measures = json_decode($consolidated->value_measures);
+                        @endphp
+
+                        @if (!empty($measures))
+                            <tr>
+                                <td><strong>Medidas</strong></td>
+                                <td>
+                                    @foreach ($measures as $item)
+                                        <p><span class="text-bold">{{ $item->amount }}</span> = {{ $item->width }}
+                                            {{ $item->unit_measurement }} x {{ $item->length }}
+                                            {{ $item->unit_measurement }}
+                                            x
+                                            {{ $item->height }} {{ $item->unit_measurement }}</p>
+                                    @endforeach
+                                </td>
+                            </tr>
+                        @endif
+                        <tr>
+                            <td><strong>Bulto</strong></td>
+                            <td>{{ $consolidated->nro_packages }} {{ $consolidated->packaging_type }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tipo de carga</strong></td>
+                            <td>{{ $quote->load_type }}</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+                <br>
+            @endforeach
+        @else
+            <table border="1" cellpadding="4" cellspacing="0" style="border-collapse: collapse;width: 500px">
+                <thead>
+                    <th colspan="2" class="text-center" style="background-color: #e2efd9">ORBE ADUANAS S.A.C</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Tipo de embarque</strong></td>
+                        <td>{{ $quote->commercial_quote->type_shipment->name }}
+                            {{ $quote->commercial_quote->lcl_fcl != null ? "({$quote->commercial_quote->lcl_fcl})" : '' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incoterm</strong></td>
+                        <td>{{ $quote->commercial_quote->incoterm->code }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Origen</strong></td>
+                        <td>{{ $quote->pick_up }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Destino</strong></td>
+                        <td>{{ $quote->delivery }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Producto</strong></td>
+                        <td>{{ $quote->commodity }}</td>
+                    </tr>
+                    @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+
+                        <tr>
+                            <td><strong>Volumen</strong></td>
+                            <td>{{ $quote->cubage_kgv }} CBM</td>
+                        </tr>
+
+                        @if ($quote->commercial_quote->lcl_fcl === 'FCL')
+                            <tr>
+                                <td><strong>Tipo de contenedor</strong></td>
+                                <td>{{ $quote->container_type }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>TONELADAS</strong></td>
+                                <td>{{ $quote->ton_kilogram }} TON</td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td><strong>Peso</strong></td>
+                                <td>{{ $quote->ton_kilogram }} KG</td>
+                            </tr>
+                        @endif
+                    @else
+                        <tr>
+                            <td><strong>KGV</strong></td>
+                            <td>{{ $quote->cubage_kgv }} KGV</td>
+                        </tr>
+
+                        <tr>
+                            <td><strong>Peso</strong></td>
+                            <td>{{ $quote->ton_kilogram }} KG</td>
+                        </tr>
+
+                    @endif
+
+                    @php
+                        $measures = json_decode($quote->measures);
+                    @endphp
+
+                    @if (!empty($measures))
+                        <tr>
+                            <td><strong>Medidas</strong></td>
+                            <td>
+                                @foreach ($measures as $item)
+                                    <p><span class="text-bold">{{ $item->amount }}</span> = {{ $item->width }}
+                                        {{ $item->unit_measurement }} x {{ $item->length }}
+                                        {{ $item->unit_measurement }}
+                                        x
+                                        {{ $item->height }} {{ $item->unit_measurement }}</p>
+                                @endforeach
+                            </td>
+                        </tr>
+                    @endif
+                    <tr>
+                        <td><strong>Bulto</strong></td>
+                        <td>{{ $quote->packages }} {{ $quote->packaging_type }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tipo de carga</strong></td>
+                        <td>{{ $quote->load_type }}</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        @endif
+    </div>
+
 
 @stop
 
