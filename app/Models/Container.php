@@ -15,7 +15,8 @@ class Container extends Model
         'length',
         'width',
         'height',
-        'max_load'
+        'max_load',
+        'state'
     ];
     
     protected $dates = [
@@ -25,7 +26,7 @@ class Container extends Model
 
     public function typeContainer()
     {
-        return $this->belongsTo(TypeContainer::class, 'id_type_container');
+        return $this->belongsTo(TypeContainer::class, 'type_container_id');
     }
     protected static function booted()
     {

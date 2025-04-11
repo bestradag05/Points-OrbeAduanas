@@ -13,6 +13,6 @@
     <form action="{{ route('type_containers.update', $typeContainer->id) }}" method="POST">
         @method('PATCH')
         @csrf
-        @include ('type-containers.form-type-containers', ['formMode' => 'edit'])
+        @include ('type_containers.form-type-containers', ['formMode' => 'edit'])
     </form>
 @stop

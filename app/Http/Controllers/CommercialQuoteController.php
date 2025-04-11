@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CommercialQuote;
 use App\Models\Concepts;
 use App\Models\ConsolidatedCargos;
+use App\Models\Container;
 use App\Models\Custom;
 use App\Models\Freight;
 use App\Models\Incoterms;
@@ -94,8 +95,9 @@ class CommercialQuoteController extends Controller
         $regimes = Regime::all();
         $incoterms = Incoterms::all();
         $types_services = TypeService::all();
+        $containers = Container::where('state', 'Activo')->get();
 
-        return view("commercial_quote/register-commercial-quote", compact('stateCountrys', 'type_shipments', 'type_loads', 'regimes', 'incoterms', 'nro_quote_commercial', 'types_services'));
+        return view("commercial_quote/register-commercial-quote", compact('stateCountrys', 'type_shipments', 'type_loads', 'regimes', 'incoterms', 'nro_quote_commercial', 'types_services', 'containers'));
     }
 
     /**
@@ -124,7 +126,8 @@ class CommercialQuoteController extends Controller
                 'id_regime' => $request->id_regime,
                 'id_type_load' => $request->id_type_load,
                 'id_incoterms' => $request->id_incoterms,
-                'container_type' => ($request->is_consolidated) ? $request->container_type_consolidated :  $request->container_type,
+                'id_containers' =>  $request->id_containers_consolidated,
+                'container_quantity'=> $request->container_quantity_consolidated,
                 'lcl_fcl' => $request->lcl_fcl,
                 'is_consolidated' => $request->is_consolidated,
                 'nro_operation' => $request->nro_operation,
@@ -152,7 +155,8 @@ class CommercialQuoteController extends Controller
                 'commodity' => $request->commodity,
                 'nro_package' => $request->nro_package,
                 'packaging_type' => $request->packaging_type,
-                'container_type' => $request->container_type,
+                'id_containers' => $request->id_containers,
+                'container_quantity' => $request->container_quantity,
                 'kilograms' => $request->kilograms != null ? $this->parseDouble($request->kilograms) : null,
                 'volumen' => $request->volumen != null ?  $this->parseDouble($request->volumen) : null,
                 'kilogram_volumen' => $request->kilogram_volumen != null ? $this->parseDouble($request->kilogram_volumen) : null,

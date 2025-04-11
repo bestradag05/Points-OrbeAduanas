@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Concepts;
+use App\Models\Container;
 use App\Models\Customer;
 use App\Models\CustomerSupplierDocument;
 use App\Models\Incoterms;
@@ -15,6 +16,7 @@ use App\Models\Regime;
 use App\Models\Routing;
 use App\Models\Shipper;
 use App\Models\Supplier;
+use App\Models\TypeContainer;
 use App\Models\TypeInsurance;
 use App\Models\TypeLoad;
 use App\Models\TypeService;
@@ -31,9 +33,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-      
 
-       
+
+
         Permission::create(['name' => 'users.create', 'alias' => 'Crear usuarios', 'guard_name' => 'web']);
         Permission::create(['name' => 'users.update', 'alias' => 'Actualizar usuarios', 'guard_name' => 'web']);
         Permission::create(['name' => 'users.delete', 'alias' => 'Eliminar usuarios', 'guard_name' => 'web']);
@@ -61,8 +63,8 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'operaciones.list', 'alias' => 'Listar puntos', 'guard_name' => 'web']);
         Permission::create(['name' => 'operaciones.generate', 'alias' => 'Generar puntos', 'guard_name' => 'web']);
         Permission::create(['name' => 'operaciones.type_insurance', 'alias' => 'Tipo de Seguro', 'guard_name' => 'web']);
-       
-        
+
+
         Permission::create(['name' => 'transporte.module', 'alias' => 'Modulo de transporte', 'guard_name' => 'web']);
         Permission::create(['name' => 'transporte.list.points', 'alias' => 'Listar puntos', 'guard_name' => 'web']);
         Permission::create(['name' => 'transporte.generate', 'alias' => 'Generar puntos', 'guard_name' => 'web']);
@@ -72,8 +74,8 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'transporte.quote.generate', 'alias' => 'Generar Cotizaciones', 'guard_name' => 'web']);
         Permission::create(['name' => 'transporte.quote.response', 'alias' => 'Responder Cotizaciones', 'guard_name' => 'web']);
 
-       
-    
+
+
 
         Permission::create(['name' => 'additional.list', 'alias' => 'Listar Adicionales', 'guard_name' => 'web']);
         Permission::create(['name' => 'additional.listAll', 'alias' => 'Listar todos los adicionales', 'guard_name' => 'web']);
@@ -81,10 +83,10 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'additional.freight', 'alias' => 'Adicional de Flete', 'guard_name' => 'web']);
         Permission::create(['name' => 'additional.generate', 'alias' => 'Generar puntos', 'guard_name' => 'web']);
 
-        
+
 
         Permission::create(['name' => 'points.module', 'alias' => 'Modulo de Puntos', 'guard_name' => 'web']);
-   
+
 
         Permission::create(['name' => 'customer.create', 'alias' => 'Crear Clientes', 'guard_name' => 'web']);
         Permission::create(['name' => 'customer.update', 'alias' => 'Actualizar Clientes', 'guard_name' => 'web']);
@@ -102,7 +104,7 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'type_shipment.update', 'alias' => 'Actualizar Tipo de embarque', 'guard_name' => 'web']);
         Permission::create(['name' => 'type_shipment.delete', 'alias' => 'Eliminar Tipo de embarque', 'guard_name' => 'web']);
         Permission::create(['name' => 'type_shipment.list', 'alias' => 'Listar Tipo de embarque', 'guard_name' => 'web']);
-        
+
         Permission::create(['name' => 'modality.create', 'alias' => 'Crear modalidad', 'guard_name' => 'web']);
         Permission::create(['name' => 'modality.update', 'alias' => 'Actualizar modalidad', 'guard_name' => 'web']);
         Permission::create(['name' => 'modality.delete', 'alias' => 'Eliminar modalidad', 'guard_name' => 'web']);
@@ -119,8 +121,8 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'concept.delete', 'alias' => 'Eliminar concepto', 'guard_name' => 'web']);
         Permission::create(['name' => 'concept.list', 'alias' => 'Listar concepto', 'guard_name' => 'web']);
 
-         //Crear un rol de Super-Admin
-         $role = Role::create(['guard_name' => 'web','name' => 'Super-Admin']);
+        //Crear un rol de Super-Admin
+        $role = Role::create(['guard_name' => 'web', 'name' => 'Super-Admin']);
 
 
         $user = User::create([
@@ -168,7 +170,7 @@ class DatabaseSeeder extends Seeder
             'id_document' => $document->id,
             'id_user' => $user->id
         ]);
-        
+
         Personal::create([
             'id' => '100',
             'document_number' => '796521448',
@@ -186,7 +188,20 @@ class DatabaseSeeder extends Seeder
             'id_user' => $userPricing->id
         ]);
 
+        /* Tipo de contenedor */
 
+        $typeContainer = TypeContainer::create(['name' => 'DRY CONTAINER', 'description' => 'CONTENEDOR DE CARGA GENERAL']);
+
+        /* Contenedor */
+        Container::create([
+            'name' => "20'ST",
+            'type_container_id' => $typeContainer->id,
+            'description' => '20 PIES STANDARD',
+            'length' => 20,
+            'width' => 20,
+            'height' => 20,
+            'max_load' => 20,
+        ]);
 
         /*  Regime */
 
@@ -258,23 +273,23 @@ class DatabaseSeeder extends Seeder
 
         /* TypeInsurance */
 
-        
-        TypeInsurance::create(['name' => 'Seguro A' , 'state' => 'Activo']);
-        TypeInsurance::create(['name' => 'Seguro B' , 'state' => 'Activo']);
-        
+
+        TypeInsurance::create(['name' => 'Seguro A', 'state' => 'Activo']);
+        TypeInsurance::create(['name' => 'Seguro B', 'state' => 'Activo']);
+
         $this->call(CountrySeeder::class);
         $this->call(StatesCountrySeeder::class);
 
 
 
         /* Proceso para el routing */
-        $customer = Customer::create(['document_number' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'address' => 'Av Elmer faucett 474','contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'state' => 'Activo' , 'id_document' => $customer_supplier_document->id, 'id_personal' => $personal->id]);
-        Supplier::create(['name_businessname' => 'HENAN XINGSHENGDA', 'address' => 'North section of renmin road, changge city', 'contact_name' => 'Asten Zho', 'contact_number' => '944653246', 'contact_email' => 'asten@hnidel.com', 'state' => 'Activo' ]);
-        
+        $customer = Customer::create(['document_number' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'address' => 'Av Elmer faucett 474', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'state' => 'Activo', 'id_document' => $customer_supplier_document->id, 'id_personal' => $personal->id]);
+        Supplier::create(['name_businessname' => 'HENAN XINGSHENGDA', 'address' => 'North section of renmin road, changge city', 'contact_name' => 'Asten Zho', 'contact_number' => '944653246', 'contact_email' => 'asten@hnidel.com', 'state' => 'Activo']);
+
         Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU - CALLAO', 'destination' => 'CHINA - SHANGAI', 'load_value' => '2700', 'id_personal' => $personal->id, 'id_customer' => $customer->id, 'id_type_shipment' => 8, 'lcl_fcl' => 'LCL', 'packaging_type' => 'Pallets', 'id_type_load' => 1, 'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'commodity' => 'CILINDRO']);
-        Routing::create(['nro_operation' => 'ORBE-25255','origin' => 'China - Shanghai','destination' => 'Perú - Callao','wr_loading' => null,'load_value' => 2600.00,'id_personal' => 99,'id_customer' => 1,'id_type_shipment' => 8,'id_regime' => 1,'id_incoterms' => 1,'id_supplier' => 1,'id_type_load' => 1,'lcl_fcl' => 'LCL','commodity' => 'TELESCOPIC ROD','nro_package' => '2','packaging_type' => 'CAJAS','container_type' => null,'pounds' => 4209.61,'kilograms' => 1904.80,'volumen' => 8.37,'kilogram_volumen' => null,'tons' => null,'measures' => '{"1":{"amount":2,"width":"233.00","length":"433.00","height":"533.00"}}','hs_code' => null,'observation' => null,'state' => 'Activo','created_at' => '2025-01-06 22:30:54','updated_at' => '2025-01-06 22:30:54']);
-        Routing::create(['nro_operation' => 'ORBE-25256','origin' => 'Bielorrusia - Brestskaya obl.','destination' => 'Perú - Callao','wr_loading' => null,'load_value' => 6500.00,'id_personal' => 99,'id_customer' => 1,'id_type_shipment' => 8,'id_regime' => 1,'id_incoterms' => 1,'id_supplier' => 1,'id_type_load' => 1,'lcl_fcl' => 'FCL','commodity' => 'CILINDRO','nro_package' => '1','packaging_type' => 'PALLET','container_type' => '1x20ST','pounds' => null,'kilograms' => null,'volumen' => 2100.00,'kilogram_volumen' => null,'tons' => 21.00,'measures' => '{"1":{"amount":1,"width":"233.00","length":"433.00","height":"324.00"}}','hs_code' => null,'observation' => null,'state' => 'Activo','created_at' => '2025-01-07 01:26:28','updated_at' => '2025-01-07 01:26:28']);
-        Routing::create(['nro_operation' => 'ORBE-25257','origin' => 'Chile - Atacama','destination' => 'Perú - Callao','wr_loading' => null,'load_value' => 780.00,'id_personal' => 99,'id_customer' => 1,'id_type_shipment' => 21,'id_regime' => 1,'id_incoterms' => 9,'id_supplier' => 1,'id_type_load' => 1,'lcl_fcl' => null,'commodity' => 'LLANTAS','nro_package' => '1','packaging_type' => 'CAJAS','container_type' => null,'pounds' => 5158.14,'kilograms' => 2334.00,'volumen' => null,'kilogram_volumen' => 233.00,'tons' => null,'measures' => '{"1":{"amount":1,"width":"433.00","length":"233.00","height":"433.00"}}','hs_code' => null,'observation' => null,'state' => 'Activo','created_at' => '2025-01-07 01:27:48','updated_at' => '2025-01-07 01:27:48']);
+        Routing::create(['nro_operation' => 'ORBE-25255', 'origin' => 'China - Shanghai', 'destination' => 'Perú - Callao', 'wr_loading' => null, 'load_value' => 2600.00, 'id_personal' => 99, 'id_customer' => 1, 'id_type_shipment' => 8, 'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'id_type_load' => 1, 'lcl_fcl' => 'LCL', 'commodity' => 'TELESCOPIC ROD', 'nro_package' => '2', 'packaging_type' => 'CAJAS', 'container_type' => null, 'pounds' => 4209.61, 'kilograms' => 1904.80, 'volumen' => 8.37, 'kilogram_volumen' => null, 'tons' => null, 'measures' => '{"1":{"amount":2,"width":"233.00","length":"433.00","height":"533.00"}}', 'hs_code' => null, 'observation' => null, 'state' => 'Activo', 'created_at' => '2025-01-06 22:30:54', 'updated_at' => '2025-01-06 22:30:54']);
+        Routing::create(['nro_operation' => 'ORBE-25256', 'origin' => 'Bielorrusia - Brestskaya obl.', 'destination' => 'Perú - Callao', 'wr_loading' => null, 'load_value' => 6500.00, 'id_personal' => 99, 'id_customer' => 1, 'id_type_shipment' => 8, 'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'id_type_load' => 1, 'lcl_fcl' => 'FCL', 'commodity' => 'CILINDRO', 'nro_package' => '1', 'packaging_type' => 'PALLET', 'container_type' => '1x20ST', 'pounds' => null, 'kilograms' => null, 'volumen' => 2100.00, 'kilogram_volumen' => null, 'tons' => 21.00, 'measures' => '{"1":{"amount":1,"width":"233.00","length":"433.00","height":"324.00"}}', 'hs_code' => null, 'observation' => null, 'state' => 'Activo', 'created_at' => '2025-01-07 01:26:28', 'updated_at' => '2025-01-07 01:26:28']);
+        Routing::create(['nro_operation' => 'ORBE-25257', 'origin' => 'Chile - Atacama', 'destination' => 'Perú - Callao', 'wr_loading' => null, 'load_value' => 780.00, 'id_personal' => 99, 'id_customer' => 1, 'id_type_shipment' => 21, 'id_regime' => 1, 'id_incoterms' => 9, 'id_supplier' => 1, 'id_type_load' => 1, 'lcl_fcl' => null, 'commodity' => 'LLANTAS', 'nro_package' => '1', 'packaging_type' => 'CAJAS', 'container_type' => null, 'pounds' => 5158.14, 'kilograms' => 2334.00, 'volumen' => null, 'kilogram_volumen' => 233.00, 'tons' => null, 'measures' => '{"1":{"amount":1,"width":"433.00","length":"233.00","height":"433.00"}}', 'hs_code' => null, 'observation' => null, 'state' => 'Activo', 'created_at' => '2025-01-07 01:27:48', 'updated_at' => '2025-01-07 01:27:48']);
 
         Concepts::create(['name' => 'AGENCIAMIENTO DE ADUANAS', 'id_type_shipment' => 8, 'id_type_service' => 1]);
         Concepts::create(['name' => 'COMISION DE ADUANA', 'id_type_shipment' => 8, 'id_type_service' => 1]);

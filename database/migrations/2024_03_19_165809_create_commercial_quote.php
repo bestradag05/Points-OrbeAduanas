@@ -24,12 +24,13 @@ return new class extends Migration
             $table->unsignedBigInteger('id_regime');
             $table->unsignedBigInteger('id_incoterms');
             $table->unsignedBigInteger('id_type_load');
+            $table->unsignedBigInteger('id_containers')->nullable();
+            $table->integer('container_quantity')->nullable();
             $table->string('lcl_fcl')->nullable();
             $table->boolean('is_consolidated')->nullable();
             $table->string('commodity')->nullable();
             $table->string('nro_package')->nullable();
             $table->string('packaging_type')->nullable();
-            $table->string('container_type')->nullable();
             $table->decimal('kilograms', 8, 2)->nullable();
             $table->decimal('volumen', 8, 2)->nullable();
             $table->decimal('kilogram_volumen', 8, 2)->nullable();
@@ -39,6 +40,14 @@ return new class extends Migration
             $table->string('observation')->nullable();
             $table->enum('state', ['Activo', 'Inactivo'])->default('Activo');
             $table->timestamps();
+
+
+            $table->foreign('id_containers')->references('id') ->on('containers');
+
+
+
+
+
         });
     }
 
