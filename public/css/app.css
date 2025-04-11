@@ -232,3 +232,10 @@
 .direct-chat-primary .right>.direct-chat-text::after, .direct-chat-primary .right>.direct-chat-text::before{
     border-left-color: var(--sisorbe-100);
 }
+
+.offscreen-capture {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+    display: block !important;
+}

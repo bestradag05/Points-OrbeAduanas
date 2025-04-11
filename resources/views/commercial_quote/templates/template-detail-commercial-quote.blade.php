@@ -189,11 +189,19 @@
                                             <b class="d-block">{{ $consolidated->packaging_type }}</b>
                                         </p>
                                     </div>
-                                    <div class="col-6">
-                                        <p class="text-sm">Volumen :
-                                            <b class="d-block">{{ $consolidated->volumen }}</b>
-                                        </p>
-                                    </div>
+                                    @if ($consolidated->commercialQuote->type_shipment->description === 'Marítima')
+                                        <div class="col-6">
+                                            <p class="text-sm">Volumen :
+                                                <b class="d-block">{{ $consolidated->volumen }} CBM</b>
+                                            </p>
+                                        </div>
+                                    @else
+                                        <div class="col-6">
+                                            <p class="text-sm">KGV :
+                                                <b class="d-block">{{ $consolidated->kilogram_volumen }} KGV</b>
+                                            </p>
+                                        </div>
+                                    @endif
                                     <div class="col-6">
                                         <p class="text-sm">Peso :
                                             <b class="d-block">{{ $consolidated->kilograms }}</b>

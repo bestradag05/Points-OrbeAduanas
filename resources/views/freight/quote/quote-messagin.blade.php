@@ -66,7 +66,7 @@
                     <button onclick="copieHtmlDetailQuote()" class="btn btn-sm btn-secondary">
                         <i class="fas fa-copy"></i>
                     </button>
-                    <button onclick="downloadImageDetailQuote()" class="btn btn-sm btn-secondary">
+                    <button onclick="downloadImageDetailQuote('{{ $quote->nro_quote }}')" class="btn btn-sm btn-secondary">
                         <i class="fas fa-download"></i>
                     </button>
                 </div>
@@ -153,23 +153,23 @@
                                 data-parent="#accordionConsolidated">
 
                                 <div class="row text-muted px-5">
-                                    <div class="col-12  {{ $shipper->shipper_name ? '' : 'd-none' }}">
+                                    <div class="col-6  {{ $shipper->shipper_name ? '' : 'd-none' }}">
                                         <p class="text-sm">Proovedor :
                                             <b class="d-block">{{ $shipper->shipper_name }}</b>
                                         </p>
                                     </div>
 
-                                    <div class="col-4">
+                                    <div class="col-6">
                                         <p class="text-sm">Contacto :
                                             <b class="d-block">{{ $shipper->shipper_contact }}</b>
                                         </p>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-6">
                                         <p class="text-sm">Email :
                                             <b class="d-block">{{ $shipper->shipper_contact_email }}</b>
                                         </p>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-6">
                                         <p class="text-sm">Telefono :
                                             <b class="d-block">{{ $shipper->shipper_contact_phone }}</b>
                                         </p>
@@ -199,11 +199,20 @@
                                             <b class="d-block">{{ $consolidated->packaging_type }}</b>
                                         </p>
                                     </div>
-                                    <div class="col-6">
-                                        <p class="text-sm">Volumen :
-                                            <b class="d-block">{{ $consolidated->volumen }}</b>
-                                        </p>
-                                    </div>
+                                    @if ($consolidated->commercialQuote->type_shipment->description === 'Marítima')
+                                        <div class="col-6">
+                                            <p class="text-sm">Volumen :
+                                                <b class="d-block">{{ $consolidated->volumen }} CBM</b>
+                                            </p>
+                                        </div>
+                                    @else
+                                        <div class="col-6">
+                                            <p class="text-sm">KGV :
+                                                <b class="d-block">{{ $consolidated->kilogram_volumen }} KGV</b>
+                                            </p>
+                                        </div>
+                                    @endif
+
                                     <div class="col-6">
                                         <p class="text-sm">Peso :
                                             <b class="d-block">{{ $consolidated->kilograms }}</b>
@@ -250,33 +259,50 @@
                     </div>
                 </div>
 
-                @if ($quote->commercial_quote->lcl_fcl === 'LCL' || $quote->commercial_quote->lcl_fcl === null)
+                @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+
                     <div class="row text-muted">
                         <div class="col-6">
-                            <p class="text-sm">Cubicaje/KGV :
-                                <b class="d-block">{{ $quote->cubage_kgv }}</b>
+                            <p class="text-sm">Volumen :
+                                <b class="d-block">{{ $quote->ton_kilogram }} CBM</b>
                             </p>
                         </div>
-                        <div class="col-6">
-                            <p class="text-sm">Peso total :
-                                <b class="d-block">{{ $quote->total_weight }}</b>
-                            </p>
-                        </div>
+
+                        @if ($quote->commercial_quote->lcl_fcl === 'FCL')
+                            <div class="col-6">
+                                <p class="text-sm">Toneladas :
+                                    <b class="d-block">{{ $quote->ton_kilogram }} TON</b>
+                                </p>
+                            </div>
+                            <div class="col-6">
+                                <p class="text-sm">Tipo de contenedor :
+                                    <b class="d-block">{{ $quote->container_type }}</b>
+                                </p>
+                            </div>
+                        @else
+                            <div class="col-6">
+                                <p class="text-sm">Peso total :
+                                    <b class="d-block">{{ $quote->ton_kilogram }} KG</b>
+                                </p>
+                            </div>
+                        @endif
+
                     </div>
                 @else
                     <div class="row text-muted">
                         <div class="col-6">
-                            <p class="text-sm">Tipo de contenedor :
-                                <b class="d-block">{{ $quote->container_type }}</b>
+                            <p class="text-sm">Kilogramo volumen / KGV :
+                                <b class="d-block">{{ $quote->cubage_kgv }} KGV</b>
                             </p>
                         </div>
                         <div class="col-6">
-                            <p class="text-sm">Toneladas/Kilogramos :
-                                <b class="d-block">{{ $quote->ton_kilogram }}</b>
+                            <p class="text-sm">Peso total :
+                                <b class="d-block">{{ $quote->ton_kilogram }} KG</b>
                             </p>
                         </div>
                     </div>
                 @endif
+
 
 
                 @if ($quote->commercial_quote->measures)
@@ -558,10 +584,13 @@
                             <td>{{ $consolidated->commodity }}</td>
                         </tr>
                         @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
-                            <tr>
-                                <td><strong>Tipo de contenedor</strong></td>
-                                <td>{{ $quote->container_type }}</td>
-                            </tr>
+                            @if ($quote->commercial_quote->lcl_fcl === 'FCL')
+                                <tr>
+                                    <td><strong>Tipo de contenedor</strong></td>
+                                    <td>{{ $quote->container_type }}</td>
+                                </tr>
+                            @endif
+
                             <tr>
                                 <td><strong>Volumen</strong></td>
                                 <td>{{ $consolidated->volumen }} CBM</td>
@@ -639,16 +668,17 @@
                         <td>{{ $quote->commodity }}</td>
                     </tr>
                     @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
-                        <tr>
-                            <td><strong>Tipo de contenedor</strong></td>
-                            <td>{{ $quote->container_type }}</td>
-                        </tr>
+
                         <tr>
                             <td><strong>Volumen</strong></td>
                             <td>{{ $quote->cubage_kgv }} CBM</td>
                         </tr>
 
                         @if ($quote->commercial_quote->lcl_fcl === 'FCL')
+                            <tr>
+                                <td><strong>Tipo de contenedor</strong></td>
+                                <td>{{ $quote->container_type }}</td>
+                            </tr>
                             <tr>
                                 <td><strong>TONELADAS</strong></td>
                                 <td>{{ $quote->ton_kilogram }} TON</td>
@@ -926,13 +956,19 @@
 
         }
 
-        function downloadImageDetailQuote() {
+        function downloadImageDetailQuote(nro_quote) {
             const plantilla = document.getElementById("plantilla-cotizacion");
 
-            
-            //TODO::Agregar logica para que funcione cuando la plantilla este con d-none
 
-            
+            const wasHidden = plantilla.classList.contains("d-none");
+
+            if (wasHidden) {
+                plantilla.classList.remove("d-none");
+                plantilla.classList.add("offscreen-capture");
+                console.log("Se aplico la clase");
+            }
+
+
             html2canvas(plantilla, {
                 useCORS: true, // Esto ayuda a evitar problemas con imágenes externas
                 scrollX: 0, // Evita desplazamiento horizontal durante la captura
@@ -942,11 +978,18 @@
 
                 // Crear un enlace para descargar la imagen
                 const link = document.createElement('a');
-                link.download = 'detalle-cotizacion.png'; // Nombre del archivo a descargar
+                link.download = `detalle-cotizacion-${nro_quote}.png`; // Nombre del archivo a descargar
                 link.href = dataUrl;
                 link.click(); // Simula el clic para descargar la imagen
+
+                if (wasHidden) {
+                    plantilla.classList.remove("offscreen-capture");
+                    plantilla.classList.add("d-none");
+                }
+
+                toastr.success("La imagen fue generadad.");
+
             }).catch(function(error) {
-                console.error('Oops, something went wrong!', error);
                 toastr.error("❌ No se pudo generar la imagen.");
             });
         }
