@@ -94,7 +94,8 @@ Route::middleware('auth')->group(function () {
     Route::get('roles/grupos/remove-all-permissions/{id_role}/{modulo}', [PermissionsController::class, 'removeAllPermissions']);
 
     Route::resource('concepts', ConceptsController::class);
-    Route::get('/obtener-datos-ruc/{ruc}', [CustomerController::class, 'obtenerDatosRuc']);
+    Route::get('/api/consult-ruc/{ruc}', [CustomerController::class, 'consultRuc']);
+    Route::get('/customer/data/{document_number}', [CustomerController::class, 'getDataForRuc']);
     Route::resource('customer', CustomerController::class);
     Route::resource('suppliers', SupplierController::class);
     Route::resource('type_shipment', TypeShipmentController::class);

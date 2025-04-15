@@ -14,8 +14,9 @@
 
           <div class="col-6">
 
-              <x-adminlte-select2 name="origin" label="Origen" igroup-size="md"
-                  data-placeholder="Seleccione una opcion...">
+              <label for="origin">Origen <span class="text-danger">*</span></label>
+
+              <x-adminlte-select2 name="origin" igroup-size="md" data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($stateCountrys as $stateCountry)
                       <option
@@ -28,7 +29,9 @@
           </div>
           <div class="col-6">
 
-              <x-adminlte-select2 name="destination" label="Destino" igroup-si ze="md"
+              <label for="destination">Destino <span class="text-danger">*</span></label>
+
+              <x-adminlte-select2 name="destination" igroup-si ze="md"
                   data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($stateCountrys as $stateCountry)
@@ -49,7 +52,7 @@
                   <div class="input-group">
 
                       <input type="text" class="form-control  @error('customer_ruc') is-invalid @enderror "
-                          name="customer_ruc" placeholder="Ingrese el ruc"
+                          name="customer_ruc" id="customer_ruc" placeholder="Ingrese el ruc"
                           value="{{ isset($routing->customer_ruc) ? $routing->customer_ruc : old('customer_ruc') }}">
                   </div>
                   @error('customer_ruc')
@@ -67,7 +70,7 @@
 
                   <div class="input-group">
                       <input type="text" class="form-control @error('customer_company_name') is-invalid @enderror "
-                          name="customer_company_name" placeholder="Ingrese valor de la carga"
+                          name="customer_company_name" id="customer_company_name" placeholder="Ingrese valor de la carga"
                           value="{{ isset($routing->customer_company_name) ? $routing->customer_company_name : old('customer_company_name') }}">
                   </div>
                   @error('customer_company_name')
@@ -79,45 +82,51 @@
               </div>
           </div>
 
-          <div class="col-6 row" id="lclfcl_content">
-              <div class="col-12">
-                  <x-adminlte-select2 name="id_type_shipment" label="Tipo de embarque" igroup-size="md"
-                      data-placeholder="Seleccione una opcion...">
-                      <option />
-                      @foreach ($type_shipments as $type_shipment)
-                          <option value="{{ $type_shipment->id }}"
-                              {{ (isset($routing->id_type_shipment) && $routing->id_type_shipment == $type_shipment->id) || old('id_type_shipment') == $type_shipment->id ? 'selected' : '' }}>
-                              {{ $type_shipment->code . ' - ' . $type_shipment->name }}
-                          </option>
-                      @endforeach
-                  </x-adminlte-select2>
+          <div class="col-6">
+              <div class="row" id="lclfcl_content">
+                  <div class="col-12">
+                      <label for="id_type_shipment">Tipo de embarque <span class="text-danger">*</span></label>
+                      <x-adminlte-select2 name="id_type_shipment" igroup-size="md"
+                          data-placeholder="Seleccione una opcion...">
+                          <option />
+                          @foreach ($type_shipments as $type_shipment)
+                              <option value="{{ $type_shipment->id }}"
+                                  {{ (isset($routing->id_type_shipment) && $routing->id_type_shipment == $type_shipment->id) || old('id_type_shipment') == $type_shipment->id ? 'selected' : '' }}>
+                                  {{ $type_shipment->code . ' - ' . $type_shipment->name }}
+                              </option>
+                          @endforeach
+                      </x-adminlte-select2>
+                  </div>
+
+                  <div id="contenedor_radio_lcl_fcl" class="col-4 row align-items-center d-none">
+                      <div class="col-6 form-check text-center">
+                          <input type="radio" id="radioLcl" name="lcl_fcl" value="LCL"
+                              {{ (isset($routing->lcl_fcl) && $routing->lcl_fcl === 'LCL') || old('lcl_fcl') === 'LCL' ? 'checked' : '' }}
+                              class="form-check-input @error('lcl_fcl') is-invalid @enderror">
+                          <label for="radioLclFcl" class="form-check-label">
+                              LCL
+                          </label>
+                      </div>
+                      <div class="col-6 form-check text-center">
+                          <input type="radio" id="radioFcl" name="lcl_fcl" value="FCL"
+                              {{ (isset($routing->lcl_fcl) && $routing->lcl_fcl === 'FCL') || old('lcl_fcl') === 'FCL' ? 'checked' : '' }}
+                              class="form-check-input @error('lcl_fcl') is-invalid @enderror">
+                          <label for="radioLclFcl" class="form-check-label">
+                              FCL
+                          </label>
+                      </div>
+                  </div>
+
               </div>
 
-              <div id="contenedor_radio_lcl_fcl" class="col-4 d-none align-items-center">
-                  <div class="form-check d-inline">
-                      <input type="radio" id="radioLcl" name="lcl_fcl" value="LCL"
-                          {{ (isset($routing->lcl_fcl) && $routing->lcl_fcl === 'LCL') || old('lcl_fcl') === 'LCL' ? 'checked' : '' }}
-                          class="form-check-input @error('lcl_fcl') is-invalid @enderror">
-                      <label for="radioLclFcl" class="form-check-label">
-                          LCL
-                      </label>
-                  </div>
-                  <div class="form-check d-inline">
-                      <input type="radio" id="radioFcl" name="lcl_fcl" value="FCL"
-                          {{ (isset($routing->lcl_fcl) && $routing->lcl_fcl === 'FCL') || old('lcl_fcl') === 'FCL' ? 'checked' : '' }}
-                          class="form-check-input @error('lcl_fcl') is-invalid @enderror">
-                      <label for="radioLclFcl" class="form-check-label">
-                          FCL
-                      </label>
-                  </div>
-              </div>
 
           </div>
 
           <div class="col-6">
 
-              <x-adminlte-select2 name="id_type_load" label="Tipo de carga" igroup-size="md"
-                  data-placeholder="Seleccione una opcion...">
+              <label for="id_type_load">Tipo de carga <span class="text-danger">*</span></label>
+
+              <x-adminlte-select2 name="id_type_load" igroup-size="md" data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($type_loads as $type_load)
                       <option value="{{ $type_load->id }}"
@@ -129,8 +138,10 @@
           </div>
 
           <div class="col-6">
-              <x-adminlte-select2 name="id_regime" label="Regimen" igroup-size="md"
-                  data-placeholder="Seleccione una opcion...">
+
+              <label for="id_regime">Regimen <span class="text-danger">*</span></label>
+
+              <x-adminlte-select2 name="id_regime" igroup-size="md" data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($regimes as $regime)
                       <option value="{{ $regime->id }}"
@@ -142,7 +153,7 @@
           </div>
 
           <div class="col-6">
-              <label for="customer_company_name">Incoterm</label>
+              <label for="id_incoterms">Incoterm <span class="text-danger">*</span></label>
               <a href="#" data-bs-toggle="modal" data-bs-target="#incotermModal">
                   <i class="fas fa-info-circle"></i>
               </a>
@@ -181,7 +192,8 @@
       <div id="singleProviderSection">
 
           <div class="form-group row">
-              <label for="commodity" class="col-sm-2 col-form-label">Producto</label>
+              <label for="commodity" class="col-sm-2 col-form-label">Producto <span
+                      class="text-danger">*</span></label>
               <div class="col-sm-10">
                   <input type="text" class="form-control @error('commodity') is-invalid @enderror" id="commodity"
                       name="commodity" placeholder="Ingrese el producto.."
@@ -198,7 +210,8 @@
 
               <div class="col-4">
                   <div class="form-group row">
-                      <label for="load_value" class="col-sm-4 col-form-label">Valor de factura</label>
+                      <label for="load_value" class="col-sm-4 col-form-label">Valor de factura <span
+                              class="text-danger">*</span></label>
                       <div class="col-sm-8">
                           <div class="input-group">
                               <div class="input-group-prepend">
@@ -223,7 +236,8 @@
 
               <div class="col-4">
                   <div class="form-group row">
-                      <label for="nro_package" class="col-sm-4 col-form-label">N° Paquetes / Bultos</label>
+                      <label for="nro_package" class="col-sm-4 col-form-label">N° Paquetes / Bultos <span
+                              class="text-danger">*</span></label>
                       <div class="col-sm-8">
                           <input type="number" min="0" step="1"
                               class="form-control @error('nro_package') is-invalid @enderror" id="nro_package"
@@ -242,7 +256,8 @@
 
               <div class="col-4">
                   <div class="form-group row">
-                      <label for="packaging_type" class="col-sm-4 col-form-label">Tipo de embalaje</label>
+                      <label for="packaging_type" class="col-sm-4 col-form-label">Tipo de embalaje <span
+                              class="text-danger">*</span></label>
                       <div class="col-sm-8">
                           <input type="text" min="0" step="1"
                               class="form-control @error('packaging_type') is-invalid @enderror" id="packaging_type"
@@ -259,7 +274,8 @@
 
               <div class="col-4 d-none fcl-fields" id="containerTypeWrapper">
                   <div class="form-group row">
-                      <label for="id_containers" class="col-sm-4 col-form-label">Tipo de contenedor</label>
+                      <label for="id_containers" class="col-sm-4 col-form-label">Tipo de contenedor <span
+                              class="text-danger">*</span></label>
                       <div class="col-sm-8">
                           <select class="form-control @error('id_containers') is-invalid @enderror" id="id_containers"
                               name="id_containers">
@@ -281,7 +297,8 @@
               </div>
               <div class="col-4 d-none fcl-fields" id="containerQuantityWrapper">
                   <div class="form-group row">
-                      <label for="container_quantity" class="col-sm-4 col-form-label">Nº Contenedor</label>
+                      <label for="container_quantity" class="col-sm-4 col-form-label">Nº Contenedor <span
+                              class="text-danger">*</span></label>
                       <div class="col-sm-8">
                           <input type="number" min="0" step="1"
                               class="form-control @error('container_quantity') is-invalid @enderror"
@@ -360,7 +377,7 @@
 
               <div class="col-4">
                   <div class="form-group row">
-                      <label for="pounds" class="col-sm-4 col-form-label">Libras: </label>
+                      <label for="pounds" class="col-sm-4 col-form-label">Libras </label>
                       <div class="col-sm-8">
                           <input type="text" class="form-control CurrencyInput" id="pounds" name="pounds"
                               data-type="currency" placeholder="Ingrese las libras"
@@ -374,7 +391,8 @@
 
               <div class="col-4">
                   <div id="contenedor_weight" class="form-group row lcl-fields d-none">
-                      <label for="kilograms" class="col-sm-4 col-form-label">Peso Total : </label>
+                      <label for="kilograms" class="col-sm-4 col-form-label">Peso Total <span
+                              class="text-danger">*</span> </label>
                       <div class="col-sm-8">
                           <input type="text"
                               class="form-control CurrencyInput @error('kilograms') is-invalid @enderror"
@@ -389,7 +407,8 @@
                   </div>
 
                   <div id="contenedor_tons" class="form-group row fcl-fields d-none">
-                      <label for="tons" class="col-sm-4 col-form-label">Toneladas : </label>
+                      <label for="tons" class="col-sm-4 col-form-label">Toneladas <span
+                              class="text-danger">*</span> </label>
                       <div class="col-sm-8">
                           <input type="text"
                               class="form-control CurrencyInput @error('tons') is-invalid @enderror" id="tons"
@@ -408,7 +427,7 @@
 
               <div class="col-4">
                   <div id="contenedor_volumen" class="form-group row  d-none">
-                      <label for="volumen" class="col-sm-4 col-form-label">Volumen: </label>
+                      <label for="volumen" class="col-sm-4 col-form-label">Volumen </label>
                       <div class="col-sm-8">
                           {{-- Volumen --}}
                           <input type="text"
@@ -484,7 +503,7 @@
               <div class="col-6 mt-4 d-none fcl-fields" id="containerTypeWrapperConsolidated">
                   <div class="form-group row">
                       <label for="id_containers_consolidated" class="col-sm-4 col-form-label">Tipo de
-                          contenedor</label>
+                          contenedor <span class="text-danger">*</span></label>
                       <div class="col-sm-8">
                           <select class="form-control @error('id_containers_consolidated') is-invalid @enderror"
                               id="id_containers_consolidated" name="id_containers_consolidated">
@@ -507,7 +526,7 @@
               <div class="col-6 mt-4 d-none fcl-fields" id="containerQuantityWrapperConsolidated">
                   <div class="form-group row">
                       <label for="container_quantity_consolidated" class="col-sm-4 col-form-label">Nº
-                          Contenedor</label>
+                          Contenedor <span class="text-danger">*</span></label>
                       <div class="col-sm-8">
                           <input type="number" min="0" step="1"
                               class="form-control @error('container_quantity_consolidated') is-invalid @enderror"
@@ -702,6 +721,28 @@
               }
           })
 
+
+          /* Buscar cliente por el ruc */
+
+          $('#customer_ruc').on('blur', function() {
+              const document_number = $(this).val();
+
+
+              $.get(`/customer/data/${document_number}`, function(response) {
+
+                  if (response) {
+                      $('#customer_company_name').val(response.name_businessname);
+                      $('#customer_company_name').prop('readonly', true);
+
+                  } else {
+                      $('#customer_company_name').val('');
+                      $('#customer_company_name').prop('readonly', false);
+
+                  }
+              });
+
+          });
+
           $('#id_type_shipment').on('change', (e) => {
 
               var idShipment = $(e.target).find("option:selected").val();
@@ -720,8 +761,10 @@
 
                           $('#type_shipment_name').val(respu.description);
 
-                          $('#lclfcl_content').children().first().removeClass('col-12').addClass('col-8');
-                          $('#lclfcl_content').children().last().removeClass('d-none').addClass('d-flex');
+                          $('#lclfcl_content').addClass('row');
+                          $('#lclfcl_content').children().first().removeClass('col-12 p-0').addClass(
+                              'col-8');
+                          $('#lclfcl_content').children().last().removeClass('d-none');
 
                           $('#contenedor_volumen').removeClass('d-none');
                           $('#contenedor_vol_consolidated').removeClass('d-none');
@@ -740,8 +783,10 @@
 
                           $('#type_shipment_name').val(respu.description);
 
-                          $('#lclfcl_content').children().first().removeClass('col-8').addClass('col-12');
-                          $('#lclfcl_content').children().last().removeClass('d-flex').addClass('d-none');
+                          $('#lclfcl_content').removeClass('row');
+                          $('#lclfcl_content').children().first().removeClass('col-8').addClass(
+                              'col-12 p-0');
+                          $('#lclfcl_content').children().last().addClass('d-none');
                           $('input[name="lcl_fcl"]').prop('checked', false);
 
                           $('#contenedor_volumen').addClass('d-none');

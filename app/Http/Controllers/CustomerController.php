@@ -87,7 +87,7 @@ class CustomerController extends Controller
 
 
 
-    public function obtenerDatosRuc($ruc)
+    public function consultRuc($ruc)
     {
         try {
             $url = "https://ww1.sunat.gob.pe/ol-ti-itfisdenreg/itfisdenreg.htm?accion=obtenerDatosRuc&nroRuc=" . $ruc;
@@ -101,6 +101,21 @@ class CustomerController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Hubo un problema con la solicitud: ' . $e->getMessage()], 500);
         }
+    }
+
+
+    public function getDataForRuc($document_number){
+
+        $customer = Customer::where('document_number', $document_number)->first();
+
+        if(!$customer)
+        {
+            return null;
+        }
+
+        return response()->json($customer);
+
+
     }
 
 

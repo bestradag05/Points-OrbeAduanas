@@ -46,7 +46,7 @@
 
             const name_businessname = document.getElementById('name_businessname');
 
-            fetch(`/obtener-datos-ruc/${event.value}`)
+            fetch(`/api/consult-ruc/${event.value}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Error en la respuesta de la red');
