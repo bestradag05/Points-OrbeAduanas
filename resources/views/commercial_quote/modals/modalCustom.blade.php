@@ -311,7 +311,7 @@
                 updateTableCustom(conceptsCustomArray);
 
 
-                $('.modal').on('hide.bs.modal', function(e) {
+                $('.modalAduanas').on('hide.bs.modal', function(e) {
                     conceptsCustomArray = {};
                     TotalCustomsConcepts = 0;
                     total = 0;

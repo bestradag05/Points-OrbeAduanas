@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('nro_quote_commercial')->unique();
             $table->string('origin');
             $table->string('destination');
-            $table->string('customer_ruc')->nullable();
             $table->string('customer_company_name')->nullable();
             $table->decimal('load_value', 8, 2);
             $table->unsignedBigInteger('id_personal');
@@ -24,6 +23,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_regime');
             $table->unsignedBigInteger('id_incoterms');
             $table->unsignedBigInteger('id_type_load');
+            $table->unsignedBigInteger('id_customer')->nullable();
             $table->unsignedBigInteger('id_containers')->nullable();
             $table->integer('container_quantity')->nullable();
             $table->string('lcl_fcl')->nullable();
@@ -48,6 +48,8 @@ return new class extends Migration
             $table->date('valid_date')->nullable();
             $table->enum('state', ['Pendiente', 'Inactivo', 'Aceptado', 'Rechazado', 'Sin respuesta'])->default('Pendiente');
             $table->timestamps();
+
+            $table->foreign('id_customer')->references('id') ->on('customer');
             $table->foreign('id_containers')->references('id') ->on('containers');
             $table->foreign('id_personal')->references('id')->on('personal');
             $table->foreign('id_type_shipment')->references('id')->on('type_shipment');

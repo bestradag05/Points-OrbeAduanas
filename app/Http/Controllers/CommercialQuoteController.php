@@ -7,6 +7,8 @@ use App\Models\Concepts;
 use App\Models\ConsolidatedCargos;
 use App\Models\Container;
 use App\Models\Custom;
+use App\Models\Customer;
+use App\Models\CustomerSupplierDocument;
 use App\Models\Freight;
 use App\Models\Incoterms;
 use App\Models\Modality;
@@ -97,8 +99,13 @@ class CommercialQuoteController extends Controller
         $incoterms = Incoterms::all();
         $types_services = TypeService::all();
         $containers = Container::where('state', 'Activo')->get();
+         //Customers
+         $personalId = Auth::user()->personal->id;
+         $customers = Customer::with('personal')
+         ->where('id_personal', $personalId)
+         ->get();
 
-        return view("commercial_quote/register-commercial-quote", compact('stateCountrys', 'type_shipments', 'type_loads', 'regimes', 'incoterms', 'nro_quote_commercial', 'types_services', 'containers'));
+        return view("commercial_quote/register-commercial-quote", compact('stateCountrys', 'type_shipments', 'type_loads', 'regimes', 'incoterms', 'nro_quote_commercial', 'types_services', 'containers', 'customers'));
     }
 
     /**
@@ -107,7 +114,6 @@ class CommercialQuoteController extends Controller
     public function store(Request $request)
     {
 
-        
         $shippersConsolidated = json_decode($request->shippers_consolidated);
 
         if ($request->is_consolidated) {
@@ -120,14 +126,14 @@ class CommercialQuoteController extends Controller
                 'nro_quote_commercial' => $request->nro_quote_commercial,
                 'origin' => $request->origin,
                 'destination' => $request->destination,
-                'customer_ruc' => $request->customer_ruc != null ?  $request->customer_ruc : null,
-                'customer_company_name' => $request->customer_company_name != null ?  $request->customer_company_name : null,
+                'customer_company_name' => $request->customer_company_name,
                 'load_value' => $totals['total_load_values'],
                 'id_type_shipment' => $request->id_type_shipment,
                 'id_regime' => $request->id_regime,
                 'id_type_load' => $request->id_type_load,
                 'id_incoterms' => $request->id_incoterms,
                 'id_containers' =>  $request->id_containers_consolidated,
+                'id_customer' => $request->id_customer,
                 'container_quantity'=> $request->container_quantity_consolidated,
                 'lcl_fcl' => $request->lcl_fcl,
                 'is_consolidated' => $request->is_consolidated,
@@ -150,8 +156,7 @@ class CommercialQuoteController extends Controller
                 'nro_quote_commercial' => $request->nro_quote_commercial,
                 'origin' => $request->origin,
                 'destination' => $request->destination,
-                'customer_ruc' => $request->customer_ruc != null ?  $request->customer_ruc : null,
-                'customer_company_name' => $request->customer_company_name != null ?  $request->customer_company_name : null,
+                'customer_company_name' => $request->customer_company_name,
                 'load_value' => $this->parseDouble($request->load_value),
                 'id_type_shipment' => $request->id_type_shipment,
                 'id_regime' => $request->id_regime,
@@ -162,6 +167,7 @@ class CommercialQuoteController extends Controller
                 'packaging_type' => $request->packaging_type,
                 'id_containers' => $request->id_containers,
                 'container_quantity' => $request->container_quantity,
+                'id_customer' => $request->id_customer,
                 'kilograms' => $request->kilograms != null ? $this->parseDouble($request->kilograms) : null,
                 'volumen' => $request->volumen != null ?  $this->parseDouble($request->volumen) : null,
                 'kilogram_volumen' => $request->kilogram_volumen != null ? $this->parseDouble($request->kilogram_volumen) : null,
@@ -342,6 +348,7 @@ class CommercialQuoteController extends Controller
         $type_insurace = TypeInsurance::all();
         $customs_taxes = new stdClass();
 
+
         $stateCountrys = StateCountry::whereHas('country', function ($query) {
             $query->where('name', 'Perú');
         })->get();
@@ -395,7 +402,6 @@ class CommercialQuoteController extends Controller
             'type_insurace' => $type_insurace,
             'customs_taxes' => $customs_taxes,
             'customs_agency' => $customs_agency
-
         ];
 
 
@@ -534,6 +540,12 @@ class CommercialQuoteController extends Controller
     public function show(string $id)
     {
         //
+    }
+
+    public function showCustomerForName(string $name)
+    {
+        $customer = Customer::where('name_businessname', $name)->first();
+        return response()->json($customer);
     }
 
     /**

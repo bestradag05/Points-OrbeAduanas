@@ -209,6 +209,7 @@ Route::middleware('auth')->group(function () {
     Route::get('commercial/service/{service}/{id}', [CommercialQuoteController::class, 'editCommercialQuoteService']);
     Route::get('commercial/quote/state/{action}/{id}', [CommercialQuoteController::class, 'handleActionCommercialQuote']);
     Route::patch('commercial/quote/updatedate/{id}', [CommercialQuoteController::class, 'updateDate']);
+    Route::get('commercial/customer/{name}', [CommercialQuoteController::class, 'showCustomerForName']);
     Route::resource('commercial/quote', CommercialQuoteController::class);
 
 

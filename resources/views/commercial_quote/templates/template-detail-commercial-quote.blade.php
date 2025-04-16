@@ -586,6 +586,22 @@
         }
 
 
+        function searchCustomer(nameCustomer) {
+
+            $.ajax({
+                type: "GET",
+                url: `/commercial/customer/${nameCustomer}`,
+                dataType: "JSON",
+                success: function(response) {
+
+                    console.log(response);
+
+                }
+            });
+
+        }
+
+
         // Mostrar mensaje de error
         function showError(input, message) {
             let errorSpan = input.nextElementSibling;

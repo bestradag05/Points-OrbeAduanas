@@ -45,44 +45,6 @@
           </div>
 
           <div class="col-6">
-
-              <div class="form-group">
-                  <label for="customer_ruc">RUC</label>
-
-                  <div class="input-group">
-
-                      <input type="text" class="form-control  @error('customer_ruc') is-invalid @enderror "
-                          name="customer_ruc" id="customer_ruc" placeholder="Ingrese el ruc"
-                          value="{{ isset($routing->customer_ruc) ? $routing->customer_ruc : old('customer_ruc') }}">
-                  </div>
-                  @error('customer_ruc')
-                      <span class="invalid-feedback d-block" role="alert">
-                          <strong>{{ $message }}</strong>
-                      </span>
-                  @enderror
-
-              </div>
-          </div>
-          <div class="col-6">
-
-              <div class="form-group">
-                  <label for="customer_company_name">Razon social / Nombre</label>
-
-                  <div class="input-group">
-                      <input type="text" class="form-control @error('customer_company_name') is-invalid @enderror "
-                          name="customer_company_name" id="customer_company_name" placeholder="Ingrese valor de la carga"
-                          value="{{ isset($routing->customer_company_name) ? $routing->customer_company_name : old('customer_company_name') }}">
-                  </div>
-                  @error('customer_company_name')
-                      <span class="invalid-feedback d-block" role="alert">
-                          <strong>{{ $message }}</strong>
-                      </span>
-                  @enderror
-
-              </div>
-          </div>
-
-          <div class="col-6">
               <div class="row" id="lclfcl_content">
                   <div class="col-12">
                       <label for="id_type_shipment">Tipo de embarque <span class="text-danger">*</span></label>
@@ -166,6 +128,64 @@
                       </option>
                   @endforeach
               </x-adminlte-select2>
+          </div>
+
+          <div class="col-6 row justify-content-center align-items-center">
+              <div class="form-group text-indigo">
+                  <label>¿Es cliente o prospecto?</label>
+                  <div class="form-check form-check-inline">
+                      <input type="radio" id="customer" name="is_customer_prospect" value="customer"
+                          class="form-check-input" onchange="toggleCustomerProspectSection()">
+                      <label for="customer" class="form-check-label">Cliente</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                      <input type="radio" id="prospect" name="is_customer_prospect" value="prospect"
+                          class="form-check-input" onchange="toggleCustomerProspectSection()" checked>
+                      <label for="prospect" class="form-check-label">Prospecto</label>
+                  </div>
+              </div>
+          </div>
+
+          <div id="contentProspect" class="col-6">
+              <div class="form-group">
+                  <label for="customer_company_name">Razon social / Nombre</label>
+
+                  <div class="input-group">
+                      <input type="text" class="form-control @error('customer_company_name') is-invalid @enderror "
+                          name="customer_company_name" id="customer_company_name"
+                          placeholder="Ingrese valor de la carga"
+                          value="{{ isset($routing->customer_company_name) ? $routing->customer_company_name : old('customer_company_name') }}">
+                  </div>
+                  @error('customer_company_name')
+                      <span class="invalid-feedback d-block" role="alert">
+                          <strong>{{ $message }}</strong>
+                      </span>
+                  @enderror
+
+              </div>
+          </div>
+
+          <div id="contentCustomer" class="col-6 d-none">
+              <div class="form-group">
+                  <label for="id_customer">Cliente <span class="text-danger">*</span></label>
+
+                  <x-adminlte-select2 name="id_customer" igroup-size="md"
+                      data-placeholder="Seleccione una opcion...">
+                      <option />
+                      @foreach ($customers as $customer)
+                          <option value="{{ $customer->id }}"
+                              {{ (isset($routing->id_customer) && $routing->id_customer == $customer->id) || old('id_customer') == $customer->id ? 'selected' : '' }}>
+                             {{ $customer->name_businessname }} - {{$customer->document->name}}:{{$customer->document_number}}
+                          </option>
+                      @endforeach
+                  </x-adminlte-select2>
+                  @error('customer_company_name')
+                      <span class="invalid-feedback d-block" role="alert">
+                          <strong>{{ $message }}</strong>
+                      </span>
+                  @enderror
+
+              </div>
           </div>
 
 
@@ -847,6 +867,23 @@
               } else {
                   document.getElementById("multipleProvidersSection").classList.add("d-none");
                   document.getElementById("singleProviderSection").classList.remove("d-none");
+              }
+          }
+
+
+          function toggleCustomerProspectSection() {
+              let isCustomerProspect = document.querySelector('input[name="is_customer_prospect"]:checked').value;
+
+              if (isCustomerProspect === "customer") {
+
+                  $("#contentCustomer").removeClass("d-none");
+                  $("#contentProspect").addClass("d-none");
+                  $("#contentProspect").find('input').val("");
+
+              } else {
+                  $("#contentCustomer").addClass("d-none");
+                  $("#contentProspect").removeClass("d-none");
+                  $('#id_customer').val('').trigger('change');
               }
           }
 
