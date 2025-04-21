@@ -346,6 +346,7 @@ class CommercialQuoteController extends Controller
         $modalitys = Modality::all();
         $concepts = Concepts::all()->load('typeService');
         $type_insurace = TypeInsurance::all();
+        $documents = CustomerSupplierDocument::all();
         $customs_taxes = new stdClass();
 
 
@@ -401,7 +402,8 @@ class CommercialQuoteController extends Controller
             'stateCountrys' => $stateCountrys,
             'type_insurace' => $type_insurace,
             'customs_taxes' => $customs_taxes,
-            'customs_agency' => $customs_agency
+            'customs_agency' => $customs_agency,
+            'documents' => $documents
         ];
 
 

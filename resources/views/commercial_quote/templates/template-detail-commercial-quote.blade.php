@@ -529,6 +529,7 @@
 @include('commercial_quote/modals/modalFreight')
 @include('commercial_quote/modals/modalCustom')
 @include('commercial_quote/modals/modalTransport')
+@include('commercial_quote/modals/modalCommercialFillData')
 
 @push('scripts')
     <script>
@@ -559,29 +560,97 @@
 
         function handleActionCommercialQuote(action, id) {
 
+
+
             let textAction = (action === 'accept') ? 'aceptar' : 'rechazar';
 
-            Swal.fire({
-                title: `¿Estas seguro que deseas ${textAction} esta cotización?`,
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#2e37a4",
-                cancelButtonColor: "#6c757d",
-                confirmButtonText: `Si, ${textAction}!`,
-                cancelButtonText: 'No, cancelar',
-                allowOutsideClick: false // Evita que se cierre al hacer clic fuera
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        title: "Listo!",
-                        text: `tu cotizacion se acaba de ${textAction} .`,
-                        icon: "success",
-                        allowOutsideClick: false
-                    }).then((result) => {
-                        window.location.href = `/commercial/quote/state/${action}/${id}`;
-                    })
+            if (action === 'accept') {
+                //Verificamos si tiene asociado un cliente antes de aceptar.
+                let id_customer = @json($comercialQuote->id_customer);
+
+                if (!id_customer) {
+
+                    let name_customer = @json($comercialQuote->customer_company_name);
+
+                    completeCustomerInformation(name_customer);
+
                 }
-            });
+
+            }
+
+
+
+
+
+            /*  Swal.fire({
+                 title: `¿Estas seguro que deseas ${textAction} esta cotización?`,
+                 icon: "warning",
+                 showCancelButton: true,
+                 confirmButtonColor: "#2e37a4",
+                 cancelButtonColor: "#6c757d",
+                 confirmButtonText: `Si, ${textAction}!`,
+                 cancelButtonText: 'No, cancelar',
+                 allowOutsideClick: false 
+             }).then((result) => {
+                 if (result.isConfirmed) {
+
+                 }
+             }); */
+
+        }
+
+
+        function completeCustomerInformation(name_customer = null) {
+
+            if (name_customer) {
+                openModalToFillData(name_customer)
+            }
+
+        }
+
+        function openModalToFillData(name_customer = null) {
+            let modal = $('#commercialFillData');
+
+            //Abrimos el modal
+            modal.modal('show');
+
+            if (name_customer) {
+                //Agregamos el nombre que guardo si es que lo tenia
+                modal.find('#name_businessname').val(name_customer);
+            }
+
+
+
+
+        }
+
+
+        function searchsupplier(event) {
+
+            const name_businessname = document.getElementById('name_businessname');
+
+            fetch(`/api/consult-ruc/${event.value}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta de la red');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Manejar los datos de la respuesta
+
+                    name_businessname.value = data.lista[0].apenomdenunciado;
+                    name_businessname.readOnly = true;
+
+                })
+                .catch(error => {
+                    // Manejar cualquier error
+                    console.error('Hubo un problema con la solicitud fetch:', error);
+
+                    name_businessname.value = '';
+                    name_businessname.readOnly = false;
+                });
+
 
         }
 
