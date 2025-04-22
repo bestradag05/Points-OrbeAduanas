@@ -24,6 +24,7 @@ return new class extends Migration
             $table->unsignedBigInteger('id_incoterms');
             $table->unsignedBigInteger('id_type_load');
             $table->unsignedBigInteger('id_customer')->nullable();
+            $table->unsignedBigInteger('id_supplier')->nullable();
             $table->unsignedBigInteger('id_containers')->nullable();
             $table->integer('container_quantity')->nullable();
             $table->string('lcl_fcl')->nullable();
@@ -50,6 +51,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('id_customer')->references('id') ->on('customer');
+            $table->foreign('id_supplier')->references('id') ->on('suppliers');
             $table->foreign('id_containers')->references('id') ->on('containers');
             $table->foreign('id_personal')->references('id')->on('personal');
             $table->foreign('id_type_shipment')->references('id')->on('type_shipment');

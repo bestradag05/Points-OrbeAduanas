@@ -24,6 +24,7 @@ class CommercialQuote extends Model
         'id_incoterms',
         'id_type_load',
         'id_customer',
+        'id_supplier',
         'lcl_fcl',
         'is_consolidated',
         'total_nro_package_consolidated',

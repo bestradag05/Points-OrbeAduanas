@@ -569,11 +569,11 @@
                 let id_customer = @json($comercialQuote->id_customer);
 
                 if (!id_customer) {
-
                     let name_customer = @json($comercialQuote->customer_company_name);
+                    completeCustomerInformation(name_customer, null);
 
-                    completeCustomerInformation(name_customer);
-
+                } else {
+                    completeCustomerInformation(null, id_customer);
                 }
 
             }
@@ -600,29 +600,64 @@
         }
 
 
-        function completeCustomerInformation(name_customer = null) {
+        function completeCustomerInformation(name_customer = null, id_customer) {
 
-            if (name_customer) {
-                openModalToFillData(name_customer)
-            }
-
-        }
-
-        function openModalToFillData(name_customer = null) {
             let modal = $('#commercialFillData');
 
-            //Abrimos el modal
+            if (id_customer) {
+
+                $('#customer-data').addClass('d-none');
+                $('#has_customer_data').val(0);
+
+            } else {
+
+                if (name_customer) {
+                    //Agregamos el nombre que guardo si es que lo tenia
+                    modal.find('#name_businessname').val(name_customer);
+                }
+            }
+
             modal.modal('show');
 
-            if (name_customer) {
-                //Agregamos el nombre que guardo si es que lo tenia
-                modal.find('#name_businessname').val(name_customer);
+
+        }
+
+
+        function submitFillData() {
+
+            let formFillData = $('#forCommercialFillData');
+            let hasCustomerData = $('#has_customer_data').val() === '1';
+            let inputsAndSelects = formFillData.find('input, select');
+
+            let isValid = true;
+
+            inputsAndSelects.each(function() {
+                let $input = $(this); // Convertir a objeto jQuery
+                let value = $input.val();
+
+                if (!hasCustomerData && $input.closest('#customer-data').length > 0) {
+                    return; // skip this input
+                }
+
+                if (value.trim() === '') {
+                    $input.addClass('is-invalid');
+                    isValid = false;
+                    showError(this, 'Debe completar este campo');
+                } else {
+                    $input.removeClass('is-invalid');
+                    hideError(this);
+                }
+            });
+
+            if (isValid) {
+                formFillData.submit();
             }
 
 
 
-
         }
+
+
 
 
         function searchsupplier(event) {

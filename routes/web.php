@@ -203,6 +203,7 @@ Route::middleware('auth')->group(function () {
     Route::get('commercial/quote/{id_quote}/detail', [CommercialQuoteController::class, 'getTemplateDetailCommercialQuote'])->name('commercial.quote.detail');
     Route::get('commercial/quote/{id_quote}/quotes', [CommercialQuoteController::class, 'getTemplateQuoteCommercialQuote']);
     Route::get('commercial/quote/{id_quote}/documents', [CommercialQuoteController::class, 'getTemplateDocmentCommercialQuote']);
+    Route::post('commercial/quote/completeData', [CommercialQuoteController::class, 'completeData']);
 
     Route::get('commercial/createQuote/{nro_quote_commercial}', [CommercialQuoteController::class, 'createQuote']);
     Route::get('commercial/quote/getPDF/{id}', [CommercialQuoteController::class, 'getPDF']);
