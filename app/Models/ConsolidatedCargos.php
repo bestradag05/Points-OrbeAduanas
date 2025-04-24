@@ -12,19 +12,19 @@ class ConsolidatedCargos extends Model
     protected $table = 'consolidated_cargos';
 
     protected $fillable =
-    [       
-            'commercial_quote_id',
-            'id_incoterms',
-            'supplier_id',
-            'supplier_temp',
-            'commodity',
-            'load_value',
-            'nro_packages',
-            'packaging_type',
-            'kilogram_volumen',
-            'volumen',
-            'kilograms',
-            'value_measures',
+    [
+        'commercial_quote_id',
+        'id_incoterms',
+        'supplier_id',
+        'supplier_temp',
+        'commodity',
+        'load_value',
+        'nro_packages',
+        'packaging_type',
+        'kilogram_volumen',
+        'volumen',
+        'kilograms',
+        'value_measures',
     ];
 
 
@@ -38,5 +38,8 @@ class ConsolidatedCargos extends Model
         return $this->belongsTo(Incoterms::class, 'id_incoterms', 'id');
     }
 
-
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
+    }
 }

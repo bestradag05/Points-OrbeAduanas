@@ -131,7 +131,6 @@
                     {{-- Proveedor --}}
 
                     <div id="supplier-data" class="row col-12">
-
                         <div class="col-12">
                             <h6 class="text-indigo text-bold">Proveedor: </h6>
                         </div>

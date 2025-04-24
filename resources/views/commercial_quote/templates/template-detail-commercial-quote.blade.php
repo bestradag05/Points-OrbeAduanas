@@ -136,7 +136,11 @@
 
                 @foreach ($comercialQuote->consolidatedCargos as $consolidated)
                     @php
-                        $shipper = json_decode($consolidated->supplier_temp);
+                        $shipperTemp = json_decode($consolidated->supplier_temp);
+                        $shipper = null;
+                        if (!$shipper) {
+                            $shipper = $consolidated->supplier;
+                        }
                         $measures = json_decode($consolidated->value_measures);
                     @endphp
 
@@ -150,7 +154,7 @@
                                         type="button" data-toggle="collapse"
                                         data-target="#collapse{{ $consolidated->id }}" aria-expanded="true">
                                         <span class="text-indigo text-bold">Shipper {{ $loop->iteration }}</span>:
-                                        {{ $shipper->shipper_name }}
+                                        {{ isset($shipperTemp->shipper_name) ? $shipperTemp->shipper_name : $shipper->name_businessname }}
                                         <i class="fas fa-sort-down mx-3"></i>
                                     </button>
                                 </h2>
@@ -160,30 +164,35 @@
                                 data-parent="#accordionConsolidated">
 
                                 <div class="row text-muted px-5">
-                                    <div class="col-12  {{ $shipper->shipper_name ? '' : 'd-none' }}">
+                                    <div class="col-12  {{ isset($shipperTemp->shipper_name) ? '' : 'd-none' }}">
                                         <p class="text-sm">Proovedor :
-                                            <b class="d-block">{{ $shipper->shipper_name }}</b>
+                                            <b
+                                                class="d-block">{{ isset($shipperTemp->shipper_name) ? $shipperTemp->shipper_name : $shipper->name_businessname }}</b>
                                         </p>
                                     </div>
 
                                     <div class="col-4">
                                         <p class="text-sm">Contacto :
-                                            <b class="d-block">{{ $shipper->shipper_contact }}</b>
+                                            <b
+                                                class="d-block">{{ isset($shipperTemp->shipper_contact) ? $shipperTemp->shipper_contact : $shipper->contact_name }}</b>
                                         </p>
                                     </div>
                                     <div class="col-4">
                                         <p class="text-sm">Email :
-                                            <b class="d-block">{{ $shipper->shipper_contact_email }}</b>
+                                            <b
+                                                class="d-block">{{ isset($shipperTemp->shipper_contact_email) ? $shipperTemp->shipper_contact_email : $shipper->contact_email }}</b>
                                         </p>
                                     </div>
                                     <div class="col-4">
                                         <p class="text-sm">Telefono :
-                                            <b class="d-block">{{ $shipper->shipper_contact_phone }}</b>
+                                            <b
+                                                class="d-block">{{ isset($shipperTemp->shipper_contact_phone) ? $shipperTemp->shipper_contact_phone : $shipper->contact_number }}</b>
                                         </p>
                                     </div>
                                     <div class="col-12">
                                         <p class="text-sm">Direccion :
-                                            <b class="d-block">{{ $shipper->shipper_address }}</b>
+                                            <b
+                                                class="d-block">{{ isset($shipperTemp->shipper_address) ? $shipperTemp->shipper_address : $shipper->address }}</b>
                                         </p>
                                     </div>
                                     <div class="col-12">
@@ -566,54 +575,82 @@
 
             if (action === 'accept') {
                 //Verificamos si tiene asociado un cliente antes de aceptar.
-                let id_customer = @json($comercialQuote->id_customer);
+                let idCustomer = @json($comercialQuote->id_customer);
+                let nameCustomer = @json($comercialQuote->customer_company_name);
+                let isConsolidated = @json($comercialQuote->is_consolidated);
 
-                if (!id_customer) {
-                    let name_customer = @json($comercialQuote->customer_company_name);
-                    completeCustomerInformation(name_customer, null);
+                //cuando no hay idCustomer
+                //cuando no es consolidado
 
+                if (!idCustomer || !isConsolidated) {
+                    completeCustomerInformation(nameCustomer, idCustomer, isConsolidated);
                 } else {
-                    completeCustomerInformation(null, id_customer);
+
+                    let formFillData = $('#forCommercialFillData');
+                    $('#has_customer_data').val(0);
+                    $('#has_supplier_data').val(0);
+
+                    Swal.fire({
+                        title: `¿Estas seguro que deseas ${textAction} esta cotización?`,
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#2e37a4",
+                        cancelButtonColor: "#6c757d",
+                        confirmButtonText: `Si, ${textAction}!`,
+                        cancelButtonText: 'No, cancelar',
+                        allowOutsideClick: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            formFillData.submit();
+                        }
+                    });
+
                 }
 
+            } else {
+                Swal.fire({
+                    title: `¿Estas seguro que deseas ${textAction} esta cotización?`,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#2e37a4",
+                    cancelButtonColor: "#6c757d",
+                    confirmButtonText: `Si, ${textAction}!`,
+                    cancelButtonText: 'No, cancelar',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                    }
+                });
             }
-
-
-
-
-
-            /*  Swal.fire({
-                 title: `¿Estas seguro que deseas ${textAction} esta cotización?`,
-                 icon: "warning",
-                 showCancelButton: true,
-                 confirmButtonColor: "#2e37a4",
-                 cancelButtonColor: "#6c757d",
-                 confirmButtonText: `Si, ${textAction}!`,
-                 cancelButtonText: 'No, cancelar',
-                 allowOutsideClick: false 
-             }).then((result) => {
-                 if (result.isConfirmed) {
-
-                 }
-             }); */
 
         }
 
 
-        function completeCustomerInformation(name_customer = null, id_customer) {
+        function completeCustomerInformation(nameCustomer, idCustomer, isConsolidated) {
 
             let modal = $('#commercialFillData');
 
-            if (id_customer) {
+            if (isConsolidated) {
+                let shippersCosolidated = @json($comercialQuote->consolidatedCargos);
+
+                if (shippersCosolidated.length > 0) {
+                    $('#supplier-data').addClass('d-none');
+                    $('#has_supplier_data').val(0);
+                }
+
+            }
+
+            if (idCustomer) {
 
                 $('#customer-data').addClass('d-none');
                 $('#has_customer_data').val(0);
 
             } else {
 
-                if (name_customer) {
+                if (nameCustomer) {
                     //Agregamos el nombre que guardo si es que lo tenia
-                    modal.find('#name_businessname').val(name_customer);
+                    modal.find('#name_businessname').val(nameCustomer);
                 }
             }
 
@@ -627,6 +664,7 @@
 
             let formFillData = $('#forCommercialFillData');
             let hasCustomerData = $('#has_customer_data').val() === '1';
+            let hasSupplierData = $('#has_supplier_data').val() === '1';
             let inputsAndSelects = formFillData.find('input, select');
 
             let isValid = true;
@@ -636,6 +674,10 @@
                 let value = $input.val();
 
                 if (!hasCustomerData && $input.closest('#customer-data').length > 0) {
+                    return; // skip this input
+                }
+
+                if (!hasSupplierData && $input.closest('#supplier-data').length > 0) {
                     return; // skip this input
                 }
 

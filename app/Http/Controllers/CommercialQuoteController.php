@@ -339,14 +339,14 @@ class CommercialQuoteController extends Controller
 
     public function completeData(Request $request)
     {
-        $commercialQuote = CommercialQuote::where('nro_quote_commercial', $request->nro_quote_commercial)->first();
 
+        $commercialQuote = CommercialQuote::where('nro_quote_commercial', $request->nro_quote_commercial)->first();
         $customer = null;
         $supplier = null;
         $updateData = [
             'state' => 'Aceptado'
         ];
-        
+
 
         if ($request->has_customer_data) {
 
@@ -355,52 +355,83 @@ class CommercialQuoteController extends Controller
                 ->where('document_number', $request->document_number)
                 ->first();
 
-                if ($customer) {
-                    // Verificar si el cliente pertenece a otro usuario
-                    if ($customer->id_personal !== Auth::user()->personal->id) {
-                        return back()->with('error', 'El cliente que intentas registrar, esta asignado a otro usuario.');
-                    }
-                    // Si pertenece al mismo usuario, se usa tal cual (sin crear uno nuevo)
-                } else {
-                    // Si no existe, se crea uno nuevo
-                    $customer = Customer::create([
-                        'id_document' => $request->id_document,
-                        'document_number' => $request->document_number,
-                        'name_businessname' => $request->name_businessname,
-                        'address' => $request->address,
-                        'contact_name' => $request->contact_name,
-                        'contact_number' => $request->contact_number,
-                        'contact_email' => $request->contact_email,
-                        'state' => 'Activo',
-                        'id_personal' => Auth::user()->personal->id
-                    ]);
-
-
-                    $updateData['customer_company_name'] = null;
-                    $updateData['id_customer'] = $customer->id;
+            if ($customer) {
+                // Verificar si el cliente pertenece a otro usuario
+                if ($customer->id_personal !== Auth::user()->personal->id) {
+                    return back()->with('error', 'El cliente que intentas registrar, esta asignado a otro usuario.');
                 }
-        }
-
-
-        if ($request->has_supplier_data) {
-
-            // Buscar proveedor por nombre (ajústalo si tienes un campo clave único)
-            $supplier = Supplier::where('name_businessname', $request->name_businessname)->first();
-
-            if (!$supplier) {
-                $supplier = Supplier::create([
-                    'name_businessname' => $request->name_businessname_supplier,
-                    'address' => $request->address_supplier,
-                    'contact_name' => $request->contact_name_supplier,
-                    'contact_number' => $request->contact_number_supplier,
-                    'contact_email' => $request->contact_email_supplier,
+                // Si pertenece al mismo usuario, se usa tal cual (sin crear uno nuevo)
+            } else {
+                // Si no existe, se crea uno nuevo
+                $customer = Customer::create([
+                    'id_document' => $request->id_document,
+                    'document_number' => $request->document_number,
+                    'name_businessname' => $request->name_businessname,
+                    'address' => $request->address,
+                    'contact_name' => $request->contact_name,
+                    'contact_number' => $request->contact_number,
+                    'contact_email' => $request->contact_email,
                     'state' => 'Activo',
+                    'id_personal' => Auth::user()->personal->id
                 ]);
-            }
 
-            $updateData['id_supplier'] = $supplier->id;
+
+                $updateData['customer_company_name'] = null;
+                $updateData['id_customer'] = $customer->id;
+            }
         }
 
+        if ($commercialQuote->is_consolidated) {
+
+            foreach ($commercialQuote->consolidatedCargos as $loads) {
+
+                $supplerdata = json_decode($loads->supplier_temp);
+
+                $supplier = Supplier::where('name_businessname', $supplerdata->shipper_name)->first();
+
+                if (!$supplier) {
+                    $supplier = Supplier::create([
+                        'name_businessname' => $supplerdata->shipper_name,
+                        'address' => $supplerdata->shipper_address,
+                        'contact_name' => $supplerdata->shipper_contact,
+                        'contact_number' => $supplerdata->shipper_contact_phone,
+                        'contact_email' => $supplerdata->shipper_contact_email,
+                        'state' => 'Activo',
+                    ]);
+                }
+                // Una vez que se acepta, se cambia el supplier temporal por el supplier registrado.
+                $loads->update([
+                    'supplier_temp' => null,
+                    'supplier_id' => $supplier->id
+                ]);
+
+                //Obtenemos el supplier que tenga mayor valor de factura, para actualizarlo en la cotizacion
+
+                $maxLoadCargo = $commercialQuote->consolidatedCargos->sortByDesc('load_value')->first();
+                $supplierId = $maxLoadCargo->supplier_id;
+                $updateData['id_supplier'] = $supplierId;
+            }
+        } else {
+
+            if ($request->has_supplier_data) {
+
+                // Buscar proveedor por nombre (ajústalo si tienes un campo clave único)
+                $supplier = Supplier::where('name_businessname', $request->name_businessname)->first();
+
+                if (!$supplier) {
+                    $supplier = Supplier::create([
+                        'name_businessname' => $request->name_businessname_supplier,
+                        'address' => $request->address_supplier,
+                        'contact_name' => $request->contact_name_supplier,
+                        'contact_number' => $request->contact_number_supplier,
+                        'contact_email' => $request->contact_email_supplier,
+                        'state' => 'Activo',
+                    ]);
+                }
+
+                $updateData['id_supplier'] = $supplier->id;
+            }
+        }
 
         $commercialQuote->update($updateData);
 
