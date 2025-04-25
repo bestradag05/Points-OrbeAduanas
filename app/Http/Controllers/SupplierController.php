@@ -142,6 +142,7 @@ class SupplierController extends Controller
                 'unique:suppliers,document_number,' . $id,
                 $digits ? 'digits:' . $digits : 'nullable'
             ], */
+            
             'name_businessname' => 'required|string|unique:suppliers,name_businessname,' . $id,
             'address' => 'required|string',
             'contact_name' => 'required|string',
