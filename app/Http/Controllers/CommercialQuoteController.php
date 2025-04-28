@@ -374,11 +374,11 @@ class CommercialQuoteController extends Controller
                     'state' => 'Activo',
                     'id_personal' => Auth::user()->personal->id
                 ]);
-
-
-                $updateData['customer_company_name'] = null;
-                $updateData['id_customer'] = $customer->id;
+               
             }
+
+            $updateData['customer_company_name'] = null;
+            $updateData['id_customer'] = $customer->id;
         }
 
         if ($commercialQuote->is_consolidated) {
@@ -416,7 +416,7 @@ class CommercialQuoteController extends Controller
             if ($request->has_supplier_data) {
 
                 // Buscar proveedor por nombre (ajústalo si tienes un campo clave único)
-                $supplier = Supplier::where('name_businessname', $request->name_businessname)->first();
+                $supplier = Supplier::where('name_businessname', $request->name_businessname_supplier)->first();
 
                 if (!$supplier) {
                     $supplier = Supplier::create([

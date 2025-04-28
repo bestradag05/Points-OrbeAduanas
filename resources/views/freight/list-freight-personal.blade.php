@@ -13,29 +13,24 @@
         @foreach ($freights as $freight)
             <tr>
                 <td>{{ $loop->iteration }}</td>
-                <td>
-                    <a href="{{ url('/routing/' . $freight->routing->id . '/detail') }}">
-                        {{ $freight->nro_operation }}
-                    </a>
-                </td>
-                @forelse ($freight->quoteFreights as $quoteFreights)
-                    @if ($quoteFreights->state === 'Aceptada')
-                        <td>{{ $quoteFreights->nro_quote }}</td>
-                    @endif
-                @empty
-                    <td>Sin Cotización</td>
-                @endforelse
-
+                <td>{{ $freight->commercial_quote->customer->name_businessname }}</td>
+                <td>{{ $freight->commercial_quote->origin }}</td>
+                <td>{{ $freight->commercial_quote->destination }}</td>
                 <td>{{ $freight->value_utility }}</td>
                 <td>{{ $freight->value_freight }}</td>
                 <td class="text-indigo text-bold">{{ ($freight->insurance) ? 'SI' : 'NO' }}</td>
+                <td>
+                    <a href="{{ url('/commercial/quote/' . $freight->commercial_quote->id . '/detail') }}">
+                        {{ $freight->nro_quote_commercial }}
+                    </a>
+                </td>
 
-                <td>{{ $freight->routing->personal->names }}</td>
+                <td>{{ $freight->commercial_quote->personal->names }}</td>
                 <td class="{{ $freight->state == 'Pendiente' ? 'text-warning' : 'text-success' }}">{{ $freight->state }}
                 </td>
 
                 <td>
-                    <a href="{{ url('/freight/' . $freight->id . '/edit') }}" class="{{($freight->state === 'Pendiente') ? '' : 'd-none'}}"> <i class="fas fa-edit"></i> </a>
+                    <a href="{{ url('/freight/' . $freight->id) }}" class="btn btn-indigo btn-sm">Detalle</a>
                 </td>
             </tr>
         @endforeach

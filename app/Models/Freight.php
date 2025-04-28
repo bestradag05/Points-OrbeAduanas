@@ -62,6 +62,6 @@ class Freight extends Model
     
     public function quoteFreight()
     {
-        return $this->hasOne(QuoteFreight::class, 'id', 'id_quote_freight');
+        return $this->hasMany(QuoteFreight::class, 'id', 'id_quote_freight');
     }
 }

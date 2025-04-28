@@ -89,7 +89,9 @@ class FreightController extends Controller
      */
     public function show(string $id)
     {
-        //
+      $compact = $this->freightService->showFreight($id);
+
+      return view("freight/detail-freight", $compact);
     }
 
 

@@ -66,22 +66,23 @@ class FreightService
         // Verificar si el usuario es un Super-Admin
         if (Auth::user()->hasRole('Super-Admin')) {
             // Si es Super-Admin, obtener todos los routing
-            $freights = Freight::with('quoteFreights')->get();
+            $freights = Freight::with('quoteFreight')->get();
         } else {
             // Si no es Super-Admin, solo obtener los clientes que pertenecen al personal del usuario autenticado
-            $freights = Freight::whereHas('routing', function ($query) use ($personalId) {
+            $freights = Freight::whereHas('commercial_quote', function ($query) use ($personalId) {
                 $query->where('id_personal', $personalId);
             })->with('quoteFreights')->get();
         }
 
-
         $heads = [
             '#',
-            'N° Operacion',
-            'N° Cotizacion',
+            'Cliente',
+            'Origen',
+            'Destino',
             'Utilidad a Orbe',
             'Valor del Flete',
             'Seguro',
+            'N° Cotizacion',
             'Asesor Comercial',
             'Estado',
             'Acciones'
@@ -221,6 +222,17 @@ class FreightService
 
         return compact('freight', 'quote', 'type_insurace', 'concepts', 'conceptFreight', 'commercial_quote', 'insurance');
     }
+
+    public function showFreight($id){
+
+        
+        $freight = Freight::findOrFail($id);
+        $comercialQuote = $freight->commercial_quote;
+
+        return compact('freight', 'comercialQuote');
+
+    }
+
 
 
     public function updateFreight($request, $id)

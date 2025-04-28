@@ -71,6 +71,12 @@ class CommercialQuote extends Model
     {
         return $this->belongsTo(Personal::class, 'id_personal', 'id');
     }
+    
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'id_customer', 'id');
+    }
+
 
     public function regime()
     {
