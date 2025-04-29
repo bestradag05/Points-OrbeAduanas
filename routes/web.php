@@ -36,6 +36,8 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ContainerController;
 use App\Http\Controllers\TypeContainerController;
+use App\Models\CommercialQuote;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +49,16 @@ use App\Http\Controllers\TypeContainerController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('/routingpdf/{id}', function($id){
+
+    $commercialQuote = CommercialQuote::findOrFail($id);
+
+    $pdf = Pdf::loadView('freight.pdf.routingOrder', compact('commercialQuote'));
+
+    return $pdf->stream('Routing Order.pdf');
+
+});
 
 Route::get('/', function () {
     return view('auth/login');

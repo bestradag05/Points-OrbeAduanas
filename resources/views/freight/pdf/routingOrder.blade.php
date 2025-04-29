@@ -10,236 +10,26 @@
     <style>
         body {
             font-size: 10px;
-            border: 2px solid #000;
             overflow: hidden;
             position: relative;
-
+            font-family: Arial, Helvetica, sans-serif
         }
 
-        .title {
-            text-align: center;
-        }
-
-        .image {
-            width: 180px;
-            text-align: center;
-        }
-
-        .image img {
-            width: 100%;
-            height: auto;
-            max-height: 80px;
-        }
-
-        .title {
-            width: 100%;
-            text-align: center;
-
-            /* Simula la segunda línea */
-        }
-
-        .title h1 {
-            font-weight: bold;
-            text-transform: uppercase;
-            text-decoration: underline;
-            text-decoration-thickness: 2px;
-            text-shadow: 0px 3px 0px #234195;
-            color: #234195;
-
-        }
-
-        .detail {
-            width: 90%;
-            display: table;
-            margin-top: 30px;
-
-            /* Hace que el contenedor actúe como tabla */
-        }
-
-        .items-detail {
-            display: table-cell;
-            /* Hace que los elementos se alineen en la misma fila */
-            width: 50%;
-            /* Distribuye cada tabla al 50% */
-            vertical-align: top;
-            /* Alinea el contenido arriba */
-        }
-
-        .items-detail table {
-
-            width: 100%;
-            /* Hace que las tablas ocupen todo el ancho del contenedor */
+        .table-head {
             border-collapse: collapse;
-        }
-
-        .detail .items-detail:first-child table {
-            border: 1px solid #000;
-            border-left: none;
-            border-bottom: none;
-            /* Agrega borde para mejor visualización */
-        }
-
-        .detail .items-detail:last-child table {
-            margin-top: 20px;
-            /* Agrega borde para mejor visualización */
-        }
-
-        .detail .items-detail:last-child table td {
-            text-align: right;
-            /* Agrega borde para mejor visualización */
-        }
-
-        .items-detail td {
-            padding: 5px;
-            /* Agrega borde para mejor visualización */
-        }
-
-        .title-table {
-            background: #234195;
-            padding: 10px;
-            color: white;
-            text-transform: uppercase;
-        }
-
-        .title-item-table {
             color: #234195;
-            text-transform: uppercase;
-            font-weight: bold;
-
         }
 
-        #detail-freight {
-            width: 100%;
-        }
-
-        .container-service table {
-            width: 100%;
-        }
-
-        .table {
-            border-collapse: collapse;
-        }
-
-        .table th {
-            background: #7A9CC7;
+        .table-detail{
             padding: 5px;
-            color: white
-        }
-
-        .table td {
-            padding: 5px;
-        }
-
-        .table td#observation {
-            width: 20%;
-            text-align: center;
-        }
-
-        th {
-            text-transform: uppercase;
-        }
-
-        .table td:last-child {
-            text-align: right;
-        }
-
-        .total-service {
-            background: #FFC000;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 10px;
-        }
-
-        #detail-quote {
             width: 100%;
-            display: table;
-        }
-
-
-        .item-detail-quote {
-            display: table-cell;
-            /* Hace que los elementos se alineen en la misma fila */
-            width: 50%;
-            /* Distribuye cada tabla al 50% */
-            vertical-align: top;
-            /* Alinea el contenido arriba */
-        }
-
-        #detail-quote .item-detail-quote:first-child {
-            border: 2px solid black;
-            border-left: none;
-            padding: 5px;
-        }
-
-        #detail-quote .item-detail-quote:first-child p {
-            text-transform: uppercase;
-            text-decoration: underline;
-            font-weight: bold;
-        }
-
-        #detail-quote .item-detail-quote:first-child ul {
-            text-align: justify;
-            list-style: none;
-            padding: 0;
-            margin: 0;
-
-        }
-
-        #detail-quote .item-detail-quote:first-child ul li {
-            margin-bottom: 5px;
-
-        }
-
-
-        .item-detail-quote:last-child {
-            position: relative;
-            /* Necesario para que el hijo absoluto se posicione dentro */
-            height: 215px;
-            /* Ajusta según tu necesidad */
-        }
-
-        .total-quote {
-            background: #48c759;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: auto;
-            /* Para que ocupe todo el ancho */
-            text-align: center;
-            /* Alinear texto si es necesario */
-            padding: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-            /* Espaciado opcional */
             font-size: 12px;
-
         }
 
-
-        .footer-quote {
-            text-align: center;
-        }
-
-        .footer-quote p {
-            margin: 0;
-            margin-top: 5px;
-        }
-
-        .watermark {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            width: 110%;
-            height: 100%;
-            background-image: url('{{ public_path('vendor/adminlte/dist/img/logoorbe.png') }}');
-            background-size: contain;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: 0.1;
-            z-index: -1;
-            transform: translate(-50%, -50%) rotate(-45deg);
-            /* Rotación en diagonal */
+        .table-detail span{
+            text-transform: uppercase;
+            color: #234195;
+            font-weight: bold;
         }
     </style>
 
@@ -247,18 +37,40 @@
 </head>
 
 <body>
-    {{-- 
-    <div class="image">
-        <img src="{{ public_path('vendor/adminlte/dist/img/logoorbe.png') }}">
-    </div> --}}
-
-    <div class="watermark"></div>
 
 
-    <div class="title">
-        <h1>Cotizacion {{ $commercialQuote->type_shipment->description }} </h1>
+    <table class="table-head" width="100%" >
+        <tr>
+            <td style="text-align: left;">
+                <h1 style="margin: 0; font-weight: bold; font-size: 28px">
+                    ROUTING ORDER</h1>
+            </td>
+            <td style="text-align: right;">
+                <img src="{{ public_path('assets/img/logo.png') }}" alt="Orbe Aduanas S.A.C" style="height: 45px;">
+            </td>
+        </tr>
+        <tr style="color: #fff; background: #234195; font-weight: 800px; text-align: right; font-size: 14px">
+            <td colspan="2" style="padding-right: 20px">{{ $commercialQuote->type_shipment->name }}</td>
+        </tr>
+    </table>
 
-    </div>
+    <table class="table-detail">
+        <tr>
+            <td>
+                <span>Fecha: </span> {{ $commercialQuote->freight->created_at}}
+            </td>
+            <td>
+                <span>Origen: </span> {{ $commercialQuote->origin}}
+            </td>
+            <td>
+                <span>Destino: </span> {{ $commercialQuote->destination}}
+            </td>
+            <td>
+                <span>Vendedor: </span> {{ $commercialQuote->personal->names}}
+            </td>
+        </tr>
+    </table>
+
 
     <div class="detail">
         <div class="items-detail">
@@ -303,7 +115,8 @@
                             @if ($commercialQuote->total_volumen_consolidated)
                                 <td class="text-item-table">{{ $commercialQuote->total_volumen_consolidated }} CBM</td>
                             @else
-                            <td class="text-item-table">{{ $commercialQuote->total_kilogram_volumen_consolidated }} KGV</td>
+                                <td class="text-item-table">{{ $commercialQuote->total_kilogram_volumen_consolidated }}
+                                    KGV</td>
                             @endif
                         </tr>
                         <tr>
@@ -320,19 +133,16 @@
                             <td class="text-item-table">{{ $commercialQuote->volumen }}</td>
                         </tr>
 
-                        @if($commercialQuote->lcl_fcl === 'FCL')
-
-                        <tr>
-                            <td class="title-item-table">Peso total</td>
-                            <td class="text-item-table">{{ $commercialQuote->tons }} TONS</td>
-                        </tr>
-
+                        @if ($commercialQuote->lcl_fcl === 'FCL')
+                            <tr>
+                                <td class="title-item-table">Peso total</td>
+                                <td class="text-item-table">{{ $commercialQuote->tons }} TONS</td>
+                            </tr>
                         @else
-                        <tr>
-                            <td class="title-item-table">Peso total</td>
-                            <td class="text-item-table">{{ $commercialQuote->kilograms }} KG</td>
-                        </tr>
-
+                            <tr>
+                                <td class="title-item-table">Peso total</td>
+                                <td class="text-item-table">{{ $commercialQuote->kilograms }} KG</td>
+                            </tr>
                         @endif
 
 
@@ -383,191 +193,6 @@
     </div>
 
 
-    @if ($freight)
-
-        <div id="detail-freight" class="container-service">
-            <table id="table-freight" class="table">
-                <thead>
-                    <th style="width: 45% ; background-color: #234195">Flete Maritimo</th>
-                    <th style="width: 40%">Observacion</th>
-                    <th style="width: 15%">Total</th>
-                </thead>
-                <tbody>
-                    @foreach ($freight->concepts as $concept)
-                        <tr>
-                            <td>{{ $concept->name }}</td>
-                            <td id="observation"> - </td>
-                            <td> $ {{ $concept->pivot->total_value_concept }}</td>
-                        </tr>
-                    @endforeach
-                    <tr class="total-service">
-                        <td colspan="2" style="text-align: right">Total Flete:</td>
-                        <td> $ {{ number_format($freight->value_freight, 2) }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-    @endif
-
-
-    @if ($custom)
-
-        <div id="detail-taxes-custom" class="container-service">
-            <table id="table-taxes-custom" class="table">
-                <thead>
-                    <th style="width: 45%; background-color: #234195">Impuesto de aduanas</th>
-                    <th style="width: 40%">Impuestos</th>
-                    <th style="width: 15%">Total Aprox.</th>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>IMPUESTOS DE ADUANAS </td>
-                        <td>(ADV. 0% + IGV 16% + IPM 2%) X VALOR CIF</td>
-                        <td>$ {{ $custom->customs_taxes }}</td>
-                    </tr>
-                    <tr>
-                        <td>PERCEPCIÓN ADUANAS </td>
-                        <td>3.5% X ( CIF+ IMPUESTOS DE ADUANAS)</td>
-                        <td>$ {{ $custom->customs_perception }}</td>
-                    </tr>
-
-                    <tr class="total-service">
-                        <td colspan="2" style="text-align: right">Total Aprox:</td>
-                        <td> $ {{ number_format($custom->customs_taxes + $custom->customs_perception, 2) }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div id="detail-custom" class="container-service">
-            <table id="table-custom" class="table">
-                <thead>
-                    <th style="width: 45%; background-color: #234195">Gastos en destino</th>
-                    <th style="width: 40%">Observacion</th>
-                    <th style="width: 15%">Total</th>
-                </thead>
-                <tbody>
-                    @foreach ($custom->concepts as $concept)
-                        <tr>
-                            <td>{{ $concept->name }}</td>
-                            @if ($concept->name === 'AGENCIAMIENTO DE ADUANAS')
-                                <td id="observation"> 0.4 % x fob / min $100.00 </td>
-                            @else
-                                <td id="observation"> - </td>
-                            @endif
-                            <td> $ {{ $concept->pivot->total }}</td>
-                        </tr>
-                    @endforeach
-
-                    @if ($transport)
-
-                        @foreach ($transport->concepts as $concept)
-                            <tr>
-                                <td>{{ $concept->name }}</td>
-                                <td id="observation"> - </td>
-                                <td> $ {{ $concept->pivot->total }}</td>
-                            </tr>
-                        @endforeach
-
-
-                        @php
-                            $subtotal = $custom->total_custom + ($transport->total_transport ?? 0);
-                            $igv = $subtotal * 0.18;
-                            $cats_destinations = $subtotal * 1.18;
-
-                        @endphp
-
-
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">Sub Total:</td>
-                            <td> $ {{ number_format($subtotal, 2) }}</td>
-                        </tr>
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">IGV:</td>
-                            <td> $ {{ number_format($igv, 2) }}</td>
-                        </tr>
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">Total:</td>
-                            <td> $ {{ number_format($cats_destinations, 2) }}</td>
-                        </tr>
-                    @else
-                        @php
-                            $subtotal = $custom->total_custom;
-                            $igv = $subtotal * 0.18;
-                            $cats_destinations = $subtotal * 1.18;
-
-                        @endphp
-
-
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">Sub Total:</td>
-                            <td> $ {{ number_format($subtotal, 2) }}</td>
-                        </tr>
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">IGV:</td>
-                            <td> $ {{ number_format($igv, 2) }}</td>
-                        </tr>
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">Total:</td>
-                            <td> $ {{ number_format($cats_destinations, 2) }}</td>
-                        </tr>
-
-                    @endif
-
-
-
-                </tbody>
-            </table>
-        </div>
-    @else
-        @if ($transport)
-
-            <div id="detail-transport" class="container-service">
-                <table id="table-transport" class="table">
-                    <thead>
-                        <th style="width: 45% ; background-color: #234195">Gastos en destino</th>
-                        <th style="width: 40%">Observacion</th>
-                        <th style="width: 15%">Total</th>
-                    </thead>
-                    <tbody>
-                        @foreach ($transport->concepts as $concept)
-                            <tr>
-                                <td>{{ $concept->name }}</td>
-                                <td id="observation"> - </td>
-                                <td> $ {{ $concept->pivot->total }}</td>
-                            </tr>
-                        @endforeach
-
-
-                        @php
-                            $subtotal = $transport->total_transport ?? 0;
-                            $igv = $subtotal * 0.18;
-                            $cats_destinations = $subtotal * 1.18;
-
-                        @endphp
-
-
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">Sub Total:</td>
-                            <td> $ {{ number_format($subtotal, 2) }}</td>
-                        </tr>
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">IGV:</td>
-                            <td> $ {{ number_format($igv, 2) }}</td>
-                        </tr>
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">Total:</td>
-                            <td> $ {{ number_format($cats_destinations, 2) }}</td>
-                        </tr>
-
-                    </tbody>
-                </table>
-            </div>
-
-        @endif
-
-    @endif
-
 
     <div class="container-footer-quote">
 
@@ -609,13 +234,13 @@
 
         </div>
 
-        <div class="footer-quote">
+        {{--  <div class="footer-quote">
 
             <p>Si usted tiene alguna pregunta sobre esta cotización, por favor, pónganse en contacto con nosotros</p>
             <p>[{{ $personal->names }} {{ $personal->last_name }}, +51 {{ $personal->cellphone }},
                 {{ $personal->user->email }}]</p>
             <p style="font-weight: bold">Gracias por hacer negocios con nosotros!</p>
-        </div>
+        </div> --}}
 
     </div>
 

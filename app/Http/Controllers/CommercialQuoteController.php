@@ -435,7 +435,10 @@ class CommercialQuoteController extends Controller
 
         $commercialQuote->update($updateData);
 
-        return redirect('commercial/quote/' . $commercialQuote->id . '/detail')->with('success', 'La cotizacion fue aceptada.');
+        /* Generamos el RO - Routing Order para el siguiente proceso (Operaciones) */
+        return $this->generateRoPdf($commercialQuote);
+
+       /*  return redirect('commercial/quote/' . $commercialQuote->id . '/detail')->with('success', 'La cotizacion fue aceptada.'); */
     }
 
 
@@ -716,9 +719,6 @@ class CommercialQuoteController extends Controller
 
     public function getPDF($id)
     {
-
-
-        //TODO: Falta ver el caso de cuando no es por medio de cotizacion.
         $commercialQuote = CommercialQuote::with([
             'quote_freight' => function ($query) {
                 $query->where('state', 'Aceptado');
@@ -757,6 +757,17 @@ class CommercialQuoteController extends Controller
         $pdf = FacadePdf::loadView('commercial_quote.pdf.commercial_quote_pdf', compact('commercialQuote', 'freight', 'custom', 'transport', 'personal'));
 
         return $pdf->stream('Cotizacion Comercial.pdf'); // Muestra el PDF en el navegador
+
+    }
+
+
+    public function generateRoPdf($commercialQuote){
+
+
+        $pdf = FacadePdf::loadView('freight.pdf.routingOrder', compact('commercialQuote'));
+
+        return $pdf->stream('Routing Order.pdf');
+
 
     }
 
