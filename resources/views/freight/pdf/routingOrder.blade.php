@@ -21,7 +21,7 @@
         }
 
         .table-detail{
-            padding: 5px;
+            padding: 15px 5px;
             width: 100%;
             font-size: 12px;
         }
@@ -49,8 +49,8 @@
                 <img src="{{ public_path('assets/img/logo.png') }}" alt="Orbe Aduanas S.A.C" style="height: 45px;">
             </td>
         </tr>
-        <tr style="color: #fff; background: #234195; font-weight: 800px; text-align: right; font-size: 14px">
-            <td colspan="2" style="padding-right: 20px">{{ $commercialQuote->type_shipment->name }}</td>
+        <tr style="color: #fff; background: #234195; font-weight: 800px; text-align: right; font-size: 14px; ">
+            <td colspan="2" style="padding: 2px 20px">{{ $commercialQuote->type_shipment->name }}</td>
         </tr>
     </table>
 
