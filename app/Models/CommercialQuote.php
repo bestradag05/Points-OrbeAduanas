@@ -77,6 +77,11 @@ class CommercialQuote extends Model
         return $this->belongsTo(Customer::class, 'id_customer', 'id');
     }
 
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'id_supplier', 'id');
+    }
+
 
     public function regime()
     {

@@ -28,9 +28,6 @@ class Freight extends Model
         'nro_quote_commercial'
     ];
 
-    protected $casts = [
-        'value_freight' => 'float',
-    ];
 
 
     public function concepts()

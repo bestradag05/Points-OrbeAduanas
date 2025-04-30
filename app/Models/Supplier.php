@@ -18,4 +18,9 @@ class Supplier extends Model
     {
         return $this->hasMany(ConsolidatedCargos::class, 'supplier_id', 'id');
     }
+
+    public function commercialQuotes()
+    {
+        return $this->hasMany(CommercialQuote::class);
+    }
 }

@@ -53,8 +53,10 @@ use Barryvdh\DomPDF\Facade\Pdf;
 Route::get('/routingpdf/{id}', function($id){
 
     $commercialQuote = CommercialQuote::findOrFail($id);
+    $freight = $commercialQuote->freight;
+    $concepts = $freight->concepts;
 
-    $pdf = Pdf::loadView('freight.pdf.routingOrder', compact('commercialQuote'));
+    $pdf = Pdf::loadView('freight.pdf.routingOrder', compact('commercialQuote', 'concepts', 'freight'));
 
     return $pdf->stream('Routing Order.pdf');
 

@@ -9,7 +9,7 @@
 
     <style>
         body {
-            font-size: 10px;
+            font-size: 12px;
             overflow: hidden;
             position: relative;
             font-family: Arial, Helvetica, sans-serif
@@ -20,16 +20,47 @@
             color: #234195;
         }
 
-        .table-detail{
+        .table-detail {
             padding: 15px 5px;
             width: 100%;
-            font-size: 12px;
         }
 
-        .table-detail span{
+        .table-detail span {
             text-transform: uppercase;
             color: #234195;
             font-weight: bold;
+        }
+
+        .table-consignee,
+        .table-shipper,
+        .table-wrloading,
+        .table-producs,
+        .table-concepts {
+            width: 100%;
+            border-collapse: collapse;
+
+        }
+
+        .table-consignee td,
+        .table-shipper td,
+        .table-producs td {
+
+            border-bottom: 1px solid #525252;
+
+        }
+
+        .table-consignee .title,
+        .table-shipper .title,
+        .table-producs .title,
+        .table-concepts .title {
+            width: 20%;
+            color: #234195;
+            font-weight: bold;
+        }
+
+        .table-wrloading td {
+            border: 1px solid #525252;
+            height: 80px;
         }
     </style>
 
@@ -39,7 +70,7 @@
 <body>
 
 
-    <table class="table-head" width="100%" >
+    <table class="table-head" width="100%">
         <tr>
             <td style="text-align: left;">
                 <h1 style="margin: 0; font-weight: bold; font-size: 28px">
@@ -57,194 +88,193 @@
     <table class="table-detail">
         <tr>
             <td>
-                <span>Fecha: </span> {{ $commercialQuote->freight->created_at}}
+                <span>Fecha: </span> {{ $commercialQuote->freight->created_at }}
             </td>
             <td>
-                <span>Origen: </span> {{ $commercialQuote->origin}}
+                <span>Origen: </span> {{ $commercialQuote->origin }}
             </td>
             <td>
-                <span>Destino: </span> {{ $commercialQuote->destination}}
+                <span>Destino: </span> {{ $commercialQuote->destination }}
             </td>
             <td>
-                <span>Vendedor: </span> {{ $commercialQuote->personal->names}}
+                <span>Vendedor: </span> {{ $commercialQuote->personal->names }}
             </td>
         </tr>
     </table>
 
 
-    <div class="detail">
-        <div class="items-detail">
+    <div style="padding: 0 5px;">
+        <h2 style="color: orange">CONSIGNEE</h2>
 
-            <table>
-                <thead>
-                    <th colspan="2" class="title-table">Detalles de la carga</th>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="title-item-table">Cliente</td>
-                        <td class="text-item-table">{{ $commercialQuote->customer_company_name }}</td>
-                    </tr>
-                    <tr>
-                        <td class="title-item-table">Puerto de salida</td>
-                        <td class="text-item-table">{{ $commercialQuote->origin }}</td>
-                    </tr>
-                    <tr>
-                        <td class="title-item-table">Puerto de llegada</td>
-                        <td class="text-item-table">{{ $commercialQuote->destination }}</td>
-                    </tr>
-                    <tr>
-                        <td class="title-item-table">Incoterm</td>
-                        <td class="text-item-table">{{ $commercialQuote->incoterm->code }}</td>
-                    </tr>
-                    <tr>
-                        <td class="title-item-table">Tipo de embarque</td>
-                        <td class="text-item-table">{{ $commercialQuote->type_shipment->name }}</td>
-                    </tr>
-                    <tr>
-                        <td class="title-item-table">Tipo de carga</td>
-                        <td class="text-item-table">{{ $commercialQuote->type_load->name }}</td>
-                    </tr>
-                    @if ($commercialQuote->is_consolidated)
-
-                        <tr>
-                            <td class="title-item-table">Bultos</td>
-                            <td class="text-item-table">{{ $commercialQuote->total_nro_package_consolidated }}</td>
-                        </tr>
-                        <tr>
-                            <td class="title-item-table">Volumen / KGV</td>
-                            @if ($commercialQuote->total_volumen_consolidated)
-                                <td class="text-item-table">{{ $commercialQuote->total_volumen_consolidated }} CBM</td>
-                            @else
-                                <td class="text-item-table">{{ $commercialQuote->total_kilogram_volumen_consolidated }}
-                                    KGV</td>
-                            @endif
-                        </tr>
-                        <tr>
-                            <td class="title-item-table">Peso total</td>
-                            <td class="text-item-table">{{ $commercialQuote->total_kilogram_consolidated }}</td>
-                        </tr>
-                    @else
-                        <tr>
-                            <td class="title-item-table">Bultos</td>
-                            <td class="text-item-table">{{ $commercialQuote->nro_package }}</td>
-                        </tr>
-                        <tr>
-                            <td class="title-item-table">Volumen</td>
-                            <td class="text-item-table">{{ $commercialQuote->volumen }}</td>
-                        </tr>
-
-                        @if ($commercialQuote->lcl_fcl === 'FCL')
-                            <tr>
-                                <td class="title-item-table">Peso total</td>
-                                <td class="text-item-table">{{ $commercialQuote->tons }} TONS</td>
-                            </tr>
-                        @else
-                            <tr>
-                                <td class="title-item-table">Peso total</td>
-                                <td class="text-item-table">{{ $commercialQuote->kilograms }} KG</td>
-                            </tr>
-                        @endif
-
-
-                    @endif
-
-                    <tr>
-                        <td class="title-item-table">Valor de factura</td>
-                        <td class="text-item-table">{{ $commercialQuote->load_value }}</td>
-                    </tr>
-                    <tr>
-                        <td class="title-item-table">Valor CIF</td>
-                        <td class="text-item-table">{{ $commercialQuote->cif_value }}</td>
-                    </tr>
-                    {{--  <tr>
-                        <td class="title-item-table">Valor Cif</td>
-                        <td class="text-item-table">{{ $commercialQuote->type_shipment->name }}</td>
-                    </tr> --}}
-                </tbody>
-            </table>
-
-        </div>
-
-        <div class="items-detail">
-
-            <table>
-                <tbody>
-                    <tr>
-                        <td class="title-item-table">Fecha de Creacion</td>
-                        <td class="text-item-table" style="font-weight: bold">
-                            {{ $commercialQuote->created_at->format('d/m/Y') }}</td>
-                    </tr>
-                    <tr>
-                        <td class="title-item-table">Cotizacion #</td>
-                        <td class="text-item-table" style="font-weight: bold">
-                            {{ $commercialQuote->nro_quote_commercial }}</td>
-                    </tr>
-                    <tr>
-                        <td class="title-item-table">Fecha de Validez</td>
-                        <td class="text-item-table" style="font-weight: bold">
-                            {{ $commercialQuote->valid_date->format('d/m/Y') }}</td>
-
-                    </tr>
-
-                </tbody>
-            </table>
-
-        </div>
-    </div>
-
-
-
-    <div class="container-footer-quote">
-
-        <div id="detail-quote">
-
-            <div class="item-detail-quote">
-                <p>Observaciones: </p>
-
-                <ul>
-                    <li>1. TARIFA SUJETA A LAS CARACTERISTICAS REALES DE LA
-                        MERCADERIA, COMMODITIES SEGÚN EL MERCADO INTERNACIONAL
-                        Y CONDICIONES DE EMBARQUE.
-                    </li>
-                    <li>
-                        2. SUJETO LOS COSTOS LOGISTICOS DE ACUERDO AL
-                        PROCEDIMIENTO A LA LINEA AEREA, LINEA NAVIERA, EMPRESA DE
-                        TRANSPORTE INTERNACIONAL, REGISTRADA EN EL CONVENIO
-                        INTERNACINAL DE VARSOVIA , MONTREAL Y REGISTRO DE
-                        COMERCIO INTERNACIONAL DE EEUU.
-                    </li>
-                    <li>
-                        3. COTIZACION SUJETA A VARIACION DE ACUERDO A ESTRUCTURA Y CONSOLIDACION DE EMBARQUE GENERADA EN
-                        ORIGEN.
-                    </li>
-                    <li>
-                        4. LOS COSTOS QUE SE INDICARON COMO APROXIMADOS EN LA COTIZACION ESTAN SUJETAS A LA FACTURACION
-                        FINAL DE LOS OPERADORES DE SERVICIO EN DESTINO PERU.
-                    </li>
-                </ul>
-
-            </div>
-
-            <div class="item-detail-quote">
-                <div class="total-quote">
-                    TOTAL COTIZACION: $
-                    {{ number_format(($freight->value_freight ?? 0) + ($cats_destinations ?? 0), 2, '.', ',') }}
-                </div>
-            </div>
-
-        </div>
-
-        {{--  <div class="footer-quote">
-
-            <p>Si usted tiene alguna pregunta sobre esta cotización, por favor, pónganse en contacto con nosotros</p>
-            <p>[{{ $personal->names }} {{ $personal->last_name }}, +51 {{ $personal->cellphone }},
-                {{ $personal->user->email }}]</p>
-            <p style="font-weight: bold">Gracias por hacer negocios con nosotros!</p>
-        </div> --}}
+        <table class="table-consignee">
+            <tr>
+                <td class="title">Company Name</td>
+                <td style="text-transform: uppercase; font-weight: bold">
+                    {{ $commercialQuote->customer->name_businessname }}</td>
+            </tr>
+            <tr>
+                <td class="title">RUC</td>
+                <td>{{ $commercialQuote->customer->document_number }}</td>
+            </tr>
+            <tr>
+                <td class="title">Address</td>
+                <td>{{ $commercialQuote->customer->address }}</td>
+            </tr>
+            <tr>
+                <td class="title">Telephone</td>
+                <td>{{ $commercialQuote->customer->contact_number }}</td>
+            </tr>
+            <tr>
+                <td class="title">Contact</td>
+                <td>{{ $commercialQuote->customer->contact_name }}</td>
+            </tr>
+            <tr>
+                <td class="title">E-mail</td>
+                <td>{{ $commercialQuote->customer->contact_email }}</td>
+            </tr>
+        </table>
 
     </div>
 
 
+    <div style="padding: 0 5px;">
+        <h2 style="color: orange">Shipper</h2>
+
+        <table class="table-shipper">
+            <tr>
+                <td class="title">Company Name</td>
+                <td style="text-transform: uppercase; font-weight: bold">
+                    {{ $commercialQuote->supplier->name_businessname }}</td>
+            </tr>
+            <tr>
+                <td class="title">Address</td>
+                <td>{{ $commercialQuote->supplier->address }}</td>
+            </tr>
+            <tr>
+                <td class="title">Contact</td>
+                <td>{{ $commercialQuote->supplier->contact_name }}</td>
+            </tr>
+            <tr>
+                <td class="title">E-mail</td>
+                <td>{{ $commercialQuote->supplier->contact_email }}</td>
+            </tr>
+        </table>
+
+    </div>
+
+    <div style="padding: 0 5px;">
+        <h2 style="color: orange">WR LOADING</h2>
+
+        <table class="table-wrloading">
+            <tr>
+                <td style="width: 20%; text-align: center">WR loading</td>
+                <td style="padding-left: 10px">
+                    2024-1262
+                </td>
+            </tr>
+
+        </table>
+
+    </div>
+
+
+    <div style="padding: 0 5px;">
+        <h2 style="color: orange">DESCRIPTION OF PRODUCTS</h2>
+
+        <table class="table-producs">
+            <tr>
+                <td class="title">Commodity</td>
+                <td colspan="5" style="text-transform: uppercase; font-weight: bold">
+                    {{ $commercialQuote->commodity }}</td>
+            </tr>
+            <tr>
+                <td class="title">Package N°</td>
+                <td colspan="5">{{ $commercialQuote->nro_package }}</td>
+            </tr>
+            <tr>
+                <td class="title">Total fross weight</td>
+                <td>{{ $commercialQuote->supplier->contact_name }}</td>
+                <td class="title">pounds</td>
+                <td> 1.10 </td>
+                <td class="title">kilograms</td>
+                <td>3.50 <span>M3</span></td>
+            </tr>
+            <tr>
+                <td class="title">Observations</td>
+                <td>C/ SEGURO</td>
+                <td class="title">Quantity Container</td>
+                <td>0</td>
+                <td class="title">Type Container</td>
+                <td>0</td>
+            </tr>
+            <tr>
+                <td class="title">Value invoice</td>
+                <td colspan="5">5746</td>
+            </tr>
+            <tr>
+                <td class="title">Incoterms</td>
+                <td colspan="2">EXW</td>
+                <td class="title">Mode</td>
+                <td colspan="2">LCL - LESS CONTAINER LOAD</td>
+            </tr>
+            <tr>
+                <td class="title">H.S. Code</td>
+                <td colspan="5"> </td>
+            </tr>
+
+        </table>
+
+
+        <div>
+            <p style="font-size: 12px; color: #525252; text-align: center">* Are mandatory enforcement details for the
+                International Freight Forwarders in origin of the country of the supplier under financial responsibility
+                in order of the Peruvian importer.</p>
+        </div>
+
+    </div>
+
+    @php
+        $chunks = $concepts->chunk(7); // Dividimos cada 7
+        $rows = $chunks->chunk(2); // Cada fila tendrá 2 columnas máximo
+    @endphp
+
+    <table style="width: 100%; border-collapse: collapse;">
+        @foreach ($rows as $row)
+            <tr>
+                @foreach ($row as $chunk)
+                    <td style="vertical-align: top; width: 50%;">
+                        <table class="table-concepts" style="width: 100%; border-collapse: collapse;">
+                            @foreach ($chunk as $concept)
+                                <tr>
+                                    <td class="title" style="width: 55%">
+                                        {{ $concept->name }}
+                                    </td>
+                                    <td style="border-bottom: 1px solid #5a5a5a; text-align: right">
+                                        $ {{ $concept->pivot->total_value_concept }}
+                                    </td>
+                                    @if(isset($concept->pivot->additional_points) && $concept->pivot->additional_points > 0)
+                                    <td style="color: red;">
+                                        ({{ $concept->pivot->additional_points }})
+                                    </td>
+                                    @endif
+                                </tr>
+                            @endforeach
+                        </table>
+                    </td>
+                @endforeach
+
+                {{-- Si hay solo una columna en la fila, agrega una celda vacía para alinear --}}
+                @if ($row->count() < 2)
+                    <td style="width: 50%;"></td>
+                @endif
+            </tr>
+        @endforeach
+    </table>
+
+    <div style="width: 100%; text-align: right;">
+       <p style="padding-right: 75px"> <span style="font-weight: bold">TOTAL A PAGAR :</span> $ {{ $freight->value_freight }}</p>
+    </div>
+    
 
 
 </body>
