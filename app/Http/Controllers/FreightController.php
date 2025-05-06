@@ -82,6 +82,11 @@ class FreightController extends Controller
     }
 
 
+    public function generateRouting(Request $request)
+    {
+        $compact = $this->freightService->generateRoutingOrder($request);
+        return view("freight/detail-freight", $compact);
+    }
 
 
     /**

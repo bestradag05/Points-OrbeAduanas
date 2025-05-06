@@ -21,7 +21,7 @@
                         <label class="col-sm-4 col-form-label">Cliente : </label>
                         <div class="col-sm-8">
 
-                            <p class="form-control-plaintext">{{ $comercialQuote->customer->name_businessname }}</p>
+                            <p class="form-control-plaintext">{{ $commercialQuote->customer->name_businessname }}</p>
                         </div>
 
                     </div>
@@ -32,7 +32,7 @@
                         <label class="col-sm-4 col-form-label">Origen : </label>
                         <div class="col-sm-8">
 
-                            <p class="form-control-plaintext">{{ $comercialQuote->origin }}</p>
+                            <p class="form-control-plaintext">{{ $commercialQuote->origin }}</p>
                         </div>
 
                     </div>
@@ -42,23 +42,23 @@
                         <label class="col-sm-4 col-form-label">Destino : </label>
                         <div class="col-sm-8">
 
-                            <p class="form-control-plaintext">{{ $comercialQuote->destination }}</p>
+                            <p class="form-control-plaintext">{{ $commercialQuote->destination }}</p>
                         </div>
 
                     </div>
                 </div>
                 <div
-                    class="col-12 border-bottom border-bottom-2 {{ $comercialQuote->customer_company_name ? '' : 'd-none' }}">
+                    class="col-12 border-bottom border-bottom-2 {{ $commercialQuote->customer_company_name ? '' : 'd-none' }}">
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Cliente : </label>
                         <div class="col-sm-8">
 
-                            <p class="form-control-plaintext">{{ $comercialQuote->customer_company_name }}</p>
+                            <p class="form-control-plaintext">{{ $commercialQuote->customer_company_name }}</p>
                         </div>
 
                     </div>
                 </div>
-                @if ($comercialQuote->is_consolidated)
+                @if ($commercialQuote->is_consolidated)
                     <div class="col-12 border-bottom border-bottom-2">
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">Carga Consolidada : </label>
@@ -69,16 +69,16 @@
 
                         </div>
                     </div>
-                    @if ($comercialQuote->type_shipment->description === 'Marítima')
+                    @if ($commercialQuote->type_shipment->description === 'Marítima')
 
-                        @if ($comercialQuote->lcl_fcl === 'FCL')
+                        @if ($commercialQuote->lcl_fcl === 'FCL')
                             <div class="col-12 border-bottom border-bottom-2">
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Contenedor : </label>
                                     <div class="col-sm-8">
 
                                         <p class="form-control-plaintext">
-                                            {{ $comercialQuote->container_quantity }}x{{ $comercialQuote->container->name }}
+                                            {{ $commercialQuote->container_quantity }}x{{ $commercialQuote->container->name }}
                                         </p>
                                     </div>
 
@@ -87,7 +87,7 @@
                         @endif
                     @endif
 
-                    @foreach ($comercialQuote->consolidatedCargos as $consolidated)
+                    @foreach ($commercialQuote->consolidatedCargos as $consolidated)
                         @php
                             $shipperTemp = json_decode($consolidated->supplier_temp);
                             $shipper = null;
@@ -220,19 +220,19 @@
                             <label class="col-sm-4 col-form-label">Producto / Mercancía : </label>
                             <div class="col-sm-8">
 
-                                <p class="form-control-plaintext">{{ $comercialQuote->commodity }}</p>
+                                <p class="form-control-plaintext">{{ $commercialQuote->commodity }}</p>
                             </div>
 
                         </div>
                     </div>
 
-                    @if ($comercialQuote->type_shipment->description === 'Aérea')
+                    @if ($commercialQuote->type_shipment->description === 'Aérea')
                         <div class="col-12 border-bottom border-bottom-2">
                             <div class="form-group row">
                                 <label class="col-sm-4 col-form-label">Peso KG : </label>
                                 <div class="col-sm-8">
 
-                                    <p class="form-control-plaintext">{{ $comercialQuote->kilograms }}</p>
+                                    <p class="form-control-plaintext">{{ $commercialQuote->kilograms }}</p>
                                 </div>
 
                             </div>
@@ -242,22 +242,22 @@
                                 <label class="col-sm-4 col-form-label">KGV : </label>
                                 <div class="col-sm-8">
 
-                                    <p class="form-control-plaintext">{{ $comercialQuote->kilogram_volumen }}</p>
+                                    <p class="form-control-plaintext">{{ $commercialQuote->kilogram_volumen }}</p>
                                 </div>
 
                             </div>
                         </div>
                     @endif
 
-                    @if ($comercialQuote->type_shipment->description === 'Marítima')
-                        @if ($comercialQuote->lcl_fcl === 'FCL')
+                    @if ($commercialQuote->type_shipment->description === 'Marítima')
+                        @if ($commercialQuote->lcl_fcl === 'FCL')
                             <div class="col-12 border-bottom border-bottom-2">
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Contenedor : </label>
                                     <div class="col-sm-8">
 
                                         <p class="form-control-plaintext">
-                                            {{ $comercialQuote->container_quantity }}x{{ $comercialQuote->container->name }}
+                                            {{ $commercialQuote->container_quantity }}x{{ $commercialQuote->container->name }}
                                         </p>
                                     </div>
 
@@ -268,7 +268,7 @@
                                     <label class="col-sm-4 col-form-label">Toneladas : </label>
                                     <div class="col-sm-8">
 
-                                        <p class="form-control-plaintext">{{ $comercialQuote->tons }}</p>
+                                        <p class="form-control-plaintext">{{ $commercialQuote->tons }}</p>
                                     </div>
 
                                 </div>
@@ -279,7 +279,7 @@
                                     <label class="col-sm-4 col-form-label">Peso : </label>
                                     <div class="col-sm-8">
 
-                                        <p class="form-control-plaintext">{{ $comercialQuote->kilograms }}</p>
+                                        <p class="form-control-plaintext">{{ $commercialQuote->kilograms }}</p>
                                     </div>
 
                                 </div>
@@ -290,7 +290,7 @@
                                 <label class="col-sm-4 col-form-label">Volumen : </label>
                                 <div class="col-sm-8">
 
-                                    <p class="form-control-plaintext">{{ $comercialQuote->volumen }}</p>
+                                    <p class="form-control-plaintext">{{ $commercialQuote->volumen }}</p>
                                 </div>
 
                             </div>
@@ -317,7 +317,7 @@
                             <label class="col-sm-4 col-form-label">Incoterm : </label>
                             <div class="col-sm-8">
 
-                                <p class="form-control-plaintext">{{ $comercialQuote->incoterm->code }}</p>
+                                <p class="form-control-plaintext">{{ $commercialQuote->incoterm->code }}</p>
                             </div>
 
                         </div>
@@ -327,7 +327,7 @@
                             <label class="col-sm-4 col-form-label">Tipo de carga : </label>
                             <div class="col-sm-8">
 
-                                <p class="form-control-plaintext">{{ $comercialQuote->type_load->name }}</p>
+                                <p class="form-control-plaintext">{{ $commercialQuote->type_load->name }}</p>
                             </div>
 
                         </div>
@@ -337,7 +337,7 @@
                             <label class="col-sm-4 col-form-label">Valor de la Carga : </label>
                             <div class="col-sm-8">
 
-                                <p class="form-control-plaintext">$ {{ $comercialQuote->load_value }}</p>
+                                <p class="form-control-plaintext">$ {{ $commercialQuote->load_value }}</p>
                             </div>
 
                         </div>
@@ -348,7 +348,7 @@
                             <div class="col-sm-8">
 
                                 <p class="form-control-plaintext">
-                                    {{ $comercialQuote->type_shipment->description . ($comercialQuote->type_shipment->description === 'Marítima' && $comercialQuote->lcl_fcl ? ' (' . $comercialQuote->lcl_fcl . ')' : '') }}
+                                    {{ $commercialQuote->type_shipment->description . ($commercialQuote->type_shipment->description === 'Marítima' && $commercialQuote->lcl_fcl ? ' (' . $commercialQuote->lcl_fcl . ')' : '') }}
 
                                 </p>
                             </div>
@@ -360,7 +360,7 @@
                             <label class="col-sm-4 col-form-label">Régimen : </label>
                             <div class="col-sm-8">
 
-                                <p class="form-control-plaintext">{{ $comercialQuote->regime->description }}</p>
+                                <p class="form-control-plaintext">{{ $commercialQuote->regime->description }}</p>
                             </div>
 
                         </div>
@@ -385,22 +385,33 @@
                 <i class="fa-duotone fa-gear"></i>
                 Documentos
             </h5>
-    
-         
+
+
             <table class="table text-center">
                 <thead>
+                    <th class="text-indigo text-bold">N°</th>
                     <th class="text-indigo text-bold">Nombre</th>
                     <th class="text-indigo text-bold">Acciones</th>
                 </thead>
                 <tbody>
-    
-           
-    
+                    @foreach ($files as $index => $file)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ basename($file) }}</td>
+                            <td>
+                                <a href="{{ asset('storage/' . $file) }}" target="_blank"
+                                    class="btn btn-sm text-danger">
+                                    <i class="fas fa-file-pdf"></i>
+                                </a>
+
+                            </td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
-    
-           
-    
+
+
+
         </div>
 
     </div>
@@ -408,7 +419,6 @@
 
 @push('scripts')
     <script>
-     
         function toggleArrows(isOpening) {
             var arrowDown = document.getElementById('arrowDown');
             var arrowUp = document.getElementById('arrowUp');

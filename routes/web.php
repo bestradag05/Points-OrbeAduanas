@@ -148,6 +148,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('freight/{id}/point', [FreightController::class, 'updatePointFreight']);
     Route::resource('freight', FreightController::class);
     Route::get('freight/create/{quoteId}', [FreightController::class, 'createFreight']);
+    Route::post('freight/routing/', [FreightController::class, 'generateRouting']);
 
 
 

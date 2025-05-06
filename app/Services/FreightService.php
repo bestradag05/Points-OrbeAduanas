@@ -11,9 +11,11 @@ use App\Models\Insurance;
 use App\Models\QuoteFreight;
 use App\Models\TypeInsurance;
 use App\Models\TypeService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use stdClass;
 
 class FreightService
@@ -190,6 +192,27 @@ class FreightService
         return $freight;
     }
 
+
+    public function generateRoutingOrder($request)
+    {
+
+        $freight = Freight::findOrFail($request->id_freight);
+        $commercialQuote = $freight->commercial_quote;
+        $concepts = $freight->concepts;
+
+        $pdf = Pdf::loadView('freight.pdf.routingOrder', compact('commercialQuote', 'concepts', 'freight'));
+        $filename = 'Routing Order.pdf';
+
+        $directory = 'commercial_quote/'.$commercialQuote->nro_quote_commercial.'/freight';
+
+        // Guardar el archivo
+        Storage::disk('public')->put($directory.'/'.$filename, $pdf->output());
+        
+        // Obtener todos los archivos del directorio
+        $files = Storage::disk('public')->files($directory);
+        return compact('freight', 'commercialQuote', 'files');
+    }
+
     public function editFreight(string $id)
     {
 
@@ -223,14 +246,15 @@ class FreightService
         return compact('freight', 'quote', 'type_insurace', 'concepts', 'conceptFreight', 'commercial_quote', 'insurance');
     }
 
-    public function showFreight($id){
-
-        
+    public function showFreight($id)
+    {
         $freight = Freight::findOrFail($id);
-        $comercialQuote = $freight->commercial_quote;
+        $commercialQuote = $freight->commercial_quote;
 
-        return compact('freight', 'comercialQuote');
+        $directory = 'commercial_quote/'.$commercialQuote->nro_quote_commercial.'/freight';
+        $files = Storage::disk('public')->files($directory);
 
+        return compact('freight', 'commercialQuote', 'files');
     }
 
 

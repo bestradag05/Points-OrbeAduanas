@@ -493,6 +493,15 @@
                                     class="text-indigo"><i class="fas fa-edit"></i></a>
                             </td>
                         @endif
+                        @if (strtolower($index) === 'flete')
+                            <td>
+                                <button class="btn btn-secondary btn-sm" onclick="openModalgenerateRoutingOrder()">
+                                    <i class="fas fa-file-import"></i>
+                                    Generar Routing
+                                </button>
+                            </td>
+                        @endif
+
                     </tr>
                 @endforeach
 
@@ -539,6 +548,9 @@
 @include('commercial_quote/modals/modalCustom')
 @include('commercial_quote/modals/modalTransport')
 @include('commercial_quote/modals/modalCommercialFillData')
+@if ($comercialQuote->freight)
+    @include('commercial_quote/modals/modalGenerateRoutingOrder')
+@endif
 
 @push('scripts')
     <script>
@@ -745,6 +757,39 @@
                 }
             });
 
+        }
+
+
+        /* Generar Routing order */
+
+        function openModalgenerateRoutingOrder() {
+            $('#generateRoutingOrder').modal('show');
+
+        }
+
+        function submitGenerateRoutingOrder() {
+            let formGenerateRoutingOrder = $('#formgenerateRoutingOrder');
+            let inputs = formGenerateRoutingOrder.find('textarea');
+
+            let isValid = true;
+
+            inputs.each(function() {
+                let $input = $(this); // Convertir a objeto jQuery
+                let value = $input.val();
+
+                if (value.trim() === '') {
+                    $input.addClass('is-invalid');
+                    isValid = false;
+                    showError(this, 'Debe completar este campo');
+                } else {
+                    $input.removeClass('is-invalid');
+                    hideError(this);
+                }
+            });
+
+            if (isValid) {
+                formGenerateRoutingOrder.submit();
+            }
         }
 
 

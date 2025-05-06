@@ -88,7 +88,7 @@
     <table class="table-detail">
         <tr>
             <td>
-                <span>Fecha: </span> {{ $commercialQuote->freight->created_at }}
+                <span>Fecha: </span> {{ $commercialQuote->freight->created_at->format('d/m/Y') }}
             </td>
             <td>
                 <span>Origen: </span> {{ $commercialQuote->origin }}
@@ -192,30 +192,32 @@
                 <td colspan="5">{{ $commercialQuote->nro_package }}</td>
             </tr>
             <tr>
-                <td class="title">Total fross weight</td>
-                <td>{{ $commercialQuote->supplier->contact_name }}</td>
+                <td class="title">Total gross weight</td>
+                <td>{{ $commercialQuote->pounds }}</td>
                 <td class="title">pounds</td>
-                <td> 1.10 </td>
+                <td> {{ $commercialQuote->kilograms }} </td>
                 <td class="title">kilograms</td>
-                <td>3.50 <span>M3</span></td>
+                <td>{{ $commercialQuote->volumen }} <span>M3</span></td>
             </tr>
             <tr>
-                <td class="title">Observations</td>
-                <td>C/ SEGURO</td>
+                @if ($commercialQuote->freight->insurance)
+                    <td class="title">Observations</td>
+                    <td>C/ SEGURO</td>
+                @endif
                 <td class="title">Quantity Container</td>
-                <td>0</td>
+                <td>{{$commercialQuote->container_quantity ?? 0}}</td>
                 <td class="title">Type Container</td>
-                <td>0</td>
+                <td>{{$commercialQuote->container->name ?? ''}}</td>
             </tr>
             <tr>
                 <td class="title">Value invoice</td>
-                <td colspan="5">5746</td>
+                <td colspan="5">{{$commercialQuote->load_value}}</td>
             </tr>
             <tr>
                 <td class="title">Incoterms</td>
-                <td colspan="2">EXW</td>
+                <td colspan="2">{{$commercialQuote->incoterm->code}}</td>
                 <td class="title">Mode</td>
-                <td colspan="2">LCL - LESS CONTAINER LOAD</td>
+                <td colspan="2">{{$commercialQuote->lcl_fcl}}</td>
             </tr>
             <tr>
                 <td class="title">H.S. Code</td>
@@ -252,10 +254,10 @@
                                     <td style="border-bottom: 1px solid #5a5a5a; text-align: right">
                                         $ {{ $concept->pivot->total_value_concept }}
                                     </td>
-                                    @if(isset($concept->pivot->additional_points) && $concept->pivot->additional_points > 0)
-                                    <td style="color: red;">
-                                        ({{ $concept->pivot->additional_points }})
-                                    </td>
+                                    @if (isset($concept->pivot->additional_points) && $concept->pivot->additional_points > 0)
+                                        <td style="color: red;">
+                                            ({{ $concept->pivot->additional_points }})
+                                        </td>
                                     @endif
                                 </tr>
                             @endforeach
@@ -272,9 +274,10 @@
     </table>
 
     <div style="width: 100%; text-align: right;">
-       <p style="padding-right: 75px"> <span style="font-weight: bold">TOTAL A PAGAR :</span> $ {{ $freight->value_freight }}</p>
+        <p style="padding-right: 75px"> <span style="font-weight: bold">TOTAL A PAGAR :</span> $
+            {{ $freight->value_freight }}</p>
     </div>
-    
+
 
 
 </body>
