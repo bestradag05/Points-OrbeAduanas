@@ -435,10 +435,7 @@ class CommercialQuoteController extends Controller
 
         $commercialQuote->update($updateData);
 
-        /* Generamos el RO - Routing Order para el siguiente proceso (Operaciones) */
-        return $this->generateRoPdf($commercialQuote);
-
-       /*  return redirect('commercial/quote/' . $commercialQuote->id . '/detail')->with('success', 'La cotizacion fue aceptada.'); */
+        return redirect('commercial/quote/' . $commercialQuote->id . '/detail')->with('success', 'La cotizacion fue aceptada.');
     }
 
 

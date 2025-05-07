@@ -493,7 +493,7 @@
                                     class="text-indigo"><i class="fas fa-edit"></i></a>
                             </td>
                         @endif
-                        @if (strtolower($index) === 'flete')
+                        @if (strtolower($index) === 'flete' && $comercialQuote->state === 'Aceptado')
                             <td>
                                 <button class="btn btn-secondary btn-sm" onclick="openModalgenerateRoutingOrder()">
                                     <i class="fas fa-file-import"></i>

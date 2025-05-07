@@ -389,14 +389,12 @@
 
             <table class="table text-center">
                 <thead>
-                    <th class="text-indigo text-bold">N°</th>
                     <th class="text-indigo text-bold">Nombre</th>
                     <th class="text-indigo text-bold">Acciones</th>
                 </thead>
                 <tbody>
                     @foreach ($files as $index => $file)
                         <tr>
-                            <td>{{ $index + 1 }}</td>
                             <td>{{ basename($file) }}</td>
                             <td>
                                 <a href="{{ asset('storage/' . $file) }}" target="_blank"

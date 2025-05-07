@@ -182,42 +182,60 @@
         <h2 style="color: orange">DESCRIPTION OF PRODUCTS</h2>
 
         <table class="table-producs">
+
+            @if ($commercialQuote->is_consolidated)
+            @else
+                <tr>
+                    <td class="title">Commodity</td>
+                    <td colspan="5" style="text-transform: uppercase; font-weight: bold">
+                        {{ $commercialQuote->commodity }}</td>
+                </tr>
+                <tr>
+                    <td class="title">Package N°</td>
+                    <td colspan="5">{{ $commercialQuote->nro_package }}</td>
+                </tr>
+                <tr>
+                    <td class="title">Total gross weight</td>
+                    <td>{{ $commercialQuote->pounds }}</td>
+                    <td class="title">pounds</td>
+                    <td> {{ $commercialQuote->kilograms }} </td>
+                    <td class="title">kilograms</td>
+                    @if ($commercialQuote->type_shipment->description === 'Marítima')
+                        <td>{{ $commercialQuote->volumen }} <span class="title">M3</span></td>
+                    @else
+                        <td>{{ $commercialQuote->kilogram_volumen }} <span class="title">KGV</span></td>
+                    @endif
+
+
+                </tr>
+
+            @endif
+
             <tr>
-                <td class="title">Commodity</td>
-                <td colspan="5" style="text-transform: uppercase; font-weight: bold">
-                    {{ $commercialQuote->commodity }}</td>
-            </tr>
-            <tr>
-                <td class="title">Package N°</td>
-                <td colspan="5">{{ $commercialQuote->nro_package }}</td>
-            </tr>
-            <tr>
-                <td class="title">Total gross weight</td>
-                <td>{{ $commercialQuote->pounds }}</td>
-                <td class="title">pounds</td>
-                <td> {{ $commercialQuote->kilograms }} </td>
-                <td class="title">kilograms</td>
-                <td>{{ $commercialQuote->volumen }} <span>M3</span></td>
-            </tr>
-            <tr>
+                <td class="title">Observations</td>
                 @if ($commercialQuote->freight->insurance)
-                    <td class="title">Observations</td>
                     <td>C/ SEGURO</td>
+                @else
+                    <td></td>
                 @endif
                 <td class="title">Quantity Container</td>
-                <td>{{$commercialQuote->container_quantity ?? 0}}</td>
+                <td>{{ $commercialQuote->container_quantity ?? 0 }}</td>
                 <td class="title">Type Container</td>
-                <td>{{$commercialQuote->container->name ?? ''}}</td>
+                <td>{{ $commercialQuote->container->name ?? '' }}</td>
             </tr>
             <tr>
                 <td class="title">Value invoice</td>
-                <td colspan="5">{{$commercialQuote->load_value}}</td>
+                <td colspan="5">{{ $commercialQuote->load_value }}</td>
             </tr>
             <tr>
                 <td class="title">Incoterms</td>
-                <td colspan="2">{{$commercialQuote->incoterm->code}}</td>
+                <td colspan="2">{{ $commercialQuote->incoterm->code }}</td>
                 <td class="title">Mode</td>
-                <td colspan="2">{{$commercialQuote->lcl_fcl}}</td>
+                <td colspan="2">{{ $commercialQuote->lcl_fcl }}</td>
+            </tr>
+            <tr>
+                <td class="title">Type Load</td>
+                <td colspan="5">{{ $commercialQuote->type_load->name }}</td>
             </tr>
             <tr>
                 <td class="title">H.S. Code</td>
