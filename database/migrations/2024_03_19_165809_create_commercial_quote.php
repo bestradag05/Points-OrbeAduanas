@@ -42,6 +42,7 @@ return new class extends Migration
             $table->string('packaging_type')->nullable();
             $table->decimal('kilograms', 8, 2)->nullable();
             $table->decimal('volumen', 8, 2)->nullable();
+            $table->decimal('pounds', 8, 2)->nullable();
             $table->decimal('kilogram_volumen', 8, 2)->nullable();
             $table->decimal('tons', 8, 2)->nullable();
             $table->text('measures')->nullable();

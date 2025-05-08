@@ -184,6 +184,30 @@
         <table class="table-producs">
 
             @if ($commercialQuote->is_consolidated)
+
+                <tr>
+                    <td class="title">Commodity</td>
+                    <td colspan="5" style="text-transform: uppercase; font-weight: bold">
+                        {{ $commercialQuote->commodity }}</td>
+                </tr>
+                <tr>
+                    <td class="title">Package N°</td>
+                    <td colspan="5">{{ $commercialQuote->total_nro_package_consolidated }}</td>
+                </tr>
+                <tr>
+                    <td class="title">Total gross weight</td>
+                    <td>{{ $commercialQuote->pounds }}</td>
+                    <td class="title">pounds</td>
+                    <td> {{ $commercialQuote->total_kilogram_consolidated }} </td>
+                    <td class="title">kilograms</td>
+                    @if ($commercialQuote->type_shipment->description === 'Marítima')
+                        <td>{{ $commercialQuote->total_volumen_consolidated }} <span class="title">M3</span></td>
+                    @else
+                        <td>{{ $commercialQuote->total_kilogram_volumen_consolidated }} <span class="title">KGV</span></td>
+                    @endif
+
+
+                </tr>
             @else
                 <tr>
                     <td class="title">Commodity</td>
@@ -212,7 +236,7 @@
             @endif
 
             <tr>
-                <td class="title">Observations</td>
+                <td class="title">Insurance</td>
                 @if ($commercialQuote->freight->insurance)
                     <td>C/ SEGURO</td>
                 @else

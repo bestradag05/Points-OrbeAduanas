@@ -38,6 +38,7 @@ class CommercialQuote extends Model
         'container_quantity',
         'kilograms',
         'volumen',
+        'pounds',
         'kilogram_volumen',
         'tons',
         'measures',

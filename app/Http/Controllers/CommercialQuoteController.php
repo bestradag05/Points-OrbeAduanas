@@ -113,21 +113,21 @@ class CommercialQuoteController extends Controller
      */
     public function store(Request $request)
     {
-
         $shippersConsolidated = json_decode($request->shippers_consolidated);
 
         if ($request->is_consolidated) {
 
-            $totals = [];
+            $consolidated = [];
 
-            $totals = $this->calculateDataConsolidated($shippersConsolidated);
-
+            $consolidated = $this->calculateDataConsolidated($shippersConsolidated);
+            
             $commercialQuote = CommercialQuote::create([
                 'nro_quote_commercial' => $request->nro_quote_commercial,
                 'origin' => $request->origin,
                 'destination' => $request->destination,
+                'commodity' => $consolidated['commodity'],
                 'customer_company_name' => $request->customer_company_name,
-                'load_value' => $totals['total_load_values'],
+                'load_value' => $consolidated['total_load_values'],
                 'id_type_shipment' => $request->id_type_shipment,
                 'id_regime' => $request->id_regime,
                 'id_type_load' => $request->id_type_load,
@@ -137,10 +137,11 @@ class CommercialQuoteController extends Controller
                 'container_quantity' => $request->container_quantity_consolidated,
                 'lcl_fcl' => $request->lcl_fcl,
                 'is_consolidated' => $request->is_consolidated,
-                'total_nro_package_consolidated' => $totals['total_bultos'],
-                'total_volumen_consolidated' => ($totals['total_volumen'] > 0) ? $totals['total_volumen'] : null,
-                'total_kilogram_volumen_consolidated' => ($totals['total_kilogram_volumen'] > 0) ? $totals['total_kilogram_volumen'] : null,
-                'total_kilogram_consolidated' => $totals['total_kilogram'],
+                'total_nro_package_consolidated' => $consolidated['total_bultos'],
+                'total_volumen_consolidated' => ($consolidated['total_volumen'] > 0) ? $consolidated['total_volumen'] : null,
+                'total_kilogram_volumen_consolidated' => ($consolidated['total_kilogram_volumen'] > 0) ? $consolidated['total_kilogram_volumen'] : null,
+                'total_kilogram_consolidated' => $consolidated['total_kilogram'],
+                'pounds' => $request->pounds,
                 'nro_operation' => $request->nro_operation,
                 'valid_date' => now()->format('Y-m-d'),
                 'id_personal' => auth()->user()->personal->id,
@@ -175,6 +176,7 @@ class CommercialQuoteController extends Controller
                 'lcl_fcl' => $request->lcl_fcl,
                 'is_consolidated' => $request->is_consolidated,
                 'measures' => $request->value_measures,
+                'pounds' => $request->pounds,
                 'nro_operation' => $request->nro_operation,
                 'valid_date' => now()->format('Y-m-d'),
                 'id_personal' => auth()->user()->personal->id,
@@ -210,7 +212,7 @@ class CommercialQuoteController extends Controller
 
     public function calculateDataConsolidated($shippersConsolidated)
     {
-
+        $commodityText = [];
         $totalVolumen = 0;
         $totalKilogramVolumen = 0;
         $totalKilogram = 0;
@@ -219,14 +221,18 @@ class CommercialQuoteController extends Controller
 
 
         foreach ($shippersConsolidated as $consolidated) {
-            $totalVolumen += (float) $consolidated->volumen;
-            $totalKilogramVolumen += (float) $consolidated->kilogram_volumen;
-            $totalKilogram += (float) $consolidated->kilograms;
+            $commodityText[] = $consolidated->commodity;
+            $totalVolumen += $this->parseDouble($consolidated->volumen);
+            $totalKilogramVolumen += $this->parseDouble($consolidated->kilogram_volumen);
+            $totalKilogram += $this->parseDouble($consolidated->kilograms);
             $totalBultos += (int) $consolidated->nro_packages_consolidated;
             $totalLoadValue += $this->parseDouble($consolidated->load_value);
         }
 
+        $commodity = implode(', ', $commodityText);
+
         return [
+            'commodity' => $commodity,
             'total_volumen' => $totalVolumen,
             'total_kilogram_volumen' => $totalKilogramVolumen,
             'total_kilogram' => $totalKilogram,
@@ -339,7 +345,7 @@ class CommercialQuoteController extends Controller
 
     public function completeData(Request $request)
     {
-
+        
         $commercialQuote = CommercialQuote::where('nro_quote_commercial', $request->nro_quote_commercial)->first();
         $customer = null;
         $supplier = null;
