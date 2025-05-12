@@ -3,9 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Events\QuoteNotification;
+use Illuminate\Support\Facades\DB;
 use App\Models\Concepts;
 use App\Models\Customer;
+use App\Models\ResponseTransportQuote;
+use App\Models\ConceptsTransportQuote;
+use App\Models\MessageQuoteTransport;
 use App\Models\QuoteTransport;
+use App\Models\Supplier;
 use App\Models\Routing;
 use App\Models\TypeShipment;
 use Carbon\Carbon;
@@ -216,26 +221,86 @@ class QuoteTransportController extends Controller
     /**
      * Display the specified resource.
      */
+    /**
+     * Display the specified resource.
+     */
     public function show(string $id)
     {
-        //Ver el detalle de la cotizacion
 
-        $quote = QuoteTransport::findOrFail($id);
+        // 1) Carga la cotización con relaciones necesarias
+        $quote = QuoteTransport::with([
+            'messages.sender.personal',
+            'commercial_quote',
+            'transportConcepts.concept',
+            'responseTransportQuotes.supplier',
+            'responseTransportQuotes',
+        ])->findOrFail($id);
+
+        // 2) Obtengo el id_type_shipment de la cotización
+        $shipmentId = $quote->commercial_quote->type_shipment->id;
+
+        // 3) Busco el concepto “TRANSPORTE” que corresponda a ese tipo de shipment
+        $transporteConcept = Concepts::where('name', 'TRANSPORTE')
+            ->where('id_type_shipment', $shipmentId)
+            ->whereHas('typeService', fn($q) => $q->where('name', 'Transporte'))
+            ->first();
+
+        // 4) Inyecto “Transporte” al principio si aún no vino seleccionado
+        $chosen = $quote->transportConcepts->keyBy('id_concepts');
+        if ($transporteConcept && ! $chosen->has($transporteConcept->id)) {
+            // Creo un modelo pivot simulado (sin persistir)
+            $fake = new \App\Models\ConceptsTransportQuote([
+                'id_concepts'   => $transporteConcept->id,
+                'value_concept' => null,
+            ]);
+            // le asigno la relación 'concept' para que en la vista funcione $fake->concept->name
+            $fake->setRelation('concept', $transporteConcept);
+            // lo agrego al inicio
+            $quote->setRelation(
+                'transportConcepts',
+                $quote->transportConcepts->prepend($fake)
+            );
+        }
+
+        // 5) Mensajes
         $messages = $quote->messages;
 
+        // 6) Archivos
         $folderPath = "commercial_quote/{$quote->commercial_quote->nro_quote_commercial}/quote_transport/{$quote->nro_quote}";
-        $files = collect(Storage::disk('public')->files($folderPath))->map(function ($file) {
-            return [
-                'name' => basename($file), // Nombre del archivo
-                'size' => Storage::disk('public')->size($file), // Tamaño del archivo
-                'url' => asset('storage/' . $file), // URL del archivo
-            ];
-        });
+        $files = collect(Storage::disk('public')->files($folderPath))
+            ->map(fn($file) => [
+                'name' => basename($file),
+                'size' => Storage::disk('public')->size($file),
+                'url'  => asset("storage/{$file}"),
+            ]);
+
+        // 7) Solo proveedores de Transporte
+        $transportSuppliers = Supplier::where('area_type', 'transporte')
+            ->where('state', 'Activo')
+            ->orderBy('name_businessname')
+            ->get();
 
 
-        return view('transport/quote/quote-messagin', compact('quote', 'files', 'messages'));
+        // 8) Conceptos válidos para transporte
+        $concepts = Concepts::where('id_type_shipment', $quote->commercial_quote->id_type_shipment)
+            ->whereHas('typeService', fn($q) => $q->where('name', 'Transporte'))
+            ->get();
+
+   
+
+
+        $status = DB::select("SHOW TABLE STATUS LIKE 'response_transport_quotes'");
+        $nextRespId = $status[0]->Auto_increment;
+        // 9) Retornar la vista con **todas** las variables
+        return view('transport.quote.quote-messagin', compact(
+            'quote',
+            'messages',
+            'files',
+            'concepts',
+            'transportSuppliers',
+            'nextRespId'
+        ));
     }
-
     /**
      * Show the form for editing the specified resource.
      */
@@ -274,27 +339,154 @@ class QuoteTransportController extends Controller
         return view('transport.quote.edit-quote', compact('quote', 'files', 'customers'))->with('showModal', $showModal);
     }
 
+
+    public function storeConceptPrices(Request $request, $quoteId)
+    {
+        // 1) Validamos
+        $data = $request->validate([
+            'provider_id'     => 'required|exists:suppliers,id',
+            'price_concept.*' => 'required|numeric|min:0',
+            'commission'      => 'nullable|numeric|min:0',
+        ]);
+
+        // 2) Creamos la respuesta de transporte
+        $resp = ResponseTransportQuote::create([
+            'nro_response'   => ResponseTransportQuote::generateNroResponse(),
+            'provider_id'    => $data['provider_id'],
+            'provider_cost'  => 0, // ahora lo tomamos de conceptos
+            'commission'     => $data['commission'] ?? 0,
+            'total'          => 0, // recalcularemos abajo
+            'status'         => 'Enviada',
+        ]);
+
+        $quote = QuoteTransport::findOrFail($quoteId);
+        // 3) Asociamos al pivot
+        $quote->responseTransportQuotes()->attach($resp->id);
+
+        // 4) Recorremos conceptos y guardamos en la tabla pivot
+        $totalConceptos = 0;
+        foreach ($data['price_concept'] as $conceptId => $price) {
+            ConceptsTransportQuote::create([
+                'quote_transport_id' => $quoteId,
+                'id_concepts'        => $conceptId,
+                'response_quote_id'  => $resp->id,
+                'value_concept'      => $price,
+                'added_value'        => 0,
+                'net_amount'         => $price,
+                'igv'                => 0,
+                'total'              => $price,
+                'additional_points'  => 0,
+            ]);
+            $totalConceptos += $price;
+        }
+
+        // 5) Ahora sí actualizamos provider_cost y total en la respuesta
+        $resp->update([
+            'provider_cost' => $totalConceptos,
+            'total'         => $totalConceptos + ($resp->commission ?? 0),
+        ]);
+
+        // 6) Generar resumen en HTML  
+        $html  = '<div class="card" style="max-width:400px; margin:0 auto;">';
+        $html .= '<strong>' . e($resp->rpta_number) . '</strong>';
+        $html .= '<table class="table table-sm" style="width:100%; max-width:100%; table-layout:auto;">';
+        $html .= '<thead><tr><th>Item</th><th class="text-right">Montos (S/)</th></tr></thead><tbody>';
+
+        // filas de conceptos
+        foreach ($data['price_concept'] as $conceptId => $price) {
+            $concept = Concepts::find($conceptId);
+            $name    = $concept ? $concept->name : "ID #" . $conceptId;
+            $html   .= '<tr>';
+            $html   .= '<td>' . e($name) . '</td>';
+            $html   .= '<td class="text-right">' . number_format($price, 2) . '</td>';
+            $html   .= '</tr>';
+        }
+
+        // fila comisión
+        $commission = $data['commission'] ?? 0;
+        $html      .= '<tr>';
+        $html      .= '<td>Comision</td>';
+        $html      .= '<td class="text-right">' . number_format($commission, 2) . '</td>';
+        $html      .= '</tr>';
+
+        // fila total
+        $total = $resp->total;
+        $html .= '<tr class="font-weight-bold">';
+        $html .= '<td>Total</td>';
+        $html .= '<td class="text-right">' . number_format($total, 2) . '</td>';
+        $html .= '</tr>';
+
+        $html .= '</tbody></table></div>';
+
+        // 6) Guardar como mensaje (ajusta la relación según tu modelo)
+        MessageQuoteTransport::create([
+            'quote_transport_id' => $quoteId,
+            'sender_id'          => auth()->id(),
+            'message'            => $html,
+        ]);
+        
+        return back()->with('success', 'Cotización de transporte registrada y resumen enviado.');
+    }
+
+
+
     public function updateQuoteTransport(Request $request, string $id)
     {
+        // 1) Decodificar conceptos enviados desde el modal
+        $concepts = json_decode(
+            $request->input('conceptsTransportModal', '[]'),
+            true      // <- convierte a array asociativo
+        );
+
+        // 2) Obtener la cotización y actualizar solo los campos válidos
         $quote = QuoteTransport::findOrFail($id);
+        $quote->update([
+            'pick_up'          => $request->pick_up,
+            'delivery'         => $request->delivery,
+            'container_return' => $request->container_return,
+        ]);
 
-        $quote->update($request->all());
+        // 3) (Opcional) Limpiar los conceptos anteriores
+        $quote->transportConcepts()->delete();
 
-        $folderPath = "quote_transport/{$quote->nro_quote}";
-        $files = collect(Storage::disk('public')->files($folderPath))->map(function ($file) {
-            return [
-                'name' => basename($file), // Nombre del archivo
-                'size' => Storage::disk('public')->size($file), // Tamaño del archivo
-                'url' => asset('storage/' . $file), // URL del archivo
-            ];
-        });
+        // 4) Insertar cada concepto en la tabla pivot
+        foreach ($concepts as $item) {
+            $quote->transportConcepts()->create([
+                'id_concepts' => $item['id'],
+            ]);
+        }
 
-
-
+        // 5) Preparar los mensajes y archivos como en show()
         $messages = $quote->messages;
+        $folderPath = "quote_transport/{$quote->nro_quote}";
+        $files = collect(Storage::disk('public')->files($folderPath))
+            ->map(fn($file) => [
+                'name' => basename($file),
+                'size' => Storage::disk('public')->size($file),
+                'url'  => asset("storage/{$file}"),
+            ]);
 
-        return view('transport/quote/quote-messagin', compact('quote', 'messages', 'files'));
+        $transportSuppliers = Supplier::where('area_type', 'transporte')
+            ->where('state', 'Activo')
+            ->orderBy('name_businessname')
+            ->get();
+
+
+        // 6) Volver a cargar los conceptos válidos para el modal
+        $concepts = Concepts::where('id_type_shipment', $quote->commercial_quote->id_type_shipment)
+            ->whereHas('typeService', fn($q) => $q->where('name', 'Transporte'))
+            ->get();
+
+        // 7) Renderizar la misma vista y pasarle TODO lo necesario
+        return view('transport.quote.quote-messagin', compact(
+            'quote',
+            'messages',
+            'files',
+            'concepts',
+            'transportSuppliers'
+        ));
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -550,7 +742,7 @@ class QuoteTransportController extends Controller
     {
         //
 
-     
+
     }
 
 
@@ -572,16 +764,15 @@ class QuoteTransportController extends Controller
             $quoteTransport->update(['state' => 'Rechazado']);
 
             //Cambiamos de estado al transporte si es que tiene alguno relacionado
-            if($quoteTransport->transport->exists()){
+            if ($quoteTransport->transport->exists()) {
                 $quoteTransport->transport->update(['state' => 'Rechazado']);
             }
-            
+
 
             return response()->json([
                 'message' => 'Cotización rechazada'
             ]);
         }
-
     }
 
 

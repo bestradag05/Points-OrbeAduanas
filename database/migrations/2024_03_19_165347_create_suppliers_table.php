@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             /* $table->string('document_number')->unique(); */
             $table->string('name_businessname');
+            $table->enum('area_type', ['comercial', 'transporte'])
+                  ->default('comercial')
+                  ->comment('Indica si el proveedor es para área Comercial o Transporte');
             $table->string('address');
             $table->string('contact_name');
             $table->string('contact_number');

@@ -11,11 +11,16 @@ class Supplier extends Model
 
     protected $table = 'suppliers';
 
-    protected $fillable = ['document_number', 'name_businessname', 'address', 'contact_name', 'contact_number', 'contact_email', 'state', 'id_document'];
+    protected $fillable = ['document_number',  'name_businessname', 'address', 'contact_name', 'contact_number', 'contact_email', 'area_type',  'state', 'id_document'];
 
 
     public function consolidatedCargos()
     {
         return $this->hasMany(ConsolidatedCargos::class, 'supplier_id', 'id');
+    }
+
+    public function transportResponses()
+    {
+        return $this->hasMany(ResponseTransportQuote::class, 'provider_id');
     }
 }

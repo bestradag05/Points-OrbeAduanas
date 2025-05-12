@@ -44,9 +44,17 @@ class Concepts extends Model
             ->withPivot(['value_concept', 'value_concept_added', 'total_value_concept', 'additional_points']);
     }
 
-    public function transport()
-    {
-        return $this->belongsToMany(Transport::class)
-            ->withPivot(['value_concept', 'added_value', 'net_amount', 'igv', 'total', 'additional_points']);
+    public function quoteTransports() {
+        return $this->belongsToMany(QuoteTransport::class, 'concepts_transport_quote', 'id_concepts', 'quote_transport_id')
+                    ->withPivot('value_concept', 'added_value', 'net_amount', 'igv', 'total');
+    }
+
+    // Ejemplo de scope para filtrar conceptos por tipo de servicio
+    public function scopeByServiceType($query, $typeServiceId) {
+    return $query->where('id_type_service', $typeServiceId);
+    }
+
+    public function scopeByShipmentType($query, $typeShipmentId) {
+    return $query->where('id_type_shipment', $typeShipmentId);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CommercialQuote;
 use App\Models\Concepts;
+use App\Models\ConceptsTransportQuote;
 use App\Models\ConsolidatedCargos;
 use App\Models\Container;
 use App\Models\Custom;
@@ -15,6 +16,7 @@ use App\Models\Modality;
 use App\Models\QuoteFreight;
 use App\Models\QuoteTransport;
 use App\Models\Regime;
+use App\Models\ResponseTransportQuote;
 use App\Models\StateCountry;
 use App\Models\Supplier;
 use App\Models\TypeInsurance;
@@ -514,17 +516,24 @@ class CommercialQuoteController extends Controller
 
     public function getTemplateQuoteCommercialQuote(string $id)
     {
-
         $comercialQuote = CommercialQuote::find($id);
+
+        // 1. Corregir nombre del modelo a singular
+        // 2. Usar with() para eager loading de la relación
+        // 3. Agregar validación para evitar errores
+        $concepts = Concepts::with('typeService')
+            ->when($comercialQuote->type_shipment, function ($query) use ($comercialQuote) {
+                return $query->where('id_type_shipment', $comercialQuote->type_shipment->id);
+            })
+            ->get();
 
         $tab = 'quote';
 
         $data = [
             'comercialQuote' => $comercialQuote,
+            'concepts' => $concepts, // 4. Incluir la variable en los datos
             'tab' => $tab,
-
         ];
-
 
         return view('commercial_quote/detail-commercial-quote', $data);
     }
@@ -636,6 +645,77 @@ class CommercialQuoteController extends Controller
 
         return redirect('commercial/quote/' . $commercialQuote->id . '/detail');
     }
+
+
+    /**
+     * Actualiza los costos netos de los conceptos de transporte (Área de Transporte).
+     */
+    public function updateTransportCosts(Request $request, $quoteTransportId)
+    {
+        $request->validate([
+            'concepts' => 'required|array',
+            'concepts.*.value_concept' => 'required|numeric|min:0', // Costo neto
+        ]);
+
+        $quoteTransport = QuoteTransport::findOrFail($quoteTransportId);
+
+        // Actualizar cada concepto en la tabla pivote
+        foreach ($request->concepts as $conceptId => $data) {
+            $quoteTransport->concepts()->updateExistingPivot($conceptId, [
+                'value_concept' => $data['value_concept'],
+                'net_amount'    => $data['value_concept'], // net_amount = value_concept (costo base)
+                'igv'           => $data['value_concept'] * 0.18, // IGV 18%
+                'total'         => $data['value_concept'] * 1.18, // total con IGV
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Costos netos actualizados por el área de transporte.');
+    }
+
+
+    public function updateCommercialMargins(Request $request, $quoteTransportId)
+    {
+        $quoteTransport = QuoteTransport::findOrFail($quoteTransportId);
+
+        foreach ($request->concepts as $conceptId => $data) {
+            $quoteTransport->concepts()->updateExistingPivot($conceptId, [
+                'added_value' => $data['added_value'],
+                'total'       => $quoteTransport->concepts->find($conceptId)->pivot->net_amount + $data['added_value'],
+            ]);
+        }
+    }
+
+    public function storeConceptPrices(Request $request, $quoteId)
+{
+    $data = $request->validate([
+      'provider_id'     => 'required|exists:suppliers,id',
+      'price_concept.*' => 'required|numeric|min:0',
+      'cost_transport'  => 'required|numeric|min:0',
+    ]);
+
+    // 1) Crea o actualiza la respuesta del transportista:
+    $resp = ResponseTransportQuote::updateOrCreate(
+      ['quote_transport_id' => $quoteId, 'provider_id' => $data['provider_id']],
+      ['provider_cost' => $data['cost_transport'], 'status'=>'Enviada']
+    );
+
+    $quote = QuoteTransport::findOrFail($quoteId);
+    $quote->responseTransportQuotes()->attach($resp->id);
+
+    // 2) Para cada concepto, grábalo en concepts_transport_quote:
+    foreach ($data['price_concept'] as $conceptId => $price) {
+        $resp->conceptsTransportQuote()->updateOrCreate(
+          ['quote_transport_id' => $quoteId, 'id_concepts' => $conceptId, 'response_quote_id'=>$resp->id],
+          ['value_concept' => $price]
+        );
+    }
+
+    // 3) Redirige con éxito…
+    return back()->with('success', 'Cotización de transporte registrada.');
+}
+
+
+
 
     /**
      * Display the specified resource.
