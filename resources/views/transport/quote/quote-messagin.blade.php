@@ -475,84 +475,84 @@
 
 {{-- Modal de “Cerrar Cotización” con selección de respuesta --}}
 <div id="quote-transport" class="modal fade" tabindex="-1" role="dialog"
-     aria-labelledby="quote-transport-title" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <form action="{{ url('/quote/transport/cost/accept/' . $quote->id) }}"
-            id="sendTransportCost"
-            method="POST">
-        @csrf
+    aria-labelledby="quote-transport-title" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{{ url('/quote/transport/cost/accept/' . $quote->id) }}"
+                id="sendTransportCost"
+                method="POST">
+                @csrf
 
-        <div class="modal-header">
-          <h5 class="modal-title" id="quote-transport-title">
-            {{ $quote->nro_quote }}
-          </h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-            <span aria-hidden="true">&times;</span>
-          </button>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="quote-transport-title">
+                        {{ $quote->nro_quote }}
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    {{-- 1) Dropdown con las respuestas existentes --}}
+                    <div class="form-group">
+                        <label for="response_id"><strong>Respuesta</strong></label>
+                        <select name="response_id" id="response_id"
+                            class="form-control select2"
+                            data-placeholder="Seleccione una respuesta..." style="width:100%">
+                            <option></option>
+                            @foreach($quote->responseTransportQuotes as $resp)
+                            <option value="{{ $resp->id }}">
+                                {{ $resp->supplier->name_businessname }} &mdash; {{ $resp->nro_response }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- 2) Cuadrilla, si aplica --}}
+                    @if ($quote->gang === 'SI')
+                    <div class="form-group">
+                        <label for="cost_gang">Cuadrilla</label>
+                        <input id="cost_gang"
+                            name="cost_gang"
+                            data-type="currency"
+                            class="form-control CurrencyInput"
+                            type="text">
+                    </div>
+                    @endif
+
+                    {{-- 3) Resguardo, si aplica --}}
+                    @if ($quote->guard === 'SI')
+                    <div class="form-group">
+                        <label for="cost_guard">Resguardo</label>
+                        <input id="cost_guard"
+                            name="cost_guard"
+                            data-type="currency"
+                            class="form-control CurrencyInput"
+                            type="text">
+                    </div>
+                    @endif
+
+                    {{-- 4) Fecha aproximada de retiro --}}
+                    <div class="form-group">
+                        <label for="withdrawal_date">Fecha aproximada de retiro</label>
+                        <input id="withdrawal_date"
+                            name="withdrawal_date"
+                            type="date"
+                            class="form-control">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">
+                        Cerrar Cotización
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Cerrar
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <div class="modal-body">
-          {{-- 1) Dropdown con las respuestas existentes --}}
-          <div class="form-group">
-            <label for="response_id"><strong>Respuesta</strong></label>
-            <select name="response_id" id="response_id"
-                    class="form-control select2"
-                    data-placeholder="Seleccione una respuesta..." style="width:100%">
-              <option></option>
-              @foreach($quote->responseTransportQuotes as $resp)
-                <option value="{{ $resp->id }}">
-                  {{ $resp->supplier->name_businessname }} &mdash; {{ $resp->nro_response }}
-                </option>
-              @endforeach
-            </select>
-          </div>
-
-          {{-- 2) Cuadrilla, si aplica --}}
-          @if ($quote->gang === 'SI')
-            <div class="form-group">
-              <label for="cost_gang">Cuadrilla</label>
-              <input id="cost_gang"
-                     name="cost_gang"
-                     data-type="currency"
-                     class="form-control CurrencyInput"
-                     type="text">
-            </div>
-          @endif
-
-          {{-- 3) Resguardo, si aplica --}}
-          @if ($quote->guard === 'SI')
-            <div class="form-group">
-              <label for="cost_guard">Resguardo</label>
-              <input id="cost_guard"
-                     name="cost_guard"
-                     data-type="currency"
-                     class="form-control CurrencyInput"
-                     type="text">
-            </div>
-          @endif
-
-          {{-- 4) Fecha aproximada de retiro --}}
-          <div class="form-group">
-            <label for="withdrawal_date">Fecha aproximada de retiro</label>
-            <input id="withdrawal_date"
-                   name="withdrawal_date"
-                   type="date"
-                   class="form-control">
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">
-            Cerrar Cotización
-          </button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">
-            Cerrar
-          </button>
-        </div>
-      </form>
     </div>
-  </div>
 </div>
 
 <div class="modal fade" id="modalQuoteTransportDocuments" tabindex="-1"
@@ -787,14 +787,6 @@
     @endif
 </div>
 
-
-@php
-$resp = $quote
-->responseTransportQuotes
-->sortByDesc('id')
-->first();
-@endphp
-
 {{-- Modal para que Transporte cotice sobre la respuesta del proveedor --}}
 <div id="modalCotizarTransporte" class="modal fade" tabindex="-1" role="dialog"
     aria-labelledby="modalCotizarTransporte-title" aria-hidden="true">
@@ -812,12 +804,6 @@ $resp = $quote
                     </button>
                 </div>
 
-                @php
-                 // tomo la última respuesta (o null)
-                 $last = $quote->responseTransportQuotes->sortByDesc('id')->first();
-                 // genero el siguiente número
-                 $nextRpta = \App\Models\ResponseTransportQuote::generateNroResponse();
-                @endphp
 
                 <div class="modal-body">
                     {{-- Fila: Proveedor + RPTA --}}
@@ -830,25 +816,21 @@ $resp = $quote
                                 <option />
                                 @foreach($transportSuppliers as $sup)
                                 <option value="{{ $sup->id }}"
-                                    {{ optional($resp)->provider_id == $sup->id ? 'selected' : '' }}>
+                                    {{ optional($quote)->provider_id == $sup->id ? 'selected' : '' }}>
                                     {{ $sup->name_businessname }}
                                 </option>
                                 @endforeach
                             </x-adminlte-select2>
                         </div>
 
-                        <div class="col-md-4">
-                            <div class="d-flex align-items-center justify-content-end h-100 mt-3">
-                                <div class="bg-light p-3 rounded text-center">
-                                    <div class="text-muted small mb-1">RESPUESTA DE PROV.</div>
-                                      <div class="h4 font-weight-bold text-primary mb-0">
-                                      {{-- Muestro siempre el próximo RPTA --}}
-                                      {{ $nextRpta }}
-                                      </div>
-                                </div>
+                        <div class="col-md-4 text-right">
+                            <div class="bg-light p-3 rounded">
+                                <div class="small text-muted mb-1">RPTA</div>
+                                <b class="d-block">{{ $nro_response }}</b>
                             </div>
                         </div>
                     </div>
+
 
                     <hr class="mb-4">
 
@@ -856,7 +838,7 @@ $resp = $quote
                     <div class="mb-4">
                         <h4 class="mb-3">Precios de conceptos</h4>
 
-                        @foreach($quote->transportConcepts as $tc)
+                        @foreach($modalConcepts as $tc)
                         <div class="form-group row">
                             <label class="col-sm-6 col-form-label font-weight-bold">
                                 {{ $tc->concept->name }} (S/)
@@ -867,7 +849,7 @@ $resp = $quote
                                     step="0.01"
                                     name="price_concept[{{ $tc->concept->id }}]"
                                     class="form-control concept-input"
-                                    value="{{ 'price_concept.'.$tc->concept->id, $tc->value_concept }}">
+                                    value="{{ optional($resp->conceptsTransportQuote->firstWhere('id_concepts', $tc->concept->id))->value_concept }}">
                             </div>
                         </div>
                         @endforeach
@@ -1163,11 +1145,29 @@ $resp = $quote
     });
 </script>
 <script>
-  // Inicializamos Select2 (si no lo tenías)
-  $('#response_id').select2({
-    theme: 'bootstrap4',
-    placeholder: 'Seleccione una respuesta...'
-  });
+    // Inicializamos Select2 (si no lo tenías)
+    $('#response_id').select2({
+        theme: 'bootstrap4',
+        placeholder: 'Seleccione una respuesta...'
+    });
+
+</script>
+
+<script>
+$('#modalCotizarTransporte').on('show.bs.modal', function () {
+    // 1) Resetea TODO el form (inputs vuelven a su value="" original)
+    this.querySelector('form').reset();
+
+    // 2) Para los <input> que rellenas con JS (clase .concept-input y comisión), forzamos a vacío
+    $(this).find('.concept-input').val('');
+    $(this).find('#commission').val('');
+
+    // 3) Ponemos el total en 0.00
+    $(this).find('#totalConceptos').val('0.00');
+
+    // 4) (Opcional) si tienes un select2 para proveedor, lo limpias así:
+    $(this).find('#provider_id').val(null).trigger('change');
+});
 </script>
 
 @endpush

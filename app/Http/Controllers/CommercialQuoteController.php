@@ -106,6 +106,7 @@ class CommercialQuoteController extends Controller
         $customers = Customer::with('personal')
             ->where('id_personal', $personalId)
             ->get();
+            
 
         return view("commercial_quote/register-commercial-quote", compact('stateCountrys', 'type_shipments', 'type_loads', 'regimes', 'incoterms', 'nro_quote_commercial', 'types_services', 'containers', 'customers'));
     }

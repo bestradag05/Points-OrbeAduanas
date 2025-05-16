@@ -9,41 +9,43 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ResponseTransportQuote extends Model
 {
     protected $fillable = [
-        'nro_response',
         'provider_id',
         'provider_cost',
         'commission',
         'total',
-        'status',
-        'nro_response'
+        'status'
     ];
 
 
-    protected static function booted()
-    {
-        static::creating(function ($m) {
-            $year = date('y');
-            $prefix = 'RPTA-';
-            $last = static::latest('id')->first();
-            $nextSeq = $last ? $last->id + 1 : 1;
-            $m->nro_response = "{$prefix}{$year}{$nextSeq}";
-        });
-    }
+    // Genera "RPTA-YY{n}"
     public static function generateNroResponse(): string
     {
-        $last  = static::latest('id')->first();
-        $year  = date('y');
-        $prefx = 'RPTA-';
+    
+        // Obtener el último registro
+        $lastCode = self::latest('id')->first();
+        $year = date('y');
+        $prefix = 'RPTA-';
 
-        if (! $last || ! $last->nro_response) {
-            return "{$prefx}{$year}1";
+        if (!$lastCode || empty($lastCode->nro_response)) {
+            return $prefix . $year . '1';
+        } else {
+            // Calculamos desde dónde extraer la parte numérica
+            $offset = strlen($prefix . $year);
+            $number = (int) substr($lastCode->nro_response, $offset);
+            $number++;
+            return $prefix . $year . $number;
         }
-
-        $seq = (int) substr($last->nro_response, strlen($prefx . $year)) + 1;
-        return "{$prefx}{$year}{$seq}";
     }
 
-
+    protected static function booted()
+    {
+        static::creating(function ($quote) {
+            // Si no tiene un número de operación, generarlo
+            if (empty($quote->nro_response)) {
+                $quote->nro_response = $quote->generateNroResponse();
+            }
+        });
+ }
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class, 'provider_id');

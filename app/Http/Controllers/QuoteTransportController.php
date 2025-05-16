@@ -236,6 +236,15 @@ class QuoteTransportController extends Controller
             'responseTransportQuotes',
         ])->findOrFail($id);
 
+        $displayConcepts = $quote->transportConcepts
+            ->map(fn($tc) => $tc->setRelation('concept', $tc->concept));
+
+        $latestResp = $quote
+            ->responseTransportQuotes()
+            ->orderBy('id', 'desc')
+            ->first();
+
+
         // 2) Obtengo el id_type_shipment de la cotización
         $shipmentId = $quote->commercial_quote->type_shipment->id;
 
@@ -286,20 +295,34 @@ class QuoteTransportController extends Controller
             ->whereHas('typeService', fn($q) => $q->where('name', 'Transporte'))
             ->get();
 
-   
-
+        // Filtramos por id_concepts para quitar duplicados
+        $modalConcepts = $quote
+            ->transportConcepts            // colección de pivot models
+            ->unique('id_concepts')        // dejamos sólo 1 por cada concepto
+            ->values();
 
         $status = DB::select("SHOW TABLE STATUS LIKE 'response_transport_quotes'");
         $nextRespId = $status[0]->Auto_increment;
+        $nro_response = (new ResponseTransportQuote())->generateNroResponse();
+
         // 9) Retornar la vista con **todas** las variables
-        return view('transport.quote.quote-messagin', compact(
-            'quote',
-            'messages',
-            'files',
-            'concepts',
-            'transportSuppliers',
-            'nextRespId'
-        ));
+        return view('transport.quote.quote-messagin', [
+            'quote'           => $quote,
+            'messages'        => $quote->messages,
+            'files'           => $files = collect(Storage::disk('public')
+                ->files("commercial_quote/{$quote->commercial_quote->nro_quote_commercial}/quote_transport/{$quote->nro_quote}"))
+                ->map(fn($f) => [
+                    'name' => basename($f),
+                    'url'  => asset("storage/{$f}"),
+                ]),
+            'transportSuppliers' => Supplier::where('area_type', 'transporte')->where('state', 'Activo')->get(),
+            'displayConcepts'  => $displayConcepts,
+            'latestResp'       => $latestResp,
+            'transportSuppliers' => $transportSuppliers,
+            'nro_response'     => $nro_response,
+            'nextRespId'          => $nextRespId,
+            'modalConcepts'       => $modalConcepts
+        ]);
     }
     /**
      * Show the form for editing the specified resource.
@@ -351,7 +374,6 @@ class QuoteTransportController extends Controller
 
         // 2) Creamos la respuesta de transporte
         $resp = ResponseTransportQuote::create([
-            'nro_response'   => ResponseTransportQuote::generateNroResponse(),
             'provider_id'    => $data['provider_id'],
             'provider_cost'  => 0, // ahora lo tomamos de conceptos
             'commission'     => $data['commission'] ?? 0,
@@ -366,19 +388,24 @@ class QuoteTransportController extends Controller
         // 4) Recorremos conceptos y guardamos en la tabla pivot
         $totalConceptos = 0;
         foreach ($data['price_concept'] as $conceptId => $price) {
-            ConceptsTransportQuote::create([
-                'quote_transport_id' => $quoteId,
-                'id_concepts'        => $conceptId,
-                'response_quote_id'  => $resp->id,
-                'value_concept'      => $price,
-                'added_value'        => 0,
-                'net_amount'         => $price,
-                'igv'                => 0,
-                'total'              => $price,
-                'additional_points'  => 0,
-            ]);
+            ConceptsTransportQuote::updateOrCreate(
+                [
+                    'quote_transport_id' => $quoteId,
+                    'id_concepts'        => $conceptId,
+                    'response_quote_id'  => $resp->id,
+                ],
+                [
+                    'value_concept'     => $price,
+                    'added_value'       => 0,
+                    'net_amount'        => $price,
+                    'igv'               => 0,
+                    'total'             => $price,
+                    'additional_points' => 0,
+                ]
+            );
             $totalConceptos += $price;
         }
+
 
         // 5) Ahora sí actualizamos provider_cost y total en la respuesta
         $resp->update([
@@ -424,8 +451,10 @@ class QuoteTransportController extends Controller
             'sender_id'          => auth()->id(),
             'message'            => $html,
         ]);
-        
-        return back()->with('success', 'Cotización de transporte registrada y resumen enviado.');
+
+    return redirect()
+        ->route('transport.quote.show', $quoteId)
+        ->with('success', 'Cotización de transporte registrada y resumen enviado.');
     }
 
 
@@ -477,13 +506,16 @@ class QuoteTransportController extends Controller
             ->whereHas('typeService', fn($q) => $q->where('name', 'Transporte'))
             ->get();
 
+            $nro_response = ResponseTransportQuote::generateNroResponse();
+
         // 7) Renderizar la misma vista y pasarle TODO lo necesario
         return view('transport.quote.quote-messagin', compact(
             'quote',
             'messages',
             'files',
             'concepts',
-            'transportSuppliers'
+            'transportSuppliers',
+            'nro_response'
         ));
     }
 
