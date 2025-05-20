@@ -15,11 +15,17 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use stdClass;
 
 class FreightService
 {
+
+    protected $freightDocumentService;
+
+    public function __construct(FreightDocumentService $freightDocumentService)
+    {
+        $this->freightDocumentService = $freightDocumentService;
+    }
 
 
     public function index()
@@ -195,22 +201,17 @@ class FreightService
 
     public function generateRoutingOrder($request)
     {
-
         $freight = Freight::findOrFail($request->id_freight);
         $commercialQuote = $freight->commercial_quote;
         $concepts = $freight->concepts;
 
+        $freight->update(['wr_loading' => $request->wr_loading]);
         $pdf = Pdf::loadView('freight.pdf.routingOrder', compact('commercialQuote', 'concepts', 'freight'));
         $filename = 'Routing Order.pdf';
 
-        $directory = 'commercial_quote/'.$commercialQuote->nro_quote_commercial.'/freight';
+        $this->freightDocumentService->storeFreightDocument($freight, $pdf->output(), $filename);
 
-        // Guardar el archivo
-        Storage::disk('public')->put($directory.'/'.$filename, $pdf->output());
-        
-        // Obtener todos los archivos del directorio
-        $files = Storage::disk('public')->files($directory);
-        return compact('freight', 'commercialQuote', 'files');
+        return compact('freight', 'commercialQuote');
     }
 
     public function editFreight(string $id)
@@ -248,15 +249,29 @@ class FreightService
 
     public function showFreight($id)
     {
-        $freight = Freight::findOrFail($id);
+        $freight = Freight::with('documents')->findOrFail($id);
         $commercialQuote = $freight->commercial_quote;
 
-        $directory = 'commercial_quote/'.$commercialQuote->nro_quote_commercial.'/freight';
-        $files = Storage::disk('public')->files($directory);
-
-        return compact('freight', 'commercialQuote', 'files');
+        return compact('freight', 'commercialQuote');
     }
 
+
+    public function uploadFreightFiles($request, $id)
+    {
+        $freight = Freight::findOrFail($id);
+        // Validar que venga el archivo
+        if (!$request->hasFile('file')) {
+            return redirect()->route('freight.show', $freight->id)->with('error', 'Hubo un error, el archivo no se pudo cargar');
+        }
+
+
+        $file = $request->file('file');
+        $content = file_get_contents($file);
+        $nameForDB = $request->name_file;
+        $extension = $file->getClientOriginalExtension();
+
+         $this->freightDocumentService->storeFreightDocument($freight, $content, $nameForDB, $extension);
+    }
 
 
     public function updateFreight($request, $id)

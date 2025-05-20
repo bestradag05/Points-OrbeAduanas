@@ -169,7 +169,7 @@
             <tr>
                 <td style="width: 20%; text-align: center">WR loading</td>
                 <td style="padding-left: 10px">
-                    2024-1262
+                    {{ $freight->wr_loading}}
                 </td>
             </tr>
 

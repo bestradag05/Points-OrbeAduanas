@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('freight', function (Blueprint $table) {
             $table->id();
+            $table->string('wr_loading')->nullable();
             $table->string('roi')->nullable()->unique();
             $table->string('hawb_hbl')->nullable();
             $table->string('bl_work')->nullable();

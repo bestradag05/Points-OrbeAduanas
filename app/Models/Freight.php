@@ -12,18 +12,19 @@ class Freight extends Model
 
     protected $table = 'freight';
 
-    protected $fillable = 
+    protected $fillable =
     [
-        'roi', 
-        'hawb_hbl', 
-        'bl_work', 
-        'date_register', 
-        'edt', 
+        'wr_loading',
+        'roi',
+        'hawb_hbl',
+        'bl_work',
+        'date_register',
+        'edt',
         'eta',
-        'value_utility', 
-        'value_freight', 
+        'value_utility',
+        'value_freight',
         'state',
-        'id_quote_freight', 
+        'id_quote_freight',
         'nro_operation',
         'nro_quote_commercial'
     ];
@@ -33,7 +34,7 @@ class Freight extends Model
     public function concepts()
     {
         return $this->belongsToMany(Concepts::class, 'concepts_freight', 'id_freight', 'id_concepts')
-                    ->withPivot(['value_concept', 'value_concept_added', 'total_value_concept', 'additional_points']);
+            ->withPivot(['value_concept', 'value_concept_added', 'total_value_concept', 'additional_points']);
     }
 
 
@@ -41,7 +42,7 @@ class Freight extends Model
     {
         return $this->belongsTo(Routing::class, 'nro_operation', 'nro_operation');
     }
-    
+
     public function commercial_quote()
     {
         return $this->belongsTo(CommercialQuote::class, 'nro_quote_commercial', 'nro_quote_commercial');
@@ -56,9 +57,14 @@ class Freight extends Model
     {
         return $this->morphMany(AdditionalPoints::class, 'additional', 'model_additional_service', 'id_additional_service');
     }
-    
+
     public function quoteFreight()
     {
         return $this->hasMany(QuoteFreight::class, 'id', 'id_quote_freight');
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(FreightDocuments::class, 'id_freight');
     }
 }

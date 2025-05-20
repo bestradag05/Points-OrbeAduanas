@@ -381,27 +381,34 @@
 
         <div class="col-6 px-5">
 
-            <h5 class="text-indigo mb-2 text-center py-3">
-                <i class="fa-duotone fa-gear"></i>
-                Documentos
-            </h5>
+            <div class="row justify-content-center py-3">
+                <h5 class="text-indigo m-0">
+                    Documentos
+                </h5>
+                <button type="button" class="btn btn-indigo btn-sm mx-2" onclick="showModalUpdateDocumentFreight()"><i
+                        class="fas fa-plus"></i></button>
+            </div>
 
-
-            <table class="table text-center">
+            <table class="table mt-2">
                 <thead>
                     <th class="text-indigo text-bold">Nombre</th>
+                    <th class="text-indigo text-bold">Documento</th>
                     <th class="text-indigo text-bold">Acciones</th>
                 </thead>
                 <tbody>
-                    @foreach ($files as $index => $file)
+                    @foreach ($freight->documents as $document)
                         <tr>
-                            <td>{{ basename($file) }}</td>
+                            <td class="text-indigo text-uppercase">{{ $document->name }}</td>
                             <td>
-                                <a href="{{ asset('storage/' . $file) }}" target="_blank"
-                                    class="btn btn-sm text-danger">
+                                <a href="{{ asset($document->path) }}" target="_blank" class="btn text-danger">
                                     <i class="fas fa-file-pdf"></i>
                                 </a>
 
+                            </td>
+                            <td>
+                                <a href="" class="text-danger">
+                                    <i class="fas fa-times"></i>
+                                </a>
                             </td>
                         </tr>
                     @endforeach
@@ -410,9 +417,92 @@
 
 
 
+            <div class="row mt-4">
+                <div class="col-3">
+                    <button class="btn btn-secondary btn-sm" onclick="openModalgenerateRoutingOrder()">
+                        Generar Routing
+                    </button>
+                </div>
+            </div>
+
+
+
         </div>
 
     </div>
+
+
+    <x-adminlte-modal id="modalUploadDocumentFreight" class="modal" title="Documento necesarios para el proceso"
+        size='lg' scrollable>
+        <form action="{{ url('/freight/upload_file/' . $freight->id) }}" id="formUploadFile" method="POST"
+            enctype="multipart/form-data">
+            @csrf
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="customs_perception">Nombre</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="name_file"
+                                placeholder="Ingrese el nombre del archivo" value="">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="customs_perception">Archivo: </label>
+                        <div class="input-group">
+                            <input type="file" class="form-control" name="file" placeholder="Ingrese el archivo"
+                                value="">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <x-slot name="footerSlot">
+                <x-adminlte-button class="btn btn-indigo" id="btnSubmit" type="submit" onclick="submitUploadFile(this)"
+                    label="Guardar Archivo" />
+                <x-adminlte-button theme="secondary" label="Cerrar" data-dismiss="modal" />
+            </x-slot>
+
+        </form>
+    </x-adminlte-modal>
+
+
+    {{-- Commercial Fill Data --}}
+    <x-adminlte-modal id="generateRoutingOrder" class="modal" title="Complete la informacion para generar el routing"
+        size='lg' scrollable>
+        <form action="/freight/routing" method="POST" id="formgenerateRoutingOrder">
+            @csrf
+
+            <input type="hidden" name="id_freight" value="{{ $freight->id }}">
+
+            <div class="row">
+
+                <div class="col-12 ">
+                    <div class="form-group">
+                        <label for="wr_loading">WR Loading</label>
+
+                        <textarea class="form-control" id="wr_loading" name="wr_loading" placeholder="Ingrese el numero de seguimiento"></textarea>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <x-slot name="footerSlot">
+                <x-adminlte-button class="btn btn-indigo" type="submit" onclick="submitGenerateRoutingOrder(this)"
+                    label="Generar" />
+                <x-adminlte-button theme="secondary" label="Cerrar" data-dismiss="modal" />
+            </x-slot>
+
+        </form>
+    </x-adminlte-modal>
+
+
+
+
 @stop
 
 @push('scripts')
@@ -437,5 +527,90 @@
         document.getElementById('extraFields').addEventListener('hide.bs.collapse', function() {
             toggleArrows(false);
         });
+
+
+        function showModalUpdateDocumentFreight() {
+            $('#modalUploadDocumentFreight').modal('show');
+        }
+
+        function submitUploadFile() {
+
+            let formUploadFile = $('#formUploadFile');
+            let inputs = formUploadFile.find('input');
+
+            let isValid = true;
+
+            inputs.each(function() {
+                let $input = $(this); // Convertir a objeto jQuery
+                let value = $input.val();
+
+                if (value.trim() === '') {
+                    $input.addClass('is-invalid');
+                    isValid = false;
+                    showError(this, 'Debe completar este campo');
+                } else {
+                    $input.removeClass('is-invalid');
+                    hideError(this);
+                }
+            });
+
+            if (isValid) {
+                formUploadFile.submit();
+            }
+        }
+
+
+        function openModalgenerateRoutingOrder() {
+            $('#generateRoutingOrder').modal('show');
+
+        }
+
+
+        function submitGenerateRoutingOrder() {
+            let formGenerateRoutingOrder = $('#formgenerateRoutingOrder');
+            let inputs = formGenerateRoutingOrder.find('textarea');
+
+            let isValid = true;
+
+            inputs.each(function() {
+                let $input = $(this); // Convertir a objeto jQuery
+                let value = $input.val();
+
+                if (value.trim() === '') {
+                    $input.addClass('is-invalid');
+                    isValid = false;
+                    showError(this, 'Debe completar este campo');
+                } else {
+                    $input.removeClass('is-invalid');
+                    hideError(this);
+                }
+            });
+
+            if (isValid) {
+                formGenerateRoutingOrder.submit();
+            }
+        }
+
+
+        // Mostrar mensaje de error
+        function showError(input, message) {
+            let errorSpan = input.nextElementSibling;
+            if (!errorSpan || !errorSpan.classList.contains('invalid-feedback')) {
+                errorSpan = document.createElement('span');
+                errorSpan.classList.add('invalid-feedback');
+                input.after(errorSpan);
+            }
+            errorSpan.textContent = message;
+            errorSpan.style.display = 'block';
+        }
+
+
+        // Ocultar mensaje de error
+        function hideError(input) {
+            let errorSpan = input.nextElementSibling;
+            if (errorSpan && errorSpan.classList.contains('invalid-feedback')) {
+                errorSpan.style.display = 'none';
+            }
+        }
     </script>
 @endpush

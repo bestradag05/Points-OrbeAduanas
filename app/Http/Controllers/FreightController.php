@@ -7,13 +7,16 @@ use App\Models\CommercialQuote;
 use App\Models\ConceptFreight;
 use App\Models\Concepts;
 use App\Models\Freight;
+use App\Models\FreightDocuments;
 use App\Models\Insurance;
 use App\Models\QuoteFreight;
 use App\Models\TypeInsurance;
 use App\Services\FreightService;
 use Carbon\Carbon;
+use Dom\DocumentFragment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use stdClass;
 
 class FreightController extends Controller
@@ -22,10 +25,10 @@ class FreightController extends Controller
 
     protected $freightService;
 
-     public function __construct(FreightService $freightService)
-     {
-         $this->freightService = $freightService;
-     }
+    public function __construct(FreightService $freightService)
+    {
+        $this->freightService = $freightService;
+    }
 
     /**
      * Display a listing of the resource.
@@ -49,7 +52,7 @@ class FreightController extends Controller
     public function getFreightPersonal()
     {
 
-       $compact = $this->freightService->getFreightPersonal();
+        $compact = $this->freightService->getFreightPersonal();
 
         return view("freight/list-freight-personal", $compact);
     }
@@ -84,8 +87,9 @@ class FreightController extends Controller
 
     public function generateRouting(Request $request)
     {
-        $compact = $this->freightService->generateRoutingOrder($request);
-        return view("freight/detail-freight", $compact);
+        $this->freightService->generateRoutingOrder($request);
+
+        return redirect()->route('freight.show', $request->id_freight)->with('success', 'Routing Order generado correctamente.');
     }
 
 
@@ -94,9 +98,17 @@ class FreightController extends Controller
      */
     public function show(string $id)
     {
-      $compact = $this->freightService->showFreight($id);
+        $compact = $this->freightService->showFreight($id);
 
-      return view("freight/detail-freight", $compact);
+        return view("freight/detail-freight", $compact);
+    }
+
+
+    public function uploadFreightFiles(Request $request, $id)
+    {
+        $this->freightService->uploadFreightFiles($request, $id);
+
+       return redirect()->route('freight.show', $id)->with('success', 'Archivo subido correctamente.');
     }
 
 
@@ -104,8 +116,8 @@ class FreightController extends Controller
     public function getTemplateGeneratePointFreight(string $id)
     {
         $compact = $this->freightService->getTemplateGeneratePointFreight($id);
-       
-       return $compact;
+
+        return $compact;
     }
 
     public function updatePointFreight(Request $request, string $id)
@@ -121,23 +133,20 @@ class FreightController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
-    {
-       
-    }
+    public function edit(string $id) {}
 
     /**
      * Update the specified resource in storage.
-     */ 
+     */
     public function update(Request $request, string $id)
     {
         $freight = $this->freightService->updateFreight($request, $id);
-        
+
         return redirect('commercial/quote/' . $freight->commercial_quote->id . '/detail');
     }
 
 
-    
+
 
     /**
      * Remove the specified resource from storage.
@@ -153,8 +162,4 @@ class FreightController extends Controller
             'roi' => 'required|string|unique:freight,roi,' . $id
         ]);
     }
-
-
-
-    
 }

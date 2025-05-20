@@ -149,6 +149,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('freight', FreightController::class);
     Route::get('freight/create/{quoteId}', [FreightController::class, 'createFreight']);
     Route::post('freight/routing/', [FreightController::class, 'generateRouting']);
+    Route::post('freight/upload_file/{id}', [FreightController::class, 'uploadFreightFiles']);
 
 
 
@@ -198,9 +199,7 @@ Route::middleware('auth')->group(function () {
 
     /* Cotizaciones de flete */
 
-    Route::resource('quote/freight', QuoteFreightController::class)->names([
-        'create' => 'quote.freight.create',
-    ]);
+    Route::resource('quote/freight', QuoteFreightController::class)->names('quote.freight');
 
     Route::patch('quote/freight/cost/accept/{id}', [QuoteFreightController::class, 'acceptQuoteFreight']);
     Route::post('quote/freight/file-upload-documents', [QuoteFreightController::class, 'uploadFilesQuoteFreight']);
