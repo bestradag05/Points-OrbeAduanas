@@ -108,7 +108,28 @@ class FreightController extends Controller
     {
         $this->freightService->uploadFreightFiles($request, $id);
 
-       return redirect()->route('freight.show', $id)->with('success', 'Archivo subido correctamente.');
+        return redirect()->route('freight.show', $id)->with('success', 'Archivo subido correctamente.');
+    }
+
+
+    public function deleteFreightFiles($id)
+    {
+
+        $document = FreightDocuments::findOrFail($id);
+
+        $relativePath = ltrim($document->path, '/');
+        if (str_starts_with($relativePath, 'storage/')) {
+            $relativePath = substr($relativePath, strlen('storage/'));
+        }
+
+        // Usar el disco 'public' para borrar
+        if (Storage::disk('public')->exists($relativePath)) {
+            Storage::disk('public')->delete($relativePath);
+        }
+
+        $document->delete();
+
+        return back()->with('success', 'Documento eliminado');
     }
 
 
@@ -145,6 +166,25 @@ class FreightController extends Controller
         return redirect('commercial/quote/' . $freight->commercial_quote->id . '/detail');
     }
 
+
+    public function sendToOperation($id)
+    {
+        $freight = Freight::findOrFail($id);
+
+        $requiredDocs = ['Routing Order', 'Factura Comercial', 'BL Draf'];
+        $uploadedDocs = $freight->documents->pluck('name')->map(fn($n) => strtolower(trim($n)));
+
+        foreach ($requiredDocs as $doc) {
+            if (!$uploadedDocs->contains(strtolower(trim($doc)))) {
+                return back()->with('error', 'Faltan documentos obligatorios para enviar el flete.');
+            }
+        }
+
+        $freight->state = 'En Proceso';
+        $freight->save();
+
+        return back()->with('success', 'Flete enviado al área de operaciones.');
+    }
 
 
 

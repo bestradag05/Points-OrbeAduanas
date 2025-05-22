@@ -389,39 +389,127 @@
                         class="fas fa-plus"></i></button>
             </div>
 
+            @php
+                $requiredDocuments = ['Routing Order', 'Factura Comercial', 'BL Draf'];
+                $uploadedDocuments = $freight->documents->keyBy(fn($doc) => strtolower(trim($doc->name)));
+                $allRequiredUploaded = collect($requiredDocuments)->every(function ($doc) use ($uploadedDocuments) {
+                    return $uploadedDocuments->has(strtolower(trim($doc)));
+                });
+            @endphp
+
             <table class="table mt-2">
                 <thead>
-                    <th class="text-indigo text-bold">Nombre</th>
-                    <th class="text-indigo text-bold">Documento</th>
-                    <th class="text-indigo text-bold">Acciones</th>
+                    <tr>
+                        <th class="text-indigo text-bold">Nombre</th>
+                        <th class="text-indigo text-bold ">Documento</th>
+                        <th class="text-indigo text-bold">Acciones</th>
+                    </tr>
                 </thead>
                 <tbody>
-                    @foreach ($freight->documents as $document)
+                    {{-- Documentos obligatorios --}}
+                    @foreach ($requiredDocuments as $required)
+                        @php
+                            $docKey = strtolower(trim($required));
+                            $document = $uploadedDocuments[$docKey] ?? null;
+                        @endphp
                         <tr>
-                            <td class="text-indigo text-uppercase">{{ $document->name }}</td>
-                            <td>
-                                <a href="{{ asset($document->path) }}" target="_blank" class="btn text-danger">
-                                    <i class="fas fa-file-pdf"></i>
-                                </a>
+                            <td class="text-indigo text-uppercase text-bold">{{ $required }} <span
+                                    class="text-danger">*</span>
+                            </td>
+                            <td class="text-center">
+                                @if ($document)
+                                    <a href="{{ asset($document->path) }}" target="_blank" class="btn text-danger">
+                                        <x-file-icon :path="$document->path" />
+                                    </a>
+                                @elseif($required === 'Routing Order')
+                                    {{-- No mostrar botón de subida para Routing Order --}}
+                                    <span class="text-muted">Aún no generado</span>
+                                @else
+                                    <form action="{{ url('/freight/upload_file/' . $freight->id) }}" method="POST"
+                                        enctype="multipart/form-data" class="d-inline">
+                                        @csrf
+                                        <input type="hidden" name="name_file" value="{{ $required }}">
+                                        <input type="file" name="file" required onchange="this.form.submit()"
+                                            style="display: none;" id="fileInput_{{ $loop->index }}">
+                                        <button type="button" class="btn btn-sm text-primary" title="Subir archivo"
+                                            onclick="uploadRequiredFile({{ $loop->index }})">
+                                            <i class="fas fa-upload"></i>
+                                        </button>
+                                    </form>
+                                @endif
+                            </td>
 
-                            </td>
-                            <td>
-                                <a href="" class="text-danger">
-                                    <i class="fas fa-times"></i>
-                                </a>
-                            </td>
+                            @if ($document)
+                                <td>
+                                    <form action="{{ url('/freight/delete_file/' . $document->id) }}" method="POST"
+                                        class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn text-danger">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            @else
+                                <td></td>
+                            @endif
+
                         </tr>
+                    @endforeach
+
+                    {{-- Documentos no obligatorios --}}
+                    @foreach ($freight->documents as $document)
+                        @php
+                            $docName = strtolower(trim($document->name));
+                        @endphp
+                        @if (!in_array($docName, collect($requiredDocuments)->map(fn($d) => strtolower($d))->toArray()))
+                            <tr>
+                                <td class="text-indigo text-uppercase">{{ $document->name }}</td>
+                                <td class="text-center">
+                                    <a href="{{ asset($document->path) }}" target="_blank" class="btn text-danger">
+                                        <x-file-icon :path="$document->path" />
+                                    </a>
+                                </td>
+                                <td>
+                                    <form action="{{ url('/freight/delete_file/' . $document->id) }}" method="POST"
+                                        class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn text-danger">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endif
                     @endforeach
                 </tbody>
             </table>
 
 
+            <div class="row justify-content-center mt-4">
 
-            <div class="row mt-4">
-                <div class="col-3">
-                    <button class="btn btn-secondary btn-sm" onclick="openModalgenerateRoutingOrder()">
-                        Generar Routing
-                    </button>
+                <div class="col-12 mb-4">
+                    <h5 class="text-center status-{{ Str::slug($freight->state) }}"> <i class="fas fa-circle"></i>
+                        {{ $freight->state }}</h5>
+                </div>
+
+                @if (!$freight->documents->contains('name', 'Routing Order'))
+                    <div class="col-6 col-xl-4">
+                        <button class="btn btn-secondary btn-sm w-100" onclick="openModalgenerateRoutingOrder()">
+                            Generar Routing
+                        </button>
+                    </div>
+                @endif
+
+                <div class="col-6 col-xl-4">
+                    <form action="{{ url('/freight/send-operation/' . $freight->id) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('PUT') <!-- O POST, según tu ruta -->
+                        <button class="btn btn-indigo btn-sm w-100" {{ $allRequiredUploaded ? '' : 'disabled' }}>
+                            Enviar
+                        </button>
+                    </form>
                 </div>
             </div>
 
@@ -559,6 +647,10 @@
             }
         }
 
+        function uploadRequiredFile(index) {
+            document.getElementById(`fileInput_${index}`).click()
+        }
+
 
         function openModalgenerateRoutingOrder() {
             $('#generateRoutingOrder').modal('show');
@@ -589,6 +681,11 @@
             if (isValid) {
                 formGenerateRoutingOrder.submit();
             }
+        }
+
+
+        function sendFreightInformation() {
+            console.log("enviado para cambiar de estado");
         }
 
 

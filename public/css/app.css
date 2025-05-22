@@ -197,9 +197,9 @@
 .status-aceptado {
     color: green;
 }
-/* .status-reajuste {
-    color: rgb(5, 61, 165);
-} */
+.status-en-proceso {
+    color: #FFA500;
+}
 /* .status-observado {
     color: purple;
 } */
