@@ -336,7 +336,7 @@ class RoutingController extends Controller
             'tab' => $tab,
             'stateCountrys' => $stateCountrys,
             'type_insurace' => $type_insurace,
-            'id_quote_transport' => request('id_quote_transport', null)
+            'quote_transport_id' => request('quote_transport_id', null)
         ];
 
 
@@ -531,7 +531,7 @@ class RoutingController extends Controller
 
                 foreach ($concepts as $concept) {
                     $conceptFreight = ConceptFreight::create([
-                        'id_concepts' => $concept->id, // ID del concepto relacionado
+                        'concepts_id' => $concept->id, // ID del concepto relacionado
                         'id_freight' => $freight->id, // Clave foránea al modelo Freight
                         'value_concept' => $concept->value,
                         'value_concept_added' => $concept->added,
@@ -567,7 +567,7 @@ class RoutingController extends Controller
                     'additional_points' => $request->additional_points,
                     'withdrawal_date' =>  $request->withdrawal_date,
                     'nro_operation' => $routing->nro_operation,
-                    'id_quote_transport' => $request->id_quote_transport,
+                    'quote_transport_id' => $request->quote_transport_id,
                     'state' => 'Pendiente'
 
                 ]);

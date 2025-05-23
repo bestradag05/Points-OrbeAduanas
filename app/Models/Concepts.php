@@ -25,14 +25,18 @@ class Concepts extends Model
 
     public function concept_freight()
     {
-        return $this->hasOne(ConceptFreight::class, 'id_concepts');
+        return $this->hasOne(ConceptFreight::class, 'concepts_id');
     }
 
-    public function concept_transport()
+    // 1:N directo si usas modelos pivote
+    public function conceptsTransport()
     {
-        return $this->hasMany(ConceptTransport::class, 'id_concepts');
+        return $this->hasMany(ConceptsTransport::class, 'concepts_id');
     }
-
+        public function conceptsResponse()
+    {
+        return $this->hasMany(ConceptsResponse::class, 'concepts_id');
+    }
     public function custom()
     {
         return $this->belongsToMany(Custom::class);
@@ -40,13 +44,14 @@ class Concepts extends Model
 
     public function freights()
     {
-        return $this->belongsToMany(Freight::class, 'concepts_freight', 'id_concepts', 'id_freight')
+        return $this->belongsToMany(Freight::class, 'concepts_freight', 'concepts_id', 'id_freight')
             ->withPivot(['value_concept', 'value_concept_added', 'total_value_concept', 'additional_points']);
     }
 
-    public function quoteTransports() {
-        return $this->belongsToMany(QuoteTransport::class, 'concepts_transport_quote', 'id_concepts', 'quote_transport_id')
-                    ->withPivot('value_concept', 'added_value', 'net_amount', 'igv', 'total');
+    // Relación many‐to‐many con QuoteTransport
+    public function quoteTransports()
+    {
+        return $this->belongsToMany( QuoteTransport::class,'concepts_quote_transport','concepts_id','quote_transport_id');
     }
 
     // Ejemplo de scope para filtrar conceptos por tipo de servicio
@@ -56,5 +61,11 @@ class Concepts extends Model
 
     public function scopeByShipmentType($query, $typeShipmentId) {
     return $query->where('id_type_shipment', $typeShipmentId);
+    }
+        // Relación many‐to‐many con ResponseTransportQuote
+    public function responseTransportQuotes()
+    {
+        return $this->belongsToMany(ResponseTransportQuote::class,'concepts_response','concepts_id','response_transport_quote_id'
+        )->withPivot('value_concept', 'net_amount');
     }
 }

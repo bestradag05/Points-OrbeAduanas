@@ -441,7 +441,7 @@
                     <input type="hidden" name="nro_operation" value="{{ $comercialQuote->nro_quote_commercial }}">
                     <input type="hidden" name="typeService" id="typeService">
                     @if (isset($cost_transport))
-                        <input type="hidden" name="id_quote_transport" id="id_quote_transport">
+                        <input type="hidden" name="quote_transport_id" id="quote_transport_id">
                     @endif
 
                     <div class="row">
@@ -1272,7 +1272,7 @@
                         $('#transport_value').val(cost_transport).prop('readonly', true);
                         $('#origin').val("{{ $origin ?? '' }}").prop('readonly', true);
                         $('#destination').val("{{ $destination ?? '' }}").prop('readonly', true);
-                        $('#id_quote_transport').val('{{ $id_quote_transport ?? '' }}')
+                        $('#quote_transport_id').val('{{ $quote_transport_id ?? '' }}')
                         $('#withdrawal_date').val('{{ $withdrawal_date ?? '' }}').prop('readonly', true);
 
 
@@ -1952,7 +1952,7 @@
                         $('#transport_value').val(cost_transport).prop('readonly', true);
                         $('#origin').val("{{ $origin ?? '' }}").prop('readonly', true);
                         $('#destination').val("{{ $destination ?? '' }}").prop('readonly', true);
-                        $('#id_quote_transport').val('{{ $id_quote_transport ?? '' }}')
+                        $('#quote_transport_id').val('{{ $quote_transport_id ?? '' }}')
                         $('#withdrawal_date').val('{{ $withdrawal_date ?? '' }}').prop('readonly', true);
 
 
@@ -2644,7 +2644,7 @@
                         $('#transport_value').val(cost_transport).prop('readonly', true);
                         $('#origin').val("{{ $origin ?? '' }}").prop('readonly', true);
                         $('#destination').val("{{ $destination ?? '' }}").prop('readonly', true);
-                        $('#id_quote_transport').val('{{ $id_quote_transport ?? '' }}')
+                        $('#quote_transport_id').val('{{ $quote_transport_id ?? '' }}')
                         $('#withdrawal_date').val('{{ $withdrawal_date ?? '' }}').prop('readonly', true);
 
 

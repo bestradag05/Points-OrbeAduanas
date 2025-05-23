@@ -395,7 +395,7 @@ class FreightService
         // Relacionamos los nuevos conceptos con el flete
         foreach ($concepts as $concept) {
             $conceptFreight = ConceptFreight::create([
-                'id_concepts' => $concept->id, // ID del concepto relacionado
+                'concepts_id' => $concept->id, // ID del concepto relacionado
                 'id_freight' => $freight->id, // Clave foránea al modelo Freight
                 'value_concept' => $this->parseDouble($concept->value),
                 'value_concept_added' => $concept->added,

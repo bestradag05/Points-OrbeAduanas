@@ -204,7 +204,7 @@ class TransportService {
             'destination' => $request->delivery,
             'total_transport' => $request->total,
             'withdrawal_date' => $dateRegisterFormat,
-            'id_quote_transport' => $request->id_quote_transport,
+            'quote_transport_id' => $request->quote_transport_id,
             'nro_quote_commercial' => $request->nro_quote_commercial
         ]);
 
@@ -235,7 +235,7 @@ class TransportService {
             $igv = $total - $net_amount;
 
             $conceptTransport = ConceptTransport::create([
-                'id_concepts' => $concept->id, // ID del concepto relacionado
+                'concepts_id' => $concept->id, // ID del concepto relacionado
                 'id_transport' => $transport->id, // Clave foránea al modelo Freight
                 'value_concept' => $this->parseDouble($concept->value),
                 'added_value' => $this->parseDouble($concept->added),

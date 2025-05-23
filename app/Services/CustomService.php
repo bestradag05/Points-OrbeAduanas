@@ -240,7 +240,7 @@ class CustomService
             $igv = $total - $net_amount;
 
             $conceptCustom = ConceptCustoms::create([
-                'id_concepts' => $concept->id, // ID del concepto relacionado
+                'concepts_id' => $concept->id, // ID del concepto relacionado
                 'id_customs' => $custom->id, // Clave foránea al modelo Freight
                 'value_concept' => $this->parseDouble($concept->value),
                 'added_value' => $this->parseDouble($concept->added),

@@ -28,7 +28,7 @@ class Transport extends Model
         'nro_operation', 
         'nro_quote_commercial', 
         'id_supplier', 
-        'id_quote_transport'
+        'quote_transport_id'
     ];
 
 
@@ -85,14 +85,15 @@ class Transport extends Model
         return $this->morphMany(AdditionalPoints::class, 'additional', 'model_additional_service', 'id_additional_service');
     }
 
-    public function concept_transports()
+    // 1:N → ConceptsTransport
+    public function concepts()
     {
-        return $this->hasMany(ConceptTransport::class, 'id_transport');
+        return $this->hasMany(ConceptsTransport::class, 'transport_id');
     }
 
-
-    public function quoteTransports()
+    // Inversa N:1 → QuoteTransport
+    public function quoteTransport()
     {
-        return $this->hasMany(QuoteTransport::class, 'id', 'id_quote_transport');
+        return $this->belongsTo(QuoteTransport::class, 'quote_transport_id');
     }
 }

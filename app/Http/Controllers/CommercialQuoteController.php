@@ -706,7 +706,7 @@ class CommercialQuoteController extends Controller
     // 2) Para cada concepto, grábalo en concepts_transport_quote:
     foreach ($data['price_concept'] as $conceptId => $price) {
         $resp->conceptsTransportQuote()->updateOrCreate(
-          ['quote_transport_id' => $quoteId, 'id_concepts' => $conceptId, 'response_quote_id'=>$resp->id],
+          ['quote_transport_id' => $quoteId, 'concepts_id' => $conceptId, 'response_quote_id'=>$resp->id],
           ['value_concept' => $price]
         );
     }

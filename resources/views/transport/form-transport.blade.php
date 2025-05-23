@@ -7,7 +7,7 @@
 
     <input type="hidden" name="nro_quote_commercial"
         value="{{ isset($commercial_quote->nro_quote_commercial) ? $commercial_quote->nro_quote_commercial : '' }}">
-    <input type="hidden" name="id_quote_transport" value="{{ isset($quote->id) ? $quote->id : '' }}">
+    <input type="hidden" name="quote_transport_id" value="{{ isset($quote->id) ? $quote->id : '' }}">
 
     {{-- <input type="hidden" name="typeService" id="typeService"> --}}
 

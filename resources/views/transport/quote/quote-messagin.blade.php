@@ -8,60 +8,7 @@
     {{-- <div class="col-12  mb-4 text-right">
             <a href="{{ url('/quote/freight') }}" class="btn btn-primary"> Atras </a>
 </div> --}}
-<div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
-    <div class="card direct-chat direct-chat-primary h-100">
-        <div class="card-header bg-sisorbe-100 py-2">
-            <h5 class="text-center text-bold text-uppercase text-indigo">Cotizacion : {{ $quote->nro_quote }}</h5>
-        </div>
-        <div class="card-body" style="max-height: 600px; overflow-y: auto;">
-            <div class="direct-chat-messages h-100">
-                @foreach ($messages as $message)
-                <div class="direct-chat-msg {{ $message->sender_id != auth()->user()->id ? 'right' : '' }}">
-                    <div class="direct-chat-infos clearfix">
-                        <span
-                            class="direct-chat-name float-left text-indigo text-bold">{{ $message->sender->personal->names }}</span>
-                        <span
-                            class="direct-chat-timestamp float-right text-bold">{{ $message->created_at }}</span>
-                    </div>
-                    @if ($message->sender->personal->img_url !== null)
-                    <img src="{{ asset('storage/' . $message->sender->personal->img_url) }}"
-                        class="direct-chat-img" alt="User Image">
-                    @else
-                    <img src="{{ asset('storage/personals/user_default.png') }}" class="direct-chat-img"
-                        alt="User Image">
-                    @endif
-                    <div class="direct-chat-text">
-                        {!! $message->message !!}
-                    </div>
-                </div>
-                @endforeach
-            </div>
-
-        </div>
-        <div class="card-footer">
-            <form action="/quote/transport/message" method="POST">
-                @csrf
-                <div class="row">
-                    <div class="col-12">
-                        <textarea id="quote-text" name="message"></textarea>
-                        <input type="hidden" name="quote_id" value="{{ $quote->id }}">
-                    </div>
-                    <div class="col-12 row align-items-center justify-content-center mt-2">
-                        <button type="submit" {{ $quote->state === 'Aceptada' ? 'disabled' : '' }} class="btn btn-indigo mr-2">
-                            Enviar
-                        </button>
-
-                        {{-- Botón para abrir el modal de cotización --}}
-                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalCotizarTransporte">
-                            <i class="fas fa-dollar-sign"></i> Responder cotizacion
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-<div class="col-12 col-md-12 col-lg-4 order-1 order-md-2 px-4">
+ <div class="col-12 col-md-12 col-lg-6">
     <h5 class="text-indigo text-center"><i class="fas fa-file-alt"></i> Detalle de carga</h5>
 
     <br>
@@ -469,7 +416,100 @@
             data-toggle="modal" data-target="#quote-transport">Cotización Aceptada</button>
 
     </div>
+ </div>
+<!-- <div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
+    <div class="card direct-chat direct-chat-primary h-100">
+        <div class="card-header bg-sisorbe-100 py-2">
+            <h5 class="text-center text-bold text-uppercase text-indigo">Cotizacion : {{ $quote->nro_quote }}</h5>
+        </div>
+        <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+            <div class="direct-chat-messages h-100">
+                @foreach ($messages as $message)
+                <div class="direct-chat-msg {{ $message->sender_id != auth()->user()->id ? 'right' : '' }}">
+                    <div class="direct-chat-infos clearfix">
+                        <span
+                            class="direct-chat-name float-left text-indigo text-bold">{{ $message->sender->personal->names }}</span>
+                        <span
+                            class="direct-chat-timestamp float-right text-bold">{{ $message->created_at }}</span>
+                    </div>
+                    @if ($message->sender->personal->img_url !== null)
+                    <img src="{{ asset('storage/' . $message->sender->personal->img_url) }}"
+                        class="direct-chat-img" alt="User Image">
+                    @else
+                    <img src="{{ asset('storage/personals/user_default.png') }}" class="direct-chat-img"
+                        alt="User Image">
+                    @endif
+                    <div class="direct-chat-text">
+                        {!! $message->message !!}
+                    </div>
+                </div>
+                @endforeach
+            </div>
+
+        </div>
+        <div class="card-footer">
+            <form action="/quote/transport/message" method="POST">
+                @csrf
+                <div class="row">
+                    <div class="col-12">
+                        <textarea id="quote-text" name="message"></textarea>
+                        <input type="hidden" name="quote_id" value="{{ $quote->id }}">
+                    </div>
+                    <div class="col-12 row align-items-center justify-content-center mt-2">
+                        <button type="submit" {{ $quote->state === 'Aceptada' ? 'disabled' : '' }} class="btn btn-indigo mr-2">
+                            Enviar
+                        </button>
+
+                        {{-- Botón para abrir el modal de cotización --}}
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalCotizarTransporte">
+                            <i class="fas fa-dollar-sign"></i> Responder cotizacion
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> -->
+<!-- Crear lista de respuestas -->
+<div class="col-12 col-md-12 col-lg-6">
+    <h5 class="text-indigo text-center"><i class="fas fa-file-alt"></i> Lista de respuestas</h5>
+
+    <table class="table table-sm text-sm my-5">
+        <thead class="thead-dark">
+            <th>#</th>
+            <th>N° respuesta</th>
+            <th>Proveedor</th>
+            <th>Costo Neto</th>
+            <th>Comision</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </thead>
+        <tbody>
+            @foreach ($quote->responseTransportQuotes as $response)
+            <tr>
+                <td>{{ $loop->iteration }}</td>
+                <td>{{ $response->nro_response }}</td>
+                <td>{{ $response->provider_id}}</td>
+                <td>{{ $response->provider_cost }}</td>
+                <td>{{ $response->commission }}</td>
+                <td>{{ $response->total }}</td>
+                <td class="status-{{ strtolower($response->state) }}">{{ $response->status }}
+                </td>
+
+                <td style="width: 150px">
+
+                   
+                </td>
+
+            </tr>
+            @endforeach
+
+        </tbody>
+
+    </table>
 </div>
+<!-- Fin lista de respuestas -->
 </div>
 
 
@@ -838,7 +878,7 @@
                     <div class="mb-4">
                         <h4 class="mb-3">Precios de conceptos</h4>
 
-                        @foreach($modalConcepts as $tc)
+                        @foreach($quote->transportConcepts->unique('concepts_id') as $tc)
                         <div class="form-group row">
                             <label class="col-sm-6 col-form-label font-weight-bold">
                                 {{ $tc->concept->name }} (S/)
@@ -849,7 +889,7 @@
                                     step="0.01"
                                     name="price_concept[{{ $tc->concept->id }}]"
                                     class="form-control concept-input"
-                                    value="{{ optional($resp->conceptsTransportQuote->firstWhere('id_concepts', $tc->concept->id))->value_concept }}">
+                                    value="">
                             </div>
                         </div>
                         @endforeach
@@ -987,7 +1027,6 @@
     }
 </script>
 
-</script>
 <script>
     let commercial_quote = @json($quote->nro_quote_commercial);
     let transport_quote = @json($quote->nro_quote);
@@ -1150,24 +1189,87 @@
         theme: 'bootstrap4',
         placeholder: 'Seleccione una respuesta...'
     });
-
 </script>
 
 <script>
-$('#modalCotizarTransporte').on('show.bs.modal', function () {
-    // 1) Resetea TODO el form (inputs vuelven a su value="" original)
-    this.querySelector('form').reset();
+    $('#modalCotizarTransporte').on('show.bs.modal', function() {
+        // 1) Resetea TODO el form (inputs vuelven a su value="" original)
+        this.querySelector('form').reset();
 
-    // 2) Para los <input> que rellenas con JS (clase .concept-input y comisión), forzamos a vacío
-    $(this).find('.concept-input').val('');
-    $(this).find('#commission').val('');
+        // 2) Para los <input> que rellenas con JS (clase .concept-input y comisión), forzamos a vacío
+        $(this).find('.concept-input').val('');
+        $(this).find('#commission').val('');
 
-    // 3) Ponemos el total en 0.00
-    $(this).find('#totalConceptos').val('0.00');
+        // 3) Ponemos el total en 0.00
+        $(this).find('#totalConceptos').val('0.00');
 
-    // 4) (Opcional) si tienes un select2 para proveedor, lo limpias así:
-    $(this).find('#provider_id').val(null).trigger('change');
-});
+        // 4) (Opcional) si tienes un select2 para proveedor, lo limpias así:
+        $(this).find('#provider_id').val(null).trigger('change');
+    });
+</script>
+
+<script>
+    (function() {
+        const form = document.getElementById('formCotizarTransporte');
+
+        // Campos que validamos:
+        const providerSelect = document.getElementById('provider_id');
+        const conceptInputs = Array.from(document.querySelectorAll('.concept-input'));
+        const commissionInput = document.getElementById('commission');
+
+        form.addEventListener('submit', function(e) {
+            // 1) Limpia errores anteriores
+            form.querySelectorAll('.is-invalid').forEach(el => {
+                el.classList.remove('is-invalid');
+            });
+            form.querySelectorAll('.invalid-feedback').forEach(feedback => {
+                feedback.remove();
+            });
+
+            let hasError = false;
+
+            // 2) Valida proveedor
+            if (!providerSelect.value) {
+                markInvalid(providerSelect, 'Seleccione un proveedor.');
+                hasError = true;
+            }
+
+            // 3) Valida cada concepto
+            conceptInputs.forEach(input => {
+                const val = input.value.trim();
+                if (val === '' || isNaN(parseFloat(val))) {
+                    const label = input.closest('.form-group')
+                        .querySelector('label')
+                        .innerText.replace(/ *\(.+\)$/, '');
+                    markInvalid(input, `Complete el precio de "${label}".`);
+                    hasError = true;
+                }
+            });
+
+            // 4) Valida comisión
+            const comm = commissionInput.value.trim();
+            if (comm === '' || isNaN(parseFloat(comm))) {
+                markInvalid(commissionInput, 'Ingrese la comisión.');
+                hasError = true;
+            }
+
+            if (hasError) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            // Si no hay errores, el formulario se envía normalmente.
+        });
+
+        // Función helper para marcar invalidez
+        function markInvalid(inputEl, message) {
+            inputEl.classList.add('is-invalid');
+            const feedback = document.createElement('div');
+            feedback.className = 'invalid-feedback';
+            feedback.innerText = message;
+            // asegúrate de insertarlo justo después del input
+            inputEl.parentNode.appendChild(feedback);
+        }
+    })();
 </script>
 
 @endpush

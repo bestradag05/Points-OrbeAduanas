@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('concepts_freight', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_concepts');
+            $table->unsignedBigInteger('concepts_id');
             $table->unsignedBigInteger('id_freight');
             $table->decimal('value_concept', 8 , 2);
             $table->decimal('value_concept_added', 8 , 2);
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('additional_points')->nullable();
             $table->timestamps();
 
-            $table->foreign('id_concepts')->references('id')->on('concepts');
+            $table->foreign('concepts_id')->references('id')->on('concepts');
             $table->foreign('id_freight')->references('id')->on('freight');
         });
     }

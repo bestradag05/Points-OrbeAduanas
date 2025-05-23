@@ -13,7 +13,7 @@ class ConceptTransport extends Model
 
     protected $fillable =
     [
-        'id_concepts',
+        'concepts_id',
         'id_transport',
         'value_concept',
         'added_value',
@@ -26,7 +26,7 @@ class ConceptTransport extends Model
 
     public function concepts()
     {
-        return $this->belongsTo(Concepts::class, 'id_concepts');
+        return $this->belongsTo(Concepts::class, 'concepts_id');
     }
 
     // Relación con Freight

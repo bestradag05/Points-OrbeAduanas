@@ -123,7 +123,7 @@ class CommercialQuote extends Model
             Concepts::class,
             'commercial_quote_concept',      // nombre de la tabla pivote
             'commercial_quote_id',           // FK en la pivote hacia commercial_quote
-            'concept_id'                     // FK en la pivote hacia concepts
+            'concepts_id'                     // FK en la pivote hacia concepts
         );
     }
 

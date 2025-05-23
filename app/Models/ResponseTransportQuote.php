@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ResponseTransportQuote extends Model
 {
     protected $fillable = [
+        'quote_transport_id',
         'provider_id',
         'provider_cost',
         'commission',
@@ -51,19 +52,14 @@ class ResponseTransportQuote extends Model
         return $this->belongsTo(Supplier::class, 'provider_id');
     }
 
-    public function quoteTransports()
+    // Inversa  N:1 → QuoteTransport
+    public function quoteTransport()
     {
-        return $this->belongsToMany(
-            QuoteTransport::class,
-            'quote_transport_response',
-            'response_quote_id',
-            'quote_transport_id'
-        );
+        return $this->belongsTo(QuoteTransport::class, 'quote_transport_id');
     }
-    // App\Models\ResponseTransportQuote.php
-
-    public function conceptsTransportQuote()
+    // 1:N → ConceptsResponse
+    public function conceptsResponse()
     {
-        return $this->hasMany(ConceptsTransportQuote::class, 'response_quote_id');
+        return $this->hasMany(ConceptsResponse::class, 'response_transport_quote_id');
     }
 }

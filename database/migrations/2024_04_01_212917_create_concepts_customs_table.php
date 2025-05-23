@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('concepts_customs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_concepts');
+            $table->unsignedBigInteger('concepts_id');
             $table->unsignedBigInteger('id_customs');
             $table->decimal('value_concept', 8 , 2);
             $table->decimal('added_value', 8, 2);
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->integer('additional_points')->nullable();
             $table->timestamps();
 
-            $table->foreign('id_concepts')->references('id')->on('concepts');
+            $table->foreign('concepts_id')->references('id')->on('concepts');
             $table->foreign('id_customs')->references('id')->on('custom');
         });
     }

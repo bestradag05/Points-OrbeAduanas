@@ -35,7 +35,7 @@ class Freight extends Model
 
     public function concepts()
     {
-        return $this->belongsToMany(Concepts::class, 'concepts_freight', 'id_freight', 'id_concepts')
+        return $this->belongsToMany(Concepts::class, 'concepts_freight', 'id_freight', 'concepts_id')
                     ->withPivot(['value_concept', 'value_concept_added', 'total_value_concept', 'additional_points']);
     }
 

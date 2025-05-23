@@ -56,7 +56,7 @@ class ResponseTransportQuoteController extends Controller
         if ($transportConcept) {
             ConceptsTransportQuote::create([
                 'quote_id'     => $request->quote_id, // si se está usando
-                'concept_id'   => $transportConcept->id,
+                'concepts_id'   => $transportConcept->id,
                 'value_concept'=> $request->provider_cost, // o el valor que desees asociar
             ]);
         }

@@ -93,7 +93,7 @@ class QuoteTransport extends Model
 
     public function transport()
     {
-        return $this->belongsTo(Transport::class, 'id', 'id_quote_transport');
+        return $this->belongsTo(Transport::class, 'id', 'quote_transport_id');
     }
 
     public function customer()
@@ -113,9 +113,11 @@ class QuoteTransport extends Model
 
     public function concepts()
     {
-        return $this->hasMany(
-            ConceptsTransportQuote::class,
-            'response_quote_id'
+        return $this->belongsToMany(
+            Concepts::class,
+            'concepts_quote_transport',    // nombre de la tabla pivote
+            'quote_transport_id',          // FK en la tabla pivote hacia este modelo
+            'concepts_id'                   // FK en la tabla pivote hacia Concept
         );
     }
 
@@ -128,30 +130,17 @@ class QuoteTransport extends Model
 
     public function responseTransportQuotes()
     {
-        return $this->belongsToMany(
+        return $this->hasMany(
             ResponseTransportQuote::class,
-            'quote_transport_response',   // tu tabla pivote
-            'quote_transport_id',         // FK en la pivote hacia quote_transport
-            'response_quote_id'           // FK en la pivote hacia response_transport_quotes
+            'quote_transport_id',     // FK hacia quote_transport
+            'id'
         );
     }
 
+    // 1:N → ConceptsTransportQuote (tabla pivote para conceptos de transporte)
     public function transportConcepts()
     {
-        return $this->hasMany(
-            ConceptsTransportQuote::class,
-            'quote_transport_id'  // FK en concepts_transport_quote
-        );
-    }
-
-    public function responses()
-    {
-        return $this->belongsToMany(
-            ResponseTransportQuote::class,
-            'quote_transport_response',  // tu tabla pivote
-            'quote_transport_id',
-            'response_quote_id'
-        );
+        return $this->hasMany(ConceptsQuoteTransport::class, 'quote_transport_id');
     }
 
 
