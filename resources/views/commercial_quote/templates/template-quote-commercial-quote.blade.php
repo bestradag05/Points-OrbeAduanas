@@ -79,7 +79,10 @@
                                 {{ $quote->ton_kilogram }}</td>
                             <td>{{ $quote->nro_quote_commercial }}</td>
                             <td>{{ \Carbon\Carbon::parse($quote->created_at)->format('d/m/Y') }}</td>
-                            <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
+                            <td>
+                                <div class="custom-badge status-{{ strtolower($quote->state) }}">
+                                    {{ $quote->state }}
+                                </div>
                             </td>
 
 
@@ -403,7 +406,7 @@
 
         function createTypeQuote(select) {
 
-            let nro_quote_commercial =  @json($comercialQuote->nro_quote_commercial);
+            let nro_quote_commercial = @json($comercialQuote->nro_quote_commercial);
 
             Swal.fire({
                 title: `Crearas una cotizacion para ${select.value}`,

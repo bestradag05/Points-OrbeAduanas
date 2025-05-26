@@ -18,7 +18,7 @@
                 <td>{{ $freight->commercial_quote->destination }}</td>
                 <td>{{ $freight->value_utility }}</td>
                 <td>{{ $freight->value_freight }}</td>
-                <td class="text-indigo text-bold">{{ ($freight->insurance) ? 'SI' : 'NO' }}</td>
+                <td class="text-indigo text-bold">{{ $freight->insurance ? 'SI' : 'NO' }}</td>
                 <td>
                     <a href="{{ url('/commercial/quote/' . $freight->commercial_quote->id . '/detail') }}">
                         {{ $freight->nro_quote_commercial }}
@@ -26,7 +26,10 @@
                 </td>
 
                 <td>{{ $freight->commercial_quote->personal->names }}</td>
-                <td class="{{ $freight->state == 'Pendiente' ? 'text-warning' : 'text-success' }}">{{ $freight->state }}
+                <td>
+                    <div class="custom-badge text-sm status-{{ Str::slug($freight->state) }}">
+                        {{ $freight->state }}
+                    </div>
                 </td>
 
                 <td>
@@ -71,6 +74,5 @@
             });
 
         });
-        
     </script>
 @endpush

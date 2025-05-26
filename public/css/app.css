@@ -106,7 +106,8 @@
 
 
 
-.btn-indigo, .bg-indigo{
+.btn-indigo,
+.bg-indigo {
     background: var(--sisorbe-800);
     color: white;
 }
@@ -116,47 +117,49 @@
 .btn-outline-indigo {
     color: var(--sisorbe-800);
     border-color: var(--sisorbe-800);
-  }
-  
-  .btn-outline-indigo:hover {
+}
+
+.btn-outline-indigo:hover {
     color: #fff;
     background-color: var(--sisorbe-800);
     border-color: var(--sisorbe-800);
-  }
-  
-  .btn-outline-indigo:focus, .btn-outline-indigo.focus {
-    box-shadow: 0 0 0 0 var(--sisorbe-800);;
-  }
+}
+
+.btn-outline-indigo:focus,
+.btn-outline-indigo.focus {
+    box-shadow: 0 0 0 0 var(--sisorbe-800);
+    ;
+}
 
 
-.btn-indigo:hover{
+.btn-indigo:hover {
     background: #4609a8;
     color: white;
 }
 
 .text-indigo {
-    color: var(--sisorbe-800)!important;
+    color: var(--sisorbe-800) !important;
 }
 
-.select2-selection{
-    height: 41px!important;
+.select2-selection {
+    height: 41px !important;
 }
 
-#select2-type_service-container{
-    height: 100%!important;
+#select2-type_service-container {
+    height: 100% !important;
 }
 
 .user-img-xs {
-    max-width: 40px!important;
+    max-width: 40px !important;
 }
 
-.nav-treeview .nav-link{
+.nav-treeview .nav-link {
     padding-left: 30px;
 }
 
-.select2-selection__choice{
-    background: #4609a8!important;
-    color: white!important;
+.select2-selection__choice {
+    background: #4609a8 !important;
+    color: white !important;
 }
 
 
@@ -175,61 +178,89 @@
 
 #myDropzone .dz-preview {
     display: inline-block;
-    width: 23%; /* Ajusta el ancho de cada archivo para que quepan 4 por fila */
-    margin: 1%; /* Espaciado entre los archivos */
+    width: 23%;
+    /* Ajusta el ancho de cada archivo para que quepan 4 por fila */
+    margin: 1%;
+    /* Espaciado entre los archivos */
     box-sizing: border-box;
 }
 
 
 .dz-preview .dz-image img {
-    object-fit: cover; /* Hace que la imagen se ajuste sin perder proporciones */
-    width: 100%;  /* Se ajusta al tamaño del contenedor */
-    height: 100%; /* Asegura que la altura sea proporcional */
+    object-fit: cover;
+    /* Hace que la imagen se ajuste sin perder proporciones */
+    width: 100%;
+    /* Se ajusta al tamaño del contenedor */
+    height: 100%;
+    /* Asegura que la altura sea proporcional */
 }
 
+.custom-badge {
+    border-radius: 8px;
+    display: inline-block;
+    min-width: 115px;
+    padding: 5px 15px;
+    text-align: center;
+    border: 0;
+}
 
 .status-pendiente {
-    color: orange;
+    background: rgba(255, 165, 0, 0.1);
+    color: rgb(255, 165, 0);
 }
+
 /* .status-respondido {
     color: blue;
 } */
 .status-aceptado {
-    color: green;
+    background: rgba(0, 128, 0, 0.1);
+    color: rgb(0, 128, 0);
 }
+
 .status-en-proceso {
-    color: #FFA500;
+    background: rgba(0, 211, 199, 0.1);
+    color: #00D3C7;
 }
+
+.status-notificado {
+    background: rgba(211, 0, 0, 0.1);
+    color: #d30700;
+}
+
 /* .status-observado {
     color: purple;
 } */
 .status-rechazado {
-    color: red;
+    background: rgba(211, 0, 0, 0.1);
+    color: #d30700;
 }
+
 .status-anulado {
     color: gray;
 }
 
-.direct-chat-text{
-    background-color: #f3f6f8!important;
-    border: 1px solid #f3f6f8!important;
-    
+.direct-chat-text {
+    background-color: #f3f6f8 !important;
+    border: 1px solid #f3f6f8 !important;
+
 }
 
-.direct-chat-text::after, .direct-chat-text::before {
+.direct-chat-text::after,
+.direct-chat-text::before {
     border-right-color: #f3f6f8;
     color: #000;
 }
 
-.direct-chat-primary .right>.direct-chat-text{
-    background-color: var(--sisorbe-100)!important;
-    border-color: var(--sisorbe-100)!important;
-    color: var(--sisorbe-900)!important;
+.direct-chat-primary .right>.direct-chat-text {
+    background-color: var(--sisorbe-100) !important;
+    border-color: var(--sisorbe-100) !important;
+    color: var(--sisorbe-900) !important;
 
 }
 
 
-.direct-chat-primary .right>.direct-chat-text::after, .direct-chat-primary .right>.direct-chat-text::before{
+.direct-chat-primary .right>.direct-chat-text::after,
+.direct-chat-primary .right>.direct-chat-text::before {
     border-left-color: var(--sisorbe-100);
 }
 

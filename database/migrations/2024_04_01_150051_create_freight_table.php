@@ -22,7 +22,7 @@ return new class extends Migration
             $table->date('eta')->nullable();
             $table->string('value_utility')->nullable();
             $table->decimal('value_freight', 8, 2)->nullable();
-            $table->enum('state', ['Pendiente', 'En Proceso', 'Cerrado'])->default('Pendiente');
+            $table->enum('state', ['Pendiente', 'En Proceso', 'Notificado', 'Cerrado'])->default('Pendiente');
             /* $table->unsignedBigInteger('id_insurance')->nullable(); */
             $table->string('nro_operation')->nullable();
             $table->string('nro_quote_commercial')->nullable();

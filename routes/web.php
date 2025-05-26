@@ -35,6 +35,8 @@ use App\Models\MessageQuoteTransport;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ContainerController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TypeContainerController;
 use App\Models\CommercialQuote;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -86,10 +88,10 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::middleware('auth')->group(function () {
 
-    Route::get('/home', function () {
-        return view('home');
-    })->name('home');
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
 
+    Route::get('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])
+    ->name('notifications.read');
 
     Route::resource('users', UserController::class);
     Route::resource('personal', PersonalController::class);
@@ -152,6 +154,7 @@ Route::middleware('auth')->group(function () {
     Route::post('freight/upload_file/{id}', [FreightController::class, 'uploadFreightFiles']);
     Route::delete('freight/delete_file/{id}', [FreightController::class, 'deleteFreightFiles']);
     Route::put('freight/send-operation/{id}', [FreightController::class, 'sendToOperation']);
+    Route::post('freight/notify', [FreightController::class, 'notifyCommercial']);
 
 
 

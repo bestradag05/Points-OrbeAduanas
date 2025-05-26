@@ -482,8 +482,10 @@
                                 @endif
                             @endif
                         </td>
-                        <td class="text-bold  status-{{ strtolower($service->state) }}">
-                            {{ $service->state }}
+                        <td>
+                            <div class="text-bold custom-badge status-{{ strtolower($service->state) }}">
+                                {{ $service->state }}
+                            </div>
                         </td>
 
 
@@ -510,11 +512,9 @@
 
         <div class="row justify-content-center text-bold mt-5">
             <div class="col-6">
-                <p class="text-uppercase ">Estado :
-                    <b class="status-{{ strtolower($comercialQuote->state) }}">{{ $comercialQuote->state }}</b>
-                    <b class="status-{{ strtolower($comercialQuote->state) }}"><i class="fas fa-circle"></i></b>
-
-                </p>
+                 <div class="text-bold custom-badge status-{{ strtolower($comercialQuote->state) }}">
+                    <i class="fas fa-circle"></i> {{ $comercialQuote->state }}
+                </div>
             </div>
 
         </div>

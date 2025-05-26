@@ -348,13 +348,12 @@
 
 
 
-            <div class="row text-muted mt-3">
-                <div class="col-6">
-                    <p class="text-uppercase ">Estado :
-                        <b class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}</b>
-                        <b class="status-{{ strtolower($quote->state) }}"><i class="fas fa-circle"></i></b>
-
-                    </p>
+             <div class="row text-muted mt-3">
+                <div class="col-12 text-center
+                ">
+                    <div class="custom-badge status-{{ strtolower($quote->state) }}">
+                        <i class="fas fa-circle"></i> {{ $quote->state }}
+                    </div>
                 </div>
 
             </div>

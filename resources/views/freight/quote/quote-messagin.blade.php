@@ -276,7 +276,8 @@
                             </div>
                             <div class="col-6">
                                 <p class="text-sm">Tipo de contenedor :
-                                    <b class="d-block">{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }}</b>
+                                    <b
+                                        class="d-block">{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }}</b>
                                 </p>
                             </div>
                         @else
@@ -337,12 +338,11 @@
 
 
             <div class="row text-muted mt-3">
-                <div class="col-6">
-                    <p class="text-uppercase ">Estado :
-                        <b class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}</b>
-                        <b class="status-{{ strtolower($quote->state) }}"><i class="fas fa-circle"></i></b>
-
-                    </p>
+                <div class="col-12 text-center
+                ">
+                    <div class="custom-badge status-{{ strtolower($quote->state) }}">
+                        <i class="fas fa-circle"></i> {{ $quote->state }}
+                    </div>
                 </div>
 
             </div>
@@ -587,7 +587,8 @@
                             @if ($quote->commercial_quote->lcl_fcl === 'FCL')
                                 <tr>
                                     <td><strong>Tipo de contenedor</strong></td>
-                                    <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }}</td>
+                                    <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }}
+                                    </td>
                                 </tr>
                             @endif
 
@@ -677,7 +678,8 @@
                         @if ($quote->commercial_quote->lcl_fcl === 'FCL')
                             <tr>
                                 <td><strong>Tipo de contenedor</strong></td>
-                                <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }}</td>
+                                <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }}
+                                </td>
                             </tr>
                             <tr>
                                 <td><strong>TONELADAS</strong></td>

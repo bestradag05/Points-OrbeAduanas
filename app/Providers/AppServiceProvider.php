@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +22,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        View::composer('*', function ($view) {
+            if (Auth::check()) {
+                $notifications = Auth::user()->unreadNotifications;
+                // Extraemos los IDs únicos de usuarios que originaron las notificaciones
+                $userIds = $notifications->pluck('data.oring_user')->unique()->filter();
+                // Cargamos los usuarios de una sola consulta y los indexamos por ID
+                $originUsers = User::whereIn('id', $userIds)->get()->keyBy('id');
+                // Pasamos las variables a las vistas
+                $view->with([
+                    'notifications' => $notifications,
+                    'originUsers' => $originUsers,
+                ]);
+            }
+        });
     }
 }

@@ -385,7 +385,7 @@
                 <h5 class="text-indigo m-0">
                     Documentos
                 </h5>
-                <button type="button" class="btn btn-indigo btn-sm mx-2" onclick="showModalUpdateDocumentFreight()"><i
+                <button type="button" class="btn btn-indigo btn-sm mx-2 " onclick="showModalUpdateDocumentFreight()"><i
                         class="fas fa-plus"></i></button>
             </div>
 
@@ -439,7 +439,7 @@
                                 @endif
                             </td>
 
-                            @if ($document)
+                            @if ($document && $freight->state === 'Pendiente')
                                 <td>
                                     <form action="{{ url('/freight/delete_file/' . $document->id) }}" method="POST"
                                         class="d-inline">
@@ -470,16 +470,18 @@
                                         <x-file-icon :path="$document->path" />
                                     </a>
                                 </td>
-                                <td>
-                                    <form action="{{ url('/freight/delete_file/' . $document->id) }}" method="POST"
-                                        class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn text-danger">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </form>
-                                </td>
+                                @if ($freight->state === 'Pendiente')
+                                    <td>
+                                        <form action="{{ url('/freight/delete_file/' . $document->id) }}" method="POST"
+                                            class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn text-danger">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                @endif
                             </tr>
                         @endif
                     @endforeach
@@ -489,28 +491,38 @@
 
             <div class="row justify-content-center mt-4">
 
-                <div class="col-12 mb-4">
-                    <h5 class="text-center status-{{ Str::slug($freight->state) }}"> <i class="fas fa-circle"></i>
-                        {{ $freight->state }}</h5>
+                <div class="col-12 mb-4 text-center">
+                    <h6 class="custom-badge status-{{ Str::slug($freight->state) }}"> <i class="fas fa-circle"></i>
+                        {{ $freight->state }}</h6>
                 </div>
 
                 @if (!$freight->documents->contains('name', 'Routing Order'))
-                    <div class="col-6 col-xl-4">
+                    <div class="col-6 col-xl-6">
                         <button class="btn btn-secondary btn-sm w-100" onclick="openModalgenerateRoutingOrder()">
                             Generar Routing
                         </button>
                     </div>
                 @endif
 
-                <div class="col-6 col-xl-4">
-                    <form action="{{ url('/freight/send-operation/' . $freight->id) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('PUT') <!-- O POST, según tu ruta -->
-                        <button class="btn btn-indigo btn-sm w-100" {{ $allRequiredUploaded ? '' : 'disabled' }}>
-                            Enviar
+
+                @if ($freight->state === 'Pendiente')
+                    <div class="col-6 col-xl-6">
+                        <form action="{{ url('/freight/send-operation/' . $freight->id) }}" method="POST"
+                            class="d-inline">
+                            @csrf
+                            @method('PUT') <!-- O POST, según tu ruta -->
+                            <button class="btn btn-indigo btn-sm w-100" {{ $allRequiredUploaded ? '' : 'disabled' }}>
+                                Enviar
+                            </button>
+                        </form>
+                    </div>
+                @elseif($freight->state === 'En Proceso')
+                    <div class="col-6 col-xl-6">
+                        <button class="btn btn-info btn-sm w-100" onclick="openModalNotification()">
+                            <i class="fas fa-info-circle"></i> Solicitar Correcion
                         </button>
-                    </form>
-                </div>
+                    </div>
+                @endif
             </div>
 
 
@@ -588,6 +600,31 @@
         </form>
     </x-adminlte-modal>
 
+    {{-- Notification --}}
+    <x-adminlte-modal id="generateNotification" class="modal" title="Envie notificación al asesor comercial"
+        size='lg' scrollable>
+        <form action="/freight/notify" method="POST" id="formGenerateNotification">
+            @csrf
+              <input type="hidden" name="id_freight" value="{{ $freight->id }}">
+            <div class="row">
+
+                <div class="col-12 ">
+                    <div class="form-group">
+                        <label for="message_freight">Mensaje</label>
+                        <textarea class="form-control" id="message_freight" name="message_freight" placeholder="Ingrese mensaje"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <x-slot name="footerSlot">
+                <x-adminlte-button class="btn btn-indigo" type="submit" onclick="submitGenerateNotification(this)"
+                    label="Enviar" />
+                <x-adminlte-button theme="secondary" label="Cerrar" data-dismiss="modal" />
+            </x-slot>
+
+        </form>
+    </x-adminlte-modal>
+
 
 
 
@@ -657,6 +694,11 @@
 
         }
 
+        function openModalNotification() {
+            $('#generateNotification').modal('show');
+
+        }
+
 
         function submitGenerateRoutingOrder() {
             let formGenerateRoutingOrder = $('#formgenerateRoutingOrder');
@@ -680,6 +722,31 @@
 
             if (isValid) {
                 formGenerateRoutingOrder.submit();
+            }
+        }
+
+        function submitGenerateNotification() {
+            let formGenerateNotification = $('#formGenerateNotification');
+            let inputs = formGenerateNotification.find('textarea');
+
+            let isValid = true;
+
+            inputs.each(function() {
+                let $input = $(this); // Convertir a objeto jQuery
+                let value = $input.val();
+
+                if (value.trim() === '') {
+                    $input.addClass('is-invalid');
+                    isValid = false;
+                    showError(this, 'Debe completar este campo');
+                } else {
+                    $input.removeClass('is-invalid');
+                    hideError(this);
+                }
+            });
+
+            if (isValid) {
+                formGenerateNotification.submit();
             }
         }
 

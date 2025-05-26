@@ -11,6 +11,8 @@ use App\Models\Insurance;
 use App\Models\QuoteFreight;
 use App\Models\TypeInsurance;
 use App\Models\TypeService;
+use App\Models\User;
+use App\Notifications\Notify;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -199,6 +201,20 @@ class FreightService
     }
 
 
+    public function generateNofity($request)
+    {
+        //Debemos buscar al usuario que se notificara 
+
+        $freight = Freight::with('commercial_quote.personal.user')->findOrFail($request->id_freight);
+        $user = $freight->commercial_quote->personal->user;
+
+        $user->notify(new Notify($freight, $request->message_freight));
+
+        $freight->update(['state' => 'Notificado']);
+
+    }
+
+
     public function generateRoutingOrder($request)
     {
         $freight = Freight::findOrFail($request->id_freight);
@@ -270,7 +286,7 @@ class FreightService
         $nameForDB = $request->name_file;
         $extension = $file->getClientOriginalExtension();
 
-         $this->freightDocumentService->storeFreightDocument($freight, $content, $nameForDB, $extension);
+        $this->freightDocumentService->storeFreightDocument($freight, $content, $nameForDB, $extension);
     }
 
 

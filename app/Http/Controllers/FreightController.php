@@ -85,6 +85,14 @@ class FreightController extends Controller
     }
 
 
+    public function notifyCommercial(Request $request)
+    {
+        $this->freightService->generateNofity($request);
+
+        return back()->with('success', 'Notificacion enviada.');
+    }
+
+
     public function generateRouting(Request $request)
     {
         $this->freightService->generateRoutingOrder($request);
