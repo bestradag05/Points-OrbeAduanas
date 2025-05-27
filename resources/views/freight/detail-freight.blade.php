@@ -391,7 +391,13 @@
 
             @php
                 $requiredDocuments = ['Routing Order', 'Factura Comercial', 'BL Draf'];
+
+                if ($freight->state != 'Pendiente') {
+                    $requiredDocuments[] = 'BL Final';
+                }
+
                 $uploadedDocuments = $freight->documents->keyBy(fn($doc) => strtolower(trim($doc->name)));
+                $blFinalUploaded = $uploadedDocuments->has('bl final');
                 $allRequiredUploaded = collect($requiredDocuments)->every(function ($doc) use ($uploadedDocuments) {
                     return $uploadedDocuments->has(strtolower(trim($doc)));
                 });
@@ -491,10 +497,19 @@
 
             <div class="row justify-content-center mt-4">
 
-                <div class="col-12 mb-4 text-center">
+                <div class="col-12 mb-3 text-center">
                     <h6 class="custom-badge status-{{ Str::slug($freight->state) }}"> <i class="fas fa-circle"></i>
                         {{ $freight->state }}</h6>
                 </div>
+
+
+                @if ($lastNotification)
+                    <div class="alert alert-danger text-sm">
+                        <strong>Motivo:</strong> {{ $lastNotification->data['message'] }} <br>
+                        <small class="text-warning">{{ $lastNotification->created_at->diffForHumans() }}</small>
+                    </div>
+                @endif
+
 
                 @if (!$freight->documents->contains('name', 'Routing Order'))
                     <div class="col-6 col-xl-6">
@@ -505,7 +520,7 @@
                 @endif
 
 
-                @if ($freight->state === 'Pendiente')
+                @if ($freight->state != 'En Proceso')
                     <div class="col-6 col-xl-6">
                         <form action="{{ url('/freight/send-operation/' . $freight->id) }}" method="POST"
                             class="d-inline">
@@ -518,11 +533,14 @@
                     </div>
                 @elseif($freight->state === 'En Proceso')
                     <div class="col-6 col-xl-6">
-                        <button class="btn btn-info btn-sm w-100" onclick="openModalNotification()">
+                        <button class="btn btn-info btn-sm w-100" onclick="openModalNotification()" {{$blFinalUploaded ? '' : 'disabled'}}>
                             <i class="fas fa-info-circle"></i> Solicitar Correcion
                         </button>
                     </div>
                 @endif
+
+
+
             </div>
 
 
@@ -605,7 +623,7 @@
         size='lg' scrollable>
         <form action="/freight/notify" method="POST" id="formGenerateNotification">
             @csrf
-              <input type="hidden" name="id_freight" value="{{ $freight->id }}">
+            <input type="hidden" name="id_freight" value="{{ $freight->id }}">
             <div class="row">
 
                 <div class="col-12 ">

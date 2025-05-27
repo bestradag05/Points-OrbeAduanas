@@ -211,7 +211,6 @@ class FreightService
         $user->notify(new Notify($freight, $request->message_freight));
 
         $freight->update(['state' => 'Notificado']);
-
     }
 
 
@@ -268,7 +267,18 @@ class FreightService
         $freight = Freight::with('documents')->findOrFail($id);
         $commercialQuote = $freight->commercial_quote;
 
-        return compact('freight', 'commercialQuote');
+        $lastNotification = null;
+
+        if ($freight->state === 'Notificado') {
+            $lastNotification = auth()->user()->notifications()
+                ->where('data->freight_id', $freight->id)
+                ->latest()
+                ->first();
+
+        }
+
+
+        return compact('freight', 'commercialQuote', 'lastNotification');
     }
 
 
