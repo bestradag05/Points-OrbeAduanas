@@ -9,6 +9,7 @@ use App\Models\QuoteTransport;
 use App\Models\Supplier;
 use App\Models\Transport;
 use App\Models\TypeInsurance;
+use App\Models\ResponseTransportQuote;
 use App\Services\TransportService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -33,7 +34,7 @@ class TransportController extends Controller
     {
         // Listar transportes
 
-       $compact = $this->trasnportService->index();
+        $compact = $this->trasnportService->index();
 
         return view("transport/list-transport", compact("transports", "heads"));
     }
@@ -68,10 +69,15 @@ class TransportController extends Controller
     public function createTransport($quoteId)
     {
 
-        $compact = $this->trasnportService->createTransport($quoteId);
+        $quote = QuoteTransport::findOrFail($quoteId);
+
+        $response = $quote->responseTransportQuotes()
+            ->where('status', 'Aceptada')
+            ->with('conceptResponses.concept')
+            ->firstOrFail();
 
 
-        return view('transport.register-transport', $compact);
+        return view('transport.register-transport', compact('quote', 'response'));
     }
     /**
      * Store a newly created resource in storage.

@@ -58,8 +58,8 @@ class ResponseTransportQuote extends Model
         return $this->belongsTo(QuoteTransport::class, 'quote_transport_id');
     }
     // 1:N → ConceptsResponse
-    public function conceptsResponse()
+    public function conceptResponses()
     {
-        return $this->hasMany(ConceptsResponse::class, 'response_transport_quote_id');
+        return $this->hasMany(ConceptsResponse::class, 'response_transport_quote_id','id');
     }
 }

@@ -180,7 +180,7 @@ Route::middleware('auth')->group(function () {
     Route::get('quote/search-routing/{nro_operation}', [QuoteTransportController::class, 'searchRouting']);
     Route::patch('quote/transport/cost/{id}', [QuoteTransportController::class, 'costTransport']);
     Route::delete('quote/transport/{id}/{action}', [QuoteTransportController::class, 'updateStateQuoteTransport']);
-  /*   Route::patch('quote/transport/cost/{action}/{id}', [QuoteTransportController::class, 'handleTransportAction']); */
+ /*    Route::patch('quote/transport/cost/{action}/{id}', [QuoteTransportController::class, 'handleTransportAction']); */
     Route::get('quote/transport/cost/reject/{id}', [QuoteTransportController::class, 'rejectQuoteTransport']);
     Route::get('quote/transport/cost/keep/{id}', [QuoteTransportController::class, 'keepQuoteTransport']);
     Route::patch('quote/transport/cost/accept/{id}', [QuoteTransportController::class, 'acceptQuoteTransport']);

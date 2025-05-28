@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\ResponseTransportQuote;
 use App\Models\Supplier;
-use App\Models\ConceptsTransportQuote;
-use App\Models\Concepts;
+use App\Models\ConceptsQuoteTransport;
+use App\Models\Concept;
 use Illuminate\Http\Request;
 
 class ResponseTransportQuoteController extends Controller
@@ -49,12 +49,12 @@ class ResponseTransportQuoteController extends Controller
         // Asumimos que el tipo de envío se envía en el request o se conoce de otro modo
         $typeShipmentId = $request->type_shipment_id; // Asegúrate de enviarlo
         
-        $transportConcept = Concepts::where('name', 'TRANSPORTE')
+        $transportConcept = Concept::where('name', 'TRANSPORTE')
             ->where('id_type_shipment', $typeShipmentId)
             ->first();
         
         if ($transportConcept) {
-            ConceptsTransportQuote::create([
+            ConceptsQuoteTransport::create([
                 'quote_id'     => $request->quote_id, // si se está usando
                 'concepts_id'   => $transportConcept->id,
                 'value_concept'=> $request->provider_cost, // o el valor que desees asociar

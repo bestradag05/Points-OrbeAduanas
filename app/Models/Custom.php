@@ -37,9 +37,9 @@ class Custom extends Model
 
 
 
-    public function concepts()
+    public function concept()
     {
-        return $this->belongsToMany(Concepts::class, 'concepts_customs', 'id_customs', 'concepts_id')
+        return $this->belongsToMany(Concept::class, 'concepts_customs', 'id_customs', 'concepts_id')
             ->withPivot(['value_concept', 'added_value', 'net_amount', 'igv', 'total', 'additional_points']);
     }
 

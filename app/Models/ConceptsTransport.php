@@ -19,7 +19,7 @@ class ConceptsTransport extends Model
         // Inversa N:1 → Concept
     public function concept()
     {
-        return $this->belongsTo(Concepts::class, 'concepts_id');
+        return $this->belongsTo(Concept::class, 'concepts_id');
     }
 
 

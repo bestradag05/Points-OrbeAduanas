@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Concepts extends Model
+class Concept extends Model
 {
     use HasFactory;
 
     protected $table = 'concepts';
 
     protected $fillable = ['name', 'id_type_shipment', 'id_type_service'];
-
+ 
     public function typeService()
     {
         return $this->belongsTo(TypeService::class, 'id_type_service', 'id');
@@ -65,7 +65,7 @@ class Concepts extends Model
         // Relación many‐to‐many con ResponseTransportQuote
     public function responseTransportQuotes()
     {
-        return $this->belongsToMany(ResponseTransportQuote::class,'concepts_response','concepts_id','response_transport_quote_id'
+        return $this->belongsToMany(ResponseTransportQuote::class,'concepts_response','transport_cost','concepts_id','response_transport_quote_id'
         )->withPivot('value_concept', 'net_amount');
     }
 }

@@ -96,4 +96,9 @@ class Transport extends Model
     {
         return $this->belongsTo(QuoteTransport::class, 'quote_transport_id');
     }
+    public function conceptsTransport()
+{
+    return $this->hasMany(ConceptsTransport::class, 'transport_id');
+}
+
 }

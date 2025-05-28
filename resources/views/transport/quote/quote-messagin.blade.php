@@ -8,7 +8,7 @@
     {{-- <div class="col-12  mb-4 text-right">
             <a href="{{ url('/quote/freight') }}" class="btn btn-primary"> Atras </a>
 </div> --}}
- <div class="col-12 col-md-12 col-lg-6">
+ <div class="col-12 col-md-12 col-lg-5">
     <h5 class="text-indigo text-center"><i class="fas fa-file-alt"></i> Detalle de carga</h5>
 
     <br>
@@ -409,13 +409,6 @@
 
     </div>
     @endif
-
-
-    <div class="text-center mt-5 mb-3">
-        <button class="btn btn-sm btn-success {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}" type="button"
-            data-toggle="modal" data-target="#quote-transport">Cotización Aceptada</button>
-
-    </div>
  </div>
 <!-- <div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
     <div class="card direct-chat direct-chat-primary h-100">
@@ -471,9 +464,12 @@
     </div>
 </div> -->
 <!-- Crear lista de respuestas -->
-<div class="col-12 col-md-12 col-lg-6">
-    <h5 class="text-indigo text-center"><i class="fas fa-file-alt"></i> Lista de respuestas</h5>
-
+<div class="col-12 col-md-12 col-lg-7">
+   <div class="d-flex justify-content-center align-items-center">
+     <h5 class=" mx-2 text-indigo text-center"><i class="fas fa-file-alt"></i> Lista de respuestas</h5>
+     <button type="button" class="btn btn-indigo mx-2 text-sm" data-toggle="modal" data-target="#modalCotizarTransporte"> <i class="fas fa-truck mr-1"></i> Responder
+    </button>
+   </div>
     <table class="table table-sm text-sm my-5">
         <thead class="thead-dark">
             <th>#</th>
@@ -490,17 +486,21 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $response->nro_response }}</td>
-                <td>{{ $response->provider_id}}</td>
+                 <td>{{ optional($response->supplier)->name_businessname }}</td>
                 <td>{{ $response->provider_cost }}</td>
                 <td>{{ $response->commission }}</td>
                 <td>{{ $response->total }}</td>
-                <td class="status-{{ strtolower($response->state) }}">{{ $response->status }}
+                <td class="status-{{ strtolower($response->state) }}">
+                    {{ $response->status }}
                 </td>
-
-                <td style="width: 150px">
-
-                   
+                <td>
+                  <button class="btn btn-indigo btn-indigo {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}" type="button" data-toggle="modal" data-target="#quote-transport"
+                  data-response-id="{{ $response->id }}"
+                  data-response-nro="{{ $response->nro_response }}">
+                  Aceptar
+                  </button>
                 </td>
+            
 
             </tr>
             @endforeach
@@ -522,6 +522,7 @@
                 id="sendTransportCost"
                 method="POST">
                 @csrf
+                {{method_field("PATCH") }}
 
                 <div class="modal-header">
                     <h5 class="modal-title" id="quote-transport-title">
@@ -532,20 +533,23 @@
                     </button>
                 </div>
 
-                <div class="modal-body">
-                    {{-- 1) Dropdown con las respuestas existentes --}}
+                                <div class="modal-body">
+                    {{-- 1) Campo solo lectura con la respuesta seleccionada --}}
                     <div class="form-group">
-                        <label for="response_id"><strong>Respuesta</strong></label>
-                        <select name="response_id" id="response_id"
-                            class="form-control select2"
-                            data-placeholder="Seleccione una respuesta..." style="width:100%">
-                            <option></option>
-                            @foreach($quote->responseTransportQuotes as $resp)
-                            <option value="{{ $resp->id }}">
-                                {{ $resp->supplier->name_businessname }} &mdash; {{ $resp->nro_response }}
-                            </option>
-                            @endforeach
-                        </select>
+                        <label for="response_display"><strong>Respuesta seleccionada</strong></label>
+                        {{-- Valor visible --}}
+                        <input 
+                            type="text" 
+                            id="response_display" 
+                            class="form-control" 
+                            readonly
+                        >
+                        {{-- Valor real que se envía --}}
+                        <input 
+                            type="hidden" 
+                            name="response_id" 
+                            id="response_id"
+                        >
                     </div>
 
                     {{-- 2) Cuadrilla, si aplica --}}
@@ -881,13 +885,13 @@
                         @foreach($quote->transportConcepts->unique('concepts_id') as $tc)
                         <div class="form-group row">
                             <label class="col-sm-6 col-form-label font-weight-bold">
-                                {{ $tc->concept->name }} (S/)
+                                {{ $tc->name }} (S/)
                             </label>
                             <div class="col-sm-6">
                                 <input
                                     type="number"
                                     step="0.01"
-                                    name="price_concept[{{ $tc->concept->id }}]"
+                                    name="price_concept[{{ $tc->id }}]"
                                     class="form-control concept-input"
                                     value="">
                             </div>
@@ -1271,5 +1275,20 @@
         }
     })();
 </script>
+<script>
+$('#quote-transport').on('show.bs.modal', function (e) {
+  var button      = $(e.relatedTarget);
+  var responseId  = button.data('response-id');
+  var responseNro = button.data('response-nro');
+  var modal       = $(this);
+
+  // Rellena el campo oculto con el ID
+  modal.find('#response_id').val(responseId);
+
+  // Muestra el número de respuesta en el input de solo lectura
+  modal.find('#response_display').val(responseNro);
+});
+</script>
+
 
 @endpush

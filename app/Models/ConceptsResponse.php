@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Concept;
 
 class ConceptsResponse extends Model
 {
@@ -28,10 +29,10 @@ class ConceptsResponse extends Model
     }
 
     // 3) Relación N:1 → Concepts
-    public function concepts()
+    public function concept()
     {
         return $this->belongsTo(
-            Concepts::class,      // o App\Models\Concepts si tu modelo se llama así
+            Concept::class,      // o App\Models\Concepts si tu modelo se llama así
             'concepts_id'        // columna en tu tabla pivote
         );
     }

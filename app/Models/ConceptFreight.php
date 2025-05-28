@@ -22,9 +22,9 @@ class ConceptFreight extends Model
     ];
 
 
-    public function concepts()
+    public function concept()
     {
-        return $this->belongsTo(Concepts::class, 'concepts_id');
+        return $this->belongsTo(Concept::class, 'concepts_id');
     }
 
     // Relación con Freight

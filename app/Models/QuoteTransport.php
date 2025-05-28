@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Concept;
 
 
 class QuoteTransport extends Model
@@ -33,8 +34,6 @@ class QuoteTransport extends Model
         'measures',
         'lcl_fcl',
         'id_type_shipment',
-        'cost_transport',
-        'total_transport',
         'withdrawal_date',
         'observations',
         'state',
@@ -111,21 +110,12 @@ class QuoteTransport extends Model
         return $this->hasMany(MessageQuoteTransport::class, 'quote_transport_id', 'id');
     }
 
-    public function concepts()
-    {
-        return $this->belongsToMany(
-            Concepts::class,
-            'concepts_quote_transport',    // nombre de la tabla pivote
-            'quote_transport_id',          // FK en la tabla pivote hacia este modelo
-            'concepts_id'                   // FK en la tabla pivote hacia Concept
-        );
-    }
 
     public function setCostTransportAttribute($value)
     {
         $this->attributes['cost_transport'] = $value;
         // Calcular total_transport si es necesario
-        $this->attributes['total_transport'] = $value + ($this->concepts->sum('pivot.added_value') ?? 0);
+        $this->attributes['total_transport'] = $value + ($this->transportConcepts->sum('pivot.added_value') ?? 0);
     }
 
     public function responseTransportQuotes()
@@ -137,10 +127,13 @@ class QuoteTransport extends Model
         );
     }
 
-    // 1:N → ConceptsTransportQuote (tabla pivote para conceptos de transporte)
     public function transportConcepts()
     {
-        return $this->hasMany(ConceptsQuoteTransport::class, 'quote_transport_id');
+        return $this->belongsToMany(
+            Concept::class,
+            'concepts_quote_transport',      // tu tabla de pivot
+            'quote_transport_id',           // FK en pivot hacia esta tabla
+            'concepts_id');
     }
 
 

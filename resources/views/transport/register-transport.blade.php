@@ -1,19 +1,15 @@
 @extends('home')
 
 @section('content_header')
-    <div class="d-flex justify-content-between">
-        <h2>Registra un transporte</h2>
-        <div>
-            <a href="{{url('/transport') }}" class="btn btn-primary"> Atras </a>
-        </div>
-    </div>
-
+<div class="d-flex justify-content-between align-items-center">
+    <h2>Registrar un transporte</h2>
+    <a href="{{ url('/transport') }}" class="btn btn-secondary">Atrás</a>
+</div>
 @stop
+
 @section('dinamic-content')
-    <form action="/transport" method="post" id="formTransport" enctype="multipart/form-data">
-        @csrf
-        @include ('transport.form-transport', ['formMode' => 'create'])
-    </form>
-
-
+<form action="{{ route('transport.store', $quote->id) }}" method="POST" id="formTransport">
+    @csrf
+    @include ('transport.form-transport', ['formMode' => 'create'])
+</form>
 @stop
