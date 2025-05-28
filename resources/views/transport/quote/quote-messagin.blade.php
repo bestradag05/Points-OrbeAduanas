@@ -464,12 +464,28 @@
     </div>
 </div> -->
 <!-- Crear lista de respuestas -->
+<<<<<<< HEAD
 <div class="col-12 col-md-12 col-lg-7">
    <div class="d-flex justify-content-center align-items-center">
      <h5 class=" mx-2 text-indigo text-center"><i class="fas fa-file-alt"></i> Lista de respuestas</h5>
      <button type="button" class="btn btn-indigo mx-2 text-sm" data-toggle="modal" data-target="#modalCotizarTransporte"> <i class="fas fa-truck mr-1"></i> Responder
     </button>
    </div>
+=======
+<div class="col-12 col-md-12 col-lg-6">
+     <div class="d-flex justify-content-between align-items-center">
+        <h5 class="text-indigo"><i class="fas fa-file-alt"></i> Lista de respuestas</h5>
+        <!-- Botón para abrir el modal -->
+        <button
+            type="button"
+            class="btn btn-primary"
+            data-toggle="modal"
+            data-target="#modalCotizarTransporte">
+            <i class="fas fa-truck mr-1"></i> Responder
+        </button>
+    </div>
+
+>>>>>>> 1bc9ebbf1101bc8b6952fca920cf0dd36097bf18
     <table class="table table-sm text-sm my-5">
         <thead class="thead-dark">
             <th>#</th>
@@ -486,7 +502,7 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $response->nro_response }}</td>
-                 <td>{{ optional($response->supplier)->name_businessname }}</td>
+                <td>{{ optional($response->supplier)->name_businessname }}</td>
                 <td>{{ $response->provider_cost }}</td>
                 <td>{{ $response->commission }}</td>
                 <td>{{ $response->total }}</td>
@@ -500,7 +516,7 @@
                   Aceptar
                   </button>
                 </td>
-            
+        
 
             </tr>
             @endforeach
@@ -533,7 +549,11 @@
                     </button>
                 </div>
 
+<<<<<<< HEAD
                                 <div class="modal-body">
+=======
+                 <div class="modal-body">
+>>>>>>> 1bc9ebbf1101bc8b6952fca920cf0dd36097bf18
                     {{-- 1) Campo solo lectura con la respuesta seleccionada --}}
                     <div class="form-group">
                         <label for="response_display"><strong>Respuesta seleccionada</strong></label>
