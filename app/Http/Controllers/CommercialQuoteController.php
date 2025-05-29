@@ -633,9 +633,7 @@ class CommercialQuoteController extends Controller
 
     public function updateDate(Request $request, string $id)
     {
-
-        $commercialQuote = CommercialQuote::findOrFail($id)->first();
-
+        $commercialQuote = CommercialQuote::findOrFail($id);
         $validDate = Carbon::createFromFormat('d/m/Y', $request->valid_date)->format('Y-m-d');
 
         $commercialQuote->update(['valid_date' =>  $validDate]);

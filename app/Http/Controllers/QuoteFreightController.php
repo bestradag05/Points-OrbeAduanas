@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\QuoteFreight;
+use App\Notifications\Notify;
+use App\Notifications\NotifyQuoteFreight;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -138,6 +140,20 @@ class QuoteFreightController extends Controller
         return redirect('/freight/create/' . $quote->id);
     }
 
+    public function sendInfoAndNotifyPricing($id)
+    {
+        //Debemos buscar al usuario que se notificara 
+
+        $quote = QuoteFreight::with('commercial_quote.personal.user')->findOrFail($id);
+        $user = $quote->commercial_quote->personal->user;
+
+        $user->notify(new NotifyQuoteFreight($quote, "Tiene una nueva cotización con el codigo {$quote->nro_quote}"));
+
+        $quote->update(['state' => 'Enviado']);
+
+        return back()->with('success', 'Informacion Enviada.');
+    }
+
     public function uploadFilesQuoteFreight(Request $request)
     {
         if ($request->hasFile('file')) {
@@ -261,7 +277,7 @@ class QuoteFreightController extends Controller
         if ($action === 'rechazar') {
             $quoteFreight->update(['state' => 'Rechazado']);
 
-            if($quoteFreight->freight->exists()){
+            if ($quoteFreight->freight->exists()) {
                 $quoteFreight->freight->update(['state' => 'Rechazado']);
             }
 

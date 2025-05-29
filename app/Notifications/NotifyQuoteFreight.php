@@ -7,19 +7,19 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class Notify extends Notification
+class NotifyQuoteFreight extends Notification
 {
     use Queueable;
 
-    protected $freight;
+    protected $quoteFreight;
     protected $message;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($freight, $message)
+    public function __construct($quoteFreight, $message)
     {
-        $this->freight = $freight;
+        $this->quoteFreight = $quoteFreight;
         $this->message = $message;
     }
 
@@ -48,9 +48,9 @@ class Notify extends Notification
     public function toDatabase(object $notifiable): array
     {
         return [
-            'freight_id' => $this->freight->id,
+            'quote_freight_id' => $this->quoteFreight->id,
             'message' => $this->message,
-            'route' => route('freight.show', $this->freight->id),
+            'route' => route('quote.freight.show', $this->quoteFreight->id),
             'oring_user' => auth()->user()->id,
             'type' => 'freight'
         ];

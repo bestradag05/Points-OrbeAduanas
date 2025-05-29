@@ -217,7 +217,7 @@
     color: rgb(0, 128, 0);
 }
 
-.status-en-proceso {
+.status-en-proceso, .status-enviado {
     background: rgba(0, 211, 199, 0.1);
     color: #00D3C7;
 }

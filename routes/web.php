@@ -211,6 +211,7 @@ Route::middleware('auth')->group(function () {
     Route::post('quote/freight/file-delete-documents', [QuoteFreightController::class, 'deleteFilesQuoteFreight']);
     Route::get('quote/freight/sendQuote/{id}', [QuoteFreightController::class, 'sendQuote']);
     Route::delete('quote/freight/{id}/{action}', [QuoteFreightController::class, 'updateStateQuoteFreight']);
+    Route::patch('quote/freight/send-pricing/{id}', [QuoteFreightController::class, 'sendInfoAndNotifyPricing']);
 
     /* Mensaje de cotizaciones de flete */
 

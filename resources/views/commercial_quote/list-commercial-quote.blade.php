@@ -26,7 +26,11 @@
                 <td>{{ $commercial_quote->personal->names }}</td>
                 <td>{{ $commercial_quote->is_consolidated ? 'SI' : 'NO'}}</td>
                 <td>{{ \Carbon\Carbon::parse($commercial_quote->created_at)->format('d/m/Y') }}</td> 
-                <td class="status-{{ strtolower($commercial_quote->state) }}">{{ $commercial_quote->state }}</td>
+                <td>
+                    <div class="custom-badge status-{{ strtolower($commercial_quote->state) }}">
+                        {{ $commercial_quote->state }}
+                    </div>
+                </td>
 
                 <td>
                     @if (!$commercial_quote->typeService()->exists() || auth()->user()->hasRole('Super-Admin'))

@@ -3,12 +3,14 @@
 
 @section('dinamic-content')
 
-    <div class="row">
+    <div class="row p-3">
 
         {{-- <div class="col-12  mb-4 text-right">
             <a href="{{ url('/quote/freight') }}" class="btn btn-primary"> Atras </a>
         </div> --}}
-        <div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
+
+        {{-- Chat de messagin quote --}}
+        {{-- <div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
             <div class="card direct-chat direct-chat-primary h-100">
                 <div class="card-header bg-sisorbe-100 py-2">
                     <h5 class="text-center text-bold text-uppercase text-indigo">Cotizacion : {{ $quote->nro_quote }}</h5>
@@ -55,12 +57,13 @@
                     </form>
                 </div>
             </div>
-        </div>
-        <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2 px-4">
+        </div> --}}
+
+        <div class="col-12 col-md-12 col-lg-6 px-4">
 
             <div class="row justify-content-center align-items-center">
                 <div class="col-8 col-lg-6">
-                    <h5 class="text-indigo text-center"> <i class="fas fa-file-alt"></i> Detalle de carga</h5>
+                    <h5 class="text-indigo text-center"> <i class="fas fa-file-alt mx-2"></i>Detalle de carga</h5>
                 </div>
                 <div class="col-4 col-lg-6">
                     <button onclick="copieHtmlDetailQuote()" class="btn btn-sm btn-secondary">
@@ -335,125 +338,226 @@
 
             @endif
 
+        </div>
 
+        <div class="col-12 col-md-12 col-lg-6 px-4">
 
-            <div class="row text-muted mt-3">
-                <div class="col-12 text-center
-                ">
-                    <div class="custom-badge status-{{ strtolower($quote->state) }}">
-                        <i class="fas fa-circle"></i> {{ $quote->state }}
+            <div class="row justify-content-between h-100">
+                <div class="col-12">
+                    <div class="row align-items-center mb-4">
+                        <div class="col-8 col-lg-6">
+                            <h5 class="text-indigo text-center"> <i class="fas fa-file"></i> Lista de archivos</h5>
+                        </div>
+                        <div class="col-6 align-items-center {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}">
+                            <button class="btn btn-indigo btn-sm" data-toggle="modal"
+                                data-target="#modalQuoteFreightDocuments">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
+                    <table id="table-file-freight" class="table">
+                        <tbody>
+                            @foreach ($files as $file)
+                                <tr>
+                                    <td>
+                                        <a href="{{ $file['url'] }}" target="_blank" class="btn-link text-secondary">
+                                            <i class="far fa-fw fa-file-pdf"></i> {{ $file['name'] }}
+                                        </a>
+                                    </td>
+                                    <td class="text-center {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}">
+                                        <a href="#" class="text-danger"
+                                            onclick="handleFileDeletion('{{ $file['name'] }}', this, event)">
+                                            X
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
 
+                    <hr>
+
+                </div>
+                <div class="col-12 d-flex flex-column justify-content-end">
+
+                    <div class="text-center">
+                        <div class="custom-badge status-{{ strtolower($quote->state) }}">
+                            <i class="fas fa-circle"></i> {{ $quote->state }}
+                        </div>
+                    </div>
+
+                    @if ($quote->ocean_freight != null && $quote->state === 'Aceptada')
+                        <div class="row">
+
+                            <div class="col-12">
+                                <h6 class="text-indigo text-center mb-3 text-bold"><i class="fas fa-dollar-sign"></i>
+                                    Detalle
+                                    de
+                                    costos
+                                </h6>
+                            </div>
+
+                            <div class="col-12 ml-4">
+
+                                <div class="row text-muted">
+                                    <div class="col-4">
+                                        <p class="text-sm">Flete :
+                                        </p>
+                                    </div>
+                                    <div class="col-6">
+                                        <b class="d-inline">$ {{ $quote->ocean_freight }}</b>
+                                    </div>
+
+                                </div>
+                                <div class="row text-muted">
+                                    <div class="col-4">
+                                        <p class="text-sm"> Orbe (utilidad) :
+                                        </p>
+                                    </div>
+                                    <div class="col-6">
+                                        <b class="d-inline">$ {{ $quote->utility }}</b>
+                                    </div>
+
+                                </div>
+                                <div class="row text-muted">
+                                    <div class="col-4">
+                                        <p class="text-sm">Operaciones :
+                                        </p>
+                                    </div>
+                                    <div class="col-6">
+                                        <b class="d-inline">$ {{ $quote->operations_commission }}</b>
+                                    </div>
+
+                                </div>
+                                <div class="row text-muted">
+                                    <div class="col-4">
+                                        <p class="text-sm">Pricing :
+                                        </p>
+                                    </div>
+                                    <div class="col-6">
+                                        <b class="d-inline">$ {{ $quote->pricing_commission }}</b>
+                                    </div>
+
+                                </div>
+
+                                <div class="row text-muted mt-3 ">
+                                    <div class="col-12 row justify-content-center">
+                                        <p class="text-uppercase text-bold text-lg">Costo del Flete :
+                                            <b class="status-{{ strtolower($quote->state) }}">$
+                                                {{ $quote->total_ocean_freight }}</b>
+                                        </p>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
+                    @endif
+
+                    <div class="text-center mt-5 mb-3">
+                        {{--  <button class="btn btn-sm btn-success "
+                            type="button" data-toggle="modal" data-target="#quote-freight">Cotización Aceptada</button>
+                        --}}
+
+
+                        <form action="{{ url('/quote/freight/send-pricing/' . $quote->id) }}" method="POST"
+                            class="d-inline" id="form-send-pricing">
+                            @csrf
+                            @method('PATCH')
+
+                            <button
+                                class="btn btn-outline-indigo btn-sm {{ $quote->state != 'Pediente' ? 'd-none' : '' }}">
+                                <i class="fas fa-paper-plane"></i> Enviar</button>
+                        </form>
+
+                    </div>
+
+
+                </div>
             </div>
 
-            <hr>
-            <div class="row align-items-center">
-                <div class="col-6 align-items-center">
-                    <h5 class="mt-3 text-muted">Archivos : </h5>
-                </div>
-                <div class="col-6 align-items-center {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}">
-                    <button class="btn btn-indigo btn-sm" data-toggle="modal" data-target="#modalQuoteFreightDocuments">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </div>
+        </div>
+
+
+        <div class="col-12 px-4 mt-5">
+            <div class="text-center mb-4">
+                <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
+                <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal" data-target="#modalQuoteFreightDocuments">
+                    <i class="fas fa-plus"></i>
+                </button>
             </div>
-            <table id="table-file-freight" class="table">
+
+            <table class="table table-sm text-sm">
+                <thead class="thead-dark">
+                    <th>#</th>
+                    <th>N° cotizacion</th>
+                    <th>Origen</th>
+                    <th>Destino</th>
+                    <th>N° de operacion</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </thead>
                 <tbody>
-                    @foreach ($files as $file)
+
+
+                    {{-- @foreach ($comercialQuote->quote_freight as $quote)
                         <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $quote->nro_quote }}</td>
+                            <td>{{ $quote->origin }}</td>
+                            <td>{{ $quote->destination }}</td>
+                            <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
+                                {{ $quote->commodity }}</td>
+                            <td class="{{ $comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none' }}">
+                                {{ $quote->commercial_quote->lcl_fcl }}</td>
+                            <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
+                                {{ $quote->cubage_kgv }}</td>
+                            <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
+                                {{ $quote->ton_kilogram }}</td>
+                            <td>{{ $quote->nro_quote_commercial }}</td>
+                            <td>{{ \Carbon\Carbon::parse($quote->created_at)->format('d/m/Y') }}</td>
                             <td>
-                                <a href="{{ $file['url'] }}" target="_blank" class="btn-link text-secondary">
-                                    <i class="far fa-fw fa-file-pdf"></i> {{ $file['name'] }}
-                                </a>
+                                <div class="custom-badge status-{{ strtolower($quote->state) }}">
+                                    {{ $quote->state }}
+                                </div>
                             </td>
-                            <td class="text-center {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}"">
-                                <a href="#" class="text-danger"
-                                    onclick="handleFileDeletion('{{ $file['name'] }}', this, event)">
-                                    X
-                                </a>
+
+
+                            <td style="width: 150px">
+                                <select name="acction_transport" class="form-control form-control-sm"
+                                    onchange="changeAcction(this, {{ $quote }}, 'Flete')">
+                                    <option value="" disabled selected>Seleccione una acción...</option>
+                                    <option>Detalle</option>
+                                    <option class="{{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">Anular
+                                    </option>
+                                    @if ($comercialQuote->state === 'Pendiente')
+                                        <option class="{{ $quote->state != 'Aceptado' ? 'd-none' : '' }}">Rechazar
+                                        </option>
+                                    @endif
+                                </select>
+
                             </td>
+
                         </tr>
-                    @endforeach
+                    @endforeach --}}
+
                 </tbody>
+
             </table>
 
-            <hr>
-            @if ($quote->ocean_freight != null && $quote->state === 'Aceptada')
-                <div class="row">
-
-                    <div class="col-12">
-                        <h6 class="text-indigo text-center mb-3 text-bold"><i class="fas fa-dollar-sign"></i> Detalle de
-                            costos
-                        </h6>
-                    </div>
-
-                    <div class="col-12 ml-4">
-
-                        <div class="row text-muted">
-                            <div class="col-4">
-                                <p class="text-sm">Flete :
-                                </p>
-                            </div>
-                            <div class="col-6">
-                                <b class="d-inline">$ {{ $quote->ocean_freight }}</b>
-                            </div>
-
-                        </div>
-                        <div class="row text-muted">
-                            <div class="col-4">
-                                <p class="text-sm"> Orbe (utilidad) :
-                                </p>
-                            </div>
-                            <div class="col-6">
-                                <b class="d-inline">$ {{ $quote->utility }}</b>
-                            </div>
-
-                        </div>
-                        <div class="row text-muted">
-                            <div class="col-4">
-                                <p class="text-sm">Operaciones :
-                                </p>
-                            </div>
-                            <div class="col-6">
-                                <b class="d-inline">$ {{ $quote->operations_commission }}</b>
-                            </div>
-
-                        </div>
-                        <div class="row text-muted">
-                            <div class="col-4">
-                                <p class="text-sm">Pricing :
-                                </p>
-                            </div>
-                            <div class="col-6">
-                                <b class="d-inline">$ {{ $quote->pricing_commission }}</b>
-                            </div>
-
-                        </div>
-
-                        <div class="row text-muted mt-3 ">
-                            <div class="col-12 row justify-content-center">
-                                <p class="text-uppercase text-bold text-lg">Costo del Flete :
-                                    <b class="status-{{ strtolower($quote->state) }}">$
-                                        {{ $quote->total_ocean_freight }}</b>
-                                </p>
-                            </div>
-
-                        </div>
 
 
-                    </div>
-
-
-                </div>
-            @endif
-
-
-            <div class="text-center mt-5 mb-3">
-                <button class="btn btn-sm btn-success {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}" type="button"
-                    data-toggle="modal" data-target="#quote-freight">Cotización Aceptada</button>
-            </div>
         </div>
+
+
+
+
+
+
     </div>
 
 
@@ -995,5 +1099,24 @@
                 toastr.error("❌ No se pudo generar la imagen.");
             });
         }
+
+        $('#form-send-pricing').on('submit', function(e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta acción enviará y notificara al área de pricing.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#2e37a4',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, enviar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit(); // Enviar formulario si confirma
+                }
+            });
+        });
     </script>
 @endpush

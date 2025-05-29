@@ -13,6 +13,7 @@ use App\Models\TypeInsurance;
 use App\Models\TypeService;
 use App\Models\User;
 use App\Notifications\Notify;
+use App\Notifications\NotifyFreight;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -208,7 +209,7 @@ class FreightService
         $freight = Freight::with('commercial_quote.personal.user')->findOrFail($request->id_freight);
         $user = $freight->commercial_quote->personal->user;
 
-        $user->notify(new Notify($freight, $request->message_freight));
+        $user->notify(new NotifyFreight($freight, $request->message_freight));
 
         $freight->update(['state' => 'Notificado']);
     }
