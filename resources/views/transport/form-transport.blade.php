@@ -101,14 +101,14 @@
         let TotalConcepts = 0;
         let total = 0;
         let countConcepts = 0;
-        let conceptTransport = null
+        let conceptsTransport = null
 
 
         //PAra editar, verificamos si tiene conceptos el flete: 
 
         @if(isset($formMode) && $formMode === 'edit')
 
-        conceptTransport = @json($conceptsTransport);
+        conceptTransport = @json($conceptTransport);
 
 
         @if(isset($response->conceptResponses))
@@ -120,8 +120,8 @@
 
             console.log(concept);
             conceptsArray.push({
-                'id': concept.id,
-                'name': concept.name,
+                'id': concept.concept.id,
+                'name': concept.concept.name,
                 'value': formatValue(concept.pivot.value_concept),
                 'added': formatValue(concept.pivot.added_value),
                 'pa': concept.pivot.additional_points > 0 ? concept.pivot
@@ -136,11 +136,16 @@
         value_transport = @json($quote->cost_transport);
         conceptTransport = @json($response->conceptResponses);
 
-        //Ordenamos para que transporte siempre vaya primero en el array:
-
+        // Ordenamiento corregido
         conceptTransport.sort((a, b) => {
-            return a.name === "TRANSPORTE" ? -1 : b.name === "TRANSPORTE" ? 1 : 0;
-        }); 
+            const nameA = a.concept?.name?.toUpperCase() || '';
+            const nameB = b.concept?.name?.toUpperCase() || '';
+
+            if (nameA === "TRANSPORTE") return -1;
+            if (nameB === "TRANSPORTE") return 1;
+            return nameA.localeCompare(nameB);
+        });
+
 
         conceptTransport.forEach(concept => {
 
@@ -231,7 +236,7 @@
 
         function updateTable(conceptsArray) {
 
-            let tbodyRouting = $(`#formConceptsTr                                  ansport`).find('tbody')[0];
+            let tbodyRouting = $(`#formconceptsTransport`).find('tbody')[0];
 
             if (tbodyRouting) {
 
@@ -242,7 +247,6 @@
             let contador = 0;
 
             for (let clave in conceptsArray) {
-
 
                 let item = conceptsArray[clave];
 

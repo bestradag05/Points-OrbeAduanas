@@ -571,7 +571,7 @@ class QuoteTransportController extends Controller
         return redirect('quote/transport');
     }
 
-/*     public function handleTransportAction(Request $request, string $action, int $id)
+    /*     public function handleTransportAction(Request $request, string $action, int $id)
     {
 
         
@@ -664,22 +664,20 @@ class QuoteTransportController extends Controller
     {
 
         // 1) Actualizas tu cotización…
-            $quote = QuoteTransport::findOrFail($id);
-            $response = ResponseTransportQuote::findOrFail($request->input('response_id'));
-            $dateFormat = Carbon::createFromFormat('Y-m-d', $request->withdrawal_date)->toDateString();
-            $transportCost = $response->total;
-            $quote->update([
-                'withdrawal_date' => $dateFormat,   // equivale a format('Y-m-d')
-                'state'           => 'Aceptado',
-            ]);
+        $quote = QuoteTransport::findOrFail($id);
+        $response = ResponseTransportQuote::findOrFail($request->input('response_id'));
+        $dateFormat = Carbon::createFromFormat('Y-m-d', $request->withdrawal_date)->toDateString();
+        $transportCost = $response->total;
+        $quote->update([
+            'withdrawal_date' => $dateFormat,   // equivale a format('Y-m-d')
+            'state'           => 'Aceptado',
+        ]);
 
-            $response->update([
-                'status' => 'Aceptado'
-            ]);
-
-
-            return redirect('/transport/create/' . $quote->id);
-
+        $response->update([
+            'status' => 'Aceptada'
+        ]);
+        
+        return redirect('/transport/create/' . $quote->id);
     }
 
     public function correctedQuoteTransport(string $id)
