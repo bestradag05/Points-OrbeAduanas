@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Concept;
 
 
 class QuoteTransport extends Model
@@ -33,8 +34,6 @@ class QuoteTransport extends Model
         'measures',
         'lcl_fcl',
         'id_type_shipment',
-        'cost_transport',
-        'total_transport',
         'withdrawal_date',
         'observations',
         'state',
@@ -93,7 +92,7 @@ class QuoteTransport extends Model
 
     public function transport()
     {
-        return $this->belongsTo(Transport::class, 'id', 'id_quote_transport');
+        return $this->belongsTo(Transport::class, 'id', 'quote_transport_id');
     }
 
     public function customer()
@@ -111,47 +110,30 @@ class QuoteTransport extends Model
         return $this->hasMany(MessageQuoteTransport::class, 'quote_transport_id', 'id');
     }
 
-    public function concepts()
-    {
-        return $this->hasMany(
-            ConceptsTransportQuote::class,
-            'response_quote_id'
-        );
-    }
 
     public function setCostTransportAttribute($value)
     {
         $this->attributes['cost_transport'] = $value;
         // Calcular total_transport si es necesario
-        $this->attributes['total_transport'] = $value + ($this->concepts->sum('pivot.added_value') ?? 0);
+        $this->attributes['total_transport'] = $value + ($this->transportConcepts->sum('pivot.added_value') ?? 0);
     }
 
     public function responseTransportQuotes()
     {
-        return $this->belongsToMany(
+        return $this->hasMany(
             ResponseTransportQuote::class,
-            'quote_transport_response',   // tu tabla pivote
-            'quote_transport_id',         // FK en la pivote hacia quote_transport
-            'response_quote_id'           // FK en la pivote hacia response_transport_quotes
+            'quote_transport_id',     // FK hacia quote_transport
+            'id'
         );
     }
 
     public function transportConcepts()
     {
-        return $this->hasMany(
-            ConceptsTransportQuote::class,
-            'quote_transport_id'  // FK en concepts_transport_quote
-        );
-    }
-
-    public function responses()
-    {
         return $this->belongsToMany(
-            ResponseTransportQuote::class,
-            'quote_transport_response',  // tu tabla pivote
-            'quote_transport_id',
-            'response_quote_id'
-        );
+            Concept::class,
+            'concepts_quote_transport',      // tu tabla de pivot
+            'quote_transport_id',           // FK en pivot hacia esta tabla
+            'concepts_id');
     }
 
 

@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AdditionalPoints;
 use App\Models\ConceptFreight;
-use App\Models\Concepts;
-use App\Models\Country;
+use App\Models\Concept;
 use App\Models\Custom;
 use App\Models\Customer;
 use App\Models\Freight;
@@ -21,10 +20,8 @@ use App\Models\TypeInsurance;
 use App\Models\TypeLoad;
 use App\Models\TypeService;
 use App\Models\TypeShipment;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Ramsey\Uuid\Type\Integer;
 use stdClass;
 
 class RoutingController extends Controller
@@ -302,7 +299,7 @@ class RoutingController extends Controller
         $routing->load('customer', 'type_shipment', 'regime', 'supplier', 'type_load');
         $type_services = TypeService::all();
         $modalitys = Modality::all();
-        $concepts = Concepts::all()->load('typeService');
+        $concepts = Concept::all()->load('typeService');
         $type_insurace = TypeInsurance::all();
 
         $stateCountrys = StateCountry::whereHas('country', function ($query) {
@@ -336,7 +333,7 @@ class RoutingController extends Controller
             'tab' => $tab,
             'stateCountrys' => $stateCountrys,
             'type_insurace' => $type_insurace,
-            'id_quote_transport' => request('id_quote_transport', null)
+            'quote_transport_id' => request('quote_transport_id', null)
         ];
 
 
@@ -507,7 +504,7 @@ class RoutingController extends Controller
                     $lastKey = array_key_last($arrayConcepts); // obtenemos el ultimo indice
                     $key = $lastKey + 1; // agregamos al ultimo indice par acrear el concepto de seguro
 
-                    $concept = Concepts::where('name', 'SEGURO')
+                    $concept = Concept::where('name', 'SEGURO')
                         ->where('id_type_shipment', $freight->routing->type_shipment->id)
                         ->whereHas('typeService', function ($query) {
                             $query->where('name', 'Flete');  // Segunda condición: Filtrar por name del tipo de servicio
@@ -531,7 +528,7 @@ class RoutingController extends Controller
 
                 foreach ($concepts as $concept) {
                     $conceptFreight = ConceptFreight::create([
-                        'id_concepts' => $concept->id, // ID del concepto relacionado
+                        'concepts_id' => $concept->id, // ID del concepto relacionado
                         'id_freight' => $freight->id, // Clave foránea al modelo Freight
                         'value_concept' => $concept->value,
                         'value_concept_added' => $concept->added,
@@ -567,7 +564,7 @@ class RoutingController extends Controller
                     'additional_points' => $request->additional_points,
                     'withdrawal_date' =>  $request->withdrawal_date,
                     'nro_operation' => $routing->nro_operation,
-                    'id_quote_transport' => $request->id_quote_transport,
+                    'quote_transport_id' => $request->quote_transport_id,
                     'state' => 'Pendiente'
 
                 ]);

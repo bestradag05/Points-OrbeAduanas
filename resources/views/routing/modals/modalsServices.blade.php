@@ -389,7 +389,7 @@
                     <input type="hidden" name="nro_operation" value="{{ $routing->nro_operation }}">
                     <input type="hidden" name="typeService" id="typeService">
                     @if (isset($cost_transport))
-                    <input type="hidden" name="id_quote_transport" id="id_quote_transport">
+                    <input type="hidden" name="quote_transport_id" id="quote_transport_id">
                     @endif
 
                     <div class="row">

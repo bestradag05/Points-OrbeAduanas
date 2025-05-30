@@ -9,59 +9,57 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ResponseTransportQuote extends Model
 {
     protected $fillable = [
-        'nro_response',
+        'quote_transport_id',
         'provider_id',
         'provider_cost',
         'commission',
         'total',
-        'status',
-        'nro_response'
+        'status'
     ];
 
 
-    protected static function booted()
-    {
-        static::creating(function ($m) {
-            $year = date('y');
-            $prefix = 'RPTA-';
-            $last = static::latest('id')->first();
-            $nextSeq = $last ? $last->id + 1 : 1;
-            $m->nro_response = "{$prefix}{$year}{$nextSeq}";
-        });
-    }
+    // Genera "RPTA-YY{n}"
     public static function generateNroResponse(): string
     {
-        $last  = static::latest('id')->first();
-        $year  = date('y');
-        $prefx = 'RPTA-';
+    
+        // Obtener el último registro
+        $lastCode = self::latest('id')->first();
+        $year = date('y');
+        $prefix = 'RPTA-';
 
-        if (! $last || ! $last->nro_response) {
-            return "{$prefx}{$year}1";
+        if (!$lastCode || empty($lastCode->nro_response)) {
+            return $prefix . $year . '1';
+        } else {
+            // Calculamos desde dónde extraer la parte numérica
+            $offset = strlen($prefix . $year);
+            $number = (int) substr($lastCode->nro_response, $offset);
+            $number++;
+            return $prefix . $year . $number;
         }
-
-        $seq = (int) substr($last->nro_response, strlen($prefx . $year)) + 1;
-        return "{$prefx}{$year}{$seq}";
     }
 
-
+    protected static function booted()
+    {
+        static::creating(function ($quote) {
+            // Si no tiene un número de operación, generarlo
+            if (empty($quote->nro_response)) {
+                $quote->nro_response = $quote->generateNroResponse();
+            }
+        });
+ }
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class, 'provider_id');
     }
 
-    public function quoteTransports()
+    // Inversa  N:1 → QuoteTransport
+    public function quoteTransport()
     {
-        return $this->belongsToMany(
-            QuoteTransport::class,
-            'quote_transport_response',
-            'response_quote_id',
-            'quote_transport_id'
-        );
+        return $this->belongsTo(QuoteTransport::class, 'quote_transport_id');
     }
-    // App\Models\ResponseTransportQuote.php
-
-    public function conceptsTransportQuote()
+    // 1:N → ConceptsResponse
+    public function conceptResponses()
     {
-        return $this->hasMany(ConceptsTransportQuote::class, 'response_quote_id');
+        return $this->hasMany(ConceptsResponse::class, 'response_transport_quote_id','id');
     }
 }

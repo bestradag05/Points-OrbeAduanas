@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('response_transport_quotes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('quote_transport_id')->constrained('quote_transport');
             $table->string('nro_response')->unique()->default('');
             $table->foreignId('provider_id')->constrained('suppliers');
             $table->decimal('provider_cost', 12, 2);
             $table->decimal('commission', 12, 2)->nullable();
             $table->decimal('total', 12, 2)->nullable();
-            $table->enum('status', ['Enviada', 'Aceptada', 'Rechazada'])->default('Enviada');
+            $table->enum('status', ['Enviada', 'Aceptado', 'Rechazada'])->default('Enviada');
             $table->timestamps();
         });
     }

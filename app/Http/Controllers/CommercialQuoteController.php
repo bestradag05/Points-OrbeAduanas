@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\CommercialQuote;
-use App\Models\Concepts;
-use App\Models\ConceptsTransportQuote;
+use App\Models\Concept;
+use App\Models\ConceptsQuoteTransport;
 use App\Models\ConsolidatedCargos;
 use App\Models\Container;
 use App\Models\Custom;
@@ -106,6 +106,7 @@ class CommercialQuoteController extends Controller
         $customers = Customer::with('personal')
             ->where('id_personal', $personalId)
             ->get();
+            
 
         return view("commercial_quote/register-commercial-quote", compact('stateCountrys', 'type_shipments', 'type_loads', 'regimes', 'incoterms', 'nro_quote_commercial', 'types_services', 'containers', 'customers'));
     }
@@ -453,7 +454,7 @@ class CommercialQuoteController extends Controller
         $comercialQuote = CommercialQuote::find($id);
         $type_services = TypeService::all();
         $modalitys = Modality::all();
-        $concepts = Concepts::all()->load('typeService');
+        $concepts = Concept::all()->load('typeService');
         $type_insurace = TypeInsurance::all();
         $documents = CustomerSupplierDocument::all();
         $customs_taxes = new stdClass();
@@ -527,7 +528,7 @@ class CommercialQuoteController extends Controller
         // 1. Corregir nombre del modelo a singular
         // 2. Usar with() para eager loading de la relación
         // 3. Agregar validación para evitar errores
-        $concepts = Concepts::with('typeService')
+        $concepts = Concept::with('typeService')
             ->when($comercialQuote->type_shipment, function ($query) use ($comercialQuote) {
                 return $query->where('id_type_shipment', $comercialQuote->type_shipment->id);
             })
@@ -708,8 +709,8 @@ class CommercialQuoteController extends Controller
 
     // 2) Para cada concepto, grábalo en concepts_transport_quote:
     foreach ($data['price_concept'] as $conceptId => $price) {
-        $resp->conceptsTransportQuote()->updateOrCreate(
-          ['quote_transport_id' => $quoteId, 'id_concepts' => $conceptId, 'response_quote_id'=>$resp->id],
+        $resp->conceptsQuoteTransport()->updateOrCreate(
+          ['quote_transport_id' => $quoteId, 'concepts_id' => $conceptId, 'response_quote_id'=>$resp->id],
           ['value_concept' => $price]
         );
     }

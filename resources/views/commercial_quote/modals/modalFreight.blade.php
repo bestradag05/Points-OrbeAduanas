@@ -699,7 +699,7 @@
             $('#transport_value').val(cost_transport).prop('readonly', true);
             $('#origin').val("{{ $origin ?? '' }}").prop('readonly', true);
             $('#destination').val("{{ $destination ?? '' }}").prop('readonly', true);
-            $('#id_quote_transport').val('{{ $id_quote_transport ?? '' }}')
+            $('#quote_transport_id').val('{{ $quote_transport_id ?? '' }}')
             $('#withdrawal_date').val('{{ $withdrawal_date ?? '' }}').prop('readonly', true);
 
 

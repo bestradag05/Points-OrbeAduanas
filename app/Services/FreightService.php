@@ -4,15 +4,13 @@ namespace App\Services;
 
 use App\Models\AdditionalPoints;
 use App\Models\CommercialQuote;
+use App\Models\Concept;
 use App\Models\ConceptFreight;
-use App\Models\Concepts;
 use App\Models\Freight;
 use App\Models\Insurance;
 use App\Models\QuoteFreight;
 use App\Models\TypeInsurance;
 use App\Models\TypeService;
-use App\Models\User;
-use App\Notifications\Notify;
 use App\Notifications\NotifyFreight;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -153,7 +151,7 @@ class FreightService
         $quote = QuoteFreight::findOrFail($quoteId);
         $commercial_quote = $quote->commercial_quote;
         $type_insurace = TypeInsurance::all();
-        $concepts = Concepts::all();
+        $concepts = Concept::all();
         $conceptFreight = null;
 
         foreach ($concepts as $concept) {
@@ -244,7 +242,7 @@ class FreightService
 
         $quote = $freight->quoteFreight()->where('state', 'Aceptado')->first();
         $type_insurace = TypeInsurance::all();
-        $concepts = Concepts::all();
+        $concepts = Concept::all();
 
         $conceptFreight = null;
 
@@ -427,7 +425,7 @@ class FreightService
 
 
         // Buscar el concepto en la base de datos
-        /*   $concept = Concepts::where('name', 'SEGURO')
+        /*   $concept = Concept::where('name', 'SEGURO')
             ->where('id_type_shipment', $freight->routing->type_shipment->id)
             ->whereHas('typeService', function ($query) {
                 $query->where('name', 'Flete');  // Segunda condición: Filtrar por name del tipo de servicio
@@ -435,7 +433,7 @@ class FreightService
             ->first(); */
 
 
-        $concept = Concepts::where('name', 'SEGURO')
+        $concept = Concept::where('name', 'SEGURO')
             ->where('id_type_shipment', $freight->commercial_quote->type_shipment->id)
             ->whereHas('typeService', function ($query) {
                 $query->where('name', 'Flete');  // Segunda condición: Filtrar por name del tipo de servicio
@@ -473,7 +471,7 @@ class FreightService
         // Relacionamos los nuevos conceptos con el flete
         foreach ($concepts as $concept) {
             $conceptFreight = ConceptFreight::create([
-                'id_concepts' => $concept->id, // ID del concepto relacionado
+                'concepts_id' => $concept->id, // ID del concepto relacionado
                 'id_freight' => $freight->id, // Clave foránea al modelo Freight
                 'value_concept' => $this->parseDouble($concept->value),
                 'value_concept_added' => $concept->added,

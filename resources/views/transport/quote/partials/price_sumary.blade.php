@@ -7,7 +7,7 @@
 @foreach($transportConcepts as $tc)
   <div class="direct-chat-msg right">
     <div class="direct-chat-text bg-light">
-      <strong>{{ $tc->concept->name }}:</strong>
+      <strong>{{ $tc->name }}:</strong>
       S/ {{ number_format($tc->value_concept,2) }}
     </div>
   </div>

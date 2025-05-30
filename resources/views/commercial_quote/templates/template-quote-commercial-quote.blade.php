@@ -375,6 +375,7 @@
                 return;
             }
 
+
             const concepto = {
                 id: selectedOption.val(),
                 nombre: selectedOption.text().trim()

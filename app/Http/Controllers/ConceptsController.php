@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Concepts;
+use App\Models\Concept;
 use App\Models\TypeService;
 use App\Models\TypeShipment;
 use Illuminate\Http\Request;
@@ -16,7 +16,7 @@ class ConceptsController extends Controller
     {
         // Listamos los conceptos
 
-        $concepts = Concepts::all()->load('typeService', 'typeShipment');
+        $concepts = Concept::all()->load('typeService', 'typeShipment');
 
         $heads = [
             '#',
@@ -53,7 +53,7 @@ class ConceptsController extends Controller
 
         $this->validateForm($request, null);
 
-        Concepts::create([
+        Concept::create([
             'name' => $request->name,
             'id_type_shipment' => $request->id_type_shipment,
             'id_type_service' => $request->id_type_service
@@ -76,7 +76,7 @@ class ConceptsController extends Controller
      */
     public function edit(string $id)
     {
-        $concept = Concepts::find($id);
+        $concept = Concept::find($id);
 
         $type_services = TypeService::all();
         $type_shipments = TypeShipment::all();
@@ -93,7 +93,7 @@ class ConceptsController extends Controller
 
         
         $this->validateForm($request, $id);
-        $concept = Concepts::find($id);
+        $concept = Concept::find($id);
 
         $concept->fill($request->all());
         $concept->save();
@@ -106,7 +106,7 @@ class ConceptsController extends Controller
      */
     public function destroy(string $id)
     {
-        $concept = Concepts::find($id);
+        $concept = Concept::find($id);
         $concept->delete();
 
         return redirect('concepts')->with('eliminar', 'ok');

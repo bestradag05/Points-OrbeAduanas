@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Models\AdditionalPoints;
 use App\Models\CommercialQuote;
-use App\Models\Concepts;
-use App\Models\ConceptTransport;
+use App\Models\Concept;
+use App\Models\ConceptsTransport;
 use App\Models\QuoteTransport;
 use App\Models\Supplier;
 use App\Models\Transport;
@@ -99,7 +99,7 @@ class TransportService {
         $quote = QuoteTransport::findOrFail($quoteId);
         $commercial_quote = $quote->commercial_quote;
         $type_insurace = TypeInsurance::all();
-        $concepts = Concepts::all();
+        $concepts = Concept::all();
         $conceptsTransport = [];
 
         
@@ -142,7 +142,7 @@ class TransportService {
 
 
         $quote = $transport->quoteTransports()->where('state', 'Aceptado')->first();
-        $concepts = Concepts::all();
+        $concepts = Concept::all();
 
 
         $conceptsTransport = $concepts->map(function ($concept) use ($quote, $commercial_quote) {
@@ -204,7 +204,7 @@ class TransportService {
             'destination' => $request->delivery,
             'total_transport' => $request->total,
             'withdrawal_date' => $dateRegisterFormat,
-            'id_quote_transport' => $request->id_quote_transport,
+            'quote_transport_id' => $request->quote_transport_id,
             'nro_quote_commercial' => $request->nro_quote_commercial
         ]);
 
@@ -218,7 +218,7 @@ class TransportService {
     private function syncTransportConcepts($transport, $concepts)
     {
         // Eliminar los conceptos previos si estamos actualizando, pero antes 
-        $conceptsTransport = ConceptTransport::where('id_transport', $transport->id)->get(); // cuando eliminamos el concepto se elimina el additional_point relacionado en cascada
+        $conceptsTransport = ConceptsTransport::where('id_transport', $transport->id)->get(); // cuando eliminamos el concepto se elimina el additional_point relacionado en cascada
 
         if ($conceptsTransport) {
             foreach ($conceptsTransport as $concept) {
@@ -234,8 +234,8 @@ class TransportService {
             $net_amount = $total / 1.18;
             $igv = $total - $net_amount;
 
-            $conceptTransport = ConceptTransport::create([
-                'id_concepts' => $concept->id, // ID del concepto relacionado
+            $conceptTransport = ConceptsTransport::create([
+                'concepts_id' => $concept->id, // ID del concepto relacionado
                 'id_transport' => $transport->id, // Clave foránea al modelo Freight
                 'value_concept' => $this->parseDouble($concept->value),
                 'added_value' => $this->parseDouble($concept->added),

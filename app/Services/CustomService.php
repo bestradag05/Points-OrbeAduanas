@@ -3,19 +3,13 @@
 namespace App\Services;
 
 use App\Models\AdditionalPoints;
-use App\Models\CommercialQuote;
 use App\Models\ConceptCustoms;
-use App\Models\ConceptFreight;
-use App\Models\Concepts;
+use App\Models\Concept;
 use App\Models\Custom;
-use App\Models\Freight;
 use App\Models\Insurance;
 use App\Models\Modality;
-use App\Models\QuoteFreight;
 use App\Models\TypeInsurance;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use stdClass;
 
 class CustomService
@@ -65,7 +59,7 @@ class CustomService
 
         $modalitys = Modality::all();
         $type_insurace = TypeInsurance::all();
-        $concepts = Concepts::all();
+        $concepts = Concept::all();
 
         $conceptCustom = null;
 
@@ -189,7 +183,7 @@ class CustomService
 
 
         // Buscar el concepto en la base de datos
-        /*   $concept = Concepts::where('name', 'SEGURO')
+        /*   $concept = Concept::where('name', 'SEGURO')
             ->where('id_type_shipment', $freight->routing->type_shipment->id)
             ->whereHas('typeService', function ($query) {
                 $query->where('name', 'Flete');  // Segunda condición: Filtrar por name del tipo de servicio
@@ -197,7 +191,7 @@ class CustomService
             ->first(); */
 
 
-        $concept = Concepts::where('name', 'SEGURO')
+        $concept = Concept::where('name', 'SEGURO')
             ->where('id_type_shipment', $freight->commercial_quote->type_shipment->id)
             ->whereHas('typeService', function ($query) {
                 $query->where('name', 'Flete');  // Segunda condición: Filtrar por name del tipo de servicio
@@ -240,7 +234,7 @@ class CustomService
             $igv = $total - $net_amount;
 
             $conceptCustom = ConceptCustoms::create([
-                'id_concepts' => $concept->id, // ID del concepto relacionado
+                'concepts_id' => $concept->id, // ID del concepto relacionado
                 'id_customs' => $custom->id, // Clave foránea al modelo Freight
                 'value_concept' => $this->parseDouble($concept->value),
                 'added_value' => $this->parseDouble($concept->added),

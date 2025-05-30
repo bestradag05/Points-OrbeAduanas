@@ -8,62 +8,7 @@
         {{-- <div class="col-12  mb-4 text-right">
             <a href="{{ url('/quote/freight') }}" class="btn btn-primary"> Atras </a>
 </div> --}}
-        <div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
-            <div class="card direct-chat direct-chat-primary h-100">
-                <div class="card-header bg-sisorbe-100 py-2">
-                    <h5 class="text-center text-bold text-uppercase text-indigo">Cotizacion : {{ $quote->nro_quote }}</h5>
-                </div>
-                <div class="card-body" style="max-height: 600px; overflow-y: auto;">
-                    <div class="direct-chat-messages h-100">
-                        @foreach ($messages as $message)
-                            <div class="direct-chat-msg {{ $message->sender_id != auth()->user()->id ? 'right' : '' }}">
-                                <div class="direct-chat-infos clearfix">
-                                    <span
-                                        class="direct-chat-name float-left text-indigo text-bold">{{ $message->sender->personal->names }}</span>
-                                    <span
-                                        class="direct-chat-timestamp float-right text-bold">{{ $message->created_at }}</span>
-                                </div>
-                                @if ($message->sender->personal->img_url !== null)
-                                    <img src="{{ asset('storage/' . $message->sender->personal->img_url) }}"
-                                        class="direct-chat-img" alt="User Image">
-                                @else
-                                    <img src="{{ asset('storage/personals/user_default.png') }}" class="direct-chat-img"
-                                        alt="User Image">
-                                @endif
-                                <div class="direct-chat-text">
-                                    {!! $message->message !!}
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-
-                </div>
-                <div class="card-footer">
-                    <form action="/quote/transport/message" method="POST">
-                        @csrf
-                        <div class="row">
-                            <div class="col-12">
-                                <textarea id="quote-text" name="message"></textarea>
-                                <input type="hidden" name="quote_id" value="{{ $quote->id }}">
-                            </div>
-                            <div class="col-12 row align-items-center justify-content-center mt-2">
-                                <button type="submit" {{ $quote->state === 'Aceptada' ? 'disabled' : '' }}
-                                    class="btn btn-indigo mr-2">
-                                    Enviar
-                                </button>
-
-                                {{-- Botón para abrir el modal de cotización --}}
-                                <button type="button" class="btn btn-success" data-toggle="modal"
-                                    data-target="#modalCotizarTransporte">
-                                    <i class="fas fa-dollar-sign"></i> Responder cotizacion
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2 px-4">
+        <div class="col-12 col-md-12 col-lg-5">
             <h5 class="text-indigo text-center"><i class="fas fa-file-alt"></i> Detalle de carga</h5>
 
             <br>
@@ -135,8 +80,8 @@
                                 <h2 class="mb-0">
                                     <button
                                         class="btn btn-link btn-block px-0 text-muted text-semibold text-left d-flex align-items-center"
-                                        type="button" data-toggle="collapse"
-                                        data-target="#collapse{{ $consolidated->id }}" aria-expanded="true">
+                                        type="button" data-toggle="collapse" data-target="#collapse{{ $consolidated->id }}"
+                                        aria-expanded="true">
                                         <span class="text-indigo">Shipper {{ $loop->iteration }}</span>:
                                         {{ $shipper->shipper_name }}
                                         <i class="fas fa-sort-down mx-3"></i>
@@ -449,14 +394,12 @@
 
 
 
-
                         <div class="row text-muted mt-3 ">
                             <div class="col-12 row justify-content-center">
                                 <p class="text-uppercase text-bold text-lg">Costo del Transporte :
                                     <b class="status-{{ strtolower($quote->state) }}">$
                                         {{ $quote->total_transport }}</b>
                                 </p>
-
                             </div>
 
                         </div>
@@ -467,14 +410,112 @@
 
                 </div>
             @endif
-
-
-            <div class="text-center mt-5 mb-3">
-                <button class="btn btn-sm btn-success {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}" type="button"
-                    data-toggle="modal" data-target="#quote-transport">Cotización Aceptada</button>
-
-            </div>
         </div>
+        <!-- <div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
+                <div class="card direct-chat direct-chat-primary h-100">
+                    <div class="card-header bg-sisorbe-100 py-2">
+                        <h5 class="text-center text-bold text-uppercase text-indigo">Cotizacion : {{ $quote->nro_quote }}</h5>
+                    </div>
+                    <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                        <div class="direct-chat-messages h-100">
+                            @foreach ($messages as $message)
+    <div class="direct-chat-msg {{ $message->sender_id != auth()->user()->id ? 'right' : '' }}">
+                                <div class="direct-chat-infos clearfix">
+                                    <span
+                                        class="direct-chat-name float-left text-indigo text-bold">{{ $message->sender->personal->names }}</span>
+                                    <span
+                                        class="direct-chat-timestamp float-right text-bold">{{ $message->created_at }}</span>
+                                </div>
+                                @if ($message->sender->personal->img_url !== null)
+    <img src="{{ asset('storage/' . $message->sender->personal->img_url) }}"
+                                    class="direct-chat-img" alt="User Image">
+@else
+    <img src="{{ asset('storage/personals/user_default.png') }}" class="direct-chat-img"
+                                    alt="User Image">
+    @endif
+                                <div class="direct-chat-text">
+                                    {!! $message->message !!}
+                                </div>
+                            </div>
+    @endforeach
+                        </div>
+
+                    </div>
+                    <div class="card-footer">
+                        <form action="/quote/transport/message" method="POST">
+                            @csrf
+                            <div class="row">
+                                <div class="col-12">
+                                    <textarea id="quote-text" name="message"></textarea>
+                                    <input type="hidden" name="quote_id" value="{{ $quote->id }}">
+                                </div>
+                                <div class="col-12 row align-items-center justify-content-center mt-2">
+                                    <button type="submit" {{ $quote->state === 'Aceptada' ? 'disabled' : '' }} class="btn btn-indigo mr-2">
+                                        Enviar
+                                    </button>
+
+                                    {{-- Botón para abrir el modal de cotización --}}
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalCotizarTransporte">
+                                        <i class="fas fa-dollar-sign"></i> Responder cotizacion
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div> -->
+        <!-- Crear lista de respuestas -->
+        <div class="col-12 col-md-12 col-lg-6">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="text-indigo"><i class="fas fa-file-alt"></i> Lista de respuestas</h5>
+                <!-- Botón para abrir el modal -->
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#modalCotizarTransporte">
+                    <i class="fas fa-truck mr-1"></i> Responder
+                </button>
+            </div>
+            <table class="table table-sm text-sm my-5">
+                <thead class="thead-dark">
+                    <th>#</th>
+                    <th>N° respuesta</th>
+                    <th>Proveedor</th>
+                    <th>Costo Neto</th>
+                    <th>Comision</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </thead>
+                <tbody>
+                    @foreach ($quote->responseTransportQuotes as $response)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $response->nro_response }}</td>
+                            <td>{{ optional($response->supplier)->name_businessname }}</td>
+                            <td>{{ $response->provider_cost }}</td>
+                            <td>{{ $response->commission }}</td>
+                            <td>{{ $response->total }}</td>
+                            <td class="status-{{ strtolower($response->state) }}">
+                                {{ $response->status }}
+                            </td>
+                            <td>
+                                <button
+                                    class="btn btn-indigo btn-indigo {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}"
+                                    type="button" data-toggle="modal" data-target="#quote-transport"
+                                    data-response-id="{{ $response->id }}"
+                                    data-response-nro="{{ $response->nro_response }}">
+                                    Aceptar
+                                </button>
+                            </td>
+
+
+                        </tr>
+                    @endforeach
+
+                </tbody>
+
+            </table>
+        </div>
+        <!-- Fin lista de respuestas -->
     </div>
 
 
@@ -486,6 +527,7 @@
                 <form action="{{ url('/quote/transport/cost/accept/' . $quote->id) }}" id="sendTransportCost"
                     method="POST">
                     @csrf
+                    {{ method_field('PATCH') }}
 
                     <div class="modal-header">
                         <h5 class="modal-title" id="quote-transport-title">
@@ -496,19 +538,15 @@
                         </button>
                     </div>
 
+
                     <div class="modal-body">
-                        {{-- 1) Dropdown con las respuestas existentes --}}
+                        {{-- 1) Campo solo lectura con la respuesta seleccionada --}}
                         <div class="form-group">
-                            <label for="response_id"><strong>Respuesta</strong></label>
-                            <select name="response_id" id="response_id" class="form-control select2"
-                                data-placeholder="Seleccione una respuesta..." style="width:100%">
-                                <option></option>
-                                @foreach ($quote->responseTransportQuotes as $resp)
-                                    <option value="{{ $resp->id }}">
-                                        {{ $resp->supplier->name_businessname }} &mdash; {{ $resp->nro_response }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <label for="response_display"><strong>Respuesta seleccionada</strong></label>
+                            {{-- Valor visible --}}
+                            <input type="text" id="response_display" class="form-control" readonly>
+                            {{-- Valor real que se envía --}}
+                            <input type="hidden" name="response_id" id="response_id">
                         </div>
 
                         {{-- 2) Cuadrilla, si aplica --}}
@@ -783,11 +821,6 @@
         @endif
     </div>
 
-
-    @php
-        $resp = $quote->responseTransportQuotes->sortByDesc('id')->first();
-    @endphp
-
     {{-- Modal para que Transporte cotice sobre la respuesta del proveedor --}}
     <div id="modalCotizarTransporte" class="modal fade" tabindex="-1" role="dialog"
         aria-labelledby="modalCotizarTransporte-title" aria-hidden="true">
@@ -804,12 +837,6 @@
                         </button>
                     </div>
 
-                    @php
-                        // tomo la última respuesta (o null)
-                        $last = $quote->responseTransportQuotes->sortByDesc('id')->first();
-                        // genero el siguiente número
-                        $nextRpta = \App\Models\ResponseTransportQuote::generateNroResponse();
-                    @endphp
 
                     <div class="modal-body">
                         {{-- Fila: Proveedor + RPTA --}}
@@ -821,25 +848,21 @@
                                     <option />
                                     @foreach ($transportSuppliers as $sup)
                                         <option value="{{ $sup->id }}"
-                                            {{ optional($resp)->provider_id == $sup->id ? 'selected' : '' }}>
+                                            {{ optional($quote)->provider_id == $sup->id ? 'selected' : '' }}>
                                             {{ $sup->name_businessname }}
                                         </option>
                                     @endforeach
                                 </x-adminlte-select2>
                             </div>
 
-                            <div class="col-md-4">
-                                <div class="d-flex align-items-center justify-content-end h-100 mt-3">
-                                    <div class="bg-light p-3 rounded text-center">
-                                        <div class="text-muted small mb-1">RESPUESTA DE PROV.</div>
-                                        <div class="h4 font-weight-bold text-primary mb-0">
-                                            {{-- Muestro siempre el próximo RPTA --}}
-                                            {{ $nextRpta }}
-                                        </div>
-                                    </div>
+                            <div class="col-md-4 text-right">
+                                <div class="bg-light p-3 rounded">
+                                    <div class="small text-muted mb-1">RPTA</div>
+                                    <b class="d-block">{{ $nro_response }}</b>
                                 </div>
                             </div>
                         </div>
+
 
                         <hr class="mb-4">
 
@@ -847,18 +870,19 @@
                         <div class="mb-4">
                             <h4 class="mb-3">Precios de conceptos</h4>
 
-                            @foreach ($quote->transportConcepts as $tc)
-                                <div class="form-group row">
-                                    <label class="col-sm-6 col-form-label font-weight-bold">
-                                        {{ $tc->concept->name }} (S/)
-                                    </label>
-                                    <div class="col-sm-6">
-                                        <input type="number" step="0.01"
-                                            name="price_concept[{{ $tc->concept->id }}]"
-                                            class="form-control concept-input"
-                                            value="{{ 'price_concept.' . $tc->concept->id, $tc->value_concept }}">
+                            @foreach ($quote->transportConcepts->unique('id') as $tc)
+                                @if (!empty($tc->name))
+                                    <div class="form-group row">
+                                        <label class="col-sm-6 col-form-label font-weight-bold">
+                                            {{ $tc->name }}
+                                        </label>
+                                        <div class="col-sm-6">
+                                            <input type="number" step="0.01"
+                                                name="price_concept[{{ $tc->id }}]"
+                                                class="form-control concept-input" value="">
+                                        </div>
                                     </div>
-                                </div>
+                                @endif
                             @endforeach
 
                             <hr class="my-4">
@@ -943,10 +967,9 @@
                 form.submit();
             }
 
-        })
-    </script>
+        });
 
-    <script>
+
         $(function() {
             // Prueba en consola que existe el modal
             console.log('modalCotizar:', $('#modalCotizar').length);
@@ -962,33 +985,8 @@
                     .fail(() => alert('Error guardando cotización.'));
             });
         });
-    </script>
 
-    <script>
-        // Mostrar mensaje de error
-        function showError(input, message) {
-            let errorSpan = input.nextElementSibling;
-            if (!errorSpan || !errorSpan.classList.contains('invalid-feedback')) {
-                errorSpan = document.createElement('span');
-                errorSpan.classList.add('invalid-feedback');
-                input.after(errorSpan);
-            }
-            errorSpan.textContent = message;
-            errorSpan.style.display = 'block';
-        }
-    </script>
-    <script>
-        // Ocultar mensaje de error
-        function hideError(input) {
-            let errorSpan = input.nextElementSibling;
-            if (errorSpan && errorSpan.classList.contains('invalid-feedback')) {
-                errorSpan.style.display = 'none';
-            }
-        }
-    </script>
 
-    </script>
-    <script>
         let commercial_quote = @json($quote->nro_quote_commercial);
         let transport_quote = @json($quote->nro_quote);
 
@@ -1116,21 +1114,7 @@
                 console.error('Error al eliminar el archivo:', error);
             });
         }
-    </script>
-    <script>
-        $(function() {
-            // Cuando el modal se abra, inicializa (o reinicializa) Select2
-            $('#modalCotizarTransporte').on('shown.bs.modal', function() {
-                $('#provider_id')
-                    .select2({
-                        placeholder: $(this).data('placeholder') || 'Buscar proveedor...',
-                        allowClear: true,
-                        dropdownParent: $('#modalCotizarTransporte') // muy importante dentro del modal
-                    });
-            });
-        });
-    </script>
-    <script>
+
         function recalcTotal() {
             let sum = 0;
             document.querySelectorAll('.concept-input').forEach(i => {
@@ -1143,12 +1127,108 @@
                 .forEach(i => i.addEventListener('input', recalcTotal));
             recalcTotal();
         });
-    </script>
-    <script>
+
         // Inicializamos Select2 (si no lo tenías)
         $('#response_id').select2({
             theme: 'bootstrap4',
             placeholder: 'Seleccione una respuesta...'
         });
+
+
+        (function() {
+            const form = document.getElementById('formCotizarTransporte');
+
+            // Campos que validamos:
+            const providerSelect = document.getElementById('provider_id');
+            const conceptInputs = Array.from(document.querySelectorAll('.concept-input'));
+            const commissionInput = document.getElementById('commission');
+
+            form.addEventListener('submit', function(e) {
+                // 1) Limpia errores anteriores
+                form.querySelectorAll('.is-invalid').forEach(el => {
+                    el.classList.remove('is-invalid');
+                });
+                form.querySelectorAll('.invalid-feedback').forEach(feedback => {
+                    feedback.remove();
+                });
+
+                let hasError = false;
+
+                // 2) Valida proveedor
+                if (!providerSelect.value) {
+                    markInvalid(providerSelect, 'Seleccione un proveedor.');
+                    hasError = true;
+                }
+
+                // 3) Valida cada concepto
+                conceptInputs.forEach(input => {
+                    const val = input.value.trim();
+                    if (val === '' || isNaN(parseFloat(val))) {
+                        const label = input.closest('.form-group')
+                            .querySelector('label')
+                            .innerText.replace(/ *\(.+\)$/, '');
+                        markInvalid(input, `Complete el precio de "${label}".`);
+                        hasError = true;
+                    }
+                });
+
+                // 4) Valida comisión
+                const comm = commissionInput.value.trim();
+                if (comm === '' || isNaN(parseFloat(comm))) {
+                    markInvalid(commissionInput, 'Ingrese la comisión.');
+                    hasError = true;
+                }
+
+                if (hasError) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                // Si no hay errores, el formulario se envía normalmente.
+            });
+
+            // Función helper para marcar invalidez
+            function markInvalid(inputEl, message) {
+                inputEl.classList.add('is-invalid');
+                const feedback = document.createElement('div');
+                feedback.className = 'invalid-feedback';
+                feedback.innerText = message;
+                // asegúrate de insertarlo justo después del input
+                inputEl.parentNode.appendChild(feedback);
+            }
+        })();
+
+        $(function() {
+            // Cuando el modal se abra, inicializa (o reinicializa) Select2
+            $('#modalCotizarTransporte').on('shown.bs.modal', function() {
+                $('#provider_id')
+                    .select2({
+                        placeholder: $(this).data('placeholder') || 'Buscar proveedor...',
+                        allowClear: true,
+                        dropdownParent: $('#modalCotizarTransporte') // muy importante dentro del modal
+                    });
+            });
+        });
+
+
+        // Mostrar mensaje de error
+        function showError(input, message) {
+            let errorSpan = input.nextElementSibling;
+            if (!errorSpan || !errorSpan.classList.contains('invalid-feedback')) {
+                errorSpan = document.createElement('span');
+                errorSpan.classList.add('invalid-feedback');
+                input.after(errorSpan);
+            }
+            errorSpan.textContent = message;
+            errorSpan.style.display = 'block';
+        }
+
+
+        // Ocultar mensaje de error
+        function hideError(input) {
+            let errorSpan = input.nextElementSibling;
+            if (errorSpan && errorSpan.classList.contains('invalid-feedback')) {
+                errorSpan.style.display = 'none';
+            }
+        }
     </script>
 @endpush

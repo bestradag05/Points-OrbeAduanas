@@ -29,11 +29,11 @@ return new class extends Migration
             $table->string('nro_operation')->nullable();
             $table->string('nro_quote_commercial')->nullable();
             $table->unsignedBigInteger('id_supplier')->nullable();
-            $table->unsignedBigInteger('id_quote_transport')->nullable();
+            $table->unsignedBigInteger('quote_transport_id')->nullable();
             $table->timestamps();
 
             $table->foreign('id_supplier')->references('id')->on('suppliers');
-            $table->foreign('id_quote_transport')->references('id')->on('quote_transport');
+            $table->foreign('quote_transport_id')->references('id')->on('quote_transport');
             $table->foreign('nro_operation')->references('nro_operation')->on('routing');
             $table->foreign('nro_quote_commercial')->references('nro_quote_commercial')->on('commercial_quote');
         });
