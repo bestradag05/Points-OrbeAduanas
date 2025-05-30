@@ -55,8 +55,6 @@
     <div class="col-12 d-flex justify-content-center align-items-center pt-3 mb-2">
     </div>
     <div id="formConceptsTransport" class="col-12 d-flex formConcepts row">
-
-
         <table class="table">
             <thead>
                 <tr>
@@ -94,6 +92,8 @@
     <div class="container text-center mt-5">
         <input class="btn btn-primary" type="submit" value="{{ $formMode === 'edit' ? 'Actualizar' : 'Guardar' }}">
     </div>
+
+{{--     {{dd($response->conceptResponses)}} --}}
 
     @push('scripts')
     <script>
@@ -157,7 +157,6 @@
             });
         });
         @endif
-
 
         updateTable(conceptsArray);
 
@@ -236,7 +235,7 @@
 
         function updateTable(conceptsArray) {
 
-            let tbodyRouting = $(`#formconceptsTransport`).find('tbody')[0];
+            let tbodyRouting = $(`#formConceptsTransport`).find('tbody')[0];
 
             if (tbodyRouting) {
 
@@ -250,9 +249,11 @@
 
                 let item = conceptsArray[clave];
 
+
                 if (conceptsArray.hasOwnProperty(clave)) {
                     contador++; // Incrementar el contador en cada iteración
                     // Crear una nueva fila
+                    console.log(tbodyRouting);
                     let fila = tbodyRouting.insertRow();
 
                     // Insertar el número de iteración en la primera celda de la fila
