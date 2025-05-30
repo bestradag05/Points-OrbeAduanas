@@ -72,23 +72,11 @@ class TransportController extends Controller
         $quote = QuoteTransport::findOrFail($quoteId);
 
         $response = $quote->responseTransportQuotes()
-            ->where('status', 'Aceptada')
+            ->where('status', 'Aceptado')
             ->with('conceptResponses.concept')
             ->firstOrFail();
-
-        dd([
-            'quote_id' => $quote->id,
-            'response' => $response->toArray(),
-            'conceptResponses_count' => $response->conceptResponses->count(),
-            'first_conceptResponse' => $response->conceptResponses->first() ? $response->conceptResponses->first()->toArray() : null,
-            'relationships' => [
-                'concept_loaded' => $response->conceptResponses->first()->relationLoaded('concept'),
-                'concept_data' => $response->conceptResponses->first()->concept ? $response->conceptResponses->first()->concept->toArray() : null
-            ]
-        ]);
-
-
-        return view('transport.register-transport', compact('quote', 'response'));
+   
+            return view('transport.register-transport', compact('quote', 'response'));
     }
     /**
      * Store a newly created resource in storage.

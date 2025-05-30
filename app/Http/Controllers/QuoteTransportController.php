@@ -674,9 +674,12 @@ class QuoteTransportController extends Controller
         ]);
 
         $response->update([
-            'status' => 'Aceptada'
+            'status' => 'Aceptado'
         ]);
-        
+
+        $ids = $response->conceptResponses->pluck('concepts_id')->toArray();
+        $quote->transportConcepts()->sync($ids);
+
         return redirect('/transport/create/' . $quote->id);
     }
 
