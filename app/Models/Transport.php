@@ -69,13 +69,7 @@ class Transport extends Model
 
 
     /* Relaciones */
-
-    public function concepts()
-    {
-        return $this->belongsToMany(Concepts::class, 'concepts_transport', 'id_transport', 'id_concepts')
-            ->withPivot(['value_concept', 'added_value', 'net_amount', 'igv', 'total', 'additional_points']);
-    }
-
+    
     public function routing()
     {
         return $this->belongsTo(Routing::class, 'nro_operation', 'nro_operation');

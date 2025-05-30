@@ -142,16 +142,21 @@
                             <td>{!! $quote->delivery ? e($quote->delivery) : '<span class="text-muted">Falta información</span>' !!}</td>
                             <td
                                 class="{{ $comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none' }}">
-                                {{ $quote->commercial_quote->lcl_fcl }}</td>
+                                {{ $quote->commercial_quote->lcl_fcl }}
+                            </td>
                             <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
-                                {{ $quote->cubage_kgv }}</td>
+                                {{ $quote->cubage_kgv }}
+                            </td>
                             <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
-                                {{ $quote->ton_kilogram }}</td>
+                                {{ $quote->ton_kilogram }}
+                            </td>
                             <td>{{ $quote->nro_quote_commercial }}</td>
                             <td>{{ \Carbon\Carbon::parse($quote->created_at)->format('d/m/Y') }}</td>
-                            <td class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}
+                            <td>
+                                <div class="custom-badge status-{{ strtolower($quote->state) }}">
+                                    {{ $quote->state }}
+                                </div>
                             </td>
-
                             <td style="width: 150px">
                                 <select name="acction_transport" class="form-control form-control-sm"
                                     onchange="changeAcction(this, {{ $quote }}, 'Transporte')">
@@ -186,7 +191,7 @@
 
 <div id="modalTransport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalTransport-title"
     aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog  modal-lg" role="document">
         <div class="modal-content">
             <form method="POST" id="formQuoteTransport">
                 {{ method_field('PATCH') }}
@@ -235,6 +240,44 @@
                         </div>
                     </div>
 
+                    <input type="hidden" id="conceptsTransportModal" name="conceptsTransportModal" />
+
+                    <!-- Nuevo bloque de conceptos de transporte -->
+                    <div id="formConceptsTransport" class="formConcepts row mt-4 align-items-center">
+                        <div class="col-md-8">
+                            <x-adminlte-select2 name="concept" id="concept_transport" label="Conceptos de Transporte"
+                                data-placeholder="Seleccione un concepto...">
+                                <option />
+                                @foreach ($concepts as $concept)
+                                    @if (
+                                        $concept->typeService->name == 'Transporte' &&
+                                            $comercialQuote->type_shipment->id == $concept->id_type_shipment &&
+                                            $concept->name != 'TRANSPORTE')
+                                        <option value="{{ $concept->id }}">
+                                            {{ $concept->name }}
+                                        </option>
+                                    @endif
+                                @endforeach
+                            </x-adminlte-select2>
+                        </div>
+
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="button" class="btn btn-indigo btn-sm mt-3  w-100"
+                                onclick="addConceptQuoteTransport()">
+                                <i class="fas fa-plus-circle"></i> Agregar
+                            </button>
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <div class="list-group" id="conceptsList">
+                                <div
+                                    class="list-group-item bg-light d-flex justify-content-between align-items-center">
+                                    <div class="fw-bold">Conceptos a cotizar</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" onclick="submitTransport(event)" class="btn btn-primary">Guardar</button>
@@ -249,6 +292,203 @@
 
 @push('scripts')
     <script>
+        let conceptosQuoteTransport = [];
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar select2 dentro del modal
+            $('#modalTransport').on('shown.bs.modal', function() {
+                $('#concept_transport').select2();
+            });
+
+            // Manejar el cierre del modal
+            $('#modalTransport').on('hidden.bs.modal', function(e) {
+                // Resetear variables
+                conceptsArray = {};
+                TotalConcepts = 0;
+                total = 0;
+                flete = 0;
+                value_insurance = 0;
+                valuea_added_insurance = 0;
+                countConcepts = 0;
+
+                // Limpiar componentes
+                $('#tbodyFlete').empty();
+                $('#formConceptsTransport form')[0]?.reset();
+                $('#concept_transport').val(null).trigger('change');
+                $('#total').val('0.00');
+            });
+
+            // Formateador de moneda
+            $('.CurrencyInput').on('blur', function() {
+                const value = parseFloat($(this).val().replace(/[^0-9.]/g, ''));
+                $(this).val(isNaN(value) ? '0.00' : value.toFixed(2));
+            });
+        });
+
+        // Función para agregar conceptos (implementación básica)
+        function addConcept() {
+            // Obtener elementos del DOM correctamente
+            const conceptSelect = $('#concept_transport');
+            const baseValueInput = $('#value_concept');
+            const addedValueInput = $('#value_added');
+            const tbody = $('#conceptsTable tbody');
+
+            // Validar campos requeridos
+            if (conceptSelect.val() === '' || baseValueInput.val() === '') {
+                alert('¡Complete los campos obligatorios!');
+                return;
+            }
+
+            // Calcular puntos (1 punto por cada $40)
+            const addedValue = parseFloat(addedValueInput.val()) || 0;
+            const points = Math.floor(addedValue / 40);
+
+            // Crear nueva fila
+            const newRow = `
+        <tr>
+            <td>${tbody.children().length + 1}</td>
+            <td>${conceptSelect.find('option:selected').text()}</td>
+            <td>${parseFloat(baseValueInput.val()).toFixed(2)}</td>
+            <td>${addedValue.toFixed(2)}</td>
+            <td>${points}</td>
+            <td>
+                <button class="btn btn-sm btn-danger" onclick="$(this).closest('tr').remove()">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+
+            // Agregar a la tabla
+            tbody.append(newRow);
+
+            // Limpiar campos
+            conceptSelect.val('').trigger('change');
+            baseValueInput.val('');
+            addedValueInput.val('0.00');
+        }
+
+        function addConceptQuoteTransport() {
+            const select = $('#concept_transport');
+            const selectedOption = select.find('option:selected');
+
+            if (!selectedOption.val()) {
+                alert('Seleccione un concepto válido');
+                return;
+            }
+
+            const concepto = {
+                id: selectedOption.val(),
+                nombre: selectedOption.text().trim()
+
+            };
+            console.log(concepto);
+
+            // Verificar si el concepto ya fue agregado
+            if (conceptosQuoteTransport.some(c => c.id === concepto.id)) {
+                alert('Este concepto ya fue agregado');
+                return;
+            }
+
+            conceptosQuoteTransport.push(concepto);
+            updateConceptList();
+            select.val('').trigger('change');
+        }
+
+
+        function updateConceptList() {
+            const list = $('#conceptsList');
+            list.empty();
+
+            $('#conceptsTransportModal').val(JSON.stringify(conceptosQuoteTransport));
+
+            // Header
+            list.append(`
+            <div class="list-group-item bg-light fw-bold">
+                Conceptos a cotizar (${conceptosQuoteTransport.length})
+            </div>
+        `);
+
+            // Items
+            conceptosQuoteTransport.forEach((concepto, index) => {
+                list.append(`
+                <div class="list-group-item d-flex justify-content-between align-items-center" 
+                     data-id="${concepto.id}">
+                    <div>
+                        <span class="me-2">${index + 1}.</span>
+                        ${concepto.nombre}
+                    </div>
+                    <button type="button" class="btn btn-sm btn-danger" 
+                            onclick="deleteQuoteTransport(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <input type="hidden" />
+                
+
+            `);
+            });
+        }
+
+
+        function deleteQuoteTransport(index) {
+            conceptosQuoteTransport.splice(index, 1);
+            updateConceptList();
+        }
+
+
+
+        function updateTable(conceptsArray, idContent, cost_transport = null) {
+            let tbodyRouting = $(`#${idContent}`).find('tbody')[0];
+            tbodyRouting.innerHTML = '';
+            TotalConcepts = 0;
+
+            let contador = 0;
+
+            for (let clave in conceptsArray) {
+                let item = conceptsArray[clave];
+                if (conceptsArray.hasOwnProperty(clave)) {
+                    contador++;
+
+                    // ... (código para crear filas)
+
+                    // Cálculo de puntos
+                    let maxPoints = Math.floor(item.added / 45); // Cambiar 45 por 40 según requerimiento
+                    inputPA.max = maxPoints;
+
+                    // Manejo de eventos para puntos
+                    inputPA.addEventListener('input', (e) => {
+                        conceptsArray[clave].pa = e.target.value;
+                        updateTotals();
+                    });
+                }
+            }
+            calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, container.id);
+        }
+        // Actualizar total
+        function updateTotal() {
+            let sum = 0;
+            $('#tbodyFlete tr').each(function() {
+                sum += parseFloat($(this).find('td:eq(2)').text()) + parseFloat($(this).find('td:eq(3)').text());
+            });
+            $('#total').val(sum.toFixed(2));
+        }
+
+
+        function calcTotal(TotalConcepts, flete, value_insurance, valuea_added_insurance, idContent) {
+            // Calcular puntos totales
+            let totalPuntos = Object.values(conceptsArray).reduce((acc, concept) => {
+                return acc + parseInt(concept.pa || 0);
+            }, 0);
+
+            // Actualizar campo de puntos
+            $(`#${idContent} #total-points`).val(totalPuntos);
+
+            // Calcular total monetario
+            total = TotalConcepts + flete + value_insurance + valuea_added_insurance;
+            $(`#${idContent} #total`).val(total.toFixed(2));
+        }
+
+
+
         //Ejecutar acciones de las cotizaciones
 
         function changeAcction(select, quote, typeQuote) {
@@ -463,13 +703,64 @@
             errorSpan.style.display = 'block';
         }
 
-
-        // Ocultar mensaje de error
         function hideError(input) {
             let errorSpan = input.nextElementSibling;
             if (errorSpan && errorSpan.classList.contains('invalid-feedback')) {
                 errorSpan.style.display = 'none';
+
             }
+
+        }
+
+
+
+        //Confirmacion para crear una nueva cotizacion de Transporte - Flete
+
+        function createTypeQuote(select) {
+
+            let nro_quote_commercial = @json($comercialQuote->nro_quote_commercial);
+
+            Swal.fire({
+                title: `Crearas una cotizacion para ${select.value}`,
+                text: "Se enviara una nueva cotizacion para el area correspondiente",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Si, crear cotización",
+                cancelButtonText: "Cancelar",
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    $.ajax({
+                        type: "GET",
+                        url: `/commercial/createQuote/${nro_quote_commercial}`,
+                        data: {
+                            type_quote: select.value
+                        },
+                        dataType: "JSON",
+                        success: function(response) {
+
+                            Swal.fire({
+                                title: `${response.message}`,
+                                icon: "success",
+                                allowOutsideClick: false // Evita que se cierre al hacer clic fuera
+                            }).then((result) => {
+                                location.reload(); // Recarga la página
+                            });
+
+                        }
+                    });
+
+
+                } else {
+                    select.value = '';
+                }
+
+
+            });
+
         }
     </script>
 @endpush

@@ -165,6 +165,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('transport', TransportController::class);
     Route::get('transport/create/{quoteId}', [TransportController::class, 'createTransport']);
 
+    Route::post('transport/quote/{id}/prices', 
+    [QuoteTransportController::class, 'storeConceptPrices'])
+    ->name('transport.quote.storePrices');
+
+
     Route::get('insurance/pending', [InsuranceController::class, 'getInsurancePending']);
     Route::resource('insurance', InsuranceController::class);
 

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
 class QuoteTransport extends Model
 {
     use HasFactory;
@@ -39,6 +40,9 @@ class QuoteTransport extends Model
         'state',
         'nro_operation',
         'nro_quote_commercial',
+        'quote_transport_response',     
+        'quote_transport_id',
+        'response_quote_id',
     ];
 
 
@@ -106,4 +110,49 @@ class QuoteTransport extends Model
     {
         return $this->hasMany(MessageQuoteTransport::class, 'quote_transport_id', 'id');
     }
+
+    public function concepts()
+    {
+        return $this->hasMany(
+            ConceptsTransportQuote::class,
+            'response_quote_id'
+        );
+    }
+
+    public function setCostTransportAttribute($value)
+    {
+        $this->attributes['cost_transport'] = $value;
+        // Calcular total_transport si es necesario
+        $this->attributes['total_transport'] = $value + ($this->concepts->sum('pivot.added_value') ?? 0);
+    }
+
+    public function responseTransportQuotes()
+    {
+        return $this->belongsToMany(
+            ResponseTransportQuote::class,
+            'quote_transport_response',   // tu tabla pivote
+            'quote_transport_id',         // FK en la pivote hacia quote_transport
+            'response_quote_id'           // FK en la pivote hacia response_transport_quotes
+        );
+    }
+
+    public function transportConcepts()
+    {
+        return $this->hasMany(
+            ConceptsTransportQuote::class,
+            'quote_transport_id'  // FK en concepts_transport_quote
+        );
+    }
+
+    public function responses()
+    {
+        return $this->belongsToMany(
+            ResponseTransportQuote::class,
+            'quote_transport_response',  // tu tabla pivote
+            'quote_transport_id',
+            'response_quote_id'
+        );
+    }
+
+
 }

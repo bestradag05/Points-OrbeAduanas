@@ -129,4 +129,14 @@ class CommercialQuote extends Model
         return $this->hasMany(ConsolidatedCargos::class, 'commercial_quote_id', 'id');
     }
 
+    public function concepts()
+    {
+        return $this->belongsToMany(
+            Concepts::class,
+            'commercial_quote_concept',      // nombre de la tabla pivote
+            'commercial_quote_id',           // FK en la pivote hacia commercial_quote
+            'concept_id'                     // FK en la pivote hacia concepts
+        );
+    }
+
 }

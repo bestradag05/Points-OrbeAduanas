@@ -22,9 +22,6 @@ return new class extends Migration
             $table->decimal('total', 8, 2)->nullable();
             $table->integer('additional_points')->nullable();
             $table->timestamps();
-
-            $table->foreign('id_concepts')->references('id')->on('concepts');
-            $table->foreign('id_transport')->references('id')->on('transport');
         });
     }
 

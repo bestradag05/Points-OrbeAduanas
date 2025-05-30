@@ -25,6 +25,7 @@ class SupplierController extends Controller
             'Nombre de Contacto',
             'Numero de Contacto',
             'Correo de Contacto',
+            'Tipo de proveedor',
             'Estado',
             'Acciones'
         ];
@@ -58,6 +59,7 @@ class SupplierController extends Controller
           /* 'id_document' => $request->id_document,
           'document_number' => $request->document_number, */
           'name_businessname' => $request->name_businessname,
+          'area_type'         => $request->area_type,
           'address' => $request->address,
           'contact_name' => $request->contact_name,
           'contact_number' => $request->contact_number,
@@ -142,6 +144,7 @@ class SupplierController extends Controller
                 'unique:suppliers,document_number,' . $id,
                 $digits ? 'digits:' . $digits : 'nullable'
             ], */
+            
             'name_businessname' => 'required|string|unique:suppliers,name_businessname,' . $id,
             'address' => 'required|string',
             'contact_name' => 'required|string',

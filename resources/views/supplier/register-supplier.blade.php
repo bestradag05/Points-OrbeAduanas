@@ -2,18 +2,14 @@
 
 @section('content_header')
     <div class="d-flex justify-content-between">
-        <h2>Registra un proveedor</h2>
-        <div>
-            <a href="{{url('/suppliers') }}" class="btn btn-primary"> Atras </a>
-        </div>
+        <h2>Registrar un proveedor</h2>
+        <a href="{{ url('suppliers') }}" class="btn btn-primary">Atrás</a>
     </div>
-
 @stop
+
 @section('dinamic-content')
-    <form action="/suppliers" method="post" enctype="multipart/form-data">
+    <form action="{{ url('suppliers') }}" method="POST">
         @csrf
-        @include ('supplier.form-supplier', ['formMode' => 'create'])
+        @include('supplier.form-supplier', ['formMode' => 'create'])
     </form>
-
-
 @stop

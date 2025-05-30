@@ -3,7 +3,7 @@
         <div class="col-12">
 
             <div class="head-quote mb-2">
-                <h5 id="title_quote" class="text-center text-uppercase bg-indigo p-2">Formato <span></span></h5>
+                <h5 id="title_quote" class="text-center text-uppercase bg-indigo p-2">Forma to <span></span></h5>
             </div>
             <div class="body-detail-customer p-2">
                 <div class="form-group row">
