@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AdditionalPoints;
 use App\Models\Concepts;
-use App\Models\ConceptTransport;
+use App\Models\ConceptsTransport;
 use App\Models\QuoteTransport;
 use App\Models\Supplier;
 use App\Models\Transport;
@@ -75,17 +75,107 @@ class TransportController extends Controller
             ->where('status', 'Aceptado')
             ->with('conceptResponses.concept')
             ->firstOrFail();
-   
-            return view('transport.register-transport', compact('quote', 'response'));
+
+        return view('transport.register-transport', compact('quote', 'response'));
     }
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $transport = $this->trasnportService->storeTransport($request);
+        /*         $transport = $this->trasnportService->storeTransport($request);
 
-        return redirect('/commercial/quote/' . $transport->quote_transport_id . '/detail');
+        return redirect('/commercial/quote/' . $transport->quote_transport_id . '/detail'); */
+
+        // 1) Validamos los campos básicos de la tabla 'transport'
+        $request->validate([
+            'nro_operation_transport' => 'nullable|string|max:50',
+            'nro_orden'              => 'nullable|string|max:50',
+            'date_register'          => 'required|date',
+            'invoice_number'         => 'nullable|string|max:50',
+            'nro_dua'                => 'nullable|string|max:50',
+            'origin'                 => 'required|string|max:255',
+            'destination'            => 'required|string|max:255',
+            'total_transport'        => 'nullable|numeric',
+            'payment_state'          => ['required', Rule::in(['Pendiente', 'Pagado', 'Parcial'])],
+            'payment_date'           => 'nullable|date',
+            'weight'                 => 'nullable|numeric',
+            'withdrawal_date'        => 'required|date',
+            'state'                  => ['required', Rule::in(['Aceptado', 'Registrado', 'Completado'])],
+            'nro_operation'          => 'nullable|string|max:50',
+            'nro_quote_commercial'   => 'nullable|string|max:50',
+            'id_supplier'            => 'required|integer|exists:suppliers,id',
+            // El JSON de conceptos:
+            'concepts'               => 'required|string',
+        ]);
+
+        // 2) Creamos el registro en 'transport'
+        $transport = Transport::create([
+            'nro_operation_transport' => $request->input('nro_operation_transport'),
+            'nro_orden'               => $request->input('nro_orden'),
+            'date_register'           => Carbon::parse($request->input('date_register'))->toDateString(),
+            'invoice_number'          => $request->input('invoice_number'),
+            'nro_dua'                 => $request->input('nro_dua'),
+            'origin'                  => $request->input('origin'),
+            'destination'             => $request->input('destination'),
+            'total_transport'         => $request->input('total_transport'),   // opcional, puede calcularse luego
+            'payment_state'           => $request->input('payment_state'),
+            'payment_date'            => $request->input('payment_date')
+                ? Carbon::parse($request->input('payment_date'))->toDateString()
+                : null,
+            'weight'                  => $request->input('weight'),
+            'withdrawal_date'         => Carbon::parse($request->input('withdrawal_date'))->toDateString(),
+            'state'                   => $request->input('state'),
+            'nro_operation'           => $request->input('nro_operation'),
+            'nro_quote_commercial'    => $request->input('nro_quote_commercial'),
+            'id_supplier'             => $request->input('id_supplier'),
+            'quote_transport_id'      => $quoteId,
+        ]);
+
+        // 3) Decodificamos el JSON que contiene cada concepto con sus valores
+        //    El JSON viene de tu <input name="concepts" value="[...]"> generado por JavaScript.
+        $jsonConcepts = $request->input('concepts');
+        $conceptsArr = json_decode($jsonConcepts, true);
+
+        // 4) Borramos filas previas, en caso de que sea una edición
+        ConceptsTransport::where('transport_id', $transport->id)->delete();
+
+        // 5) Por cada elemento del array, calculamos IGV y total, y guardamos en concepts_transport
+        foreach ($conceptsArr as $item) {
+            // a) Obtenemos valores desde el array
+            $conceptId    = intval($item['id']);
+            $neto         = floatval($item['value']); // valor original ya con comisión incluido si es TRANSPORTE
+            $addedValue   = floatval($item['added']);
+            $points       = intval($item['pa'] ?? 0);
+
+            // b) Subtotal = neto + addedValue
+            $subtotal = $neto + $addedValue;
+
+            // c) IGV = 18% de subtotal
+            $igv = round($subtotal * 0.18, 2);
+
+            // d) Total fila = subtotal + igv
+            $totalFila = round($subtotal + $igv, 2);
+
+            ConceptsTransport::create([
+                'transport_id'       => $transport->id,
+                'concepts_id'        => $conceptId,
+                'added_value'        => $addedValue,
+                'igv'                => $igv,
+                'total'              => $totalFila,
+                'additional_points'  => $points,
+            ]);
+        }
+
+        // 6) (Opcional) Actualizar algún campo en la cotización para marcar “Transporte Registrado”
+        //    Por ejemplo:
+        //    $quote = QuoteTransport::findOrFail($quoteId);
+        //    $quote->update(['state' => 'Transporte Registrado']);
+
+        // 7) Redirigir al índice de transportes (o la vista que corresponda)
+        return redirect()
+            ->route('transport.index')
+            ->with('success', 'Transporte registrado correctamente.');
     }
 
 
