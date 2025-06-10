@@ -23,7 +23,7 @@
                 <option value="">Seleccione...</option>
                 <option value="comercial" {{ old('area_type', $supplier->area_type ?? '') === 'comercial' ? 'selected' : '' }}>Comercial</option>
                 <option value="transporte" {{ old('area_type', $supplier->area_type ?? '') === 'transporte' ? 'selected' : '' }}>Transporte</option>
-                <option value="agente" {{ old('area_type', $supplier->area_type ?? '') === 'agente' ? 'selected' : '' }}>Agente de Carga</option>
+                <option value="pricing" {{ old('area_type', $supplier->area_type ?? '') === 'agente' ? 'selected' : '' }}>Agente de Carga</option>
             </select>
             @error('area_type')
                 <div class="invalid-feedback">{{ $message }}</div>

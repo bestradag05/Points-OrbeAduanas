@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\QuoteFreight;
+use App\Models\Supplier;
 use App\Notifications\Notify;
 use App\Notifications\NotifyQuoteFreight;
 use Carbon\Carbon;
@@ -196,6 +197,8 @@ class QuoteFreightController extends Controller
 
         $quote = QuoteFreight::findOrFail($id);
 
+        $suppliers = Supplier::where('area_type', 'pricing')->get();
+
         $folderPath = "commercial_quote/{$quote->commercial_quote->nro_quote_commercial}/quote_freight/{$quote->nro_quote}";
         $files = collect(Storage::disk('public')->files($folderPath))->map(function ($file) {
             return [
@@ -209,7 +212,7 @@ class QuoteFreightController extends Controller
         $messages = QuoteFreight::findOrFail($id)->messages;
 
 
-        return view('freight/quote/quote-messagin', compact('quote', 'files', 'messages'));
+        return view('freight/quote/quote-messagin', compact('quote', 'files', 'messages', 'suppliers'));
     }
 
 

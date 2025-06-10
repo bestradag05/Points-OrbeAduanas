@@ -24,7 +24,10 @@
                 <td>{{ $quote->total_weight }}</td>
                 <td class="text-indigo text-bold"> {{ isset($quote->withdrawal_date) ? \Carbon\Carbon::parse($quote->withdrawal_date)->format('d/m/Y') : '-' }}</td>
                 <td>{{ isset($quote->routing->personal->names) ? $quote->routing->personal->names: $quote->customer->personal->names  }}</td>
-                <td class="status-{{strtolower($quote->state)}}">{{ $quote->state }}
+                <td>
+                    <div class="custom-badge status-{{strtolower($quote->state)}}">
+                        {{ $quote->state }}
+                    </div>
                 </td>
 
 

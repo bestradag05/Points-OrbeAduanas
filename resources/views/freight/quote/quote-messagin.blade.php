@@ -485,7 +485,8 @@
         <div class="col-12 px-4 mt-5">
             <div class="text-center mb-4">
                 <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
-                <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal" data-target="#modalQuoteFreightDocuments">
+                <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
+                    data-target="#modalResponseQuoteFreight">
                     <i class="fas fa-plus"></i>
                 </button>
             </div>
@@ -623,6 +624,101 @@
                 <div class="modal-footer justify-content-center">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalResponseQuoteFreight" class="modal fade" tabindex="-1" role="dialog"
+        aria-labelledby="modalResponseQuoteFreight-title" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <form method="POST" action="{{ route('transport.quote.storePrices', $quote->id) }}"
+                    id="formCotizarTransporte">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalResponseQuoteFreight-title">Respuesta Proveedor</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-row align-items-center mb-4">
+                            <div class="col-md-8">
+                                <label for="provider_id">Proveedor <span class="text-danger">*</span></label>
+                                <x-adminlte-select2 name="provider_id" igroup-size="md"
+                                    data-placeholder="Buscar proveedor..." style="width:100%">
+                                    <option />
+                                    @foreach ($suppliers as $sup)
+                                        <option value="{{ $sup->id }}" >
+                                            {{ $sup->name_businessname }}
+                                        </option>
+                                    @endforeach
+                                </x-adminlte-select2>
+                            </div>
+
+                            <div class="col-md-4 text-right">
+                                <div class="bg-light p-3 rounded">
+                                    <div class="small text-muted mb-1">RPTA</div>
+                                    <b class="d-block"></b>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <hr class="mb-4">
+
+                        {{-- Conceptos elegidos por Comercial --}}
+                        <div class="mb-4">
+                            <h4 class="mb-3">Precios de conceptos</h4>
+
+                           {{--  @foreach ($quote->transportConcepts->unique('id') as $tc)
+                                @if (!empty($tc->name))
+                                    <div class="form-group row">
+                                        <label class="col-sm-6 col-form-label font-weight-bold">
+                                            {{ $tc->name }}
+                                        </label>
+                                        <div class="col-sm-6">
+                                            <input type="number" step="0.01"
+                                                name="price_concept[{{ $tc->id }}]"
+                                                class="form-control concept-input" value="">
+                                        </div>
+                                    </div>
+                                @endif
+                            @endforeach --}}
+
+                            <hr class="my-4">
+
+                            {{-- Comisión --}}
+                            <div class="form-group row">
+                                <label for="commission" class="col-sm-6 col-form-label font-weight-bold">
+                                    Comisión (S/)
+                                </label>
+                                <div class="col-sm-6">
+                                    <input type="number" step="0.01" name="commission" id="commission"
+                                        class="form-control concept-input" value="{{ 'commission' }}">
+                                </div>
+                            </div>
+
+                            {{-- Total general (sólo lectura) --}}
+                            <div class="form-group row mt-4">
+                                <label class="col-sm-6 font-weight-bold">Total (S/)</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="totalConceptos" readonly
+                                        value="0.00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-save mr-2"></i> Guardar respuesta
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-lg" data-dismiss="modal">
+                            <i class="fas fa-times mr-2"></i> Cerrar
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
