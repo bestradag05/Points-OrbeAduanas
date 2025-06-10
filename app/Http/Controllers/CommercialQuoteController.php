@@ -303,8 +303,8 @@ class CommercialQuoteController extends Controller
         QuoteFreight::create([
             'shipping_date' => null,
             'response_date' => null,
-            'origin' => $commercialQuote->origin,
-            'destination' => $commercialQuote->destination,
+            'origin' => $commercialQuote->originState->country->name. '-' .$commercialQuote->originState->name,
+            'destination' =>  $commercialQuote->destinationState->country->name. '-' .$commercialQuote->destinationState->name,
             'commodity' => $commercialQuote->commodity,
             'packaging_type' => $commercialQuote->packaging_type,
             'load_type' => $commercialQuote->type_load->name,

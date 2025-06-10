@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('response_freight_quotes', function (Blueprint $table) {
             $table->id();
+            $table->string('validity_date');
+            $table->string('origin');
+            $table->string('destination');
+            $table->enum('frequency', ['Diario', 'Semanal', 'Quincenal', 'Mensual']);
+            $table->string('service');
+            $table->string('transit_time');
             $table->timestamps();
         });
     }

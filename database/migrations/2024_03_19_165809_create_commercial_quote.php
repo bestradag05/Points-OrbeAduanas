@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('commercial_quote', function (Blueprint $table) {
             $table->id();
             $table->string('nro_quote_commercial')->unique();
-            $table->string('origin');
-            $table->string('destination');
+            $table->unsignedBigInteger('origin');
+            $table->unsignedBigInteger('destination');
             $table->string('customer_company_name')->nullable();
             $table->decimal('load_value', 8, 2);
             $table->unsignedBigInteger('id_personal');
@@ -51,6 +51,8 @@ return new class extends Migration
             $table->enum('state', ['Pendiente', 'Inactivo', 'Aceptado', 'Rechazado', 'Sin respuesta'])->default('Pendiente');
             $table->timestamps();
 
+            $table->foreign('origin')->references('id') ->on('state_country');
+            $table->foreign('destination')->references('id') ->on('state_country');
             $table->foreign('id_customer')->references('id') ->on('customer');
             $table->foreign('id_supplier')->references('id') ->on('suppliers');
             $table->foreign('id_containers')->references('id') ->on('containers');

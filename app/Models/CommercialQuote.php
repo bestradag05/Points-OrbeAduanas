@@ -45,7 +45,7 @@ class CommercialQuote extends Model
         'cif_value',
         'valid_date',
         'state',
-  
+
 
     ];
 
@@ -53,7 +53,15 @@ class CommercialQuote extends Model
         'valid_date' => 'date', // Convierte 'valid_date' en un objeto Carbon
     ];
 
+    public function originState()
+    {
+        return $this->belongsTo(StateCountry::class, 'origin');
+    }
 
+    public function destinationState()
+    {
+        return $this->belongsTo(StateCountry::class, 'destination');
+    }
     public function type_shipment()
     {
         return $this->belongsTo(TypeShipment::class, 'id_type_shipment', 'id');
@@ -72,7 +80,7 @@ class CommercialQuote extends Model
     {
         return $this->belongsTo(Personal::class, 'id_personal', 'id');
     }
-    
+
     public function customer()
     {
         return $this->belongsTo(Customer::class, 'id_customer', 'id');
@@ -118,7 +126,7 @@ class CommercialQuote extends Model
     {
         return $this->hasMany(QuoteFreight::class, 'nro_quote_commercial', 'nro_quote_commercial'); // 'routing_id' es la clave foránea en la tabla cotizaciones
     }
-    
+
     public function quote_transport()
     {
         return $this->hasMany(QuoteTransport::class, 'nro_quote_commercial', 'nro_quote_commercial'); // 'routing_id' es la clave foránea en la tabla cotizaciones
@@ -138,5 +146,4 @@ class CommercialQuote extends Model
             'concepts_id'                     // FK en la pivote hacia concepts
         );
     }
-
 }
