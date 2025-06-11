@@ -192,6 +192,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('quote/transport', QuoteTransportController::class)->names([
         'create' => 'quote.transport.create',
+        'store' => 'quote.transport.store',
     ]);
 
     /* Mensaje de cotizaciones de flete */

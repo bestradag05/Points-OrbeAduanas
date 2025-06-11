@@ -148,6 +148,7 @@ class QuoteTransportController extends Controller
      */
     public function store(Request $request)
     {
+        dd("quote");
 
         /* dd($request->all()); */
 
@@ -385,54 +386,23 @@ class QuoteTransportController extends Controller
         ]);
 
         foreach ($data['price_concept'] as $conceptId => $price) {
+            $concept = Concept::find($conceptId);
+
+            // Suma la comisión SOLO si el concepto es "TRANSPORTE"
+            $net = $price;
+            if (strtoupper($concept->name) === 'TRANSPORTE') {
+                $net += $data['commission'] ?? 0;
+            }
+
             $resp->conceptResponses()->create([
-                'concepts_id'    => $conceptId,
-                'net_amount'    => $price,   // o aplícale IGV si corresponde: $price / 1.18, etc.
+                'concepts_id' => $conceptId,
+                'net_amount' => $net,
             ]);
         }
 
-        // Generar resumen en HTML  
-        $html  = '<div class="card" style="max-width:400px; margin:0 auto;">';
-        $html .= '<strong>' . e($resp->rpta_number) . '</strong>';
-        $html .= '<table class="table table-sm" style="width:100%; max-width:100%; table-layout:auto;">';
-        $html .= '<thead><tr><th>Item</th><th class="text-right">Montos (S/)</th></tr></thead><tbody>';
-
-        // filas de conceptos
-        foreach ($data['price_concept'] as $conceptId => $price) {
-            $concept = Concept::find($conceptId);
-            $name    = $concept ? $concept->name : "ID #" . $conceptId;
-            $html   .= '<tr>';
-            $html   .= '<td>' . e($name) . '</td>';
-            $html   .= '<td class="text-right">' . number_format($price, 2) . '</td>';
-            $html   .= '</tr>';
-        }
-
-        // fila comisión
-        $commission = $data['commission'] ?? 0;
-        $html      .= '<tr>';
-        $html      .= '<td>Comision</td>';
-        $html      .= '<td class="text-right">' . number_format($commission, 2) . '</td>';
-        $html      .= '</tr>';
-
-        // fila total
-        $total = $resp->total;
-        $html .= '<tr class="font-weight-bold">';
-        $html .= '<td>Total</td>';
-        $html .= '<td class="text-right">' . number_format($total, 2) . '</td>';
-        $html .= '</tr>';
-
-        $html .= '</tbody></table></div>';
-
-        // 6) Guardar como mensaje (ajusta la relación según tu modelo)
-        MessageQuoteTransport::create([
-            'quote_transport_id' => $quoteId,
-            'sender_id'          => auth()->id(),
-            'message'            => $html,
-        ]);
-
         return redirect()
             ->route('transport.show', $quoteId)
-            ->with('success', 'Cotización de transporte registrada y resumen enviado.');
+            ->with('success', 'Cotización de transporte registrada.');
     }
 
 

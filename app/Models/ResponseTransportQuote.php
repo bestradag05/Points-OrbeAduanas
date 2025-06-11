@@ -21,7 +21,7 @@ class ResponseTransportQuote extends Model
     // Genera "RPTA-YY{n}"
     public static function generateNroResponse(): string
     {
-    
+
         // Obtener el último registro
         $lastCode = self::latest('id')->first();
         $year = date('y');
@@ -46,7 +46,7 @@ class ResponseTransportQuote extends Model
                 $quote->nro_response = $quote->generateNroResponse();
             }
         });
- }
+    }
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class, 'provider_id');
@@ -57,9 +57,20 @@ class ResponseTransportQuote extends Model
     {
         return $this->belongsTo(QuoteTransport::class, 'quote_transport_id');
     }
+    public function concepts()
+    {
+        return $this->belongsToMany(
+            Concept::class,
+            'concepts_response',
+            'response_transport_quote_id',
+            'concepts_id'
+        )->withPivot('net_amount');
+    }
+
+
     // 1:N → ConceptsResponse
     public function conceptResponses()
     {
-        return $this->hasMany(ConceptsResponse::class, 'response_transport_quote_id','id');
+        return $this->hasMany(ConceptsResponse::class, 'response_transport_quote_id', 'id');
     }
 }

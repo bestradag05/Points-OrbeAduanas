@@ -8,7 +8,7 @@
 @stop
 
 @section('dinamic-content')
-<form action="{{ route('transport.store', $quote->id) }}" method="POST" id="formTransport">
+<form action="{{ route('transport.store') }}" method="POST" id="formTransport">
     @csrf
     @include ('transport.form-transport', ['formMode' => 'create'])
 </form>

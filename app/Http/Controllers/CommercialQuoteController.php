@@ -449,7 +449,7 @@ class CommercialQuoteController extends Controller
 
 
     public function getTemplateDetailCommercialQuote($id)
-    {
+    {  
 
         $comercialQuote = CommercialQuote::find($id);
         $type_services = TypeService::all();
@@ -515,7 +515,7 @@ class CommercialQuoteController extends Controller
             'customs_agency' => $customs_agency,
             'documents' => $documents
         ];
-
+        
 
         return view('commercial_quote/detail-commercial-quote', $data);
     }
