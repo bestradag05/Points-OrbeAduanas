@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('frequency', ['Diario', 'Semanal', 'Quincenal', 'Mensual']);
             $table->string('service');
             $table->string('transit_time');
+            $table->string('exchange_rate')->nullable();
             $table->timestamps();
         });
     }
