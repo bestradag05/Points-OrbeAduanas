@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Concept;
 use App\Models\QuoteFreight;
+use App\Models\ResponseFreightQuotes;
 use App\Models\Supplier;
 use App\Notifications\Notify;
 use App\Notifications\NotifyQuoteFreight;
@@ -193,11 +195,11 @@ class QuoteFreightController extends Controller
      */
     public function show(string $id)
     {
-        //
-
         $quote = QuoteFreight::findOrFail($id);
 
         $suppliers = Supplier::where('area_type', 'pricing')->get();
+
+        $concepts = Concept::all();
 
         $folderPath = "commercial_quote/{$quote->commercial_quote->nro_quote_commercial}/quote_freight/{$quote->nro_quote}";
         $files = collect(Storage::disk('public')->files($folderPath))->map(function ($file) {
@@ -208,11 +210,13 @@ class QuoteFreightController extends Controller
             ];
         });
 
-
+        //TODO: ya no se usara el messages
         $messages = QuoteFreight::findOrFail($id)->messages;
+        
+        $response = new ResponseFreightQuotes();
+        $nro_response = $response->generateNroResponse();
 
-
-        return view('freight/quote/quote-messagin', compact('quote', 'files', 'messages', 'suppliers'));
+        return view('freight/quote/quote-messagin', compact('quote', 'files', 'messages', 'suppliers', 'nro_response', 'concepts'));
     }
 
 
