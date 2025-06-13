@@ -711,31 +711,35 @@
                                 </div>
                             </div>
 
-                            <div id="formConceptsAduanas" class="formConcepts p-2 row">
+                            <div id="formResponseFright" class="p-2 row">
                                 <h6 class="text-center bg-indigo w-100 p-2 mt-2">Costos Incurridos</h6>
 
-                                <div class="col-12 row justify-content-center align-items-center my-2 p-3" style="background-color: rgb(0 128 0 / 27%);">
+                                <div class="col-12 row justify-content-center align-items-center my-2 p-3"
+                                    style="background-color: rgb(157 160 166 / 27%);">
                                     <div class="col-2">
-                                        <label class="m-0 text-secondary">Detalle de la carga: </label>
+                                        <label class="m-0">Detalle de la carga: </label>
                                     </div>
 
                                     @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
                                         <div class="col-2">
-                                            <label class="m-0" for="cubage_kgv">Volumen : <span class="font-weight-normal">{{ $quote->cubage_kgv }} CBM</span></label>
+                                            <label class="m-0" for="cubage_kgv">Volumen : <span
+                                                    class="font-weight-normal">{{ $quote->cubage_kgv }} CBM</span></label>
                                         </div>
                                     @else
                                         <div class="col-2">
-                                            <label class="m-0" for="cubage_kgv">KGV : <span class="font-weight-normal">{{ $quote->cubage_kgv }} KGV</span></label>
+                                            <label class="m-0" for="cubage_kgv">KGV : <span
+                                                    class="font-weight-normal">{{ $quote->cubage_kgv }} KGV</span></label>
                                         </div>
                                     @endif
 
                                     <div class="col-2">
-                                        <label class="m-0" for="ton_kilogram">Peso : <span class="font-weight-normal">{{ $quote->ton_kilogram }} KG</span></label>
+                                        <label class="m-0" for="ton_kilogram">Peso : <span
+                                                class="font-weight-normal">{{ $quote->ton_kilogram }} KG</span></label>
                                     </div>
                                 </div>
                                 <div class="col-4">
                                     <x-adminlte-select2 name="concept" id="concept_aduana" label="Conceptos"
-                                        data-placeholder="Seleccione un concepto...">
+                                        data-placeholder="Seleccione un concepto..." data-required="true">
                                         <option />
                                         @foreach ($concepts as $concept)
                                             @if ($concept->typeService->name == 'Flete' && $quote->commercial_quote->type_shipment->id == $concept->id_type_shipment)
@@ -754,9 +758,10 @@
                                                     $
                                                 </span>
                                             </div>
-                                            <input type="text" class="form-control CurrencyInput " name="unit_cost"
-                                                data-type="currency" placeholder="Ingrese valor del concepto"
-                                                value="">
+                                            <input type="text" class="form-control CurrencyInput" id="unit_cost"
+                                                name="unit_cost" data-type="currency"
+                                                placeholder="Ingrese valor del concepto" value=""
+                                                data-required="true">
                                         </div>
                                     </div>
 
@@ -764,9 +769,17 @@
 
                                 <div class="col-4">
                                     <div class="form-group">
-                                        <label for="fixed_miltiplyable_cost">Fijo / CW</label>
                                         <div class="input-group">
-                                            <input type="text" class="form-control" name="fixed_miltiplyable_cost">
+                                            {{-- <input type="text" class="form-control" name="fixed_miltiplyable_cost"> --}}
+
+                                            <x-adminlte-select2 name="fixed_miltiplyable_cost"
+                                                id="fixed_miltiplyable_cost" label="Fijo / CW"
+                                                data-placeholder="Seleccione un tipo..." data-required="true">
+                                                <option />
+                                                <option value="Fijo">Fijo</option>
+                                                <option value="C/W">C/W</option>
+                                            </x-adminlte-select2>
+
                                         </div>
                                     </div>
 
@@ -783,8 +796,9 @@
                                 <div class="col-4">
                                     <div class="form-group">
                                         <label for="observations">Costo Final</label>
-                                        <input type="final_cost" class="form-control CurrencyInput " name="observations"
-                                            data-type="currency" placeholder="Ingrese el costo final" readonly>
+                                        <input type="text" class="form-control CurrencyInput" id="final_cost"
+                                            name="final_cost" data-type="currency" placeholder="Ingrese el costo final"
+                                            data-required="true" readonly>
                                     </div>
 
                                 </div>
@@ -815,19 +829,20 @@
                                     </tbody>
                                 </table>
 
-                                <div class="row w-100 justify-content-end">
+                            </div>
 
-                                    <div class="col-4 row">
-                                        <label for="total" class="col-sm-4 col-form-label">Total:</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control" id="total" name="totalCustom"
-                                                value="0.00" @readonly(true)>
-                                        </div>
+                            <div class="row w-100 justify-content-end">
+
+                                <div class="col-4 row">
+                                    <label for="total" class="col-sm-4 col-form-label">Total:</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control" id="total_response_concept_freight"
+                                            name="total_response_concept_freight" value="0.00" @readonly(true)>
                                     </div>
-
                                 </div>
 
                             </div>
+
 
 
                         </div>
@@ -1070,6 +1085,8 @@
 
 @push('scripts')
     <script>
+        let conceptsResponseFreightArray = [];
+
         $('#sendFreightCost').on('submit', (e) => {
 
             e.preventDefault();
@@ -1104,27 +1121,235 @@
         });
 
 
+        /* Calculamos cuando el costo final multiplicando el costo unitario pr el peso cargable (va depender de si el volumen o el peso sea mayor) */
+        $('#unit_cost').on('change', () => {
+            let cubage_kgv = parseFloat(@json($quote->cubage_kgv));
+            let ton_kilogram = parseFloat(@json($quote->ton_kilogram));
+            let unit_cost = parseFloat($('#unit_cost').val());
+            let higherCost = 0;
 
+
+            //Verificamos cual es mayor para realizar calculo del costo final
+
+            higherCost = cubage_kgv > ton_kilogram ? cubage_kgv : ton_kilogram;
+            let final_cost = unit_cost * higherCost;
+
+            let formattedNumber = final_cost.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+
+            $('#final_cost').val(formattedNumber);
+
+        });
+
+        function addConceptResponseFreight(buton) {
+
+            let divConcepts = $('#formResponseFright');
+            const inputs = divConcepts.find('input , select');
+            let isValid = true;
+
+            inputs.each(function() {
+                const input = this;
+
+                if (input.closest('.d-none')) return;
+
+                // Solo validar si el campo tiene el atributo data-required
+                if (input.dataset.required === 'true') {
+                    if (input.value.trim() === '' || input.value == null) {
+                        input.classList.add('is-invalid');
+                        isValid = false;
+                        showError(input, 'Debe completar este campo');
+                    } else {
+                        input.classList.remove('is-invalid');
+                        hideError(input);
+                    }
+                } else {
+                    // No requerido, aseguramos que no tenga error visible
+                    input.classList.remove('is-invalid');
+                    hideError(input);
+                }
+            });
+
+            if (isValid) {
+                let data = loadConceptData(inputs);
+                const index = conceptsResponseFreightArray.findIndex(item => item.id === parseInt(inputs[0].value));
+
+                if (index !== -1) {
+
+                    conceptsResponseFreightArray[index] = data;
+
+                } else {
+
+                    conceptsResponseFreightArray.push(data);
+                }
+                clearConceptsData(inputs);
+                updateTableRespnoseFreight(conceptsResponseFreightArray);
+            }
+        };
+
+
+        function updateTableRespnoseFreight(conceptsResponseFreightArray) {
+
+            let tbodyRouting = $(`#formResponseFright`).find('tbody')[0];
+
+            if (tbodyRouting) {
+
+                tbodyRouting.innerHTML = '';
+            }
+            TotalResponseConcepts = 0;
+
+            let contador = 0;
+
+            for (let clave in conceptsResponseFreightArray) {
+
+                let item = conceptsResponseFreightArray[clave];
+
+                if (conceptsResponseFreightArray.hasOwnProperty(clave)) {
+                    contador++; // Incrementar el contador en cada iteración
+                    // Crear una nueva fila
+                    let fila = tbodyRouting.insertRow();
+
+                    // Insertar el número de iteración en la primera celda de la fila
+                    let celdaContador = fila.insertCell(0);
+                    celdaContador.textContent = contador;
+
+                    // Insertar la clave en la segunda celda de la fila
+                    let celdaName = fila.insertCell(1);
+                    celdaName.textContent = item.concept.name;
+
+                    // Insertar el valor en la tercera celda de la fila
+                    let celdaUnitCost = fila.insertCell(2);
+                    celdaUnitCost.textContent = item.unit_cost;
+
+
+                    // Insertar el valor en la cuarta celda de la fila
+                    let celdaFixesMiltiplyableCost = fila.insertCell(3);
+                    celdaFixesMiltiplyableCost.textContent = item.fixed_miltiplyable_cost;
+
+                    let CeldaObservations = fila.insertCell(4);
+                    CeldaObservations.textContent = item.observations;
+
+                    let celdaCostFinal = fila.insertCell(5);
+                    celdaCostFinal.textContent = item.final_cost.toFixed(2);
+
+
+                    let celdaEliminar = fila.insertCell(6);
+                    let botonEliminar = document.createElement('a');
+                    botonEliminar.href = '#';
+                    botonEliminar.innerHTML = '<p class="text-danger">X</p>';
+                    botonEliminar.addEventListener('click', function() {
+
+                        // Eliminar la fila correspondiente al hacer clic en el botón
+                        let fila = this.parentNode.parentNode;
+                        let indice = fila.rowIndex -
+                            1; // Restar 1 porque el índice de las filas en tbody comienza en 0
+                        delete conceptsResponseFreightArray[Object.keys(conceptsResponseFreightArray)[indice]];
+                        updateTableCustom(conceptsResponseFreightArray);
+                    });
+                    celdaEliminar.appendChild(botonEliminar);
+
+
+                    TotalResponseConcepts += parseFloat(item.final_cost);
+
+                }
+            }
+            let inputTotal = $('#total_response_concept_freight');
+            inputTotal.val(TotalResponseConcepts.toFixed(2));
+
+        }
+
+
+
+        function loadConceptData(inputs) {
+            let data = {};
+            inputs.each(function() {
+                const input = this;
+                let name = input.name;
+                if (name) {
+                    if (input.tagName === 'SELECT') {
+                        data[name] = {
+                            id: parseInt(input.value),
+                            name: input.options[input.selectedIndex] ? input.options[input.selectedIndex].text :
+                                ''
+                        };
+                    } else {
+                        // Si es un valor numérico formateado, lo limpiamos
+                        if (input.classList.contains('CurrencyInput')) {
+                            // Elimina comas y convierte a número
+                            data[name] = parseFloat(input.value.replace(/,/g, '')) || 0;
+                        } else {
+                            data[name] = input.value;
+                        }
+                    }
+                }
+            });
+
+
+            return data;
+        }
+
+
+        function clearConceptsData(inputs) {
+            inputs.each(function() {
+                const input = this;
+                if (input.tagName === 'SELECT') {
+                    $(input).val(null).trigger('change'); // Resetea select2
+                } else {
+                    input.value = '';
+                }
+                input.classList.remove('is-invalid');
+                hideError(input);
+            });
+        }
+
+
+
+        //Formatear el valor para poder hacer calculos
+        function formatValue(value) {
+            // Verifica si el valor es una cadena (string)
+            if (typeof value === 'string') {
+                return value.replace(/,/g, '');
+            }
+            // Si es un número, simplemente lo retorna tal cual
+            return value;
+        }
 
 
 
         // Mostrar mensaje de error
         function showError(input, message) {
-            let errorSpan = input.nextElementSibling;
+            let container = input;
+
+            // Si es un SELECT2
+            if (input.tagName === 'SELECT' && $(input).hasClass('select2-hidden-accessible')) {
+                container = $(input).next('.select2')[0];
+            }
+
+            let errorSpan = container.nextElementSibling;
+
             if (!errorSpan || !errorSpan.classList.contains('invalid-feedback')) {
                 errorSpan = document.createElement('span');
-                errorSpan.classList.add('invalid-feedback');
-                input.after(errorSpan);
+                errorSpan.classList.add('invalid-feedback', 'd-block'); // Asegura visibilidad
+                container.after(errorSpan);
             }
+
             errorSpan.textContent = message;
             errorSpan.style.display = 'block';
         }
 
-
-        // Ocultar mensaje de error
         function hideError(input) {
-            let errorSpan = input.nextElementSibling;
+            let container = input;
+
+            if (input.tagName === 'SELECT' && $(input).hasClass('select2-hidden-accessible')) {
+                container = $(input).next('.select2')[0];
+            }
+
+            let errorSpan = container.nextElementSibling;
+            console.log(errorSpan);
+
             if (errorSpan && errorSpan.classList.contains('invalid-feedback')) {
+                errorSpan.classList.remove('d-block');
                 errorSpan.style.display = 'none';
             }
         }
@@ -1132,7 +1357,7 @@
 
     {{-- Drop zone for documents --}}
 
-     <script>
+    <script>
         let commercial_quote = @json($quote->nro_quote_commercial);
         let freight_quote = @json($quote->nro_quote);
 
