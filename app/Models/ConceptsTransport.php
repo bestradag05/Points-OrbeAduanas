@@ -13,6 +13,8 @@ class ConceptsTransport extends Model
         'transport_id',
         'concepts_id',
         'added_value',
+        'net_amount_response',
+        'subtotal',
         'igv',
         'total',
         'additional_points'

@@ -101,6 +101,6 @@ class Transport extends Model
             'concepts_transport', // nombre de la tabla pivot
             'transport_id',       // clave foránea en la tabla pivot hacia este modelo
             'concepts_id'         // clave foránea en la tabla pivot hacia el modelo Concept
-        )->withPivot('added_value', 'net_amount_response', 'subtotal', 'additional_points'); // si tienes más campos en la tabla intermedia
+        )->withPivot('added_value', 'net_amount_response', 'subtotal', 'igv','total', 'additional_points'); // si tienes más campos en la tabla intermedia
     }
 }

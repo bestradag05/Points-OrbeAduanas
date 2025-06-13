@@ -133,7 +133,7 @@ class TransportService
         $quote = QuoteTransport::findOrFail($quoteId);
 
         $response = $quote->responseTransportQuotes()->where('status', 'Aceptado')->with('conceptResponses')->first();
-       
+
 
         $this->syncTransportConcepts($transport, $concepts, $response);
 
@@ -175,7 +175,7 @@ class TransportService
 
 
 
-        return compact('transport', 'commercial_quote', 'quote', 'concepts','formMode', 'response');
+        return compact('transport', 'commercial_quote', 'quote', 'concepts', 'formMode', 'response');
     }
 
 
@@ -255,12 +255,14 @@ class TransportService
             $net = optional(
                 $response->conceptResponses->firstWhere('concepts_id', $concept->id)
             )->net_amount ?? 0;
-            dd($net);
+
 
             // 2 Calcular subtotal y IGV
-            $subtotal = $net + $added;
-            $igv = $subtotal * 0.18;
-            $total = $subtotal + $igv;
+            $total = $net + $added;
+            $base_sin_igv = $total / 1.18;
+            $igv = $total - $base_sin_igv;
+            $subtotal = $total - $igv; // ya incluye IGV
+
 
 
             // 3 Guardar todo en concepts_transport
@@ -273,6 +275,7 @@ class TransportService
                 'igv' => $igv,
                 'total' => $total,
                 'additional_points' => $concept->pa ?? 0,
+
             ]);
 
 

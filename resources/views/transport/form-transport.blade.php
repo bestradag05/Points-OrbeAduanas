@@ -114,12 +114,11 @@
             //PAra editar, verificamos si tiene conceptos el transporte: 
             @if (isset($formMode) && $formMode === 'edit')
 
-/*                 conceptsResponseTransport = @json($response->conceptResponses);
- */
+
                 @if (isset($transport->concepts))
 
                     let concepts = @json($transport->concepts);
-                    /* console.log(concepts); */
+                    console.log(concepts);
 
                     concepts.forEach((concept, index) => {
                         console.log(concept);
@@ -127,10 +126,9 @@
                         conceptsArray.push({
                             'id': concept.id,
                             'name': concept.name,
-                            'value': formatValue(concept.pivot.value_concept),
+                            'value': formatValue(concept.pivot.net_amount_response), // ✅ CAMBIO AQUÍ
                             'added': formatValue(concept.pivot.added_value),
-                            'pa': concept.pivot.additional_points > 0 ? concept.pivot
-                                .additional_points : 0
+                            'pa': concept.pivot.additional_points > 0 ? concept.pivot.additional_points : 0
                         });
 
                     });
@@ -224,6 +222,8 @@
                     inputs[2].value = '';
                 }
             };
+            
+            const isEditMode = "{{ $formMode ?? '' }}" === "edit";
 
             function updateTable(conceptsArray) {
 
