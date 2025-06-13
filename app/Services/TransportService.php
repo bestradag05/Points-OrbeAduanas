@@ -126,13 +126,18 @@ class TransportService
     {
 
         $concepts  = json_decode($request->concepts);
-
-        $transport = $this->createOrUpdateTransport($request);
-
         $quoteId = $request->input('quote_transport_id');
         $quote = QuoteTransport::findOrFail($quoteId);
-
         $response = $quote->responseTransportQuotes()->where('status', 'Aceptado')->with('conceptResponses')->first();
+
+        // 1. Creamos el transporte sin total aún (lo pondremos luego)
+        $transport = $this->createOrUpdateTransport($request);
+
+        // 2. Procesamos conceptos y obtenemos el total calculado
+        $total = $this->syncTransportConcepts($transport, $concepts, $response);
+
+        // 3. Actualizamos el transporte con el total correcto
+        $transport->update(['total_transport' => $total]);
 
 
         $this->syncTransportConcepts($transport, $concepts, $response);
@@ -221,7 +226,6 @@ class TransportService
         $transport->fill([
             'origin' => $request->pick_up,
             'destination' => $request->delivery,
-            'total_transport' => $request->total,
             'withdrawal_date' => $dateRegisterFormat,
             'quote_transport_id' => $request->quote_transport_id,
             'nro_quote_commercial' => $request->nro_quote_commercial,
@@ -235,7 +239,8 @@ class TransportService
     }
 
 
-    private function syncTransportConcepts($transport, $concepts, $response)
+    private function syncTransportConcepts($transport, $concepts, $response): float
+
     {
         // Eliminar los conceptos previos si estamos actualizando, pero antes 
         $conceptsTransport = ConceptsTransport::where('transport_id', $transport->id)->get(); // cuando eliminamos el concepto se elimina el additional_point relacionado en cascada
@@ -247,6 +252,8 @@ class TransportService
             }
         }
 
+        $totalTransport = 0;
+
         // Relacionamos los nuevos conceptos con el tranporte
         foreach ($concepts as $concept) {
             $added = $this->parseDouble($concept->added);
@@ -257,12 +264,12 @@ class TransportService
             )->net_amount ?? 0;
 
 
-            // 2 Calcular subtotal y IGV
-            $total = $net + $added;
-            $base_sin_igv = $total / 1.18;
-            $igv = $total - $base_sin_igv;
-            $subtotal = $total - $igv; // ya incluye IGV
+            $concept_total = $net + $added; // total de este concepto
+            $base_sin_igv = $concept_total / 1.18;
+            $igv = $concept_total - $base_sin_igv;
+            $subtotal = $concept_total - $igv;
 
+            $totalTransport += $concept_total;
 
 
             // 3 Guardar todo en concepts_transport
@@ -273,11 +280,10 @@ class TransportService
                 'net_amount_response' => $net,
                 'subtotal' => $subtotal,
                 'igv' => $igv,
-                'total' => $total,
+                'total' => $concept_total,
                 'additional_points' => $concept->pa ?? 0,
 
             ]);
-
 
             // Si hay puntos adicionales, ejecutamos la función
             if (isset($concept->pa)) {
@@ -285,6 +291,11 @@ class TransportService
                 $this->add_aditionals_point($conceptTransport, $net_amount);
             }
         }
+
+        // Al final de syncTransportConcepts
+        $transport->update(['total_transport' => $totalTransport]);
+
+        return $totalTransport;
     }
 
 

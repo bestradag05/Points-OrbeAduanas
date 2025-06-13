@@ -126,7 +126,7 @@
                         conceptsArray.push({
                             'id': concept.id,
                             'name': concept.name,
-                            'value': formatValue(concept.pivot.net_amount_response), // ✅ CAMBIO AQUÍ
+                            'value': formatValue(concept.pivot.net_amount_response), // CAMBIO AQUÍ
                             'added': formatValue(concept.pivot.added_value),
                             'pa': concept.pivot.additional_points > 0 ? concept.pivot.additional_points : 0
                         });
@@ -164,6 +164,8 @@
                     });
                 });
             @endif
+
+            const isEditMode = "{{ $formMode ?? '' }}" === "edit";
 
             updateTable(conceptsArray);
 
@@ -223,7 +225,7 @@
                 }
             };
             
-            const isEditMode = "{{ $formMode ?? '' }}" === "edit";
+            
 
             function updateTable(conceptsArray) {
 
@@ -264,7 +266,8 @@
                         let celdaAdded = fila.insertCell(3);
 
 
-                        if (conceptsTransport.some(concept => concept.concept.name === item.name)) {
+                        if (isEditMode || (conceptsTransport && conceptsTransport.some(concept => concept.concept.name === item.name))) {
+
                             // Si concepto existe, muestra un input editable
                             let inputAdded = document.createElement('input');
                             inputAdded.type = 'text';
@@ -272,6 +275,9 @@
                             inputAdded.classList.add('form-control', 'CurrencyInput'); // Agregar clases
                             inputAdded.setAttribute('data-type', 'currency'); // Establecer el atributo data-type
                             celdaAdded.appendChild(inputAdded);
+
+                            console.log('Edit Mode:', isEditMode);
+
 
                             inputAdded.addEventListener('input', (e) => {
                                 let newValue = parseFloat(e.target.value) || 0;
@@ -337,7 +343,8 @@
                         }
 
 
-                        if (!conceptsTransport.some(concept => concept.name === item.name)) {
+                        if (isEditMode || !conceptsTransport || !conceptsTransport.some(concept => concept.name === item.name)) {
+
 
                             // Insertar un botón para eliminar la fila en la cuarta celda de la fila
                             let celdaEliminar = fila.insertCell(5);

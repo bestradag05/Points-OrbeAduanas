@@ -11,7 +11,22 @@ class Supplier extends Model
 
     protected $table = 'suppliers';
 
-    protected $fillable = ['document_number',  'name_businessname', 'address', 'contact_name', 'contact_number', 'contact_email', 'area_type',  'state', 'id_document'];
+    protected $fillable = [
+        'name_businessname',
+        'area_type',
+        'provider_type',
+        'address',
+        'contact_name',
+        'contact_number',
+        'contact_email',
+        'document_number',
+        'document_type',
+        'cargo_type',
+        'unit',
+        'country',
+        'city',
+        'state',
+    ];
 
 
     public function consolidatedCargos()
@@ -23,7 +38,6 @@ class Supplier extends Model
     public function commercialQuotes()
     {
         return $this->hasMany(CommercialQuote::class);
-
     }
     public function transportResponses()
     {

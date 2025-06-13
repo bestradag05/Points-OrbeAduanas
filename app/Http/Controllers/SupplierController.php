@@ -25,15 +25,19 @@ class SupplierController extends Controller
             'Nombre de Contacto',
             'Numero de Contacto',
             'Correo de Contacto',
+            'Area',
             'Tipo de proveedor',
+            'Tipo',
+            'Documento',
+            'Dirección',
+            'País',
+            'Ciudad',
             'Estado',
             'Acciones'
         ];
 
 
         return view("supplier/list-supplier", compact("suppliers", "heads"));
-
-
     }
 
     /**
@@ -51,24 +55,31 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
-      // Guardar un cliente
 
-      $this->validateForm($request, null);
+        // Guardar un cliente
 
-      Supplier::create([
-          /* 'id_document' => $request->id_document,
+        $this->validateForm($request, null);
+
+        Supplier::create([
+            /* 'id_document' => $request->id_document,
           'document_number' => $request->document_number, */
-          'name_businessname' => $request->name_businessname,
-          'area_type'         => $request->area_type,
-          'address' => $request->address,
-          'contact_name' => $request->contact_name,
-          'contact_number' => $request->contact_number,
-          'contact_email' => $request->contact_email,
-          'state' => 'Activo',
-      ]);
+            'name_businessname' => $request->name_businessname,
+            'area_type'         => $request->area_type,
+            'provider_type'     => $request->provider_type,
+            'address'           => $request->address,
+            'contact_name'      => $request->contact_name,
+            'contact_number'    => $request->contact_number,
+            'contact_email'     => $request->contact_email,
+            'document_number'   => $request->document_number,
+            'document_type'     => $request->document_type,
+            'cargo_type'        => $request->cargo_type,
+            'unit'              => $request->unit,
+            'country'           => $request->country,
+            'city'              => $request->city,
+            'state'             => 'Activo',
+        ]);
 
-
-      return redirect('suppliers');
+        return redirect('suppliers')->with('success', 'Proveedor registrado exitosamente.');
     }
 
     /**
@@ -88,7 +99,6 @@ class SupplierController extends Controller
         $supplier = Supplier::findOrFail($id);
 
         return view('supplier.edit-supplier', compact('supplier', 'documents'));
-
     }
 
     /**
@@ -98,7 +108,7 @@ class SupplierController extends Controller
     {
         $this->validateForm($request, $id);
 
-  
+
         $exist_name = Supplier::where("id", "<>", $id)->where("name_businessname", $request->name_businessname)->first();
 
         if ($exist_name) {
@@ -110,12 +120,11 @@ class SupplierController extends Controller
         $supplier = Supplier::findOrFail($id);
 
 
-        
+
         $supplier->update($request->all());
 
 
         return redirect("suppliers");
-
     }
 
     /**
@@ -132,26 +141,22 @@ class SupplierController extends Controller
     public function validateForm($request, $id)
     {
 
-        /* $document = CustomerSupplierDocument::find($request->id_document);
-        $digits = $document ? $document->number_digits : null; */
-
-
         $request->validate([
-           /*  'id_document' => 'required|string',
-            'document_number' => [
-                'required',
-                'numeric',
-                'unique:suppliers,document_number,' . $id,
-                $digits ? 'digits:' . $digits : 'nullable'
-            ], */
-            
+
             'name_businessname' => 'required|string|unique:suppliers,name_businessname,' . $id,
+            'area_type' => 'required|in:comercial,transporte,pricing',
+            'provider_type' => 'nullable|in:TRANSPORTISTA,NAVIERA,AEROLINEA,AGENTE DE CARGA,COMERCIAL',
             'address' => 'required|string',
             'contact_name' => 'required|string',
             'contact_number' => 'required|string',
             'contact_email' => 'required|email',
+            'document_number' => 'nullable|string',
+            'document_type' => 'nullable|string',
+            'cargo_type' => 'nullable|string',
+            'unit' => 'nullable|string',
+            'country' => 'nullable|string',
+            'city' => 'nullable|string',
+            'state' => 'nullable|string',
         ]);
     }
-
-
 }
