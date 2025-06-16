@@ -356,6 +356,7 @@ class QuoteTransportController extends Controller
     public function storeConceptPrices(Request $request, $quoteId)
     {
 
+        dd($request->all());
         // 1) Validamos
         $data = $request->validate([
             'provider_id'     => 'required|exists:suppliers,id',

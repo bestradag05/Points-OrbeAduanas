@@ -633,7 +633,7 @@
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <form method="POST" action="{{ route('transport.quote.storePrices', $quote->id) }}"
-                    id="formCotizarTransporte">
+                    id="formResponseQuoteFreight">
                     @csrf
                     <div class="modal-header">
                         <h5 class="modal-title text-uppercase text-indigo text-bold">Respuesta N°: {{ $nro_response }}
@@ -647,7 +647,7 @@
                             <div class="col-md-6">
                                 <label for="id_supplier">Agente <span class="text-danger">*</span></label>
                                 <x-adminlte-select2 name="id_supplier" igroup-size="md"
-                                    data-placeholder="Buscar proveedor..." style="width:100%">
+                                    data-placeholder="Buscar proveedor..." style="width:100%" data-required="true">
                                     <option />
                                     @foreach ($suppliers as $sup)
                                         <option value="{{ $sup->id }}">
@@ -670,7 +670,7 @@
                                 @endphp
 
                                 <x-adminlte-input-date id="validity_date" name="validity_date"
-                                    value="{{ $currentDate }}" :config="$config"
+                                    value="{{ $currentDate }}" :config="$config" data-required="true"
                                     placeholder="Selecciona la fecha de validez..." />
 
                             </div>
@@ -678,7 +678,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="frequency">Fecuencia <span class="text-danger">*</span></label>
-                                    <x-adminlte-select2 name="frequency" igroup-size="md"
+                                    <x-adminlte-select2 name="frequency" igroup-size="md" data-required="true"
                                         data-placeholder="seleccionar frecuencia..." style="width:100%">
                                         <option />
                                         <option>Diario</option>
@@ -692,14 +692,16 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="service">Servicio <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="service" name="service">
+                                    <input type="text" class="form-control" id="service" data-required="true"
+                                        name="service">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="transit_time">TT <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="transit_time" name="transit_time">
+                                    <input type="text" class="form-control" id="transit_time" data-required="true"
+                                        name="transit_time">
                                 </div>
                             </div>
 
@@ -711,7 +713,7 @@
                                 </div>
                             </div>
 
-                            <div id="formResponseFright" class="p-2 row">
+                            <div id="divResponseFreight" class="p-2 row">
                                 <h6 class="text-center bg-indigo w-100 p-2 mt-2">Costos Incurridos</h6>
 
                                 <div class="col-12 row justify-content-center align-items-center my-2 p-3"
@@ -738,7 +740,7 @@
                                     </div>
                                 </div>
                                 <div class="col-4">
-                                    <x-adminlte-select2 name="concept" id="concept_aduana" label="Conceptos"
+                                    <x-adminlte-select2 name="concept" id="concept_response_freight" label="Conceptos"
                                         data-placeholder="Seleccione un concepto..." data-required="true">
                                         <option />
                                         @foreach ($concepts as $concept)
@@ -768,20 +770,18 @@
                                 </div>
 
                                 <div class="col-4">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            {{-- <input type="text" class="form-control" name="fixed_miltiplyable_cost"> --}}
 
-                                            <x-adminlte-select2 name="fixed_miltiplyable_cost"
-                                                id="fixed_miltiplyable_cost" label="Fijo / CW"
-                                                data-placeholder="Seleccione un tipo..." data-required="true">
-                                                <option />
-                                                <option value="Fijo">Fijo</option>
-                                                <option value="C/W">C/W</option>
-                                            </x-adminlte-select2>
+                                    {{-- <input type="text" class="form-control" name="fixed_miltiplyable_cost"> --}}
 
-                                        </div>
-                                    </div>
+                                    <x-adminlte-select2 name="fixed_miltiplyable_cost" id="fixed_miltiplyable_cost"
+                                        label="Fijo / CW" class="form-control" data-placeholder="Seleccione un tipo..."
+                                        data-required="true">
+                                        <option />
+                                        <option value="Fijo">Fijo</option>
+                                        <option value="C/W">C/W</option>
+                                    </x-adminlte-select2>
+
+
 
                                 </div>
 
@@ -850,10 +850,10 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-success btn-lg">
+                        <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save mr-2"></i> Guardar respuesta
                         </button>
-                        <button type="button" class="btn btn-secondary btn-lg" data-dismiss="modal">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
                             <i class="fas fa-times mr-2"></i> Cerrar
                         </button>
                     </div>
@@ -1145,7 +1145,7 @@
 
         function addConceptResponseFreight(buton) {
 
-            let divConcepts = $('#formResponseFright');
+            let divConcepts = $('#divResponseFreight');
             const inputs = divConcepts.find('input , select');
             let isValid = true;
 
@@ -1173,7 +1173,8 @@
 
             if (isValid) {
                 let data = loadConceptData(inputs);
-                const index = conceptsResponseFreightArray.findIndex(item => item.id === parseInt(inputs[0].value));
+                console.log(conceptsResponseFreightArray);
+                const index = conceptsResponseFreightArray.findIndex(item => item.concept?.id === parseInt(data.concept.id));
 
                 if (index !== -1) {
 
@@ -1183,15 +1184,18 @@
 
                     conceptsResponseFreightArray.push(data);
                 }
-                clearConceptsData(inputs);
+
+                console.log("Concepto agregado: ", conceptsResponseFreightArray);
                 updateTableRespnoseFreight(conceptsResponseFreightArray);
+                clearConceptsData(inputs);
+
             }
         };
 
 
         function updateTableRespnoseFreight(conceptsResponseFreightArray) {
 
-            let tbodyRouting = $(`#formResponseFright`).find('tbody')[0];
+            let tbodyRouting = $(`#divResponseFreight`).find('tbody')[0];
 
             if (tbodyRouting) {
 
@@ -1204,6 +1208,7 @@
             for (let clave in conceptsResponseFreightArray) {
 
                 let item = conceptsResponseFreightArray[clave];
+                console.log("Actualizando la tabla" + conceptsResponseFreightArray[0])
 
                 if (conceptsResponseFreightArray.hasOwnProperty(clave)) {
                     contador++; // Incrementar el contador en cada iteración
@@ -1244,8 +1249,9 @@
                         let fila = this.parentNode.parentNode;
                         let indice = fila.rowIndex -
                             1; // Restar 1 porque el índice de las filas en tbody comienza en 0
+                        console.log("Indice borrado : " + indice);
                         delete conceptsResponseFreightArray[Object.keys(conceptsResponseFreightArray)[indice]];
-                        updateTableCustom(conceptsResponseFreightArray);
+                        updateTableRespnoseFreight(conceptsResponseFreightArray);
                     });
                     celdaEliminar.appendChild(botonEliminar);
 
@@ -1260,6 +1266,50 @@
         }
 
 
+        $('#formResponseQuoteFreight').on('submit', function(e) {
+            e.preventDefault();
+
+            let formResponseQuote = $('#formResponseQuoteFreight');
+            const inputs = formResponseQuote.find('input , select').not(
+                '#divResponseFreight input, #divResponseFreight select');
+            let isValid = true;
+
+
+            inputs.each(function() {
+                const input = this;
+
+                if (input.closest('.d-none')) return;
+
+                // Solo validar si el campo tiene el atributo data-required
+                if (input.dataset.required === 'true') {
+                    if (input.value.trim() === '' || input.value == null) {
+                        input.classList.add('is-invalid');
+                        isValid = false;
+                        showError(input, 'Debe completar este campo');
+                    } else {
+                        input.classList.remove('is-invalid');
+                        hideError(input);
+                    }
+                } else {
+                    // No requerido, aseguramos que no tenga error visible
+                    input.classList.remove('is-invalid');
+                    hideError(input);
+                }
+            });
+
+
+            if (isValid) {
+
+                let conceptops = JSON.stringify(conceptsResponseFreightArray);
+
+                formResponseQuote.append(`<input type="hidden" name="concepts" value='${conceptops}' />`);
+
+                e.target.submit();
+            }
+
+        });
+
+
 
         function loadConceptData(inputs) {
             let data = {};
@@ -1267,12 +1317,14 @@
                 const input = this;
                 let name = input.name;
                 if (name) {
-                    if (input.tagName === 'SELECT') {
+                    if (input.tagName === 'SELECT' && name === 'concept') {
+
                         data[name] = {
                             id: parseInt(input.value),
                             name: input.options[input.selectedIndex] ? input.options[input.selectedIndex].text :
                                 ''
                         };
+
                     } else {
                         // Si es un valor numérico formateado, lo limpiamos
                         if (input.classList.contains('CurrencyInput')) {
@@ -1284,7 +1336,6 @@
                     }
                 }
             });
-
 
             return data;
         }
@@ -1346,7 +1397,6 @@
             }
 
             let errorSpan = container.nextElementSibling;
-            console.log(errorSpan);
 
             if (errorSpan && errorSpan.classList.contains('invalid-feedback')) {
                 errorSpan.classList.remove('d-block');
@@ -1451,8 +1501,6 @@
 
                     tableBody.appendChild(row);
 
-                    console.log(tableBody);
-
                     // Guardar en el mapa de archivos subidos
                     /* uploadedFiles.set(response.filename, listItem); */
 
@@ -1513,7 +1561,6 @@
             if (wasHidden) {
                 plantilla.classList.remove("d-none");
                 plantilla.classList.add("offscreen-capture");
-                console.log("Se aplico la clase");
             }
 
 
