@@ -473,6 +473,38 @@ class QuoteTransportController extends Controller
         ));
     }
 
+    public function confirmClientResponse(Request $request)
+    {
+        $request->validate([
+            'response_id' => 'required|exists:response_transport_quotes,id',
+            'justification' => 'required|string',
+        ]);
+
+        $response = ResponseTransportQuote::findOrFail($request->response_id);
+        $response->update([
+            'status' => 'confirmada',
+        ]);
+
+        return back()->with('success', 'Respuesta confirmada.');
+    }
+
+
+    public function rejectResponse(Request $request)
+    {
+        $request->validate([
+            'response_id' => 'required|exists:response_transport_quotes,id',
+            'justification' => 'required|string',
+        ]);
+
+        $response = ResponseTransportQuote::findOrFail($request->response_id);
+        $response->update([
+            'status' => 'rechazada',
+        ]);
+
+        return back()->with('success', 'Respuesta rechazada.');
+    }
+
+
 
     /**
      * Update the specified resource in storage.

@@ -412,58 +412,58 @@
             @endif
         </div>
         <!-- <div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
-                                <div class="card direct-chat direct-chat-primary h-100">
-                                    <div class="card-header bg-sisorbe-100 py-2">
-                                        <h5 class="text-center text-bold text-uppercase text-indigo">Cotizacion : {{ $quote->nro_quote }}</h5>
-                                    </div>
-                                    <div class="card-body" style="max-height: 600px; overflow-y: auto;">
-                                        <div class="direct-chat-messages h-100">
-                                            @foreach ($messages as $message)
+                                                                <div class="card direct-chat direct-chat-primary h-100">
+                                                                    <div class="card-header bg-sisorbe-100 py-2">
+                                                                        <h5 class="text-center text-bold text-uppercase text-indigo">Cotizacion : {{ $quote->nro_quote }}</h5>
+                                                                    </div>
+                                                                    <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                                                                        <div class="direct-chat-messages h-100">
+                                                                            @foreach ($messages as $message)
     <div class="direct-chat-msg {{ $message->sender_id != auth()->user()->id ? 'right' : '' }}">
-                                                <div class="direct-chat-infos clearfix">
-                                                    <span
-                                                        class="direct-chat-name float-left text-indigo text-bold">{{ $message->sender->personal->names }}</span>
-                                                    <span
-                                                        class="direct-chat-timestamp float-right text-bold">{{ $message->created_at }}</span>
-                                                </div>
-                                                @if ($message->sender->personal->img_url !== null)
+                                                                                <div class="direct-chat-infos clearfix">
+                                                                                    <span
+                                                                                        class="direct-chat-name float-left text-indigo text-bold">{{ $message->sender->personal->names }}</span>
+                                                                                    <span
+                                                                                        class="direct-chat-timestamp float-right text-bold">{{ $message->created_at }}</span>
+                                                                                </div>
+                                                                                @if ($message->sender->personal->img_url !== null)
     <img src="{{ asset('storage/' . $message->sender->personal->img_url) }}"
-                                                    class="direct-chat-img" alt="User Image">
+                                                                                    class="direct-chat-img" alt="User Image">
 @else
     <img src="{{ asset('storage/personals/user_default.png') }}" class="direct-chat-img"
-                                                    alt="User Image">
+                                                                                    alt="User Image">
     @endif
-                                                <div class="direct-chat-text">
-                                                    {!! $message->message !!}
-                                                </div>
-                                            </div>
+                                                                                <div class="direct-chat-text">
+                                                                                    {!! $message->message !!}
+                                                                                </div>
+                                                                            </div>
     @endforeach
-                                        </div>
+                                                                        </div>
 
-                                    </div>
-                                    <div class="card-footer">
-                                        <form action="/quote/transport/message" method="POST">
-                                            @csrf
-                                            <div class="row">
-                                                <div class="col-12">
-                                                    <textarea id="quote-text" name="message"></textarea>
-                                                    <input type="hidden" name="quote_id" value="{{ $quote->id }}">
-                                                </div>
-                                                <div class="col-12 row align-items-center justify-content-center mt-2">
-                                                    <button type="submit" {{ $quote->state === 'Aceptada' ? 'disabled' : '' }} class="btn btn-indigo mr-2">
-                                                        Enviar
-                                                    </button>
+                                                                    </div>
+                                                                    <div class="card-footer">
+                                                                        <form action="/quote/transport/message" method="POST">
+                                                                            @csrf
+                                                                            <div class="row">
+                                                                                <div class="col-12">
+                                                                                    <textarea id="quote-text" name="message"></textarea>
+                                                                                    <input type="hidden" name="quote_id" value="{{ $quote->id }}">
+                                                                                </div>
+                                                                                <div class="col-12 row align-items-center justify-content-center mt-2">
+                                                                                    <button type="submit" {{ $quote->state === 'Aceptada' ? 'disabled' : '' }} class="btn btn-indigo mr-2">
+                                                                                        Enviar
+                                                                                    </button>
 
-                                                    {{-- Botón para abrir el modal de cotización --}}
-                                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalCotizarTransporte">
-                                                        <i class="fas fa-dollar-sign"></i> Responder cotizacion
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div> -->
+                                                                                    {{-- Botón para abrir el modal de cotización --}}
+                                                                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalCotizarTransporte">
+                                                                                        <i class="fas fa-dollar-sign"></i> Responder cotizacion
+                                                                                    </button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div> -->
         <!-- Crear lista de respuestas -->
         <div class="col-12 col-md-12 col-lg-6">
             <div class="d-flex justify-content-between align-items-center">
@@ -498,13 +498,34 @@
                                 {{ $response->status }}
                             </td>
                             <td>
-                                <button
-                                    class="btn btn-indigo btn-indigo {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}"
-                                    type="button" data-toggle="modal" data-target="#quote-transport"
-                                    data-response-id="{{ $response->id }}"
-                                    data-response-nro="{{ $response->nro_response }}">
-                                    Aceptar
-                                </button>
+                                @if ($response->status === 'rechazada')
+                                    <span class="text-muted">Rechazada</span>
+                                @elseif ($response->status === 'confirmada')
+                                    <span class="text-success">Confirmada</span>
+                                @elseif ($response->status === 'aceptada')
+                                    <button class="btn btn-success btn-sm" data-toggle="modal"
+                                        data-target="#modalConfirmResponse" data-response-id="{{ $response->id }}">
+                                        Confirmar
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" data-toggle="modal"
+                                        data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
+                                        Rechazar
+                                    </button>
+                                @elseif ($response->status === 'enviada')
+                                    {{-- Solo puede rechazar o aceptar --}}
+                                    <button class="btn btn-danger btn-sm" data-toggle="modal"
+                                        data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
+                                        Rechazar
+                                    </button>
+
+                                    <button
+                                        class="btn btn-indigo btn-indigo {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}"
+                                        type="button" data-toggle="modal" data-target="#quote-transport"
+                                        data-response-id="{{ $response->id }}"
+                                        data-response-nro="{{ $response->nro_response }}">
+                                        Aceptar
+                                    </button>
+                                @endif
                             </td>
 
 
@@ -922,6 +943,65 @@
     </div>
 
 
+    <div class="modal fade" id="modalConfirmResponse" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form method="POST" action="{{ route('transport.quote.confirm') }}">
+                @csrf
+                <input type="hidden" name="response_id" id="confirm_response_id">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirmar respuesta del cliente</h5>
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>¿Por qué se confirma esta respuesta?</label>
+                            <textarea name="justification" class="form-control" rows="4" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-success" type="submit">Confirmar</button>
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+
+    <div class="modal fade" id="modalRejectResponse" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form method="POST" action="{{ route('transport.quote.reject') }}">
+                @csrf
+                <input type="hidden" name="response_id" id="reject_response_id">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Rechazar respuesta</h5>
+                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Motivo del rechazo</label>
+                            <textarea name="justification" class="form-control" rows="4" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-danger" type="submit">Rechazar</button>
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
 @stop
 
 
@@ -1230,5 +1310,13 @@
                 errorSpan.style.display = 'none';
             }
         }
+
+
+        $('#modalConfirmResponse').on('show.bs.modal', function(e) {
+            $('#confirm_response_id').val($(e.relatedTarget).data('response-id'));
+        });
+        $('#modalRejectResponse').on('show.bs.modal', function(e) {
+            $('#reject_response_id').val($(e.relatedTarget).data('response-id'));
+        });
     </script>
 @endpush

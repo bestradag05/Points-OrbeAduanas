@@ -39,7 +39,7 @@ class QuoteTransport extends Model
         'state',
         'nro_operation',
         'nro_quote_commercial',
-        'quote_transport_response',     
+        'quote_transport_response',
         'quote_transport_id',
         'response_quote_id',
     ];
@@ -133,8 +133,11 @@ class QuoteTransport extends Model
             Concept::class,
             'concepts_quote_transport',      // tu tabla de pivot
             'quote_transport_id',           // FK en pivot hacia esta tabla
-            'concepts_id');
+            'concepts_id'
+        );
     }
-
-
+    public function traces()
+    {
+        return $this->hasMany(QuoteTrace::class, 'quote_id');
+    }
 }

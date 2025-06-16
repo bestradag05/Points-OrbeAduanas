@@ -73,4 +73,8 @@ class ResponseTransportQuote extends Model
     {
         return $this->hasMany(ConceptsResponse::class, 'response_transport_quote_id', 'id');
     }
+    public function traces()
+    {
+        return $this->hasMany(QuoteTrace::class, 'response_id');
+    }
 }
