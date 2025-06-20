@@ -17,7 +17,7 @@ return new class extends Migration
         $table->foreignId('quote_id')->constrained('quote_transport'); // FK hacia transporte (por ahora)
         $table->foreignId('response_id')->nullable()->constrained('response_transport_quotes'); // opcional
         $table->enum('service_type', ['aduana', 'flete', 'transporte']);
-        $table->enum('action', ['aceptada', 'confirmada', 'rechazada', 'modificada']);
+        $table->enum('action', ['Aceptado', 'Confirmada', 'Rechazada', 'Enviada']);
         $table->text('justification')->nullable();
         $table->foreignId('user_id')->nullable();
         $table->timestamps();

@@ -482,7 +482,7 @@ class QuoteTransportController extends Controller
 
         $response = ResponseTransportQuote::findOrFail($request->response_id);
         $response->update([
-            'status' => 'confirmada',
+            'status' => 'Confirmada',
         ]);
 
         return back()->with('success', 'Respuesta confirmada.');
@@ -498,7 +498,7 @@ class QuoteTransportController extends Controller
 
         $response = ResponseTransportQuote::findOrFail($request->response_id);
         $response->update([
-            'status' => 'rechazada',
+            'status' => 'Rechazada',
         ]);
 
         return back()->with('success', 'Respuesta rechazada.');
