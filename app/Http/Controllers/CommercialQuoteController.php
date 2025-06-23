@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClientQuoteTrace;
 use App\Models\CommercialQuote;
 use App\Models\Concept;
 use App\Models\ConceptsQuoteTransport;
@@ -106,7 +107,7 @@ class CommercialQuoteController extends Controller
         $customers = Customer::with('personal')
             ->where('id_personal', $personalId)
             ->get();
-            
+
 
         return view("commercial_quote/register-commercial-quote", compact('stateCountrys', 'type_shipments', 'type_loads', 'regimes', 'incoterms', 'nro_quote_commercial', 'types_services', 'containers', 'customers'));
     }
@@ -123,7 +124,7 @@ class CommercialQuoteController extends Controller
             $consolidated = [];
 
             $consolidated = $this->calculateDataConsolidated($shippersConsolidated);
-            
+
             $commercialQuote = CommercialQuote::create([
                 'nro_quote_commercial' => $request->nro_quote_commercial,
                 'origin' => $request->origin,
@@ -348,7 +349,7 @@ class CommercialQuoteController extends Controller
 
     public function completeData(Request $request)
     {
-        
+
         $commercialQuote = CommercialQuote::where('nro_quote_commercial', $request->nro_quote_commercial)->first();
         $customer = null;
         $supplier = null;
@@ -383,7 +384,6 @@ class CommercialQuoteController extends Controller
                     'state' => 'Activo',
                     'id_personal' => Auth::user()->personal->id
                 ]);
-               
             }
 
             $updateData['customer_company_name'] = null;
@@ -444,12 +444,18 @@ class CommercialQuoteController extends Controller
 
         $commercialQuote->update($updateData);
 
-        return redirect('commercial/quote/' . $commercialQuote->id . '/detail')->with('success', 'La cotizacion fue aceptada.');
+        return redirect()
+            ->route('commercial.quote.detail', $commercialQuote->id)
+            ->with([
+                'success' => 'La cotización fue aceptada.',
+                'show_client_trace_modal' => true,
+                'quote_id' => $commercialQuote->id
+            ]);
     }
 
 
     public function getTemplateDetailCommercialQuote($id)
-    {  
+    {
 
         $comercialQuote = CommercialQuote::find($id);
         $type_services = TypeService::all();
@@ -515,7 +521,7 @@ class CommercialQuoteController extends Controller
             'customs_agency' => $customs_agency,
             'documents' => $documents
         ];
-        
+
 
         return view('commercial_quote/detail-commercial-quote', $data);
     }
@@ -691,33 +697,62 @@ class CommercialQuoteController extends Controller
     }
 
     public function storeConceptPrices(Request $request, $quoteId)
-{
-    $data = $request->validate([
-      'provider_id'     => 'required|exists:suppliers,id',
-      'price_concept.*' => 'required|numeric|min:0',
-      'cost_transport'  => 'required|numeric|min:0',
-    ]);
+    {
+        $data = $request->validate([
+            'provider_id'     => 'required|exists:suppliers,id',
+            'price_concept.*' => 'required|numeric|min:0',
+            'cost_transport'  => 'required|numeric|min:0',
+        ]);
 
-    // 1) Crea o actualiza la respuesta del transportista:
-    $resp = ResponseTransportQuote::updateOrCreate(
-      ['quote_transport_id' => $quoteId, 'provider_id' => $data['provider_id']],
-      ['provider_cost' => $data['cost_transport'], 'status'=>'Enviada']
-    );
-
-    $quote = QuoteTransport::findOrFail($quoteId);
-    $quote->responseTransportQuotes()->attach($resp->id);
-
-    // 2) Para cada concepto, grábalo en concepts_transport_quote:
-    foreach ($data['price_concept'] as $conceptId => $price) {
-        $resp->conceptsQuoteTransport()->updateOrCreate(
-          ['quote_transport_id' => $quoteId, 'concepts_id' => $conceptId, 'response_quote_id'=>$resp->id],
-          ['value_concept' => $price]
+        // 1) Crea o actualiza la respuesta del transportista:
+        $resp = ResponseTransportQuote::updateOrCreate(
+            ['quote_transport_id' => $quoteId, 'provider_id' => $data['provider_id']],
+            ['provider_cost' => $data['cost_transport'], 'status' => 'Enviada']
         );
+
+        $quote = QuoteTransport::findOrFail($quoteId);
+        $quote->responseTransportQuotes()->attach($resp->id);
+
+        // 2) Para cada concepto, grábalo en concepts_transport_quote:
+        foreach ($data['price_concept'] as $conceptId => $price) {
+            $resp->conceptsQuoteTransport()->updateOrCreate(
+                ['quote_transport_id' => $quoteId, 'concepts_id' => $conceptId, 'response_quote_id' => $resp->id],
+                ['value_concept' => $price]
+            );
+        }
+
+        // 3) Redirige con éxito…
+        return back()->with('success', 'Cotización de transporte registrada.');
     }
 
-    // 3) Redirige con éxito…
-    return back()->with('success', 'Cotización de transporte registrada.');
-}
+    public function storeClientTrace(Request $request)
+    {
+        $request->validate([
+            'quote_id' => 'required|exists:commercial_quote,id',
+            'client_decision' => 'required|in:Aceptado,Rechazado',
+            'justification' => 'required|string|min:5',
+        ]);
+
+        $quote = CommercialQuote::findOrFail($request->quote_id);
+
+        // Actualizamos el estado de la cotización según la decisión del cliente
+        $quote->state = $request->client_decision;
+        $quote->save();
+
+        // Creamos el registro de trazabilidad del cliente
+        ClientQuoteTrace::create([
+            'quote_id' => $quote->id,
+            'client_decision' => $request->client_decision,
+            'justification' => $request->justification,
+            'decision_date' => now()->toDateString(), // solo la fecha
+            'user_id' => Auth::id(),
+        ]);
+
+        return redirect()
+            ->route('commercial.quote.detail', $quote->id)
+            ->with('success', 'La decisión del cliente fue registrada correctamente.');
+    }
+
 
 
 
@@ -843,14 +878,13 @@ class CommercialQuoteController extends Controller
     }
 
 
-    public function generateRoPdf($commercialQuote){
+    public function generateRoPdf($commercialQuote)
+    {
 
 
         $pdf = FacadePdf::loadView('freight.pdf.routingOrder', compact('commercialQuote'));
 
         return $pdf->stream('Routing Order.pdf');
-
-
     }
 
 

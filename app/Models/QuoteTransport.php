@@ -140,4 +140,8 @@ class QuoteTransport extends Model
     {
         return $this->hasMany(QuoteTrace::class, 'quote_id');
     }
+    public function clientTrace()
+    {
+        return $this->hasOne(ClientQuoteTrace::class, 'quote_id');
+    }
 }

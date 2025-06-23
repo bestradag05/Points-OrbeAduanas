@@ -192,15 +192,17 @@ Route::middleware('auth')->group(function () {
     Route::post('transport/quote/{id}/prices', [QuoteTransportController::class, 'storeConceptPrices'])
         ->name('transport.quote.storePrices');
 
-    // Confirmar respuesta como aprobada por el cliente
-    Route::post('transport/quote/confirm', [QuoteTransportController::class, 'confirmClientResponse'])
-        ->name('transport.quote.confirm');
+    // Aceptar respuesta como aprobada por el cliente
+    Route::post('transport/quote/accept', [QuoteTransportController::class, 'acceptResponse'])
+        ->name('transport.quote.accept');
 
     // Rechazar una respuesta (en cualquier estado)
     Route::post('transport/quote/reject', [QuoteTransportController::class, 'rejectResponse'])
         ->name('transport.quote.reject');
 
-        
+
+
+
 
     /* Mensaje de cotizaciones de flete */
 
@@ -245,6 +247,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('commercial/quote/updatedate/{id}', [CommercialQuoteController::class, 'updateDate']);
     Route::get('commercial/customer/{name}', [CommercialQuoteController::class, 'showCustomerForName']);
     Route::resource('commercial/quote', CommercialQuoteController::class);
+
+    Route::post('commercial/quote/client-trace', [CommercialQuoteController::class, 'storeClientTrace'])
+        ->name('commercial.quote.clientTrace');
+
+
 
 
     /* Reportes */

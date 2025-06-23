@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('provider_cost', 12, 2);
             $table->decimal('commission', 12, 2)->nullable();
             $table->decimal('total', 12, 2)->nullable();
-            $table->enum('status', ['Aceptado', 'Confirmada', 'Rechazada', 'Enviada'])->default('Enviada');
+            $table->enum('status', ['Aceptado', 'Rechazada', 'Enviada'])->default('Enviada');
             $table->timestamps();
         });
     }

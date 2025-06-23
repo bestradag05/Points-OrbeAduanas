@@ -7,11 +7,13 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Concept;
 use App\Models\Customer;
 use App\Models\ConceptsTransport;
+use App\Models\CommercialQuote;
 use App\Models\Transport;
 use App\Models\ConceptsResponse;
 use App\Models\ResponseTransportQuote;
 use App\Models\MessageQuoteTransport;
 use App\Models\QuoteTransport;
+use App\Models\QuoteTrace;
 use App\Models\Supplier;
 use App\Models\Routing;
 use App\Models\TypeShipment;
@@ -473,7 +475,7 @@ class QuoteTransportController extends Controller
         ));
     }
 
-    public function confirmClientResponse(Request $request)
+    public function acceptResponse(Request $request)
     {
         $request->validate([
             'response_id' => 'required|exists:response_transport_quotes,id',
@@ -481,12 +483,34 @@ class QuoteTransportController extends Controller
         ]);
 
         $response = ResponseTransportQuote::findOrFail($request->response_id);
+
+        // Marcar todas como Enviada nuevamente excepto esta
+        ResponseTransportQuote::where('quote_transport_id', $response->quote_transport_id)
+            ->where('id', '!=', $response->id)
+            ->update(['status' => 'Enviada']);
+
         $response->update([
-            'status' => 'Confirmada',
+            'status' => 'Aceptado',
         ]);
 
-        return back()->with('success', 'Respuesta confirmada.');
+        QuoteTrace::create([
+            'quote_id' => $response->quote_transport_id,
+            'response_id' => $response->id,
+            'service_type' => 'transporte',
+            'action' => 'Aceptado',
+            'justification' => $request->justification,
+            'user_id' => auth()->id(),
+        ]);
+
+        return redirect()
+            ->route('transport.show', $response->quote_transport_id)
+            ->with([
+                'open_close_quote_modal' => true,
+                'response_id' => $response->id,
+                'response_nro' => $response->nro_response, // nuevo dato
+            ]);
     }
+
 
 
     public function rejectResponse(Request $request)
@@ -503,7 +527,6 @@ class QuoteTransportController extends Controller
 
         return back()->with('success', 'Respuesta rechazada.');
     }
-
 
 
     /**
