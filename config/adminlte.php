@@ -703,6 +703,13 @@ return [
             'active' => ['incoterms', 'incoterms*', 'regex:@^content/[0-9]+$@'],
             'can' => 'incoterms.list',
         ],
+        [
+            'text' => 'Comisiones',
+            'url'  => 'commissions',
+            'icon' => 'fas fa-funnel-dollar', 
+            'active' => ['incoterms', 'incoterms*', 'regex:@^content/[0-9]+$@'],
+            'can' => 'incoterms.list',
+        ],
 
         [
             'text' => 'Routing',

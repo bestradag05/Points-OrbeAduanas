@@ -770,19 +770,16 @@
                                 </div>
 
                                 <div class="col-4">
-
-                                    {{-- <input type="text" class="form-control" name="fixed_miltiplyable_cost"> --}}
-
-                                    <x-adminlte-select2 name="fixed_miltiplyable_cost" id="fixed_miltiplyable_cost"
-                                        label="Fijo / CW" class="form-control" data-placeholder="Seleccione un tipo..."
-                                        data-required="true">
-                                        <option />
-                                        <option value="Fijo">Fijo</option>
-                                        <option value="C/W">C/W</option>
-                                    </x-adminlte-select2>
-
-
-
+                                    <div class="form-group">
+                                        <label for="fixed_miltiplyable_cost">C/W</label><br>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="fixed_miltiplyable_cost"
+                                                name="fixed_miltiplyable_cost" value="C/W">
+                                            <label class="form-check-label" for="fixed_miltiplyable_cost">
+                                                Aplicar C/W
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="col-4">
@@ -1121,18 +1118,27 @@
         });
 
 
-        /* Calculamos cuando el costo final multiplicando el costo unitario pr el peso cargable (va depender de si el volumen o el peso sea mayor) */
-        $('#unit_cost').on('change', () => {
-            let cubage_kgv = parseFloat(@json($quote->cubage_kgv));
-            let ton_kilogram = parseFloat(@json($quote->ton_kilogram));
-            let unit_cost = parseFloat($('#unit_cost').val());
+        function calculateFinalCost() {
+            let cubage_kgv = parseFloat(@json($quote->cubage_kgv)) || 0;
+            let ton_kilogram = parseFloat(@json($quote->ton_kilogram)) || 0;
+            let unit_cost = parseFloat($('#unit_cost').val()) || 0;
+            let cw = $('#fixed_miltiplyable_cost');
             let higherCost = 0;
+            let final_cost = 0;
+
+
+            //Verificamos que el C/W este marcado
+
+            if (cw.is(':checked')) {
+                higherCost = cubage_kgv > ton_kilogram ? cubage_kgv : ton_kilogram;
+                final_cost = unit_cost * higherCost;
+            } else {
+                final_cost = unit_cost;
+            }
 
 
             //Verificamos cual es mayor para realizar calculo del costo final
 
-            higherCost = cubage_kgv > ton_kilogram ? cubage_kgv : ton_kilogram;
-            let final_cost = unit_cost * higherCost;
 
             let formattedNumber = final_cost.toLocaleString('en-US', {
                 minimumFractionDigits: 2,
@@ -1140,7 +1146,16 @@
             });
 
             $('#final_cost').val(formattedNumber);
+        }
 
+        /* Calculamos cuando el costo final multiplicando el costo unitario pr el peso cargable (va depender de si el volumen o el peso sea mayor) */
+        $('#unit_cost').on('change', () => {
+
+            calculateFinalCost();
+        });
+
+        $('#fixed_miltiplyable_cost').on('change', function() {
+            calculateFinalCost();
         });
 
         function addConceptResponseFreight(buton) {
@@ -1173,8 +1188,8 @@
 
             if (isValid) {
                 let data = loadConceptData(inputs);
-                console.log(conceptsResponseFreightArray);
-                const index = conceptsResponseFreightArray.findIndex(item => item.concept?.id === parseInt(data.concept.id));
+                const index = conceptsResponseFreightArray.findIndex(item => item.concept?.id === parseInt(data.concept
+                    .id));
 
                 if (index !== -1) {
 
@@ -1185,7 +1200,6 @@
                     conceptsResponseFreightArray.push(data);
                 }
 
-                console.log("Concepto agregado: ", conceptsResponseFreightArray);
                 updateTableRespnoseFreight(conceptsResponseFreightArray);
                 clearConceptsData(inputs);
 
@@ -1208,7 +1222,6 @@
             for (let clave in conceptsResponseFreightArray) {
 
                 let item = conceptsResponseFreightArray[clave];
-                console.log("Actualizando la tabla" + conceptsResponseFreightArray[0])
 
                 if (conceptsResponseFreightArray.hasOwnProperty(clave)) {
                     contador++; // Incrementar el contador en cada iteración
@@ -1238,7 +1251,6 @@
                     let celdaCostFinal = fila.insertCell(5);
                     celdaCostFinal.textContent = item.final_cost.toFixed(2);
 
-
                     let celdaEliminar = fila.insertCell(6);
                     let botonEliminar = document.createElement('a');
                     botonEliminar.href = '#';
@@ -1247,10 +1259,10 @@
 
                         // Eliminar la fila correspondiente al hacer clic en el botón
                         let fila = this.parentNode.parentNode;
+
                         let indice = fila.rowIndex -
                             1; // Restar 1 porque el índice de las filas en tbody comienza en 0
-                        console.log("Indice borrado : " + indice);
-                        delete conceptsResponseFreightArray[Object.keys(conceptsResponseFreightArray)[indice]];
+                        conceptsResponseFreightArray.splice(indice, 1);
                         updateTableRespnoseFreight(conceptsResponseFreightArray);
                     });
                     celdaEliminar.appendChild(botonEliminar);
@@ -1325,6 +1337,8 @@
                                 ''
                         };
 
+                    } else if (input.type === 'checkbox') {
+                        data[name] = $(input).is(':checked') ? input.value : '';
                     } else {
                         // Si es un valor numérico formateado, lo limpiamos
                         if (input.classList.contains('CurrencyInput')) {

@@ -3,6 +3,7 @@
 use App\Events\QuoteNotification;
 use App\Http\Controllers\AdditionalPointsController;
 use App\Http\Controllers\CommercialQuoteController;
+use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\ConceptsController;
 use App\Http\Controllers\CustomController;
 use App\Http\Controllers\CustomerController;
@@ -140,6 +141,9 @@ Route::middleware('auth')->group(function () {
     /* Regimenes */
 
     Route::resource('regimes', RegimeController::class);
+    
+    /* Comisiones */
+    Route::resource('commissions', CommissionController::class);
 
     Route::resource('containers', ContainerController::class);
     Route::resource('type_containers', TypeContainerController::class);

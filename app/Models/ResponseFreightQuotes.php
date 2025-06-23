@@ -9,9 +9,9 @@ class ResponseFreightQuotes extends Model
 {
     use HasFactory;
 
-    protected $table = 'response_freight_quotes'; 
+    protected $table = 'response_freight_quotes';
 
-     protected $fillable = [
+    protected $fillable = [
         'validity_date',
         'origin',
         'destination',
@@ -22,7 +22,7 @@ class ResponseFreightQuotes extends Model
     ];
 
 
-        // Evento que se ejecuta antes de guardar el modelo
+    // Evento que se ejecuta antes de guardar el modelo
     protected static function booted()
     {
         static::creating(function ($response) {
@@ -54,7 +54,10 @@ class ResponseFreightQuotes extends Model
     }
 
 
-
-
-
+    public function commissions()
+    {
+        return $this->belongsToMany(Commission::class, 'commission_quote_freight_response')
+            ->withPivot('amount')
+            ->withTimestamps();
+    }
 }
