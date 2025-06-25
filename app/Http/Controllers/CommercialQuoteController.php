@@ -186,7 +186,7 @@ class CommercialQuoteController extends Controller
                 'id_personal' => auth()->user()->personal->id,
             ]);
         }
-
+        
 
         if (isset($request->type_service) || !empty($request->type_service)) {
             foreach ($request->type_service as $type_service) {
@@ -729,22 +729,22 @@ class CommercialQuoteController extends Controller
     {
         $request->validate([
             'quote_id' => 'required|exists:commercial_quote,id',
-            'client_decision' => 'required|in:Aceptado,Rechazado',
+            'client_decision' => 'required|in:accept,decline',
             'justification' => 'required|string|min:5',
         ]);
 
         $quote = CommercialQuote::findOrFail($request->quote_id);
 
         // Actualizamos el estado de la cotización según la decisión del cliente
-        $quote->state = $request->client_decision;
+        $quote->state = $request->client_decision === 'accept' ? 'Aceptado' : 'Rechazado';
         $quote->save();
 
         // Creamos el registro de trazabilidad del cliente
         ClientQuoteTrace::create([
             'quote_id' => $quote->id,
-            'client_decision' => $request->client_decision,
+            'client_decision' => $quote->state,
             'justification' => $request->justification,
-            'decision_date' => now()->toDateString(), // solo la fecha
+            'decision_date' => now(),
             'user_id' => Auth::id(),
         ]);
 

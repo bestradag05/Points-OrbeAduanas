@@ -525,6 +525,16 @@ class QuoteTransportController extends Controller
             'status' => 'Rechazada',
         ]);
 
+        // Creamos un registro en la tabla de trazabilidad
+        QuoteTrace::create([
+            'quote_id' => $response->quote_transport_id,
+            'response_id' => $response->id,
+            'service_type' => 'transporte',
+            'action' => 'Rechazada',
+            'justification' => $request->justification,
+            'user_id' => auth()->id(),
+        ]);
+
         return back()->with('success', 'Respuesta rechazada.');
     }
 

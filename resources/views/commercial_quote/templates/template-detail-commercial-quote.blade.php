@@ -698,7 +698,7 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             $('#client_trace_quote_id').val(id);
-                            $('#client_trace_action').val('Aceptado');
+                            $('#client_trace_action').val('accept');
                             $('#modalClientTrace').modal('show');
                         }
                     });
@@ -719,7 +719,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $('#client_trace_quote_id').val(id);
-                        $('#client_trace_action').val('Rechazado');
+                        $('#client_trace_action').val('decline');
                         $('#modalClientTrace').modal('show');
                     }
                 });
