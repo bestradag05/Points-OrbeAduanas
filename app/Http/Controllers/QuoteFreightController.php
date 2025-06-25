@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Commission;
 use App\Models\Concept;
 use App\Models\QuoteFreight;
 use App\Models\ResponseFreightQuotes;
@@ -216,7 +217,10 @@ class QuoteFreightController extends Controller
         $response = new ResponseFreightQuotes();
         $nro_response = $response->generateNroResponse();
 
-        return view('freight/quote/quote-messagin', compact('quote', 'files', 'messages', 'suppliers', 'nro_response', 'concepts'));
+        //Obtenemos las comisiones que se consideraran
+        $commissions = Commission::all();
+
+        return view('freight/quote/quote-messagin', compact('quote', 'files', 'messages', 'suppliers', 'nro_response', 'concepts','commissions'));
     }
 
 
