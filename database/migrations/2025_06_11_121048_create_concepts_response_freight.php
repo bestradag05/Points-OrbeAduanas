@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('fixed_miltiplyable_cost')->nullable();
             $table->string('observations')->nullable();
             $table->decimal('final_cost', 8, 2);
-            $table->decimal('net_cost', 8, 2);
             $table->timestamps();
 
             $table->foreign('response_freight_id')->references('id')->on('response_freight_quotes');

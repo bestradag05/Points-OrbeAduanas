@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('response_freight_quotes', function (Blueprint $table) {
             $table->id();
             $table->string('nro_response')->unique();
-            $table->string('validity_date');
+            $table->date('validity_date');
             $table->unsignedBigInteger('id_supplier');
             $table->string('origin');
             $table->string('destination');
@@ -22,9 +22,12 @@ return new class extends Migration
             $table->string('service');
             $table->string('transit_time');
             $table->string('exchange_rate')->nullable();
+            $table->decimal('total', 8, 2);
+            $table->unsignedBigInteger('id_quote_freight');
             $table->timestamps();
 
-             $table->foreign('id_supplier')->references('id')->on('suppliers');
+            $table->foreign('id_supplier')->references('id')->on('suppliers');
+            $table->foreign('id_quote_freight')->references('id')->on('quote_freight');
         });
     }
 

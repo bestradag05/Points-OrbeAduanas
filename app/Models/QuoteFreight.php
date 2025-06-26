@@ -86,6 +86,11 @@ class QuoteFreight extends Model
         return $this->belongsTo(Freight::class, 'id', 'id_quote_freight');
     }
 
+    public function responses()
+    {
+        return $this->hasMany(ResponseFreightQuotes::class, 'id_quote_freight');
+    }
+
 
     public function messages()
     {

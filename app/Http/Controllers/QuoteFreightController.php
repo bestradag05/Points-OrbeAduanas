@@ -196,7 +196,7 @@ class QuoteFreightController extends Controller
      */
     public function show(string $id)
     {
-        $quote = QuoteFreight::findOrFail($id);
+        $quote = QuoteFreight::with('responses.commissions')->findOrFail($id);
 
         $suppliers = Supplier::where('area_type', 'pricing')->get();
 
@@ -303,8 +303,6 @@ class QuoteFreightController extends Controller
 
     public function validateForm($request, $id)
     {
-
-        /* dd($request->all()); */
 
         return Validator::make($request->all(), [
             'origin' => 'required|string',

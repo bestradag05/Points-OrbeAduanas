@@ -493,39 +493,49 @@
 
             <table class="table table-sm text-sm">
                 <thead class="thead-dark">
+
+                    {{-- 'validity_date',
+        'id_supplier',
+        'origin',
+        'destination',
+        'frequency',
+        'service',
+        'transit_time',
+        'exchange_rate',
+        'total',
+        'id_quote_freight' --}}
+
                     <th>#</th>
-                    <th>N° cotizacion</th>
-                    <th>Origen</th>
-                    <th>Destino</th>
-                    <th>N° de operacion</th>
-                    <th>Fecha</th>
-                    <th>Estado</th>
+                    <th>N° Respuesta</th>
+                    <th>Agente</th>
+                    <th>Fecha de Validez</th>
+                    <th>Frecuencia</th>
+                    <th>Servicio</th>
+                    <th>Tiempo en transito</th>
+                    <th>Tipo de cambio</th>
+                    <th>Total</th>
                     <th>Acciones</th>
                 </thead>
                 <tbody>
 
 
-                    {{-- @foreach ($comercialQuote->quote_freight as $quote)
+                    @foreach ($quote->responses as $response)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $quote->nro_quote }}</td>
-                            <td>{{ $quote->origin }}</td>
-                            <td>{{ $quote->destination }}</td>
-                            <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
-                                {{ $quote->commodity }}</td>
-                            <td class="{{ $comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none' }}">
-                                {{ $quote->commercial_quote->lcl_fcl }}</td>
-                            <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
-                                {{ $quote->cubage_kgv }}</td>
-                            <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
-                                {{ $quote->ton_kilogram }}</td>
-                            <td>{{ $quote->nro_quote_commercial }}</td>
-                            <td>{{ \Carbon\Carbon::parse($quote->created_at)->format('d/m/Y') }}</td>
-                            <td>
+                            <td>{{ $response->nro_response }}</td>
+                            <td>{{ $response->supplier->name_businessname }}</td>
+                            <td>{{ $response->validity_date_formatted}}</td>
+                            <td>{{ $response->frequency }}</td>
+                            <td>{{ $response->service }}</td>
+                            <td>{{ $response->transit_time }}</td>
+                            <td>{{ $response->exchange_rate }}</td>
+                            <td class="text-indigo text-bold">{{ $response->total }}</td>
+
+                            {{-- <td>
                                 <div class="custom-badge status-{{ strtolower($quote->state) }}">
                                     {{ $quote->state }}
                                 </div>
-                            </td>
+                            </td> --}}
 
 
                             <td style="width: 150px">
@@ -535,7 +545,7 @@
                                     <option>Detalle</option>
                                     <option class="{{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">Anular
                                     </option>
-                                    @if ($comercialQuote->state === 'Pendiente')
+                                    @if ($quote->state === 'Pendiente')
                                         <option class="{{ $quote->state != 'Aceptado' ? 'd-none' : '' }}">Rechazar
                                         </option>
                                     @endif
@@ -544,7 +554,7 @@
                             </td>
 
                         </tr>
-                    @endforeach --}}
+                    @endforeach
 
                 </tbody>
 
@@ -632,7 +642,7 @@
         aria-labelledby="modalResponseQuoteFreight-title" aria-hidden="true">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
-                <form method="POST" action="{{ route('transport.quote.storePrices', $quote->id) }}"
+                <form method="POST" action="{{ route('transport.quote.responses.store', $quote->id) }}"
                     id="formResponseQuoteFreight">
                     @csrf
                     <div class="modal-header">
@@ -648,7 +658,8 @@
                                 <div class="bs-stepper-header">
                                     <div class="step" data-target="#step-general">
                                         <button type="button" class="step-trigger" role="tab" id="stepperGeneral"
-                                            aria-controls="step-general" aria-selected="false" data-target="#step-general">
+                                            aria-controls="step-general" aria-selected="false"
+                                            data-target="#step-general">
                                             <span class="bs-stepper-circle">1</span>
                                             <span class="bs-stepper-label">Datos Generales</span>
                                         </button>
@@ -747,7 +758,8 @@
                                         </div>
 
 
-                                        <button type="button" class="btn btn-primary mt-3" onclick="stepper.next()">Siguiente</button>
+                                        <button type="button" class="btn btn-primary mt-3"
+                                            onclick="handleStepValidation('#step-general')">Siguiente</button>
                                     </div>
 
                                     <!-- Paso 2 -->
@@ -755,7 +767,7 @@
                                         aria-labelledby="stepperCostos">
 
                                         <div id="divResponseFreight" class="p-2 row">
-                                            
+
                                             <div class="col-12 row justify-content-center align-items-center my-2 p-3"
                                                 style="background-color: rgb(157 160 166 / 27%);">
                                                 <div class="col-2">
@@ -892,7 +904,8 @@
 
                                         <button type="button" class="btn btn-secondary mt-3"
                                             onclick="stepper.previous()">Anterior</button>
-                                        <button class="btn btn-indigo mt-3" type="submit">  <i class="fas fa-save mr-2"></i>Guardar respuesta</button>
+                                        <button class="btn btn-indigo mt-3" type="submit"> <i
+                                                class="fas fa-save mr-2"></i>Guardar respuesta</button>
                                     </div>
                                 </div>
                             </div>
@@ -903,7 +916,7 @@
 
                     </div>
 
-                  
+
                 </form>
             </div>
         </div>
@@ -1143,7 +1156,7 @@
             if (commissionsResponseFreightArray.length === 0) {
                 commissionsFromDB.forEach(c => {
                     commissionsResponseFreightArray.push({
-                        commission_id: c.commission_id,
+                        commission_id: c.id,
                         concept: {
                             name: c.name
                         },
@@ -1346,41 +1359,20 @@
             e.preventDefault();
 
             let formResponseQuote = $('#formResponseQuoteFreight');
-            const inputs = formResponseQuote.find('input , select').not(
-                '#divResponseFreight input, #divResponseFreight select');
-            let isValid = true;
 
 
-            inputs.each(function() {
-                const input = this;
-
-                if (input.closest('.d-none')) return;
-
-                // Solo validar si el campo tiene el atributo data-required
-                if (input.dataset.required === 'true') {
-                    if (input.value.trim() === '' || input.value == null) {
-                        input.classList.add('is-invalid');
-                        isValid = false;
-                        showError(input, 'Debe completar este campo');
-                    } else {
-                        input.classList.remove('is-invalid');
-                        hideError(input);
-                    }
-                } else {
-                    // No requerido, aseguramos que no tenga error visible
-                    input.classList.remove('is-invalid');
-                    hideError(input);
-                }
-            });
-
-
-            if (isValid) {
+            if (conceptsResponseFreightArray.length > 0) {
 
                 let conceptops = JSON.stringify(conceptsResponseFreightArray);
+                let commissions = JSON.stringify(commissionsResponseFreightArray);
 
                 formResponseQuote.append(`<input type="hidden" name="concepts" value='${conceptops}' />`);
+                formResponseQuote.append(`<input type="hidden" name="commissions" value='${commissions}' />`);
 
                 e.target.submit();
+
+            } else {
+                toastr.error('Debe agregar algun concepto para esta respuesta aparte de las comisiones');
             }
 
         });
@@ -1436,6 +1428,37 @@
                 input.classList.remove('is-invalid');
                 hideError(input);
             });
+        }
+
+        function handleStepValidation(stepId) {
+            if (validateCurrentStep(stepId)) {
+                stepper.next();
+            } else {
+                toastr.error("Por favor completa todos los campos requeridos antes de continuar.");
+            }
+        }
+
+
+        function validateCurrentStep(stepId) {
+            let isValid = true;
+            const currentStep = document.querySelector(stepId);
+            const inputs = currentStep.querySelectorAll('[data-required="true"]');
+
+            inputs.forEach(input => {
+                if (input.closest('.d-none')) return;
+
+                const value = input.value?.trim();
+                if (!value || value === '') {
+                    input.classList.add('is-invalid');
+                    showError(input, 'Debe completar este campo');
+                    isValid = false;
+                } else {
+                    input.classList.remove('is-invalid');
+                    hideError(input);
+                }
+            });
+
+            return isValid;
         }
 
 

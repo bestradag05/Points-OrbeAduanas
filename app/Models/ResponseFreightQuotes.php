@@ -12,13 +12,22 @@ class ResponseFreightQuotes extends Model
     protected $table = 'response_freight_quotes';
 
     protected $fillable = [
+        'nro_response',
         'validity_date',
+        'id_supplier',
         'origin',
         'destination',
         'frequency',
         'service',
         'transit_time',
-        'exchange_rate'
+        'exchange_rate',
+        'total',
+        'id_quote_freight'
+    ];
+
+
+    protected $casts = [
+        'validity_date' => 'date',
     ];
 
 
@@ -51,6 +60,32 @@ class ResponseFreightQuotes extends Model
             $number++;
             return $prefix . $year . $number;
         }
+    }
+
+    /* accessors */
+
+
+    public function getValidityDateFormattedAttribute()
+    {
+        return $this->validity_date?->format('d/m/Y');
+    }
+
+
+    public function quote()
+    {
+        return $this->belongsTo(QuoteFreight::class, 'id_quote_freight');
+    }
+
+
+    public function concepts()
+    {
+        return $this->belongsToMany(Concept::class, 'concepts_response_freight', 'response_freight_id', 'concept_id')
+            ->withPivot(['unit_cost', 'fixed_miltiplyable_cost', 'observations', 'final_cost']);
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'id_supplier');
     }
 
 

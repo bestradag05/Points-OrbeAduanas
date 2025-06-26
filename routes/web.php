@@ -38,6 +38,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ContainerController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ResponseFreightQuotesController;
 use App\Http\Controllers\TypeContainerController;
 use App\Models\CommercialQuote;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -53,7 +54,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 |
 */
 
-Route::get('/routingpdf/{id}', function($id){
+Route::get('/routingpdf/{id}', function ($id) {
 
     $commercialQuote = CommercialQuote::findOrFail($id);
     $freight = $commercialQuote->freight;
@@ -62,7 +63,6 @@ Route::get('/routingpdf/{id}', function($id){
     $pdf = Pdf::loadView('freight.pdf.routingOrder', compact('commercialQuote', 'concepts', 'freight'));
 
     return $pdf->stream('Routing Order.pdf');
-
 });
 
 Route::get('/', function () {
@@ -92,7 +92,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
     Route::get('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])
-    ->name('notifications.read');
+        ->name('notifications.read');
 
     Route::resource('users', UserController::class);
     Route::resource('personal', PersonalController::class);
@@ -141,7 +141,7 @@ Route::middleware('auth')->group(function () {
     /* Regimenes */
 
     Route::resource('regimes', RegimeController::class);
-    
+
     /* Comisiones */
     Route::resource('commissions', CommissionController::class);
 
@@ -169,9 +169,19 @@ Route::middleware('auth')->group(function () {
     Route::resource('transport', TransportController::class);
     Route::get('transport/create/{quoteId}', [TransportController::class, 'createTransport']);
 
-    Route::post('transport/quote/{id}/prices', 
-    [QuoteTransportController::class, 'storeConceptPrices'])
-    ->name('transport.quote.storePrices');
+    //TODO: Modificar la ruta, ya que la respuesta debe ir en el controlador de ResponseTransportQuoteController
+    //TODO: Seguir las reglas de Api RESTful 
+    Route::post(
+        'transport/quote/{id}/prices',
+        [QuoteTransportController::class, 'storeConceptPrices']
+    )
+        ->name('transport.quote.storePrices');
+
+
+    Route::post(
+        'transport/quote/{quote}/responses',
+        [ResponseFreightQuotesController::class, 'store']
+    )->name('transport.quote.responses.store');
 
 
     Route::get('insurance/pending', [InsuranceController::class, 'getInsurancePending']);
@@ -205,7 +215,7 @@ Route::middleware('auth')->group(function () {
     Route::get('quote/search-routing/{nro_operation}', [QuoteTransportController::class, 'searchRouting']);
     Route::patch('quote/transport/cost/{id}', [QuoteTransportController::class, 'costTransport']);
     Route::delete('quote/transport/{id}/{action}', [QuoteTransportController::class, 'updateStateQuoteTransport']);
- /*    Route::patch('quote/transport/cost/{action}/{id}', [QuoteTransportController::class, 'handleTransportAction']); */
+    /*    Route::patch('quote/transport/cost/{action}/{id}', [QuoteTransportController::class, 'handleTransportAction']); */
     Route::get('quote/transport/cost/reject/{id}', [QuoteTransportController::class, 'rejectQuoteTransport']);
     Route::get('quote/transport/cost/keep/{id}', [QuoteTransportController::class, 'keepQuoteTransport']);
     Route::patch('quote/transport/cost/accept/{id}', [QuoteTransportController::class, 'acceptQuoteTransport']);

@@ -23,8 +23,13 @@ class Supplier extends Model
     public function commercialQuotes()
     {
         return $this->hasMany(CommercialQuote::class);
-
     }
+
+    public function freightResponses()
+    {
+        return $this->hasMany(ResponseFreightQuotes::class, 'id_supplier');
+    }
+
     public function transportResponses()
     {
         return $this->hasMany(ResponseTransportQuote::class, 'provider_id');
