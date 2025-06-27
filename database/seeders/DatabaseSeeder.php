@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use App\Models\Commission;
 use App\Models\Concept;
 use App\Models\Container;
+use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\CustomerSupplierDocument;
 use App\Models\Incoterms;
@@ -24,6 +25,7 @@ use App\Models\TypeService;
 use App\Models\TypeShipment;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Current;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -273,8 +275,6 @@ class DatabaseSeeder extends Seeder
         TypeService::create(['name' => 'Transporte']);
 
         /* TypeInsurance */
-
-
         TypeInsurance::create(['name' => 'Seguro A', 'state' => 'Activo']);
         TypeInsurance::create(['name' => 'Seguro B', 'state' => 'Activo']);
 
@@ -295,6 +295,13 @@ class DatabaseSeeder extends Seeder
         Commission::create(['name' => 'PRICING', 'default_amount' => '10', 'description' => 'COMISION DE PRICING POR CARGA CERRADA']);
         Commission::create(['name' => 'OPERACIONES', 'default_amount' => '10', 'description' => 'COMISION DE OPERACIONES POR CARGA CERRADA']);
         Commission::create(['name' => 'GASTOS ADMINISTRATIVOS', 'default_amount' => '10', 'description' => 'COMISION DE ADMINISTRACION POR CARGA CERRADA']);
+
+        /* Currencies */
+
+        Currency::create(['badge' => 'Dólar estadounidense', 'abbreviation' => 'USD', 'symbol' => '$']);
+        Currency::create(['badge' => 'Sol Peruano', 'abbreviation' => 'PEN', 'symbol' => 'S/']);
+        Currency::create(['badge' => 'Libra Esterlina','abbreviation' => 'GBP','symbol' => '£']);
+        Currency::create(['badge' => 'Euro','abbreviation' => 'EUR','symbol' => '€']);
 
         Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU - CALLAO', 'destination' => 'CHINA - SHANGAI', 'load_value' => '2700', 'id_personal' => $personal->id, 'id_customer' => $customer->id, 'id_type_shipment' => 8, 'lcl_fcl' => 'LCL', 'packaging_type' => 'Pallets', 'id_type_load' => 1, 'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'commodity' => 'CILINDRO']);
         Routing::create(['nro_operation' => 'ORBE-25255', 'origin' => 'China - Shanghai', 'destination' => 'Perú - Callao', 'wr_loading' => null, 'load_value' => 2600.00, 'id_personal' => 99, 'id_customer' => 1, 'id_type_shipment' => 8, 'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'id_type_load' => 1, 'lcl_fcl' => 'LCL', 'commodity' => 'TELESCOPIC ROD', 'nro_package' => '2', 'packaging_type' => 'CAJAS', 'container_type' => null, 'pounds' => 4209.61, 'kilograms' => 1904.80, 'volumen' => 8.37, 'kilogram_volumen' => null, 'tons' => null, 'measures' => '{"1":{"amount":2,"width":"233.00","length":"433.00","height":"533.00"}}', 'hs_code' => null, 'observation' => null, 'state' => 'Activo', 'created_at' => '2025-01-06 22:30:54', 'updated_at' => '2025-01-06 22:30:54']);

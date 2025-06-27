@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('response_freight_id');
             $table->unsignedBigInteger('concept_id');
+            $table->unsignedBigInteger('currency_id');
             $table->decimal('unit_cost', 8, 2);
             $table->string('fixed_miltiplyable_cost')->nullable();
             $table->string('observations')->nullable();
@@ -23,6 +24,7 @@ return new class extends Migration
 
             $table->foreign('response_freight_id')->references('id')->on('response_freight_quotes');
             $table->foreign('concept_id')->references('id')->on('concepts');
+            $table->foreign('currency_id')->references('id')->on('currencies');
         });
     }
 

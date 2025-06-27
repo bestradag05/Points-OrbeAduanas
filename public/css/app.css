@@ -204,7 +204,7 @@
     border: 0;
 }
 
-.status-pendiente {
+.status-pendiente, .status-enviada{
     background: rgba(255, 165, 0, 0.1);
     color: rgb(255, 165, 0);
 }

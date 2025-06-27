@@ -706,7 +706,7 @@ return [
         [
             'text' => 'Monedas',
             'url'  => 'currencies',
-            'icon' => 'far fa-money-bill-alt',
+            'icon' => 'fas fa-coins',
             'active' => ['currencies'],
             'can' => 'currencies.list',
         ],

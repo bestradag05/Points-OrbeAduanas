@@ -182,10 +182,20 @@ Route::middleware('auth')->group(function () {
         ->name('transport.quote.storePrices');
 
 
+    /* Respuestas cotizaciones de flete */
+
     Route::post(
         'transport/quote/{quote}/responses',
         [ResponseFreightQuotesController::class, 'store']
     )->name('transport.quote.responses.store');
+
+    Route::prefix('quote/freight/response')->group(function() {
+    Route::get('{response}/show', [ResponseFreightQuotesController::class, 'show'])->name('quote.freight.response.show');
+    Route::get('{response}/accept', [ResponseFreightQuotesController::class, 'accept'])->name('quote.freight.response.accept');
+    Route::get('{response}/reject', [ResponseFreightQuotesController::class, 'reject'])->name('quote.freight.response.reject');
+    Route::get('{response}/generate', [ResponseFreightQuotesController::class, 'generate'])->name('quote.freight.response.generate');
+});
+
 
 
     Route::get('insurance/pending', [InsuranceController::class, 'getInsurancePending']);
@@ -228,17 +238,15 @@ Route::middleware('auth')->group(function () {
     /* Cotizaciones de flete */
 
     Route::resource('quote/freight', QuoteFreightController::class)->names('quote.freight');
+    //TODO:Esta ruta ya no se usara
+    /*  Route::patch('quote/freight/cost/accept/{id}', [QuoteFreightController::class, 'acceptQuoteFreight']); */
+    /* Route::delete('quote/freight/{id}/{action}', [QuoteFreightController::class, 'updateStateQuoteFreight']); */
 
-    Route::patch('quote/freight/cost/accept/{id}', [QuoteFreightController::class, 'acceptQuoteFreight']);
     Route::post('quote/freight/file-upload-documents', [QuoteFreightController::class, 'uploadFilesQuoteFreight']);
     Route::post('quote/freight/file-delete-documents', [QuoteFreightController::class, 'deleteFilesQuoteFreight']);
     Route::get('quote/freight/sendQuote/{id}', [QuoteFreightController::class, 'sendQuote']);
-    Route::delete('quote/freight/{id}/{action}', [QuoteFreightController::class, 'updateStateQuoteFreight']);
+
     Route::patch('quote/freight/send-pricing/{id}', [QuoteFreightController::class, 'sendInfoAndNotifyPricing']);
-
-    /* Mensaje de cotizaciones de flete */
-
-    Route::resource('quote/freight/message', MessageQuoteFreightController::class);
 
 
     /* Cotizaciones comerciales */

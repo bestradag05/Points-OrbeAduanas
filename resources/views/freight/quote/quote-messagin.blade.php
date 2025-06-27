@@ -485,10 +485,12 @@
         <div class="col-12 px-4 mt-5">
             <div class="text-center mb-4">
                 <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
-                <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
-                    data-target="#modalResponseQuoteFreight">
-                    <i class="fas fa-plus"></i>
-                </button>
+                @if ($quote->responses->contains(fn($response) => $response->status != 'Aceptado'))
+                    <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
+                        data-target="#modalResponseQuoteFreight">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                @endif
             </div>
 
             <table class="table table-sm text-sm">
@@ -507,46 +509,44 @@
                     <th>Tiempo en transito</th>
                     <th>Tipo de cambio</th>
                     <th>Total</th>
+                    <th>Estado</th>
                     <th>Acciones</th>
                 </thead>
                 <tbody>
-
-
                     @foreach ($quote->responses as $response)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $response->nro_response }}</td>
                             <td>{{ $response->supplier->name_businessname }}</td>
                             @if ($quote->commercial_quote->type_shipment->description === 'Aérea')
-                            <td>{{ $response->airline }}</td>
+                                <td>{{ $response->airline }}</td>
                             @else
-                            <td>{{ $response->shipping_company }}</td>
+                                <td>{{ $response->shipping_company }}</td>
                             @endif
                             <td>{{ $response->validity_date_formatted }}</td>
                             <td>{{ $response->frequency }}</td>
                             <td>{{ $response->service }}</td>
                             <td>{{ $response->transit_time }}</td>
                             <td>{{ $response->exchange_rate }}</td>
-                            <td class="text-indigo text-bold">{{ $response->total }}</td>
-
-                            {{-- <td>
-                                <div class="custom-badge status-{{ strtolower($quote->state) }}">
-                                    {{ $quote->state }}
+                            <td class="text-indigo text-bold"> $ {{ $response->total }}</td>
+                            <td>
+                                <div class="custom-badge status-{{ strtolower($response->status) }}">
+                                    {{ $response->status }}
                                 </div>
-                            </td> --}}
-
+                            </td>
 
                             <td style="width: 150px">
                                 <select name="acction_transport" class="form-control form-control-sm"
-                                    onchange="changeAcction(this, {{ $quote }}, 'Flete')">
+                                    onchange="changeAcction(this.value, {{ $response->id }})">
                                     <option value="" disabled selected>Seleccione una acción...</option>
                                     <option>Detalle</option>
-                                    <option class="{{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">Anular
+                                    <option class="{{ $response->status === 'Aceptado' ? 'd-none' : '' }}">Aceptar
                                     </option>
-                                    @if ($quote->state === 'Pendiente')
-                                        <option class="{{ $quote->state != 'Aceptado' ? 'd-none' : '' }}">Rechazar
-                                        </option>
-                                    @endif
+                                    <option class="{{ $response->status != 'Aceptado' ? 'd-none' : '' }}">Generar Flete
+                                    </option>
+                                    <option class="{{ $response->status === 'Rechazada' ? 'd-none' : '' }}">Rechazar
+                                    </option>
+
                                 </select>
 
                             </td>
@@ -827,14 +827,18 @@
                                                 </x-adminlte-select2>
 
                                             </div>
-                                            <div class="col-4">
+                                            <div class="col-6">
                                                 <div class="form-group">
                                                     <label for="unit_cost">Costo unitario</label>
                                                     <div class="input-group">
                                                         <div class="input-group-prepend">
-                                                            <span class="input-group-text text-bold">
-                                                                $
-                                                            </span>
+                                                            <select class="custom-select" id="currency" name="currency"
+                                                                data-required="true">
+                                                                @foreach ($currencies as $currency)
+                                                                    <option value="{{ $currency->id }}">
+                                                                        {{ $currency->symbol }}</option>
+                                                                @endforeach
+                                                            </select>
                                                         </div>
                                                         <input type="text" class="form-control CurrencyInput"
                                                             id="unit_cost" name="unit_cost" data-type="currency"
@@ -845,7 +849,7 @@
 
                                             </div>
 
-                                            <div class="col-4 text-center">
+                                            <div class="col-2 text-center">
                                                 <div class="form-group">
                                                     <label for="fixed_miltiplyable_cost">C/W</label><br>
                                                     <div class="form-check">
@@ -1229,11 +1233,13 @@
         function calculateFinalCost() {
             let cubage_kgv = parseFloat(@json($quote->cubage_kgv)) || 0;
             let ton_kilogram = parseFloat(@json($quote->ton_kilogram)) || 0;
-            let unit_cost = parseFloat($('#unit_cost').val()) || 0;
+            let unit_cost = parseFloat($('#unit_cost').val().replace(/,/g, '')) || 0;
             let cw = $('#fixed_miltiplyable_cost');
             let higherCost = 0;
             let final_cost = 0;
 
+
+            console.log(unit_cost);
 
             //Verificamos que el C/W este marcado
 
@@ -1270,6 +1276,7 @@
 
             let divConcepts = $('#divResponseFreight');
             const inputs = divConcepts.find('input , select');
+            const currencies = @json($currencies);
             let isValid = true;
 
             inputs.each(function() {
@@ -1295,7 +1302,30 @@
             });
 
             if (isValid) {
+
                 let data = loadConceptData(inputs);
+
+
+                const selectedCurrencyId = parseInt(data.currency.id);
+                const selectedCurrency = currencies.find(c => c.id === selectedCurrencyId);
+                const dollarCurrency = currencies.find(c => c.abbreviation === 'USD');
+
+                if (!checkExchangeRateNotEmpyt(selectedCurrency, dollarCurrency)) return;
+
+
+                const unitCost = parseFloat(data.unit_cost) || 0;
+                let finalCost = unitCost;
+
+                if (selectedCurrency.id !== dollarCurrency.id) {
+                    const exchangeRateInput = $('#exchange_rate')[0];
+                    const exchangeRate = parseFloat(exchangeRateInput.value) || 0;
+
+                    finalCost = unitCost * exchangeRate;
+                }
+
+                data.final_cost = finalCost.toFixed(2); // Formateo a 2 decimales
+
+
                 const index = conceptsResponseFreightArray.findIndex(item => item.concept?.id === parseInt(data.concept
                     .id));
 
@@ -1328,13 +1358,13 @@
             conceptsResponseFreightArray.forEach((item, index) => {
                 contador++;
                 let fila = tbodyRouting.insertRow();
-
+                console.log(item);
                 fila.insertCell(0).textContent = contador;
-                fila.insertCell(1).textContent = item.concept.name;
-                fila.insertCell(2).textContent = item.unit_cost;
+                fila.insertCell(1).textContent = item.concept.text;
+                fila.insertCell(2).textContent = item.currency.text + " " + item.unit_cost;
                 fila.insertCell(3).textContent = item.fixed_miltiplyable_cost;
                 fila.insertCell(4).textContent = item.observations;
-                fila.insertCell(5).textContent = parseFloat(item.final_cost).toFixed(2);
+                fila.insertCell(5).textContent = "$ " + parseFloat(item.final_cost).toFixed(2);
 
                 let celdaEliminar = fila.insertCell(6);
                 let botonEliminar = document.createElement('a');
@@ -1357,10 +1387,10 @@
 
                 fila.insertCell(0).textContent = contador;
                 fila.insertCell(1).textContent = item.concept.name;
-                fila.insertCell(2).textContent = item.unit_cost;
+                fila.insertCell(2).textContent = "$ " + item.unit_cost;
                 fila.insertCell(3).textContent = item.fixed_miltiplyable_cost;
                 fila.insertCell(4).textContent = item.observations;
-                fila.insertCell(5).textContent = parseFloat(item.final_cost).toFixed(2);
+                fila.insertCell(5).textContent = "$ " + parseFloat(item.final_cost).toFixed(2);
 
                 // Celda de eliminar deshabilitada
                 let celdaEliminar = fila.insertCell(6);
@@ -1404,11 +1434,11 @@
                 const input = this;
                 let name = input.name;
                 if (name) {
-                    if (input.tagName === 'SELECT' && name === 'concept') {
+                    if (input.tagName === 'SELECT') {
 
                         data[name] = {
                             id: parseInt(input.value),
-                            name: input.options[input.selectedIndex] ? input.options[input.selectedIndex].text :
+                            text: input.options[input.selectedIndex] ? input.options[input.selectedIndex].text :
                                 ''
                         };
 
@@ -1448,6 +1478,75 @@
                 hideError(input);
             });
         }
+
+
+        function changeAcction(action, responseId) {
+            if (!action) return;
+
+            if (action === "Detalle") {
+                //Abrir modal
+
+                return;
+            } else if (action === "Aceptar") {
+                Swal.fire({
+                    title: '¿Aceptar respuesta?',
+                    text: '¿Está seguro de aceptar esta respuesta?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Aceptar',
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: '#2e37a4'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = `/quote/freight/response/${responseId}/accept`;
+                    }
+                });
+            } else if (action === "Rechazar") {
+                Swal.fire({
+                    title: '¿Rechazar respuesta?',
+                    text: '¿Está seguro de rechazar esta respuesta?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Rechazar',
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: '#d33'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = `/quote/freight/response/${responseId}/reject`;
+                    }
+                });
+            } else if (action === 'Generar Flete')
+            {
+                window.location.href = `/quote/freight/response/${responseId}/generate`;
+            }
+        }
+
+        function checkExchangeRateNotEmpyt(selectedCurrency, dollarCurrency) {
+
+            const exchangeRateInput = $('#exchange_rate')[0];
+
+            if (!selectedCurrency) {
+                toastr.error('La moneda seleccionada no es válida.');
+                return false;
+            }
+
+            if (selectedCurrency.id !== dollarCurrency.id) {
+
+                if (!exchangeRateInput || exchangeRateInput.value.trim() === '') {
+                    toastr.error(`Debe ingresar el tipo de cambio para la moneda ${selectedCurrency.badge}`);
+                    exchangeRateInput.classList.add('is-invalid');
+                    showError(exchangeRateInput, 'Ingrese el tipo de cambio');
+                    return false;
+                } else {
+                    exchangeRateInput.classList.remove('is-invalid');
+                    hideError(exchangeRateInput);
+                }
+            }
+
+            return true;
+
+        }
+
 
         function handleStepValidation(stepId) {
             if (validateCurrentStep(stepId)) {

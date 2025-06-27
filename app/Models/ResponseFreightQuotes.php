@@ -24,7 +24,8 @@ class ResponseFreightQuotes extends Model
         'transit_time',
         'exchange_rate',
         'total',
-        'id_quote_freight'
+        'id_quote_freight',
+        'status'
     ];
 
 

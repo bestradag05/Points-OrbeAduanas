@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('exchange_rate')->nullable();
             $table->decimal('total', 8, 2);
             $table->unsignedBigInteger('id_quote_freight');
+            $table->enum('status', ['Enviada', 'Aceptado', 'Rechazada'])->default('Enviada');
             $table->timestamps();
 
             $table->foreign('id_supplier')->references('id')->on('suppliers');

@@ -149,23 +149,12 @@ class FreightService
     {
 
         $quote = QuoteFreight::findOrFail($quoteId);
+        $acceptedResponse = $quote->responses()->where('status', 'Aceptado')->first();
         $commercial_quote = $quote->commercial_quote;
         $type_insurace = TypeInsurance::all();
         $concepts = Concept::all();
-        $conceptFreight = null;
 
-        foreach ($concepts as $concept) {
-
-            if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Flete' && $concept->name === 'OCEAN FREIGHT') {
-                $conceptFreight = $concept;
-            }
-
-            if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Flete' && $concept->name === 'AIR FREIGHT') {
-                $conceptFreight = $concept;
-            }
-        }
-
-        return compact('quote', 'type_insurace', 'concepts', 'conceptFreight', 'commercial_quote');
+        return compact('quote', 'type_insurace', 'concepts', 'commercial_quote', 'acceptedResponse');
     }
 
 

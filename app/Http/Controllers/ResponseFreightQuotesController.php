@@ -2,14 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Concept;
 use App\Models\QuoteFreight;
 use App\Models\ResponseFreightQuotes;
+use App\Models\TypeInsurance;
+use App\Services\FreightService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ResponseFreightQuotesController extends Controller
 {
+
+
+    protected $freightService;
+
+    public function __construct(FreightService $freightService)
+    {
+        $this->freightService = $freightService;
+    }
+
+
     /**
      * Display a listing of the resource.
      */
@@ -60,9 +73,11 @@ class ResponseFreightQuotesController extends Controller
 
         foreach ($concepts as $item) {
             $concept = $item['concept'];
+            $currency = $item['currency'];
 
             $response->concepts()->attach($concept['id'], [
                 'unit_cost' => $item['unit_cost'],
+                'currency_id' => $currency['id'],
                 'fixed_miltiplyable_cost' => $item['fixed_miltiplyable_cost'],
                 'observations' => $item['observations'],
                 'final_cost' => $item['final_cost'],
@@ -81,12 +96,42 @@ class ResponseFreightQuotesController extends Controller
             ->with('success', 'Respuesta registrada con éxito.');
     }
 
+
+
+
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
         //
+    }
+
+
+    public function accept($id)
+    {
+        $response = ResponseFreightQuotes::findOrFail($id);
+        $response->status = 'Aceptado';
+        $response->save();
+
+        return redirect()->back()->with('success', 'Respuesta aceptada correctamente.');
+    }
+
+    public function generate($id)
+    {
+        $response = ResponseFreightQuotes::findOrFail($id);
+        $compact = $this->freightService->createFreight($response->quote->id);
+
+        return view('freight/register-freight', $compact);
+    }
+
+    public function reject($id)
+    {
+        $response = ResponseFreightQuotes::findOrFail($id);
+        $response->status = 'Rechazada';
+        $response->save();
+
+        return redirect()->back()->with('success', 'Respuesta rechazada correctamente.');
     }
 
     /**
