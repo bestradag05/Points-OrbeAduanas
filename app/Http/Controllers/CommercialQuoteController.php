@@ -186,7 +186,7 @@ class CommercialQuoteController extends Controller
                 'id_personal' => auth()->user()->personal->id,
             ]);
         }
-        
+
 
         if (isset($request->type_service) || !empty($request->type_service)) {
             foreach ($request->type_service as $type_service) {
@@ -356,7 +356,6 @@ class CommercialQuoteController extends Controller
         $updateData = [
             'state' => 'Aceptado'
         ];
-
 
         if ($request->has_customer_data) {
 
@@ -620,7 +619,6 @@ class CommercialQuoteController extends Controller
     public function handleActionCommercialQuote(string $action, string $id)
     {
 
-
         $commercialQuote = CommercialQuote::findOrFail($id)->first();
 
         switch ($action) {
@@ -739,6 +737,12 @@ class CommercialQuoteController extends Controller
         $quote->state = $request->client_decision === 'accept' ? 'Aceptado' : 'Rechazado';
         $quote->save();
 
+        // Actualizar el estado del transporte relacionado
+        $transport = $quote->transport; // Obtener el transporte relacionado
+        if ($transport) { // Verificar que exista el transporte
+            $transport->update(['state' => $quote->state]); // Cambiar el estado del transporte
+        }
+
         // Creamos el registro de trazabilidad del cliente
         ClientQuoteTrace::create([
             'quote_id' => $quote->id,
@@ -752,9 +756,6 @@ class CommercialQuoteController extends Controller
             ->route('commercial.quote.detail', $quote->id)
             ->with('success', 'La decisión del cliente fue registrada correctamente.');
     }
-
-
-
 
 
     /**

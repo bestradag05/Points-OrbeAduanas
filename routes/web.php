@@ -23,6 +23,7 @@ use App\Http\Controllers\PointsController;
 use App\Http\Controllers\QuoteFreightController;
 use App\Http\Controllers\QuoteTransportController;
 use App\Http\Controllers\RegimeController;
+use App\Http\Controllers\ResponseTransportQuoteController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\RoutingController;
 use App\Http\Controllers\SupplierController;
@@ -189,8 +190,8 @@ Route::middleware('auth')->group(function () {
         'store' => 'quote.transport.store',
     ]);
 
-    Route::post('transport/quote/{id}/prices', [QuoteTransportController::class, 'storeConceptPrices'])
-        ->name('transport.quote.storePrices');
+    Route::post('transport/quote/{id}/responses', [ResponseTransportQuoteController::class, 'store'])
+        ->name('transport.quote.responses.store');
 
     // Aceptar respuesta como aprobada por el cliente
     Route::post('transport/quote/accept', [QuoteTransportController::class, 'acceptResponse'])

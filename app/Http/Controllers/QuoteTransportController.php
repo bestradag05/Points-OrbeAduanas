@@ -299,6 +299,10 @@ class QuoteTransportController extends Controller
         $nextRespId = $status[0]->Auto_increment;
         $nro_response = (new ResponseTransportQuote())->generateNroResponse();
 
+
+        $locked = in_array(optional($quote->transport)->state, ['Aceptado', 'Rechazado', 'Anulado']);
+
+
         // 9) Retornar la vista con **todas** las variables
         return view('transport.quote.quote-messagin', [
             'quote'           => $quote,
@@ -314,7 +318,8 @@ class QuoteTransportController extends Controller
             'latestResp'       => $latestResp,
             'transportSuppliers' => $transportSuppliers,
             'nro_response'     => $nro_response,
-            'nextRespId'          => $nextRespId
+            'nextRespId'          => $nextRespId,
+            'locked' => $locked
         ]);
     }
     /**
@@ -354,59 +359,6 @@ class QuoteTransportController extends Controller
 
         return view('transport.quote.edit-quote', compact('quote', 'files', 'customers'))->with('showModal', $showModal);
     }
-
-    /* Funcion sirve para registar respuesta en responsetransportquote */
-    public function storeConceptPrices(Request $request, $quoteId)
-    {
-
-        // 1) Validamos
-        $data = $request->validate([
-            'provider_id'     => 'required|exists:suppliers,id',
-            'price_concept.*' => 'required|numeric|min:0',
-            'commission'      => 'nullable|numeric|min:0',
-        ], [
-            'provider_id.required'     => 'Debes seleccionar un proveedor.',
-            'price_concept.*.required' => 'Todos los precios de concepto son obligatorios.',
-            'commission.required'      => 'La comisión es obligatoria.',
-        ]);
-
-        $quote = QuoteTransport::findOrFail($quoteId);
-
-        //  Calculamos el total de conceptos
-        $totalConceptos = array_sum($data['price_concept']);
-
-
-
-        // Creamos la respuesta de transporte
-        $resp = ResponseTransportQuote::create([
-            'quote_transport_id' => $quote->id,
-            'provider_id'    => $data['provider_id'],
-            'provider_cost'  => $totalConceptos, // ahora lo tomamos de conceptos
-            'commission'     => $data['commission'] ?? 0,
-            'total'          => $totalConceptos + ($data['commission'] ?? 0), // recalcularemos abajo
-            'status'         => 'Enviada',
-        ]);
-
-        foreach ($data['price_concept'] as $conceptId => $price) {
-            $concept = Concept::find($conceptId);
-
-            // Suma la comisión SOLO si el concepto es "TRANSPORTE"
-            $net = $price;
-            if (strtoupper($concept->name) === 'TRANSPORTE') {
-                $net += $data['commission'] ?? 0;
-            }
-
-            $resp->conceptResponses()->create([
-                'concepts_id' => $conceptId,
-                'net_amount' => $net,
-            ]);
-        }
-
-        return redirect()
-            ->route('transport.show', $quoteId)
-            ->with('success', 'Cotización de transporte registrada.');
-    }
-
 
 
     public function updateQuoteTransport(Request $request, string $id)
@@ -484,15 +436,17 @@ class QuoteTransportController extends Controller
 
         $response = ResponseTransportQuote::findOrFail($request->response_id);
 
-        // Marcar todas como Enviada nuevamente excepto esta
-        ResponseTransportQuote::where('quote_transport_id', $response->quote_transport_id)
-            ->where('id', '!=', $response->id)
-            ->update(['status' => 'Enviada']);
-
+        // 1. Marcar la respuesta seleccionada como Aceptado
         $response->update([
             'status' => 'Aceptado',
         ]);
 
+        // 2. Marcar todas las demás como Rechazada
+        ResponseTransportQuote::where('quote_transport_id', $response->quote_transport_id)
+            ->where('id', '!=', $response->id)
+            ->update(['status' => 'Rechazada']);
+
+        // 3. Registrar trazabilidad
         QuoteTrace::create([
             'quote_id' => $response->quote_transport_id,
             'response_id' => $response->id,
@@ -507,9 +461,10 @@ class QuoteTransportController extends Controller
             ->with([
                 'open_close_quote_modal' => true,
                 'response_id' => $response->id,
-                'response_nro' => $response->nro_response, // nuevo dato
+                'response_nro' => $response->nro_response,
             ]);
     }
+
 
 
 
@@ -630,7 +585,7 @@ class QuoteTransportController extends Controller
 
 
             return redirect()->route('transport.create', [
-                $quote->id,
+                $quote->id,s
                 $response->id,
             ]);
         }
