@@ -15,6 +15,8 @@ class ResponseFreightQuotes extends Model
         'nro_response',
         'validity_date',
         'id_supplier',
+        'airline',
+        'shipping_company',
         'origin',
         'destination',
         'frequency',

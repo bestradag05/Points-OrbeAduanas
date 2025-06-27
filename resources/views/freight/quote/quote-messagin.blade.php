@@ -493,21 +493,14 @@
 
             <table class="table table-sm text-sm">
                 <thead class="thead-dark">
-
-                    {{-- 'validity_date',
-        'id_supplier',
-        'origin',
-        'destination',
-        'frequency',
-        'service',
-        'transit_time',
-        'exchange_rate',
-        'total',
-        'id_quote_freight' --}}
-
                     <th>#</th>
                     <th>N° Respuesta</th>
                     <th>Agente</th>
+                    @if ($quote->commercial_quote->type_shipment->description === 'Aérea')
+                        <th>Aerolinea</th>
+                    @else
+                        <th>Naviera</th>
+                    @endif
                     <th>Fecha de Validez</th>
                     <th>Frecuencia</th>
                     <th>Servicio</th>
@@ -524,7 +517,12 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $response->nro_response }}</td>
                             <td>{{ $response->supplier->name_businessname }}</td>
-                            <td>{{ $response->validity_date_formatted}}</td>
+                            @if ($quote->commercial_quote->type_shipment->description === 'Aérea')
+                            <td>{{ $response->airline }}</td>
+                            @else
+                            <td>{{ $response->shipping_company }}</td>
+                            @endif
+                            <td>{{ $response->validity_date_formatted }}</td>
                             <td>{{ $response->frequency }}</td>
                             <td>{{ $response->service }}</td>
                             <td>{{ $response->transit_time }}</td>
@@ -712,6 +710,27 @@
                                                     placeholder="Selecciona la fecha de validez..." />
 
                                             </div>
+
+                                            @if ($quote->commercial_quote->type_shipment->description === 'Aérea')
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="airline">Aerolinea <span
+                                                                class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control" id="airline"
+                                                            name="airline">
+                                                    </div>
+                                                </div>
+                                            @endif
+                                            @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="shipping_company">Naviera <span
+                                                                class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control" id="shipping_company"
+                                                            name="shipping_company">
+                                                    </div>
+                                                </div>
+                                            @endif
 
                                             <div class="col-md-6">
                                                 <div class="form-group">

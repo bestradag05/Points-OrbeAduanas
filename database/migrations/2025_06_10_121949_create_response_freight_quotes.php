@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('nro_response')->unique();
             $table->date('validity_date');
             $table->unsignedBigInteger('id_supplier');
+            $table->string('airline')->nullable();
+            $table->string('shipping_company')->nullable();
             $table->string('origin');
             $table->string('destination');
             $table->enum('frequency', ['Diario', 'Semanal', 'Quincenal', 'Mensual']);

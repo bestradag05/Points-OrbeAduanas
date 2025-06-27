@@ -45,6 +45,8 @@ class ResponseFreightQuotesController extends Controller
             'nro_response' => $request->nro_response,
             'validity_date' => $fecha,
             'id_supplier' => $request->id_supplier,
+            'airline' => $request->airline,
+            'shipping_company' => $request->shipping_company,
             'origin' => $quoteFreight->origin,
             'destination' => $quoteFreight->destination,
             'frequency' => $request->frequency,

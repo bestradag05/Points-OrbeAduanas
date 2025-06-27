@@ -704,6 +704,13 @@ return [
             'can' => 'incoterms.list',
         ],
         [
+            'text' => 'Monedas',
+            'url'  => 'currencies',
+            'icon' => 'far fa-money-bill-alt',
+            'active' => ['currencies'],
+            'can' => 'currencies.list',
+        ],
+        [
             'text' => 'Comisiones',
             'url'  => 'commissions',
             'icon' => 'fas fa-funnel-dollar', 

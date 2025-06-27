@@ -36,6 +36,7 @@ use App\Models\MessageQuoteTransport;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ContainerController;
+use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ResponseFreightQuotesController;
@@ -144,6 +145,9 @@ Route::middleware('auth')->group(function () {
 
     /* Comisiones */
     Route::resource('commissions', CommissionController::class);
+
+    /* Currencies */
+    Route::resource('currencies', CurrencyController::class);
 
     Route::resource('containers', ContainerController::class);
     Route::resource('type_containers', TypeContainerController::class);
