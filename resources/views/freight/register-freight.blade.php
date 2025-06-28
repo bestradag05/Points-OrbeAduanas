@@ -77,7 +77,7 @@
                                 <hr class="my-2">
 
                                 <p class="mb-0 text-sm text-muted text-white">
-                                    Para cerrar la cotización, asegúrese de que el <strong class="text-warning">total de los
+                                    Para crear el flete, asegúrese de que el <strong class="text-warning">total de los
                                         conceptos agregados</strong> supere este total de respuesta.
                                 </p>
                             </div>
