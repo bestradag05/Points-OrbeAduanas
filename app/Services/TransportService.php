@@ -266,7 +266,7 @@ class TransportService
         foreach ($concepts as $concept) {
             $added = $this->parseDouble($concept->added);
 
-            // 1 Obtener el net_amount desde concepts_response
+            // 1 Obtener el net_amount desde concepts_response_transport
             $net = optional(
                 $response->conceptResponses->firstWhere('concepts_id', $concept->id)
             )->net_amount ?? 0;
