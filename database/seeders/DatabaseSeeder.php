@@ -74,8 +74,12 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'transporte.quote.generate', 'alias' => 'Generar Cotizaciones', 'guard_name' => 'web']);
         Permission::create(['name' => 'transporte.quote.response', 'alias' => 'Responder Cotizaciones', 'guard_name' => 'web']);
 
-
-
+        Permission::create(['name' => 'commercial.transport.accept.or.reject', 'alias' => 'Aceptar o Rechazar respuesta de cotizacion', 'guard_name' => 'web']);
+        Permission::create(['name' => 'commercial.transport.close', 'alias' => 'Cerrar Cotizaciones', 'guard_name' => 'web']);
+        Permission::create(['name' => 'commercial.transport.edit', 'alias' => 'Editar Valor Agregado de Transporte', 'guard_name' => 'web']);
+        Permission::create(['name' => 'commercial.client.accept.or.reject', 'alias' => 'Aceptar o Rechazar cotizacion comercial', 'guard_name' => 'web']);
+        Permission::create(['name' => 'commercial.quote.list', 'alias' => 'Todas las cotizaciones', 'guard_name' => 'web']);
+        Permission::create(['name' => 'commercial.quote.list.personal', 'alias' => 'Cotizacion por personal', 'guard_name' => 'web']);
 
         Permission::create(['name' => 'additional.list', 'alias' => 'Listar Adicionales', 'guard_name' => 'web']);
         Permission::create(['name' => 'additional.listAll', 'alias' => 'Listar todos los adicionales', 'guard_name' => 'web']);
@@ -137,6 +141,18 @@ class DatabaseSeeder extends Seeder
             'state' => 'Activo'
         ]);
 
+        $userTransport = User::create([
+            'email' => 'transporte@orbeaduanas.com',
+            'password' => bcrypt('Orbe2025'),
+            'state' => 'Activo'
+        ]);
+
+        $userCommercial = User::create([
+            'email' => 'jorge.laura@orbeaduanas.com',
+            'password' => bcrypt('Orbe2025'),
+            'state' => 'Activo'
+        ]);
+
         $user->assignRole($role);
 
 
@@ -187,6 +203,42 @@ class DatabaseSeeder extends Seeder
             'id_document' => $document->id,
             'id_user' => $userPricing->id
         ]);
+
+        Personal::create([
+            'id' => '101',
+            'document_number' => '41478898',
+            'names' => 'Jefferson',
+            'last_name' => 'Maravi',
+            'mother_last_name' => '',
+            'cellphone' => '945868543',
+            'email' => 'transporte@orbeaduanas.com',
+            'address' => 'Av Revolucion Calle Q - Villa el Salvador',
+            'img_url' =>  null,
+            'state' => 'Activo',
+            'sexo' => 'Masculino',
+            'civil_status' => 'Soltero',
+            'id_document' => $document->id,
+            'id_user' => $userTransport->id
+        ]);
+
+
+        Personal::create([
+            'id' => '102',
+            'document_number' => '79854269',
+            'names' => 'Jorge',
+            'last_name' => 'Laura',
+            'mother_last_name' => '',
+            'cellphone' => '942772672',
+            'email' => 'jorge.laura@orbeaduanas.com',
+            'address' => 'Av Revolucion Calle Q - Villa el Salvador',
+            'img_url' =>  null,
+            'state' => 'Activo',
+            'sexo' => 'Masculino',
+            'civil_status' => 'Soltero',
+            'id_document' => $document->id,
+            'id_user' => $userCommercial->id
+        ]);
+
 
         /* Tipo de contenedor */
 

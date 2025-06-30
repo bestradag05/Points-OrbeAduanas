@@ -24,10 +24,9 @@ class PermissionsController extends Controller
             'Nombre',
             'Acciones'
         ];
-        
+
 
         return view('permissions/list-permissions', compact('permissions', 'heads'));
-
     }
 
     /**
@@ -45,27 +44,26 @@ class PermissionsController extends Controller
      */
     public function store(Request $request)
     {
-       // Guardar el rol enviado desde el form
+        // Guardar el rol enviado desde el form
 
-       try {
+        try {
 
-        $this->validateForm($request, null );
-        
-        Permissions::create([
-            'name' => $request->name,
-            'guard_name' => $request->name
-        ]);
+            $this->validateForm($request, null);
 
-        return redirect('permissions');
-        
-    } catch (QueryException $e) {
-        $errorCode = $e->errorInfo[1];
+            Permissions::create([
+                'name' => $request->name,
+                'guard_name' => $request->name
+            ]);
 
-        // Si el código de error es 1062 (violación de índice único), muestra un mensaje personalizado
-        if ($errorCode == 1062) {
-            return view('roles.register-roles', ['error' => 'Este rol ya ha sido creado']);
+            return redirect('permissions');
+        } catch (QueryException $e) {
+            $errorCode = $e->errorInfo[1];
+
+            // Si el código de error es 1062 (violación de índice único), muestra un mensaje personalizado
+            if ($errorCode == 1062) {
+                return view('roles.register-roles', ['error' => 'Este rol ya ha sido creado']);
+            }
         }
-    }
     }
 
     /**
@@ -81,7 +79,7 @@ class PermissionsController extends Controller
      */
     public function edit(string $id)
     {
-        
+
         $permission = Permissions::findOrFail($id);
         return view('permissions.edit-permissions', compact('permission'));
     }
@@ -98,7 +96,7 @@ class PermissionsController extends Controller
         $permission->guard_name = $request->name;
 
         $permission->save();
-        
+
         return redirect('permissions');
     }
 
@@ -107,29 +105,37 @@ class PermissionsController extends Controller
      */
     public function destroy(string $id)
     {
-         //
-         $permission = Permissions::find($id);
-         $permission->delete();
- 
-          
-         return redirect('permissions')->with('eliminar', 'ok');
+        //
+        $permission = Permissions::find($id);
+        $permission->delete();
+
+
+        return redirect('permissions')->with('eliminar', 'ok');
     }
 
-    public function templatePermissions($id) {
-       
-       $rol = Role::find($id);
-       $permissions = ModelsPermission::all(['id', 'name', 'alias']);
+    public function templatePermissions($id)
+    {
+        $rol = Role::findOrFail($id);
+        $permissions = ModelsPermission::all(['id', 'name', 'alias']);
 
-       $tab = 'permissions';
-     
+        // Agrupar los permisos automáticamente por prefijo (módulo)
+        $modules = $permissions->groupBy(function ($permission) {
+            return explode('.', $permission->name)[0];
+        });
 
-        return view('roles/group-roles', compact('rol', 'tab', 'permissions'));
+        $tab = 'permissions';
+
+        return view('roles.group-roles', compact('rol', 'tab', 'permissions', 'modules'));
     }
 
 
-    public function assingPermission($id_permission, $id_role){
-        
-        
+
+
+
+    public function assingPermission($id_permission, $id_role)
+    {
+
+
         $rol = Role::find($id_role);
         $permission = Permissions::find($id_permission);
 
@@ -139,12 +145,12 @@ class PermissionsController extends Controller
         $permissions = Permissions::all(['id', 'name', 'alias']);
 
         return view('roles/group-roles', compact('rol', 'tab', 'permissions'));
-
     }
 
 
-    public function removePermission($id_permission, $id_role){
-        
+    public function removePermission($id_permission, $id_role)
+    {
+
         $rol = Role::find($id_role);
         $permission = Permissions::find($id_permission);
 
@@ -155,16 +161,16 @@ class PermissionsController extends Controller
         $permissions = Permissions::all(['id', 'name', 'alias']);
 
         return view('roles/group-roles', compact('rol', 'tab', 'permissions'));
-
     }
 
 
-    public function addAllPermissions($id_role, $modulo){
-       
+    public function addAllPermissions($id_role, $modulo)
+    {
+
         $rol = Role::find($id_role);
         $tab = 'permissions';
 
-        $permissions = Permissions::where('name', 'like', $modulo.'.%')->get();
+        $permissions = Permissions::where('name', 'like', $modulo . '.%')->get();
 
         foreach ($permissions as $permission) {
             $rol->givePermissionTo($permission->name);
@@ -172,17 +178,17 @@ class PermissionsController extends Controller
 
         $permissions = Permissions::all(['id', 'name', 'alias']);
 
-        return view('roles/group-roles', compact('rol', 'tab', 'permissions'));         
-
+        return view('roles/group-roles', compact('rol', 'tab', 'permissions'));
     }
 
 
-    public function removeAllPermissions($id_role, $modulo){
-       
+    public function removeAllPermissions($id_role, $modulo)
+    {
+
         $rol = Role::find($id_role);
         $tab = 'permissions';
 
-        $permissions = Permissions::where('name', 'like', $modulo.'.%')->get();
+        $permissions = Permissions::where('name', 'like', $modulo . '.%')->get();
 
         foreach ($permissions as $permission) {
             $rol->revokePermissionTo($permission->name);
@@ -190,16 +196,15 @@ class PermissionsController extends Controller
 
         $permissions = Permissions::all(['id', 'name', 'alias']);
 
-        return view('roles/group-roles', compact('rol', 'tab', 'permissions'));         
-
+        return view('roles/group-roles', compact('rol', 'tab', 'permissions'));
     }
 
 
-    public function validateForm($request, $id){
+    public function validateForm($request, $id)
+    {
         $request->validate([
             'name' => 'required|string|unique:permissions,name,' . $id,
-            
+
         ]);
-    
     }
 }

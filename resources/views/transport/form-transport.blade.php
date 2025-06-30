@@ -149,16 +149,12 @@
                 });
 
                 conceptsTransport.forEach(concept => {
-                    // ——— MODIFICACIÓN NUEVA: sumo commission al net_amount si es "TRANSPORTE" ———
-                    let base = parseFloat(concept.net_amount) || 0; // ← NUEVO
-                    if ((concept.concept.name || '').toUpperCase() === 'TRANSPORTE') { // ← NUEVO
-                        base += commission; // ← NUEVO
-                    } // ← NUEVO
+
 
                     conceptsArray.push({
                         'id': concept.concepts_id,
                         'name': concept.concept.name,
-                        'value': parseFloat(base.toFixed(2)), // ← REEMPLAZA formatValue(concept.net_amount)
+                        'value': formatValue(concept.net_amount), // ← REEMPLAZA formatValue(concept.net_amount)
                         'added': 0,
                         'pa': 0 // ← NUEVO: inicializamos puntos en 0
                     });

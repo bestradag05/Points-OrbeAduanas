@@ -204,7 +204,15 @@ class TransportService
 
     private function createOrUpdateTransport(Request $request, $id = null)
     {
-        $transport = $id ? Transport::findOrFail($id) : new Transport();
+        /* $transport = $id ? Transport::findOrFail($id) : new Transport(); */
+
+        // Buscar transporte existente por nro_quote_commercial
+        $transport = Transport::where('nro_quote_commercial', $request->nro_quote_commercial)->first();
+
+        // Si no existe, se crea uno nuevo
+        if (! $transport) {
+            $transport = new Transport();
+        }
 
         $commercial = CommercialQuote::where('nro_quote_commercial', $request->nro_quote_commercial)->first();
 

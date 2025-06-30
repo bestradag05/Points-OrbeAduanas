@@ -20,7 +20,8 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ $tab == 'usuarios' ? '' : 'active' }}"
-                        href="{{ url('/roles/grupos/permissions/' . $rol->id) }}">Permisos ({{ $rol->permissions->count(); }})</a>
+                        href="{{ url('/roles/grupos/permissions/' . $rol->id) }}">Permisos
+                        ({{ $rol->permissions->count() }})</a>
                 </li>
                 <li class="nav-item">
 
@@ -34,7 +35,11 @@
                     @if ($tab == 'usuarios')
                         @include('roles/form-group-roles')
                     @else
-                        @include('permissions/list-permissions  ')
+                        @include('permissions.list-permissions', [
+                            'permissions' => $permissions,
+                            'rol' => $rol,
+                            'modules' => $modules,
+                        ])
                     @endif
                 </div>
 
