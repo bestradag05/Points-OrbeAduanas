@@ -127,6 +127,10 @@ class DatabaseSeeder extends Seeder
 
         //Crear un rol de Super-Admin
         $role = Role::create(['guard_name' => 'web', 'name' => 'Super-Admin']);
+        $roleTransport = Role::create(['guard_name' => 'web', 'name' => 'Transporte']);
+        $roleComercial = Role::create(['guard_name' => 'web', 'name' => 'Comercial']);
+        $rolePricing = Role::create(['guard_name' => 'web', 'name' => 'Pricing']);
+
 
 
         $user = User::create([
@@ -154,6 +158,9 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $user->assignRole($role);
+        $userTransport->assignRole($roleTransport);
+        $userCommercial->assignRole($roleComercial);
+        $userPricing->assignRole($rolePricing);
 
 
         $document = PersonalDocument::create([
