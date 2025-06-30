@@ -8,6 +8,8 @@
     <input type="hidden" name="nro_quote_commercial"
         value="{{ isset($commercial_quote->nro_quote_commercial) ? $commercial_quote->nro_quote_commercial : '' }}">
     <input type="hidden" name="id_quote_freight" value="{{ isset($quote->id) ? $quote->id : '' }}">
+    <input type="hidden" name="accepted_answer_value"
+        value="{{ isset($acceptedResponse->total) ? $acceptedResponse->total : '' }}">
 
     {{-- <input type="hidden" name="typeService" id="typeService"> --}}
 
@@ -27,7 +29,7 @@
 
                 <input type="text" class="form-control CurrencyInput" id="utility" name="utility"
                     data-type="currency" placeholder="Ingrese valor de la utilidad"
-                    value="{{ isset($quote->utility) ? $quote->utility : old('utility') }}">
+                    value="{{ isset($quote->utility) ? $quote->utility : old('utility') }}" data-required="true">
             </div>
 
         </div>
@@ -47,7 +49,7 @@
         <div class="col-3">
             <label for="type_insurance">Tipo de seguro</label>
             <select name="type_insurance" class="{{ isset($insurance) ? '' : 'd-none' }} form-control"
-                label="Tipo de seguro" igroup-size="md" data-placeholder="Seleccione una opcion...">
+                label="Tipo de seguro" igroup-size="md" data-placeholder="Seleccione una opcion..." data-required="true">
                 <option />
                 @foreach ($type_insurace as $type)
                     <option value="{{ $type->id }}"
@@ -70,7 +72,7 @@
                     <input type="text" class="form-control CurrencyInput {{ isset($insurance) ? '' : 'd-none' }} "
                         name="value_insurance" data-type="currency" placeholder="Ingrese valor de la carga"
                         value="{{ isset($insurance) ? $insurance->insurance_value : '' }}"
-                        onchange="updateInsuranceTotal(this)">
+                        onchange="updateInsuranceTotal(this)" data-required="true">
                 </div>
 
             </div>
@@ -152,7 +154,7 @@
                         </span>
                     </div>
                     <input type="text" class="form-control CurrencyInput " name="value_added"
-                        data-type="currency" placeholder="Ingrese valor agregado" value="0">
+                        data-type="currency" placeholder="Ingrese valor agregado" value="0.00">
                 </div>
             </div>
 
@@ -197,16 +199,22 @@
             <div class="col-4 row">
                 <label class="col-sm-4 col-form-label">Ganancia:</label>
                 <div class="col-sm-8">
-                    <input type="text" class="form-control" id="gananciaActual" value="0.00" readonly>
+                    <input type="text" class="form-control" id="gananciaActual" name="profit_on_freight"
+                        value="0.00" readonly>
                 </div>
             </div>
         </div>
         <div class="row w-100 justify-content-end mt-2">
-            <div class="col-4 row">
+            <div class="col-4 row align-items-center">
                 <label class="col-sm-4 col-form-label">Puntos Adicionales:</label>
-                <div class="col-sm-8">
-                    <input type="text" class="form-control" id="puntosPosibles" value="0" readonly>
+                <div class="col-sm-8" id="puntosUsadosTexto">
+                    0 / 0
                 </div>
+
+                <input type="hidden" class="form-control" id="puntosPosibles" name="total_additional_points"
+                    value="0" readonly>
+                <input type="hidden" class="form-control" id="total_additional_points_used"
+                    name="total_additional_points_used" value="0" readonly>
             </div>
         </div>
 
@@ -309,6 +317,8 @@
                 contenedorInsurance.find("input").val('').addClass('d-none').removeClass('is-invalid');
                 contenedorInsurance.find('select').val('').addClass('d-none').removeClass('is-invalid');
 
+                contenedorInsurance.find('.invalid-feedback').remove();
+
                 value_insurance = 0;
                 valuea_added_insurance = 0;
 
@@ -371,6 +381,7 @@
 
             let puntosPosibles = puntosPorGanancia;
             $('#puntosPosibles').val(puntosPosibles);
+            $('#puntosUsadosTexto').text(`0 / ${puntosPosibles}`);
 
             if (puntosPosibles !== puntosPosiblesPrevios) {
                 // Reset puntos de conceptos
@@ -518,8 +529,6 @@
 
                     inputPA.addEventListener('input', (e) => {
                         let val = parseInt(e.target.value) || 0;
-                        conceptsArray[clave].pa = val;
-
                         // Validar y ajustar si excede en tiempo real
                         validateAndAdjustPointsOnInput(e.target);
                     });
@@ -585,10 +594,25 @@
 
                 $(element).val(nuevoValor);
 
+                let index = $(element).closest('tr').index();
+                if ($(element).attr('id') !== 'insurance_points') {
+                    conceptsArray[index].pa = nuevoValor;
+                }
+
                 toastr.warning(
                     `El máximo de puntos permitidos es ${puntosMaximos}. Ajustado automáticamente para evitar exceder este límite.`
                 );
+            } else {
+                let index = $(element).closest('tr').index();
+                if ($(element).attr('id') !== 'insurance_points') {
+                    conceptsArray[index].pa = parseInt($(element).val()) || 0;
+                }
             }
+
+
+            // ✅ Actualiza visualización de puntos usados
+            $('#puntosUsadosTexto').text(`${Math.min(sumaActual, puntosMaximos)} / ${puntosMaximos}`);
+            $('#total_additional_points_used').val(Math.min(sumaActual, puntosMaximos));
         }
 
 
@@ -617,6 +641,59 @@
         }
 
 
+        function validateForm(inputs) {
+            inputs.forEach(input => {
+                if (input.closest('.d-none')) return;
+
+                const value = input.value?.trim();
+                if (!value || value === '') {
+                    input.classList.add('is-invalid');
+                    showError(input, 'Debe completar este campo');
+                    return;
+                } else {
+                    input.classList.remove('is-invalid');
+                    hideError(input);
+                }
+            });
+        }
+
+
+        // Mostrar mensaje de error
+        function showError(input, message) {
+            let container = input;
+
+            // Si es un SELECT2
+            if (input.tagName === 'SELECT' && $(input).hasClass('select2-hidden-accessible')) {
+                container = $(input).next('.select2')[0];
+            }
+
+            let errorSpan = container.nextElementSibling;
+
+            if (!errorSpan || !errorSpan.classList.contains('invalid-feedback')) {
+                errorSpan = document.createElement('span');
+                errorSpan.classList.add('invalid-feedback', 'd-block'); // Asegura visibilidad
+                container.after(errorSpan);
+            }
+
+            errorSpan.textContent = message;
+            errorSpan.style.display = 'block';
+        }
+
+        function hideError(input) {
+            let container = input;
+
+            if (input.tagName === 'SELECT' && $(input).hasClass('select2-hidden-accessible')) {
+                container = $(input).next('.select2')[0];
+            }
+
+            let errorSpan = container.nextElementSibling;
+
+            if (errorSpan && errorSpan.classList.contains('invalid-feedback')) {
+                errorSpan.classList.remove('d-block');
+                errorSpan.style.display = 'none';
+            }
+        }
+
 
         function formatValue(value) {
             return value.replace(/,/g, '');
@@ -626,19 +703,32 @@
 
 
         $('#formFreight').on('submit', (e) => {
+            e.preventDefault(); // 🚩 Detiene el envío del formulario
 
             if (!validateTotalPoints()) {
-                e.preventDefault();
                 return;
             }
 
             let form = $('#formFreight');
-            let conceptops = JSON.stringify(conceptsArray);
+            let isValid = true;
 
+            const requiredInputs = form.find('[data-required="true"]').toArray();
+            validateForm(requiredInputs);
+
+            if ($('#seguroFreight').is(':checked')) {
+                const insuranceInputs = $('#content_seguroFreight').find('input[data-required="true"], select[data-required="true"]').toArray();
+                console.log(insuranceInputs);
+                validateForm(insuranceInputs);
+            }
+
+            if (form.find('.is-invalid').length > 0) {
+                return;
+            }
+
+            let conceptops = JSON.stringify(conceptsArray);
             form.append(`<input type="hidden" name="concepts" value='${conceptops}' />`);
 
             form[0].submit();
-
         });
     </script>
 @endpush

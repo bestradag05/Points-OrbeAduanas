@@ -485,7 +485,7 @@
         <div class="col-12 px-4 mt-5">
             <div class="text-center mb-4">
                 <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
-                @if ($quote->responses->contains(fn($response) => $response->status != 'Aceptado'))
+                @if (! $quote->responses->contains(fn($response) => $response->status === 'Aceptado'))
                     <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
                         data-target="#modalResponseQuoteFreight">
                         <i class="fas fa-plus"></i>

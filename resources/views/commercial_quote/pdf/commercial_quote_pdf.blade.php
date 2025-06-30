@@ -402,7 +402,7 @@
                     @endforeach
                     <tr class="total-service">
                         <td colspan="2" style="text-align: right">Total Flete:</td>
-                        <td> $ {{ number_format($freight->value_freight, 2) }}</td>
+                        <td> $ {{ number_format($freight->total_freight_value, 2) }}</td>
                     </tr>
                 </tbody>
             </table>
