@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Concept;
 
-class ConceptsResponse extends Model
+class ConceptsResponseTransport extends Model
 {
     use HasFactory;
-    protected $table = 'concepts_response';
+    protected $table = 'concepts_response_transport';
 
     // 1) Permitir asignación masiva de estos campos
     protected $fillable = [

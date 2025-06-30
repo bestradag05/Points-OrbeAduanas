@@ -9,7 +9,7 @@ use App\Models\Customer;
 use App\Models\ConceptsTransport;
 use App\Models\CommercialQuote;
 use App\Models\Transport;
-use App\Models\ConceptsResponse;
+use App\Models\ConceptsResponseTransport;
 use App\Models\ResponseTransportQuote;
 use App\Models\MessageQuoteTransport;
 use App\Models\QuoteTransport;
@@ -616,7 +616,7 @@ class QuoteTransportController extends Controller
 
             // Por cada concepto seleccionado, traigo su net_amount de concepts_response
             foreach ($data['concepts_id'] as $i => $conceptId) {
-                $conceptResp = ConceptsResponse::where('response_transport_quote_id', $data['response_id'])
+                $conceptResp = ConceptsResponseTransport::where('response_transport_quote_id', $data['response_id'])
                     ->where('concepts_id', $conceptId)
                     ->firstOrFail();
 

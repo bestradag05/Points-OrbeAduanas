@@ -61,7 +61,7 @@ class ResponseTransportQuote extends Model
     {
         return $this->belongsToMany(
             Concept::class,
-            'concepts_response',
+            'concepts_response_transport',
             'response_transport_quote_id',
             'concepts_id'
         )->withPivot('net_amount');
@@ -69,9 +69,9 @@ class ResponseTransportQuote extends Model
 
 
     // 1:N → ConceptsResponse
-    public function conceptResponses()
+    public function conceptResponseTransports()
     {
-        return $this->hasMany(ConceptsResponse::class, 'response_transport_quote_id', 'id');
+        return $this->hasMany(ConceptsResponseTransport::class, 'response_transport_quote_id', 'id');
     }
     public function traces()
     {
