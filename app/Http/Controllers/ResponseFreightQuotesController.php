@@ -7,6 +7,8 @@ use App\Models\QuoteFreight;
 use App\Models\ResponseFreightQuotes;
 use App\Models\TypeInsurance;
 use App\Services\FreightService;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use Barryvdh\DomPDF\PDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -91,7 +93,6 @@ class ResponseFreightQuotesController extends Controller
             ]);
         }
 
-
         return redirect()->route('quote.freight.show', $id)
             ->with('success', 'Respuesta registrada con éxito.');
     }
@@ -105,6 +106,15 @@ class ResponseFreightQuotesController extends Controller
     public function show(string $id)
     {
         //
+
+        $response = ResponseFreightQuotes::with('quote.commercial_quote')->findOrFail($id);
+
+
+          //Generar el pdf de respuesta: 
+
+        $pdf = FacadePdf::loadView('freight.pdf.responseFreight', compact('response'));
+
+         return $pdf->stream('Respuesta.pdf'); 
     }
 
 

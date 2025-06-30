@@ -348,12 +348,14 @@
                         <div class="col-8 col-lg-6">
                             <h5 class="text-indigo text-center"> <i class="fas fa-file"></i> Lista de archivos</h5>
                         </div>
-                        <div class="col-6 align-items-center {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}">
-                            <button class="btn btn-indigo btn-sm" data-toggle="modal"
-                                data-target="#modalQuoteFreightDocuments">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                        </div>
+                        @if (!$quote->responses->contains(fn($response) => $response->status === 'Aceptado'))
+                            <div class="col-6 align-items-center">
+                                <button class="btn btn-indigo btn-sm" data-toggle="modal"
+                                    data-target="#modalQuoteFreightDocuments">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        @endif
                     </div>
                     <table id="table-file-freight" class="table">
                         <tbody>
@@ -485,7 +487,7 @@
         <div class="col-12 px-4 mt-5">
             <div class="text-center mb-4">
                 <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
-                @if (! $quote->responses->contains(fn($response) => $response->status === 'Aceptado'))
+                @if (!$quote->responses->contains(fn($response) => $response->status === 'Aceptado'))
                     <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
                         data-target="#modalResponseQuoteFreight">
                         <i class="fas fa-plus"></i>
@@ -542,7 +544,7 @@
                                     <option>Detalle</option>
                                     <option class="{{ $response->status === 'Aceptado' ? 'd-none' : '' }}">Aceptar
                                     </option>
-                                    <option class="{{ $response->status != 'Aceptado' ? 'd-none' : '' }}">Generar Flete
+                                    <option class="{{ $response->status === 'Aceptado' ? 'd-none' : '' }}">Generar Flete
                                     </option>
                                     <option class="{{ $response->status === 'Rechazada' ? 'd-none' : '' }}">Rechazar
                                     </option>
@@ -945,6 +947,26 @@
         </div>
     </div>
 
+
+    {{-- Detail response --}}
+
+    <!-- Modal para PDF -->
+    <div class="modal fade" id="pdfDetailResponse" tabindex="-1" role="dialog"
+        aria-labelledby="pdfDetailResponseLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalle de Cotización</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-0">
+                    <iframe id="pdfFrame" src="" frameborder="0" style="width: 100%; height: 80vh;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
 
     {{-- Template para copiar y enviar por Outlook --}}
 
@@ -1485,7 +1507,9 @@
 
             if (action === "Detalle") {
                 //Abrir modal
-
+                const url = `/quote/freight/response/${responseId}/show`;
+                $('#pdfFrame').attr('src', url);
+                $('#pdfDetailResponse').modal('show');
                 return;
             } else if (action === "Aceptar") {
                 Swal.fire({
@@ -1515,8 +1539,7 @@
                         window.location.href = `/quote/freight/response/${responseId}/reject`;
                     }
                 });
-            } else if (action === 'Generar Flete')
-            {
+            } else if (action === 'Generar Flete') {
                 window.location.href = `/quote/freight/response/${responseId}/generate`;
             }
         }
