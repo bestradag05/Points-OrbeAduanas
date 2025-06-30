@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Str;
 use App\Models\Permissions;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -130,45 +131,44 @@ class PermissionsController extends Controller
 
 
 
-
-
-    public function assingPermission($id_permission, $id_role)
+    private function renderPermissionsView($rol)
     {
-
-
-        $rol = Role::find($id_role);
-        $permission = Permissions::find($id_permission);
-
-        $tab = 'permissions';
-        $rol->givePermissionTo($permission->name);
-
         $permissions = Permissions::all(['id', 'name', 'alias']);
 
-        return view('roles/group-roles', compact('rol', 'tab', 'permissions'));
+        // Agrupa por prefijo del permiso
+        $modules = $permissions->groupBy(function ($permission) {
+            return Str::before($permission->name, '.');
+        });
+
+        $tab = 'permissions';
+
+        return view('roles.group-roles', compact('rol', 'tab', 'permissions', 'modules'));
     }
 
+
+    public function assignPermission($id_permission, $id_role)
+    {
+        $rol = Role::findOrFail($id_role);
+        $permission = Permissions::findOrFail($id_permission);
+
+        $rol->givePermissionTo($permission->name);
+
+        return $this->renderPermissionsView($rol);
+    }
 
     public function removePermission($id_permission, $id_role)
     {
+        $rol = Role::findOrFail($id_role);
+        $permission = Permissions::findOrFail($id_permission);
 
-        $rol = Role::find($id_role);
-        $permission = Permissions::find($id_permission);
-
-        $tab = 'permissions';
         $rol->revokePermissionTo($permission->name);
 
-
-        $permissions = Permissions::all(['id', 'name', 'alias']);
-
-        return view('roles/group-roles', compact('rol', 'tab', 'permissions'));
+        return $this->renderPermissionsView($rol);
     }
-
 
     public function addAllPermissions($id_role, $modulo)
     {
-
-        $rol = Role::find($id_role);
-        $tab = 'permissions';
+        $rol = Role::findOrFail($id_role);
 
         $permissions = Permissions::where('name', 'like', $modulo . '.%')->get();
 
@@ -176,17 +176,12 @@ class PermissionsController extends Controller
             $rol->givePermissionTo($permission->name);
         }
 
-        $permissions = Permissions::all(['id', 'name', 'alias']);
-
-        return view('roles/group-roles', compact('rol', 'tab', 'permissions'));
+        return $this->renderPermissionsView($rol);
     }
-
 
     public function removeAllPermissions($id_role, $modulo)
     {
-
-        $rol = Role::find($id_role);
-        $tab = 'permissions';
+        $rol = Role::findOrFail($id_role);
 
         $permissions = Permissions::where('name', 'like', $modulo . '.%')->get();
 
@@ -194,9 +189,7 @@ class PermissionsController extends Controller
             $rol->revokePermissionTo($permission->name);
         }
 
-        $permissions = Permissions::all(['id', 'name', 'alias']);
-
-        return view('roles/group-roles', compact('rol', 'tab', 'permissions'));
+        return $this->renderPermissionsView($rol);
     }
 
 
