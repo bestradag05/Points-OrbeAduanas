@@ -495,6 +495,10 @@
                 @endif
             </div>
 
+            @php
+                $hasAcceptedResponse = $quote->responses->contains(fn($response) => $response->status == 'Aceptado');
+            @endphp
+
             <table class="table table-sm text-sm">
                 <thead class="thead-dark">
                     <th>#</th>
@@ -509,6 +513,7 @@
                     <th>Frecuencia</th>
                     <th>Servicio</th>
                     <th>Tiempo en transito</th>
+                    <th>Dias Libres</th>
                     <th>Tipo de cambio</th>
                     <th>Total</th>
                     <th>Estado</th>
@@ -529,6 +534,7 @@
                             <td>{{ $response->frequency }}</td>
                             <td>{{ $response->service }}</td>
                             <td>{{ $response->transit_time }}</td>
+                            <td>{{ $response->free_days }}</td>
                             <td>{{ $response->exchange_rate }}</td>
                             <td class="text-indigo text-bold"> $ {{ $response->total }}</td>
                             <td>
@@ -542,15 +548,16 @@
                                     onchange="changeAcction(this.value, {{ $response->id }})">
                                     <option value="" disabled selected>Seleccione una acción...</option>
                                     <option>Detalle</option>
-                                    <option class="{{ $response->status === 'Aceptado' ? 'd-none' : '' }}">Aceptar
-                                    </option>
-                                    <option class="{{ $response->status === 'Aceptado' ? 'd-none' : '' }}">Generar Flete
-                                    </option>
-                                    <option class="{{ $response->status === 'Rechazada' ? 'd-none' : '' }}">Rechazar
-                                    </option>
 
+                                    @if (!$hasAcceptedResponse || $response->status == 'Aceptado')
+                                        <option class="{{ $response->status != 'Aceptado' ? 'd-none' : '' }}">Generar
+                                            Flete</option>
+                                        <option class="{{ $response->status === 'Aceptado' ? 'd-none' : '' }}">Aceptar
+                                        </option>
+                                        <option class="{{ $response->status === 'Rechazada' ? 'd-none' : '' }}">Rechazar
+                                        </option>
+                                    @endif
                                 </select>
-
                             </td>
 
                         </tr>
@@ -726,8 +733,7 @@
                                             @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label for="shipping_company">Naviera <span
-                                                                class="text-danger">*</span></label>
+                                                        <label for="shipping_company">Naviera</label>
                                                         <input type="text" class="form-control" id="shipping_company"
                                                             name="shipping_company">
                                                     </div>
@@ -736,11 +742,9 @@
 
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="frequency">Fecuencia <span
-                                                            class="text-danger">*</span></label>
+                                                    <label for="frequency">Fecuencia </label>
                                                     <x-adminlte-select2 name="frequency" igroup-size="md"
-                                                        data-required="true" data-placeholder="seleccionar frecuencia..."
-                                                        style="width:100%">
+                                                        data-placeholder="seleccionar frecuencia..." style="width:100%">
                                                         <option />
                                                         <option>Diario</option>
                                                         <option>Semanal</option>
@@ -752,26 +756,31 @@
 
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="service">Servicio <span
-                                                            class="text-danger">*</span></label>
+                                                    <label for="service">Servicio</label>
                                                     <input type="text" class="form-control" id="service"
-                                                        data-required="true" name="service">
+                                                        name="service">
                                                 </div>
                                             </div>
 
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="transit_time">TT <span
-                                                            class="text-danger">*</span></label>
+                                                    <label for="transit_time">TT</label>
                                                     <input type="text" class="form-control" id="transit_time"
-                                                        data-required="true" name="transit_time">
+                                                        name="transit_time">
                                                 </div>
                                             </div>
 
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    <label for="exchange_rate">Tipo de cambio <span
-                                                            class="text-danger">*</span></label>
+                                                    <label for="free_days">Free Days</label>
+                                                    <input type="text" class="form-control" id="free_days"
+                                                        name="free_days">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="exchange_rate">Tipo de cambio</label>
                                                     <input type="text" class="form-control CurrencyInput"
                                                         data-type="currency" id="exchange_rate" name="exchange_rate">
                                                 </div>
@@ -801,19 +810,35 @@
                                                                 class="font-weight-normal">{{ $quote->cubage_kgv }}
                                                                 CBM</span></label>
                                                     </div>
+
+                                                    @if ($quote->commercial_quote->lcl_fcl === 'FCL')
+                                                        <div class="col-2">
+                                                            <label class="m-0" for="ton_kilogram">Toneladas : <span
+                                                                    class="font-weight-normal">{{ $quote->ton_kilogram }}
+                                                                    TON</span></label>
+                                                        </div>
+                                                    @else
+                                                        <div class="col-2">
+                                                            <label class="m-0" for="ton_kilogram">Peso : <span
+                                                                    class="font-weight-normal">{{ $quote->ton_kilogram }}
+                                                                    KG</span></label>
+                                                        </div>
+                                                    @endif
                                                 @else
                                                     <div class="col-2">
                                                         <label class="m-0" for="cubage_kgv">KGV : <span
                                                                 class="font-weight-normal">{{ $quote->cubage_kgv }}
                                                                 KGV</span></label>
                                                     </div>
+
+                                                    <div class="col-2">
+                                                        <label class="m-0" for="ton_kilogram">Peso : <span
+                                                                class="font-weight-normal">{{ $quote->ton_kilogram }}
+                                                                KG</span></label>
+                                                    </div>
                                                 @endif
 
-                                                <div class="col-2">
-                                                    <label class="m-0" for="ton_kilogram">Peso : <span
-                                                            class="font-weight-normal">{{ $quote->ton_kilogram }}
-                                                            KG</span></label>
-                                                </div>
+
                                             </div>
                                             <div class="col-4">
                                                 <x-adminlte-select2 name="concept" id="concept_response_freight"

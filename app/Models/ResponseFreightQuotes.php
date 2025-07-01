@@ -22,6 +22,7 @@ class ResponseFreightQuotes extends Model
         'frequency',
         'service',
         'transit_time',
+        'free_days',
         'exchange_rate',
         'total',
         'id_quote_freight',
@@ -33,8 +34,7 @@ class ResponseFreightQuotes extends Model
         'validity_date' => 'date',
     ];
 
-
-    // Evento que se ejecuta antes de guardar el modelo
+        // Evento que se ejecuta antes de guardar el modelo
     protected static function booted()
     {
         static::creating(function ($response) {
@@ -45,11 +45,12 @@ class ResponseFreightQuotes extends Model
         });
     }
 
+
     // Método para generar el número de operación
-    public function generateNroResponse()
+    public static function generateNroResponse()
     {
         // Obtener el último registro
-        $lastCode = self::latest('id')->first();
+        $lastCode = self::whereNotNull('nro_response')->latest('id')->first();
         $year = date('y');
         $prefix = 'RESPFLETE-';
 
@@ -58,8 +59,7 @@ class ResponseFreightQuotes extends Model
             return $prefix . $year . '1';
         } else {
             // Extraer el número y aumentarlo
-
-            $number = (int) substr($lastCode->nro_quote, 12);
+            $number = (int) substr($lastCode->nro_response, 12);
             $number++;
             return $prefix . $year . $number;
         }

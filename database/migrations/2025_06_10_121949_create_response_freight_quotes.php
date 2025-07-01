@@ -20,9 +20,10 @@ return new class extends Migration
             $table->string('shipping_company')->nullable();
             $table->string('origin');
             $table->string('destination');
-            $table->enum('frequency', ['Diario', 'Semanal', 'Quincenal', 'Mensual']);
-            $table->string('service');
-            $table->string('transit_time');
+            $table->enum('frequency', ['Diario', 'Semanal', 'Quincenal', 'Mensual'])->nullable();
+            $table->string('service')->nullable();
+            $table->string('transit_time')->nullable();
+            $table->string('free_days')->nullable();
             $table->string('exchange_rate')->nullable();
             $table->decimal('total', 8, 2);
             $table->unsignedBigInteger('id_quote_freight');

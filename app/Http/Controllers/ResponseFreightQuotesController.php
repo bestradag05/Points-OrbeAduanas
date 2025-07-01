@@ -67,6 +67,7 @@ class ResponseFreightQuotesController extends Controller
             'frequency' => $request->frequency,
             'service' => $request->service,
             'transit_time' => $request->transit_time,
+            'free_days' => $request->free_days,
             'exchange_rate' => $request->exchange_rate,
             'total' => $request->total_response_concept_freight,
             'id_quote_freight' => $id

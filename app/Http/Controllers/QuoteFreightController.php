@@ -217,8 +217,7 @@ class QuoteFreightController extends Controller
         //TODO: ya no se usara el messages
         $messages = QuoteFreight::findOrFail($id)->messages;
         
-        $response = new ResponseFreightQuotes();
-        $nro_response = $response->generateNroResponse();
+        $nro_response = ResponseFreightQuotes::generateNroResponse();
 
         //Obtenemos las comisiones que se consideraran
         $commissions = Commission::all();

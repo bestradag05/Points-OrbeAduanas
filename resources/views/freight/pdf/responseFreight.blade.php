@@ -91,10 +91,22 @@
             <td>{{ $response->service }}</td>
         </tr>
         <tr>
-            <td class="highlight">NAVIERA</td>
-            <td>{{ $response->shipping_company }}</td>
+            @if ($response->quote->commercial_quote->type_shipment->description === 'Marítima')
+                <td class="highlight">NAVIERA</td>
+                <td>{{ $response->shipping_company }}</td>
+            @else
+                <td class="highlight">AEROLINEA</td>
+                <td>{{ $response->airline }}</td>
+            @endif
             <td class="highlight">FRECUENCIA</td>
             <td>{{ $response->frequency }}</td>
+        </tr>
+         <tr>
+            <td class="highlight">TIEMPO DE TRANSITO</td>
+            <td>{{ $response->transit_time }}</td>
+            <td class="highlight">DIAS LIBRES</td>
+            <td>{{ $response->free_days }}</td>
+
         </tr>
     </table>
 
@@ -109,12 +121,39 @@
             <td class="highlight">TIPO DE CAMBIO</td>
             <td>{{ $response->exchange_rate }}</td>
         </tr>
-        <tr>
-            <td class="highlight">PESO</td>
-            <td>{{ $response->quote->ton_kilogram }}</td>
-            <td class="highlight">VOLUMEN</td>
-            <td>{{ $response->quote->cubage_kgv }}</td>
-        </tr>
+        @if ($response->quote->commercial_quote->type_shipment->description === 'Marítima')
+
+            @if ($response->quote->commercial_quote->lcl_fcl === 'FCL')
+                <tr>
+                    <td class="highlight">CONTENEDOR</td>
+                    <td colspan="3">{{ $response->quote->commercial_quote->container_quantity }} x
+                        {{ $response->quote->commercial_quote->container->name }}</td>
+                </tr>
+                <tr>
+                    <td class="highlight">PESO</td>
+                    <td>{{ $response->quote->ton_kilogram }} TON</td>
+                    <td class="highlight">VOLUMEN</td>
+                    <td>{{ $response->quote->cubage_kgv }} CBM</td>
+                </tr>
+            @else
+                <tr>
+                    <td class="highlight">PESO</td>
+                    <td>{{ $response->quote->ton_kilogram }} KG</td>
+                    <td class="highlight">VOLUMEN</td>
+                    <td>{{ $response->quote->cubage_kgv }} CBM</td>
+                </tr>
+            @endif
+        @else
+            <tr>
+                <td class="highlight">PESO</td>
+                <td>{{ $response->quote->ton_kilogram }} KG</td>
+                <td class="highlight">VOLUMEN</td>
+                <td>{{ $response->quote->cubage_kgv }} KGV</td>
+            </tr>
+
+
+        @endif
+
     </table>
 
     <!-- CUADRO DE COSTOS INCURRIDOS -->
@@ -134,27 +173,27 @@
         <tbody>
             @foreach ($response->concepts as $concept)
                 <tr>
-                    <td>{{$concept->name}}</td>
-                    <td class="right">{{$concept->pivot->unit_cost}}</td>
-                    <td>{{$concept->pivot->fixed_miltiplyable_cost}}</td>
-                    <td>{{$concept->pivot->observations}}</td>
-                    <td class="right">{{$concept->pivot->final_cost}}</td>
+                    <td>{{ $concept->name }}</td>
+                    <td class="right">{{ $concept->pivot->unit_cost }}</td>
+                    <td>{{ $concept->pivot->fixed_miltiplyable_cost }}</td>
+                    <td>{{ $concept->pivot->observations }}</td>
+                    <td class="right">{{ $concept->pivot->final_cost }}</td>
                 </tr>
             @endforeach
-            @foreach($response->commissions as $commission)
+            @foreach ($response->commissions as $commission)
                 <tr>
-                    <td>{{$commission->name}}</td>
-                    <td class="right">{{$commission->pivot->amount}}</td>
+                    <td>{{ $commission->name }}</td>
+                    <td class="right">{{ $commission->pivot->amount }}</td>
                     <td>FIJO</td>
                     <td></td>
-                    <td class="right">{{$commission->pivot->amount}}</td>
+                    <td class="right">{{ $commission->pivot->amount }}</td>
                 </tr>
             @endforeach
         </tbody>
         <tfoot>
             <tr class="total-row">
                 <td colspan="4">COSTOS TOTALES</td>
-                <td class="right">{{$response->total}}</td>
+                <td class="right">{{ $response->total }}</td>
             </tr>
         </tfoot>
     </table>
