@@ -29,14 +29,6 @@ return new class extends Migration
             $table->integer('container_quantity')->nullable();
             $table->string('lcl_fcl')->nullable();
             $table->boolean('is_consolidated')->nullable();
-            /* Si es consolidado */
-            $table->integer('total_nro_package_consolidated')->nullable();
-            $table->decimal('total_volumen_consolidated')->nullable();
-            $table->decimal('total_kilogram_consolidated')->nullable();
-            $table->decimal('total_kilogram_volumen_consolidated')->nullable();
-
-            /* Fin si es consolidado */
-
             $table->string('commodity')->nullable();
             $table->string('nro_package')->nullable();
             $table->string('packaging_type')->nullable();

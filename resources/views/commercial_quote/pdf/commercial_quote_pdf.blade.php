@@ -296,19 +296,19 @@
 
                         <tr>
                             <td class="title-item-table">Bultos</td>
-                            <td class="text-item-table">{{ $commercialQuote->total_nro_package_consolidated }}</td>
+                            <td class="text-item-table">{{ $commercialQuote->nro_package }}</td>
                         </tr>
                         <tr>
                             <td class="title-item-table">Volumen / KGV</td>
-                            @if ($commercialQuote->total_volumen_consolidated)
-                                <td class="text-item-table">{{ $commercialQuote->total_volumen_consolidated }} CBM</td>
+                            @if ($commercialQuote->volumen)
+                                <td class="text-item-table">{{ $commercialQuote->volumen }} CBM</td>
                             @else
-                            <td class="text-item-table">{{ $commercialQuote->total_kilogram_volumen_consolidated }} KGV</td>
+                            <td class="text-item-table">{{ $commercialQuote->kilogram_volumen }} KGV</td>
                             @endif
                         </tr>
                         <tr>
                             <td class="title-item-table">Peso total</td>
-                            <td class="text-item-table">{{ $commercialQuote->total_kilogram_consolidated }}</td>
+                            <td class="text-item-table">{{ $commercialQuote->kilograms }}</td>
                         </tr>
                     @else
                         <tr>
