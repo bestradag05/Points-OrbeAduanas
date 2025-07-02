@@ -163,6 +163,41 @@ class DatabaseSeeder extends Seeder
         $userPricing->assignRole($rolePricing);
 
 
+
+
+        $transportPermissions = [
+            'supplier.module',
+            'supplier.create',
+            'supplier.update',
+            'supplier.delete',
+            'supplier.list',
+            'customer.list',
+            'transporte.module',
+            'transporte.list.points',
+            'transporte.generate',
+            'transporte.list',
+            'transporte.quote.list',
+            'transporte.quote.list.personal',
+            'transporte.quote.generate',
+            'transporte.quote.response',
+        ];
+
+        // Crear permisos si no existen
+        foreach ($transportPermissions as $perm) {
+            Permission::firstOrCreate(
+                ['name' => $perm],
+                ['alias' => ucwords(str_replace('.', ' ', $perm)), 'guard_name' => 'web']
+            );
+        }
+
+        // Asignar permisos al rol Transporte
+        $roleTransport = Role::where('name', 'Transporte')->first();
+        if ($roleTransport) {
+            $roleTransport->givePermissionTo($transportPermissions);
+        }
+
+
+
         $document = PersonalDocument::create([
             'name' => 'DNI',
             'number_digits' => 8,
@@ -194,7 +229,7 @@ class DatabaseSeeder extends Seeder
             'id_user' => $user->id
         ]);
 
-        Personal::create([
+        $personal = Personal::create([
             'id' => '100',
             'document_number' => '796521448',
             'names' => 'Victor',
@@ -211,7 +246,7 @@ class DatabaseSeeder extends Seeder
             'id_user' => $userPricing->id
         ]);
 
-        Personal::create([
+        $personal = Personal::create([
             'id' => '101',
             'document_number' => '41478898',
             'names' => 'Jefferson',
@@ -229,7 +264,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
 
-        Personal::create([
+        $personal = Personal::create([
             'id' => '102',
             'document_number' => '79854269',
             'names' => 'Jorge',

@@ -25,7 +25,6 @@ class SupplierController extends Controller
             'Nombre de Contacto',
             'Numero de Contacto',
             'Correo de Contacto',
-            'Area',
             'Tipo de proveedor',
             'Tipo',
             'Documento',
@@ -55,16 +54,29 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
+        // Obtener el usuario autenticado
+        $user = Auth::user();
 
-        // Guardar un cliente
+        // Determinar el área automáticamente por el rol
+        $area = null;
+        if ($user->hasRole('Transporte')) {
+            $area = 'transporte';
+        } elseif ($user->hasRole('Comercial')) {
+            $area = 'comercial';
+        } elseif ($user->hasRole('Pricing')) {
+            $area = 'pricing';
+        } elseif ($user->hasRole('Super-Admin')) {
+            // Si quieres permitirle al Super-Admin elegir manualmente
+            $area = $request->area_type ?? null;
+        }
 
+        // Validación (puedes extraerla a un método aparte si gustas)
         $this->validateForm($request, null);
 
+        // Registro del proveedor con área autoasignada
         Supplier::create([
-            /* 'id_document' => $request->id_document,
-          'document_number' => $request->document_number, */
             'name_businessname' => $request->name_businessname,
-            'area_type'         => $request->area_type,
+            'area_type'         => $area,
             'provider_type'     => $request->provider_type,
             'address'           => $request->address,
             'contact_name'      => $request->contact_name,
@@ -144,7 +156,7 @@ class SupplierController extends Controller
         $request->validate([
 
             'name_businessname' => 'required|string|unique:suppliers,name_businessname,' . $id,
-            'area_type' => 'required|in:comercial,transporte,pricing',
+            /* 'area_type' => 'required|in:comercial,transporte,pricing', */
             'provider_type' => 'nullable|in:TRANSPORTISTA,NAVIERA,AEROLINEA,AGENTE DE CARGA,COMERCIAL',
             'address' => 'required|string',
             'contact_name' => 'required|string',

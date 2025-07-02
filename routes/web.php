@@ -1,6 +1,7 @@
 <?php
 
 use App\Events\QuoteNotification;
+use App\Http\Controllers\AreaController;
 use App\Http\Controllers\AdditionalPointsController;
 use App\Http\Controllers\CommercialQuoteController;
 use App\Http\Controllers\ConceptsController;
@@ -27,6 +28,7 @@ use App\Http\Controllers\ResponseTransportQuoteController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\RoutingController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TransportController;
 use App\Http\Controllers\TypeInsuranceController;
 use App\Http\Controllers\TypeLoadController;
@@ -103,11 +105,28 @@ Route::middleware('auth')->group(function () {
     Route::delete('roles/grupos/{id}', [RolesController::class, 'deletePersonGroup']);
     Route::resource('permissions', PermissionsController::class);
     Route::get('roles/grupos/permissions/{id}', [PermissionsController::class, 'templatePermissions']);
-    Route::get('roles/grupos/assignpermission/{id_permission}/{id_role}', [PermissionsController::class, 'assingPermission']);
+    Route::get('roles/grupos/assignpermission/{id_permission}/{id_role}', [PermissionsController::class, 'assignPermission']);
     Route::get('roles/grupos/removepermission/{id_permission}/{id_role}', [PermissionsController::class, 'removePermission']);
 
     Route::get('roles/grupos/add-all-permissions/{id_role}/{modulo}', [PermissionsController::class, 'addAllPermissions']);
     Route::get('roles/grupos/remove-all-permissions/{id_role}/{modulo}', [PermissionsController::class, 'removeAllPermissions']);
+
+    // Áreas
+    Route::get('areas', [AreaController::class, 'index'])->name('areas.list');
+    Route::get('areas/create', [AreaController::class, 'create'])->name('areas.register');
+    Route::post('areas', [AreaController::class, 'store'])->name('areas.store');
+    Route::get('areas/{area}/edit', [AreaController::class, 'edit'])->name('areas.edit');
+    Route::put('areas/{area}', [AreaController::class, 'update'])->name('areas.update');
+    Route::delete('areas/{area}', [AreaController::class, 'destroy'])->name('areas.delete');
+
+    // Equipos
+    Route::get('teams', [TeamController::class, 'index'])->name('teams.list');
+    Route::get('teams/create', [TeamController::class, 'create'])->name('teams.register');
+    Route::post('teams', [TeamController::class, 'store'])->name('teams.store');
+    Route::get('teams/{team}/edit', [TeamController::class, 'edit'])->name('teams.edit');
+    Route::put('teams/{team}', [TeamController::class, 'update'])->name('teams.update');
+    Route::delete('teams/{team}', [TeamController::class, 'destroy'])->name('teams.delete');
+
 
     Route::resource('concepts', ConceptsController::class);
     Route::get('/api/consult-ruc/{ruc}', [CustomerController::class, 'consultRuc']);

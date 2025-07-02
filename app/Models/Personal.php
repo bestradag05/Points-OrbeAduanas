@@ -11,21 +11,22 @@ class Personal extends Model
 
     protected $table = 'personal';
 
-    protected $fillable = [  
-    'document_number',
-    'names',
-    'last_name',
-    'mother_last_name',
-    'birthdate',
-    'civil_status',
-    'sexo',
-    'cellphone',
-    'email',
-    'address',
-    'img_url',
-    'state',
-    'id_user',
-    'id_document'];
+    protected $fillable = [
+        'document_number',
+        'names',
+        'last_name',
+        'mother_last_name',
+        'birthdate',
+        'civil_status',
+        'sexo',
+        'cellphone',
+        'email',
+        'address',
+        'img_url',
+        'state',
+        'id_user',
+        'id_document'
+    ];
 
 
     public function user()
@@ -43,8 +44,18 @@ class Personal extends Model
         return $this->belongsTo(PersonalDocument::class, 'id_document', 'id');
     }
 
-    public function routing(){
+    public function routing()
+    {
         return $this->hasMany(Routing::class, 'id_personal', 'id');
     }
 
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
+    }
+
+    public function areas()
+    {
+        return $this->belongsToMany(Area::class, 'area_personal')->withTimestamps();
+    }
 }
