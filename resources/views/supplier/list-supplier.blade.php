@@ -19,6 +19,11 @@
                 <td>{{ $supplier->contact_number }}</td>
                 <td>{{ $supplier->contact_email }}</td>
                 <td class="text-capitalize">{{ $supplier->area_type }}</td>
+                <td>{{ $supplier->provider_type }}</td>
+                <td>{{ $supplier->document_type }} {{ $supplier->document_number }}</td>
+                <td>{{ $supplier->address }}</td>
+                <td>{{ $supplier->country }}</td>
+                <td>{{ $supplier->city }}</td>
                 <td>{{ $supplier->state }}</td>
                 <td>
                     @can('supplier.update')

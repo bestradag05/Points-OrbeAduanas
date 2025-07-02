@@ -512,7 +512,7 @@
 
         <div class="row justify-content-center text-bold mt-5">
             <div class="col-6">
-                 <div class="text-bold custom-badge status-{{ strtolower($comercialQuote->state) }}">
+                <div class="text-bold custom-badge status-{{ strtolower($comercialQuote->state) }}">
                     <i class="fas fa-circle"></i> {{ $comercialQuote->state }}
                 </div>
             </div>
@@ -520,6 +520,7 @@
         </div>
 
     </div>
+
 
     @if ($comercialQuote->typeService->count() > 0)
         @if ($comercialQuote->state === 'Pendiente')
@@ -552,6 +553,40 @@
     @include('commercial_quote/modals/modalGenerateRoutingOrder')
 @endif
 
+<!-- Modal para justificar aceptación o rechazo del cliente -->
+<div class="modal fade" id="modalClientTrace" tabindex="-1" role="dialog" aria-labelledby="modalClientTraceLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <form method="POST" action="{{ route('commercial.quote.clientTrace') }}">
+            @csrf
+            <input type="hidden" name="quote_id" id="client_trace_quote_id">
+            <input type="hidden" name="client_decision" id="client_trace_action">
+            {{-- accept | reject --}}
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalClientTraceLabel">Justificación del Cliente</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>¿Cuál fue el motivo del cliente?</label>
+                        <textarea name="justification" class="form-control" rows="4" required></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="submit">Guardar Justificación</button>
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
 @push('scripts')
     <script>
         $('#type_service').select2({
@@ -579,7 +614,7 @@
 
 
 
-        function handleActionCommercialQuote(action, id) {
+        /*function handleActionCommercialQuote(action, id) {
 
 
 
@@ -636,7 +671,61 @@
                 });
             }
 
+        } */
+
+        function handleActionCommercialQuote(action, id) {
+            let textAction = (action === 'accept') ? 'aceptar' : 'rechazar';
+
+            // Validamos datos del cliente y consolidado (los traemos del backend via Blade)
+            let idCustomer = @json($comercialQuote->id_customer);
+            let nameCustomer = @json($comercialQuote->customer_company_name);
+            let isConsolidated = @json($comercialQuote->is_consolidated);
+
+            // Si es ACEPTAR
+            if (action === 'accept') {
+                if (!idCustomer || !isConsolidated) {
+                    completeCustomerInformation(nameCustomer, idCustomer, isConsolidated);
+                } else {
+                    Swal.fire({
+                        title: `¿Estas seguro que deseas ${textAction} esta cotización?`,
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#2e37a4",
+                        cancelButtonColor: "#6c757d",
+                        confirmButtonText: `Si, ${textAction}!`,
+                        cancelButtonText: 'No, cancelar',
+                        allowOutsideClick: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $('#client_trace_quote_id').val(id);
+                            $('#client_trace_action').val('accept');
+                            $('#modalClientTrace').modal('show');
+                        }
+                    });
+                }
+            }
+
+            // Si es RECHAZAR
+            else if (action === 'decline') {
+                Swal.fire({
+                    title: `¿Estas seguro que deseas ${textAction} esta cotización?`,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#2e37a4",
+                    cancelButtonColor: "#6c757d",
+                    confirmButtonText: `Si, ${textAction}!`,
+                    cancelButtonText: 'No, cancelar',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#client_trace_quote_id').val(id);
+                        $('#client_trace_action').val('decline');
+                        $('#modalClientTrace').modal('show');
+                    }
+                });
+            }
         }
+
 
 
         function completeCustomerInformation(nameCustomer, idCustomer, isConsolidated) {
@@ -838,4 +927,13 @@
             toggleArrows(false);
         });
     </script>
+    @if (session('show_client_trace_modal'))
+        <script>
+            $(document).ready(function() {
+                $('#client_trace_quote_id').val('{{ session('quote_id') }}');
+                $('#client_trace_action').val('accept');
+                $('#modalClientTrace').modal('show');
+            });
+        </script>
+    @endif
 @endpush

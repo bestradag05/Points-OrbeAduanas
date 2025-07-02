@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClientQuoteTrace;
 use App\Models\CommercialQuote;
 use App\Models\Concept;
 use App\Models\ConceptsQuoteTransport;
@@ -356,7 +357,6 @@ class CommercialQuoteController extends Controller
             'state' => 'Aceptado'
         ];
 
-
         if ($request->has_customer_data) {
 
             // Buscar si ya existe un cliente con ese tipo y número de documento
@@ -443,7 +443,13 @@ class CommercialQuoteController extends Controller
 
         $commercialQuote->update($updateData);
 
-        return redirect('commercial/quote/' . $commercialQuote->id . '/detail')->with('success', 'La cotizacion fue aceptada.');
+        return redirect()
+            ->route('commercial.quote.detail', $commercialQuote->id)
+            ->with([
+                'success' => 'La cotización fue aceptada.',
+                'show_client_trace_modal' => true,
+                'quote_id' => $commercialQuote->id
+            ]);
     }
 
 
@@ -613,7 +619,6 @@ class CommercialQuoteController extends Controller
     public function handleActionCommercialQuote(string $action, string $id)
     {
 
-
         $commercialQuote = CommercialQuote::findOrFail($id)->first();
 
         switch ($action) {
@@ -703,6 +708,7 @@ class CommercialQuoteController extends Controller
             ['provider_cost' => $data['cost_transport'], 'status' => 'Enviada']
         );
 
+
         $quote = QuoteTransport::findOrFail($quoteId);
         $quote->responseTransportQuotes()->attach($resp->id);
 
@@ -718,7 +724,39 @@ class CommercialQuoteController extends Controller
         return back()->with('success', 'Cotización de transporte registrada.');
     }
 
+    public function storeClientTrace(Request $request)
+    {
+        $request->validate([
+            'quote_id' => 'required|exists:commercial_quote,id',
+            'client_decision' => 'required|in:accept,decline',
+            'justification' => 'required|string|min:5',
+        ]);
 
+        $quote = CommercialQuote::findOrFail($request->quote_id);
+
+        // Actualizamos el estado de la cotización según la decisión del cliente
+        $quote->state = $request->client_decision === 'accept' ? 'Aceptado' : 'Rechazado';
+        $quote->save();
+
+        // Actualizar el estado del transporte relacionado
+        $transport = $quote->transport; // Obtener el transporte relacionado
+        if ($transport) { // Verificar que exista el transporte
+            $transport->update(['state' => $quote->state]); // Cambiar el estado del transporte
+        }
+
+        // Creamos el registro de trazabilidad del cliente
+        ClientQuoteTrace::create([
+            'quote_id' => $quote->id,
+            'client_decision' => $quote->state,
+            'justification' => $request->justification,
+            'decision_date' => now(),
+            'user_id' => Auth::id(),
+        ]);
+
+        return redirect()
+            ->route('commercial.quote.detail', $quote->id)
+            ->with('success', 'La decisión del cliente fue registrada correctamente.');
+    }
 
 
     /**
@@ -808,11 +846,15 @@ class CommercialQuoteController extends Controller
                     });
             },
             'quote_transport' => function ($query) {
-                $query->where('state', 'Pendiente');
+                $query->where('state', 'Pendiente')
+                    ->whereHas('responseTransportQuotes', function ($q) {
+                        $q->where('status', 'Aceptado');
+                    });
             }
         ])->find($id);
 
 
+        
 
         $personal = Auth::user()->personal;
 

@@ -256,7 +256,7 @@ class CustomService
     {
 
         $additional_point = AdditionalPoints::create([
-            'type_of_service' => $conceptCustom->concepts->name,
+            'type_of_service' => $conceptCustom->concept->name,
             'amount' => $ne_amount,
             'points' => $conceptCustom->additional_points,
             'id_additional_concept_service' => $conceptCustom->id,

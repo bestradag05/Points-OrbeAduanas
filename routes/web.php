@@ -24,6 +24,7 @@ use App\Http\Controllers\PointsController;
 use App\Http\Controllers\QuoteFreightController;
 use App\Http\Controllers\QuoteTransportController;
 use App\Http\Controllers\RegimeController;
+use App\Http\Controllers\ResponseTransportQuoteController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\RoutingController;
 use App\Http\Controllers\SupplierController;
@@ -42,6 +43,8 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ResponseFreightQuotesController;
 use App\Http\Controllers\TypeContainerController;
 use App\Models\CommercialQuote;
+use App\Models\ResponseFreightQuotes;
+use App\Models\ResponseTransportQuote;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 /*
@@ -185,9 +188,9 @@ Route::middleware('auth')->group(function () {
     /* Respuestas cotizaciones de flete */
 
     Route::post(
-        'transport/quote/{quote}/responses',
+        'freight/quote/{quote}/responses',
         [ResponseFreightQuotesController::class, 'store']
-    )->name('transport.quote.responses.store');
+    )->name('freight.quote.responses.store');
 
     Route::prefix('quote/freight/response')->group(function() {
     Route::get('{response}/show', [ResponseFreightQuotesController::class, 'show'])->name('quote.freight.response.show');
@@ -195,8 +198,6 @@ Route::middleware('auth')->group(function () {
     Route::get('{response}/reject', [ResponseFreightQuotesController::class, 'reject'])->name('quote.freight.response.reject');
     Route::get('{response}/generate', [ResponseFreightQuotesController::class, 'generate'])->name('quote.freight.response.generate');
 });
-
-
 
     Route::get('insurance/pending', [InsuranceController::class, 'getInsurancePending']);
     Route::resource('insurance', InsuranceController::class);
@@ -220,7 +221,23 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('quote/transport', QuoteTransportController::class)->names([
         'create' => 'quote.transport.create',
+        'store' => 'quote.transport.store',
     ]);
+
+    Route::post('transport/quote/{id}/responses', [ResponseTransportQuoteController::class, 'store'])
+        ->name('transport.quote.responses.store');
+
+    // Aceptar respuesta como aprobada por el cliente
+    Route::post('transport/quote/accept', [QuoteTransportController::class, 'acceptResponse'])
+        ->name('transport.quote.accept');
+
+    // Rechazar una respuesta (en cualquier estado)
+    Route::post('transport/quote/reject', [QuoteTransportController::class, 'rejectResponse'])
+        ->name('transport.quote.reject');
+
+
+
+
 
     /* Mensaje de cotizaciones de flete */
 
@@ -263,6 +280,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('commercial/quote/updatedate/{id}', [CommercialQuoteController::class, 'updateDate']);
     Route::get('commercial/customer/{name}', [CommercialQuoteController::class, 'showCustomerForName']);
     Route::resource('commercial/quote', CommercialQuoteController::class);
+
+    Route::post('commercial/quote/client-trace', [CommercialQuoteController::class, 'storeClientTrace'])
+        ->name('commercial.quote.clientTrace');
+
+
 
 
     /* Reportes */

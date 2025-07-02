@@ -12,22 +12,22 @@ class Transport extends Model
     protected $table = 'transport';
 
     protected $fillable = [
-        'nro_operation_transport', 
-        'nro_orden', 
-        'date_register', 
-        'invoice_number', 
-        'nro_dua', 
-        'origin', 
-        'destination', 
-        'total_transport', 
-        'payment_state', 
-        'payment_date',  
-        'weight', 
-        'withdrawal_date', 
-        'state', 
-        'nro_operation', 
-        'nro_quote_commercial', 
-        'id_supplier', 
+        'nro_operation_transport',
+        'nro_orden',
+        'date_register',
+        'invoice_number',
+        'nro_dua',
+        'origin',
+        'destination',
+        'total_transport',
+        'payment_state',
+        'payment_date',
+        'weight',
+        'withdrawal_date',
+        'state',
+        'nro_operation',
+        'nro_quote_commercial',
+        'id_supplier',
         'quote_transport_id'
     ];
 
@@ -69,7 +69,7 @@ class Transport extends Model
 
 
     /* Relaciones */
-    
+
     public function routing()
     {
         return $this->belongsTo(Routing::class, 'nro_operation', 'nro_operation');
@@ -85,20 +85,22 @@ class Transport extends Model
         return $this->morphMany(AdditionalPoints::class, 'additional', 'model_additional_service', 'id_additional_service');
     }
 
-    // 1:N → ConceptsTransport
-    public function concepts()
-    {
-        return $this->hasMany(ConceptsTransport::class, 'transport_id');
-    }
-
     // Inversa N:1 → QuoteTransport
     public function quoteTransport()
     {
         return $this->belongsTo(QuoteTransport::class, 'quote_transport_id');
     }
     public function conceptsTransport()
-{
-    return $this->hasMany(ConceptsTransport::class, 'transport_id');
-}
-
+    {
+        return $this->hasMany(ConceptsTransport::class, 'transport_id');
+    }
+    public function concepts()
+    {
+        return $this->belongsToMany(
+            Concept::class,
+            'concepts_transport', // nombre de la tabla pivot
+            'transport_id',       // clave foránea en la tabla pivot hacia este modelo
+            'concepts_id'         // clave foránea en la tabla pivot hacia el modelo Concept
+        )->withPivot('added_value', 'net_amount_response', 'subtotal', 'igv','total', 'additional_points'); // si tienes más campos en la tabla intermedia
+    }
 }

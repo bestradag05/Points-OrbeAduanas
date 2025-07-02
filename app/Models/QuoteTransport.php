@@ -39,7 +39,7 @@ class QuoteTransport extends Model
         'state',
         'nro_operation',
         'nro_quote_commercial',
-        'quote_transport_response',     
+        'quote_transport_response',
         'quote_transport_id',
         'response_quote_id',
     ];
@@ -118,23 +118,32 @@ class QuoteTransport extends Model
         $this->attributes['total_transport'] = $value + ($this->transportConcepts->sum('pivot.added_value') ?? 0);
     }
 
+    //TODO: (Task) Cambiar el nombre a response, ya se sobre entiende que son respuesta de transporte por que estas en el modelo QuoteTransport
     public function responseTransportQuotes()
     {
         return $this->hasMany(
             ResponseTransportQuote::class,
             'quote_transport_id',     // FK hacia quote_transport
-            'id'
         );
     }
 
+      //TODO: (Task) Llamarlo concepts unicamente, cuando hay relaciones que sean similares ahi si se especifica.
+      //TODO: Todas las relaciones que devuelven muchos debe ser en plural
     public function transportConcepts()
     {
         return $this->belongsToMany(
             Concept::class,
             'concepts_quote_transport',      // tu tabla de pivot
             'quote_transport_id',           // FK en pivot hacia esta tabla
-            'concepts_id');
+            'concepts_id'
+        );
     }
-
-
+    public function traces()
+    {
+        return $this->hasMany(QuoteTrace::class, 'quote_id');
+    }
+    public function clientTrace()
+    {
+        return $this->hasOne(ClientQuoteTrace::class, 'quote_id');
+    }
 }

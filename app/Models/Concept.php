@@ -55,7 +55,7 @@ class Concept extends Model
     }
 
     // Relación many‐to‐many con QuoteTransport
-    public function quoteTransports()
+    public function quoteTransport()
     {
         return $this->belongsToMany(QuoteTransport::class, 'concepts_quote_transport', 'concepts_id', 'quote_transport_id');
     }
@@ -76,9 +76,17 @@ class Concept extends Model
         return $this->belongsToMany(
             ResponseTransportQuote::class,
             'concepts_response',
-            'transport_cost',
             'concepts_id',
             'response_transport_quote_id'
-        )->withPivot('value_concept', 'net_amount');
+        )->withPivot('net_amount');
+    }
+    public function transport()
+    {
+        return $this->belongsToMany(
+            Transport::class,
+            'concepts_transport',
+            'concepts_id',
+            'transport_id'
+        )->withPivot('added_value', 'igv', 'total');
     }
 }

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->unsignedBigInteger('sender_id');
             $table->mediumText('message');
             $table->timestamps();
-
             $table->foreign('quote_freight_id')->references('id')->on('quote_freight');
             $table->foreign('sender_id')->references('id')->on('users');
 

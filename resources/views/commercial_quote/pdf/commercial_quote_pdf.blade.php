@@ -447,7 +447,7 @@
                     <th style="width: 15%">Total</th>
                 </thead>
                 <tbody>
-                    @foreach ($custom->concepts as $concept)
+                    @foreach ($custom->concept as $concept)
                         <tr>
                             <td>{{ $concept->name }}</td>
                             @if ($concept->name === 'AGENCIAMIENTO DE ADUANAS')

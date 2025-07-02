@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ResponseTransportQuote;
 use App\Models\Supplier;
 use App\Models\ConceptsQuoteTransport;
+use App\Models\QuoteTransport;
 use App\Models\Concept;
 use Illuminate\Http\Request;
 
@@ -33,42 +34,54 @@ class ResponseTransportQuoteController extends Controller
         return view('response-transport-quotes.register', compact('suppliers'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, $quoteId)
     {
-        $this->validateForm($request, null);
-        
-        $response = ResponseTransportQuote::create([
-            'nro_response'   => ResponseTransportQuote::generateNroResponse(),
-            'provider_id'    => $request->provider_id,
-            'provider_cost'  => $request->provider_cost,
-            'commission'     => $request->commission,
-            'total'          => $request->provider_cost + $request->commission,
-            'status'         => 'Enviada'
+        // 1) Validamos
+        $data = $request->validate([
+            'provider_id'     => 'required|exists:suppliers,id',
+            'price_concept.*' => 'required|numeric|min:0',
+            'commission'      => 'nullable|numeric|min:0',
+        ], [
+            'provider_id.required'     => 'Debes seleccionar un proveedor.',
+            'price_concept.*.required' => 'Todos los precios de concepto son obligatorios.',
+            'commission.required'      => 'La comisión es obligatoria.',
         ]);
-        
-        // Asumimos que el tipo de envío se envía en el request o se conoce de otro modo
-        $typeShipmentId = $request->type_shipment_id; // Asegúrate de enviarlo
-        
-        $transportConcept = Concept::where('name', 'TRANSPORTE')
-            ->where('id_type_shipment', $typeShipmentId)
-            ->first();
-        
-        if ($transportConcept) {
-            ConceptsQuoteTransport::create([
-                'quote_id'     => $request->quote_id, // si se está usando
-                'concepts_id'   => $transportConcept->id,
-                'value_concept'=> $request->provider_cost, // o el valor que desees asociar
+
+        $quote = QuoteTransport::findOrFail($quoteId);
+
+        //  Calculamos el total de conceptos
+        $totalConceptos = array_sum($data['price_concept']);
+
+
+
+        // Creamos la respuesta de transporte
+        $resp = ResponseTransportQuote::create([
+            'quote_transport_id' => $quote->id,
+            'provider_id'    => $data['provider_id'],
+            'provider_cost'  => $totalConceptos, // ahora lo tomamos de conceptos
+            'commission'     => $data['commission'] ?? 0,
+            'total'          => $totalConceptos + ($data['commission'] ?? 0), // recalcularemos abajo
+            'status'         => 'Enviada',
+        ]);
+
+        foreach ($data['price_concept'] as $conceptId => $price) {
+            $concept = Concept::find($conceptId);
+
+            // Suma la comisión SOLO si el concepto es "TRANSPORTE"
+            $net = $price;
+            if (strtoupper($concept->name) === 'TRANSPORTE') {
+                $net += $data['commission'] ?? 0;
+            }
+
+            $resp->conceptResponses()->create([
+                'concepts_id' => $conceptId,
+                'net_amount' => $net,
             ]);
         }
 
-        return redirect()->route('response-transport-quotes.index')->with('success', 'ok');
-    }
-
-    public function edit(string $id)
-    {
-        $suppliers = Supplier::where('supplier_type', 'Transportista')->get();
-        $quote = ResponseTransportQuote::findOrFail($id);
-        return view('response-transport-quotes.edit', compact('quote', 'suppliers'));
+        return redirect()
+            ->route('transport.show', $quoteId)
+            ->with('success', 'Cotización de transporte registrada.');
     }
 
     public function update(Request $request, string $id)

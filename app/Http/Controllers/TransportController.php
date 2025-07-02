@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AdditionalPoints;
 use App\Models\Concepts;
-use App\Models\ConceptTransport;
+use App\Models\ConceptsTransport;
 use App\Models\QuoteTransport;
 use App\Models\Supplier;
 use App\Models\Transport;
@@ -70,25 +70,14 @@ class TransportController extends Controller
     {
 
         $quote = QuoteTransport::findOrFail($quoteId);
+        $commercial_quote = $quote->commercial_quote;
 
         $response = $quote->responseTransportQuotes()
-            ->where('status', 'Aceptada')
+            ->where('status', 'Aceptado')
             ->with('conceptResponses.concept')
             ->firstOrFail();
 
-        dd([
-            'quote_id' => $quote->id,
-            'response' => $response->toArray(),
-            'conceptResponses_count' => $response->conceptResponses->count(),
-            'first_conceptResponse' => $response->conceptResponses->first() ? $response->conceptResponses->first()->toArray() : null,
-            'relationships' => [
-                'concept_loaded' => $response->conceptResponses->first()->relationLoaded('concept'),
-                'concept_data' => $response->conceptResponses->first()->concept ? $response->conceptResponses->first()->concept->toArray() : null
-            ]
-        ]);
-
-
-        return view('transport.register-transport', compact('quote', 'response'));
+        return view('transport.register-transport', compact('quote', 'response', 'commercial_quote'));
     }
     /**
      * Store a newly created resource in storage.
@@ -98,6 +87,7 @@ class TransportController extends Controller
         $transport = $this->trasnportService->storeTransport($request);
 
         return redirect('/commercial/quote/' . $transport->quote_transport_id . '/detail');
+      
     }
 
 

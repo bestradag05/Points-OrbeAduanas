@@ -649,7 +649,7 @@
         aria-labelledby="modalResponseQuoteFreight-title" aria-hidden="true">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
-                <form method="POST" action="{{ route('transport.quote.responses.store', $quote->id) }}"
+                <form method="POST" action="{{ route('freight.quote.responses.store', $quote->id) }}"
                     id="formResponseQuoteFreight">
                     @csrf
                     <div class="modal-header">

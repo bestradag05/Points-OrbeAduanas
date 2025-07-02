@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Models\ResponseTransportQuote;
+use App\Observers\QuoteTraceObserver;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -36,5 +38,8 @@ class AppServiceProvider extends ServiceProvider
                 ]);
             }
         });
+
+      ResponseTransportQuote::observe(QuoteTraceObserver::class);
+
     }
 }

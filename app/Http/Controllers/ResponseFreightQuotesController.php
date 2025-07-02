@@ -47,10 +47,10 @@ class ResponseFreightQuotesController extends Controller
     public function store(Request $request, String $id)
     {
         $this->validateForm($request, null);
-
+        
         $concepts = json_decode($request->input('concepts'), true);
         $commissions = json_decode($request->input('commissions'), true);
-
+        
         $quoteFreight = QuoteFreight::findOrFail($id)->first();
 
 
