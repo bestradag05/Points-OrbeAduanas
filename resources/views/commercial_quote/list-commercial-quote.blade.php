@@ -19,8 +19,8 @@
                         {{ $commercial_quote->nro_quote_commercial }}
                     </a>
                 </td>
-                <td class="text-uppercase">{{ $commercial_quote->origin }}</td>
-                <td class="text-uppercase">{{ $commercial_quote->destination }}</td>
+                <td class="text-uppercase">{{ $commercial_quote->originState->country->name }} - {{ $commercial_quote->originState->name }}</td>
+                <td class="text-uppercase">{{ $commercial_quote->destinationState->country->name }} - {{ $commercial_quote->destinationState->name }}</td>
                 <td class="text-uppercase">{{ $commercial_quote->customer_company_name }}</td>
                 <td>{{ $commercial_quote->type_shipment->description .' '.(($commercial_quote->type_shipment->description  === 'Marítima') ? $commercial_quote->lcl_fcl : '') }}</td>
                 <td>{{ $commercial_quote->personal->names }}</td>

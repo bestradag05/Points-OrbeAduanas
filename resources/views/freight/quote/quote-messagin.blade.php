@@ -993,6 +993,35 @@
         </div>
     </div>
 
+
+    {{-- Modal de justificacion --}}
+
+    <!-- Modal de justificación de aceptación -->
+    <div class="modal fade" id="modalJustification" tabindex="-1" aria-labelledby="modalJustificationLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="formModalJustification" method="POST">
+                @csrf
+                <div class="modal-content">
+                    <div id="headerModalJustification" class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="modalJustificationLabel">Justificar aceptación</h5>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="responseId" name="response_id">
+                        <div class="mb-3">
+                            <label for="justification" class="form-label">Explique el motivo:</label>
+                            <textarea id="justification" name="justification" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button id="btnJustification" type="submit" class="btn btn-primary">Aceptar respuesta</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     {{-- Template para copiar y enviar por Outlook --}}
 
 
@@ -1547,7 +1576,25 @@
                     confirmButtonColor: '#2e37a4'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = `/quote/freight/response/${responseId}/accept`;
+                        /* window.location.href = `/quote/freight/response/${responseId}/accept`; */
+                        $('#modalJustificationLabel').text('Justificar aceptación');
+                        $('#headerModalJustification').addClass('bg-primary').removeClass('bg-danger');
+                        $('#btnJustification').text('Aceptar respuesta');
+                        $('#btnJustification').addClass('btn-primary').removeClass('btn-danger');
+                        // Guardar temporalmente el responseId
+                        $('#acceptResponseId').val(responseId);
+                         // Limpiar el campo de justificación
+                        const justification = $('#justification')
+                        
+                        // Mostrar el modal de justificación
+                        justification.removeClass('is-invalid');
+                        hideError(justification[0]);
+                        $('#modalJustification').modal('show');
+                        // Mostrar el modal de justificación
+                        $('#modalJustification').modal('show');
+
+                        $('#formModalJustification').attr('action', `/quote/freight/response/${responseId}/accept`);
+
                     }
                 });
             } else if (action === "Rechazar") {
@@ -1561,13 +1608,44 @@
                     confirmButtonColor: '#d33'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = `/quote/freight/response/${responseId}/reject`;
+                        /*   window.location.href = `/quote/freight/response/${responseId}/reject`; */
+                        $('#modalJustificationLabel').text('Justificar rechazo');
+                        $('#headerModalJustification').addClass('bg-danger').removeClass('bg-primary');
+                        $('#btnJustification').text('Rechazar respuesta');
+                        $('#btnJustification').addClass('btn-danger').removeClass('btn-primary');
+                        $('#acceptResponseId').val(responseId);
+                        // Limpiar el campo de justificación
+                        const justification = $('#justification')
+                        
+                        // Mostrar el modal de justificación
+                        justification.removeClass('is-invalid');
+                        hideError(justification[0]);
+                        $('#modalJustification').modal('show');
+
+                        $('#formModalJustification').attr('action', `/quote/freight/response/${responseId}/reject`);
+
                     }
                 });
             } else if (action === 'Generar Flete') {
                 window.location.href = `/quote/freight/response/${responseId}/generate`;
             }
         }
+
+
+        $('#formModalJustification').on('submit', function(e) {
+            const justification = $('#justification')
+            const valueJustification = justification.val().trim();
+            hideError(justification[0]);
+            if (!valueJustification) {
+                e.preventDefault();
+                justification.addClass('is-invalid');
+                showError(justification[0], 'Debe completar el campo de justificacion');
+            } else {
+                justification.removeClass('is-invalid');
+                hideError(justification[0]);
+            }
+        });
+
 
         function checkExchangeRateNotEmpyt(selectedCurrency, dollarCurrency) {
 

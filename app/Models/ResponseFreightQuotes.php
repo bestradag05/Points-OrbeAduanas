@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasTrace;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ResponseFreightQuotes extends Model
 {
     use HasFactory;
+    use HasTrace;
 
     protected $table = 'response_freight_quotes';
 
@@ -34,7 +36,7 @@ class ResponseFreightQuotes extends Model
         'validity_date' => 'date',
     ];
 
-        // Evento que se ejecuta antes de guardar el modelo
+    // Evento que se ejecuta antes de guardar el modelo
     protected static function booted()
     {
         static::creating(function ($response) {
@@ -97,5 +99,11 @@ class ResponseFreightQuotes extends Model
         return $this->belongsToMany(Commission::class, 'commission_quote_freight_response')
             ->withPivot('amount')
             ->withTimestamps();
+    }
+
+
+    public function traces()
+    {
+        return $this->morphMany(Trace::class, 'traceable');
     }
 }

@@ -119,7 +119,7 @@ class ResponseFreightQuotesController extends Controller
     }
 
 
-    public function accept($id)
+    public function accept(Request $request, $id)
     {
         $response = ResponseFreightQuotes::findOrFail($id);
         $response->status = 'Aceptado';

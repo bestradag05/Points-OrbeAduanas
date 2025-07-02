@@ -194,8 +194,8 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('quote/freight/response')->group(function() {
     Route::get('{response}/show', [ResponseFreightQuotesController::class, 'show'])->name('quote.freight.response.show');
-    Route::get('{response}/accept', [ResponseFreightQuotesController::class, 'accept'])->name('quote.freight.response.accept');
-    Route::get('{response}/reject', [ResponseFreightQuotesController::class, 'reject'])->name('quote.freight.response.reject');
+    Route::post('{response}/accept', [ResponseFreightQuotesController::class, 'accept'])->name('quote.freight.response.accept');
+    Route::post('{response}/reject', [ResponseFreightQuotesController::class, 'reject'])->name('quote.freight.response.reject');
     Route::get('{response}/generate', [ResponseFreightQuotesController::class, 'generate'])->name('quote.freight.response.generate');
 });
 
