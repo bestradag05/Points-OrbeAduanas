@@ -3,8 +3,32 @@
     <div class="col-6">
         <div class="form-group">
             <label for="name_businessname">Razón social / Nombre</label>
-            <input type="text" class="form-control" name="name_businessname" id="name_businessname"
+            <input type="text" class="form-control @error('name_businessname') is-invalid @enderror"
+                id="name_businessname" name="name_businessname" placeholder="Ingrese la razón social o nombre"
                 value="{{ old('name_businessname', $supplier->name_businessname ?? '') }}">
+            @error('name_businessname')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="form-group">
+            <label for="area_type">Tipo de proveedor</label>
+            <select name="area_type" id="area_type" class="form-control @error('area_type') is-invalid @enderror">
+                <option value="">Seleccione...</option>
+                <option value="comercial"
+                    {{ old('area_type', $supplier->area_type ?? '') === 'comercial' ? 'selected' : '' }}>Comercial
+                </option>
+                <option value="transporte"
+                    {{ old('area_type', $supplier->area_type ?? '') === 'transporte' ? 'selected' : '' }}>Transporte
+                </option>
+                <option value="pricing"
+                    {{ old('area_type', $supplier->area_type ?? '') === 'agente' ? 'selected' : '' }}>Agente de Carga
+                </option>
+            </select>
+            @error('area_type')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
     </div>
 
@@ -113,7 +137,8 @@
     <div class="col-6 d-none" id="group-city">
         <div class="form-group">
             <label for="city">Ciudad</label>
-            <input type="text" name="city" class="form-control" value="{{ old('city', $supplier->city ?? '') }}">
+            <input type="text" name="city" class="form-control"
+                value="{{ old('city', $supplier->city ?? '') }}">
         </div>
     </div>
 

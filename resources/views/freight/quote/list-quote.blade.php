@@ -2,7 +2,7 @@
 
 @section('content_header')
     <div class="d-flex justify-content-between">
-        <h2>Listado de cotizaciones transporte</h2>
+        <h2>Listado de cotizaciones flete</h2>
     </div>
 
 @stop
@@ -15,24 +15,27 @@
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $quote->nro_quote }}</td>
                 {{-- <td>{{ $quote->routing->customer->name_businessname}}</td> --}}
-                <td>{{ $quote->customer_company_name}}</td>
+                <td>{{ $quote->customer_company_name }}</td>
                 <td>{{ $quote->origin }}</td>
                 <td>{{ $quote->destination }}</td>
-                <td>{{ $quote->commodity  }}</td>
+                <td>{{ $quote->commodity }}</td>
                 {{-- <td>{{ $quote->routing->lcl_fcl  }}</td> --}}
-                <td>{{ $quote->commercial_quote->lcl_fcl  }}</td>
+                <td>{{ $quote->commercial_quote->lcl_fcl }}</td>
                 <td>{{ $quote->cubage_kgv }}</td>
                 <td>{{ $quote->ton_kilogram }}</td>
                 {{-- <td>{{ $quote->total_weight }}</td> --}}
                 <td>{{ $quote->commercial_quote->personal->names }}</td>
                 {{-- <td>{{ $quote->nro_operation }}</td> --}}
                 <td>{{ $quote->nro_quote_commercial }}</td>
-                <td class="status-{{strtolower($quote->state)}}">{{ $quote->state }}
+                <td>
+                    <div class="custom-badge status-{{ strtolower($quote->state) }}">
+                        {{ $quote->state }}
+                    </div>
                 </td>
 
 
                 <td>
-                    <a href="{{ url('/quote/freight/'. $quote->id) }}" class="btn btn-outline-indigo btn-sm mb-2 ">
+                    <a href="{{ url('/quote/freight/' . $quote->id) }}" class="btn btn-outline-indigo btn-sm mb-2 ">
                         Detalle
                     </a>
                 </td>

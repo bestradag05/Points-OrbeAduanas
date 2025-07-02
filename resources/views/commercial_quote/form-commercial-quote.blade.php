@@ -20,7 +20,7 @@
                   <option />
                   @foreach ($stateCountrys as $stateCountry)
                       <option
-                          {{ (isset($routing->origin) && $routing->origin == $stateCountry->country->name . ' - ' . $stateCountry->name) || old('origin') == $stateCountry->country->name . ' - ' . $stateCountry->name ? 'selected' : '' }}>
+                        value="{{$stateCountry->id}}">
                           {{ $stateCountry->country->name . ' - ' . $stateCountry->name }}
                       </option>
                   @endforeach
@@ -36,7 +36,7 @@
                   <option />
                   @foreach ($stateCountrys as $stateCountry)
                       <option
-                          {{ (isset($routing->destination) && $routing->destination == $stateCountry->country->name . ' - ' . $stateCountry->name) || old('destination') == $stateCountry->country->name . ' - ' . $stateCountry->name ? 'selected' : '' }}>
+                      value="{{$stateCountry->id}}">
                           {{ $stateCountry->country->name . ' - ' . $stateCountry->name }}
                       </option>
                   @endforeach

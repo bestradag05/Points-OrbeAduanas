@@ -267,7 +267,7 @@
                     <div class="row text-muted">
                         <div class="col-6">
                             <p class="text-sm">Volumen :
-                                <b class="d-block">{{ $quote->ton_kilogram }} CBM</b>
+                                <b class="d-block">{{ $quote->cubage_kgv }} CBM</b>
                             </p>
                         </div>
 
@@ -485,7 +485,8 @@
         <div class="col-12 px-4 mt-5">
             <div class="text-center mb-4">
                 <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
-                <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal" data-target="#modalQuoteFreightDocuments">
+                <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
+                    data-target="#modalResponseQuoteFreight">
                     <i class="fas fa-plus"></i>
                 </button>
             </div>
@@ -623,6 +624,225 @@
                 <div class="modal-footer justify-content-center">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalResponseQuoteFreight" class="modal fade" tabindex="-1" role="dialog"
+        aria-labelledby="modalResponseQuoteFreight-title" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <form method="POST" action="{{ route('transport.quote.storePrices', $quote->id) }}"
+                    id="formCotizarTransporte">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title text-uppercase text-indigo text-bold">Respuesta N°: {{ $nro_response }}
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="id_supplier">Agente <span class="text-danger">*</span></label>
+                                <x-adminlte-select2 name="id_supplier" igroup-size="md"
+                                    data-placeholder="Buscar proveedor..." style="width:100%">
+                                    <option />
+                                    @foreach ($suppliers as $sup)
+                                        <option value="{{ $sup->id }}">
+                                            {{ $sup->name_businessname }}
+                                        </option>
+                                    @endforeach
+                                </x-adminlte-select2>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label>Fecha de validez <span class="text-danger">*</span></label>
+                                @php
+                                    $config = [
+                                        'format' => 'DD/MM/YYYY',
+                                        'minDate' => now()->format('Y-m-d'),
+                                        'language' => 'es', // Configurar en español
+                                    ];
+
+                                    $currentDate = \Carbon\Carbon::now()->format('d/m/Y'); // Formato compatible con el picker
+                                @endphp
+
+                                <x-adminlte-input-date id="validity_date" name="validity_date"
+                                    value="{{ $currentDate }}" :config="$config"
+                                    placeholder="Selecciona la fecha de validez..." />
+
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="frequency">Fecuencia <span class="text-danger">*</span></label>
+                                    <x-adminlte-select2 name="frequency" igroup-size="md"
+                                        data-placeholder="seleccionar frecuencia..." style="width:100%">
+                                        <option />
+                                        <option>Diario</option>
+                                        <option>Semanal</option>
+                                        <option>Quincenal</option>
+                                        <option>Mensual</option>
+                                    </x-adminlte-select2>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="service">Servicio <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="service" name="service">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="transit_time">TT <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="transit_time" name="transit_time">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="exchange_rate">Tipo de cambio <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                        id="exchange_rate" name="exchange_rate">
+                                </div>
+                            </div>
+
+                            <div id="formConceptsAduanas" class="formConcepts p-2 row">
+                                <h6 class="text-center bg-indigo w-100 p-2 mt-2">Costos Incurridos</h6>
+
+                                <div class="col-12 row justify-content-center align-items-center my-2 p-3" style="background-color: rgb(0 128 0 / 27%);">
+                                    <div class="col-2">
+                                        <label class="m-0 text-secondary">Detalle de la carga: </label>
+                                    </div>
+
+                                    @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+                                        <div class="col-2">
+                                            <label class="m-0" for="cubage_kgv">Volumen : <span class="font-weight-normal">{{ $quote->cubage_kgv }} CBM</span></label>
+                                        </div>
+                                    @else
+                                        <div class="col-2">
+                                            <label class="m-0" for="cubage_kgv">KGV : <span class="font-weight-normal">{{ $quote->cubage_kgv }} KGV</span></label>
+                                        </div>
+                                    @endif
+
+                                    <div class="col-2">
+                                        <label class="m-0" for="ton_kilogram">Peso : <span class="font-weight-normal">{{ $quote->ton_kilogram }} KG</span></label>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <x-adminlte-select2 name="concept" id="concept_aduana" label="Conceptos"
+                                        data-placeholder="Seleccione un concepto...">
+                                        <option />
+                                        @foreach ($concepts as $concept)
+                                            @if ($concept->typeService->name == 'Flete' && $quote->commercial_quote->type_shipment->id == $concept->id_type_shipment)
+                                                <option value="{{ $concept->id }}">{{ $concept->name }}</option>
+                                            @endif
+                                        @endforeach
+                                    </x-adminlte-select2>
+
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="unit_cost">Costo unitario</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text text-bold">
+                                                    $
+                                                </span>
+                                            </div>
+                                            <input type="text" class="form-control CurrencyInput " name="unit_cost"
+                                                data-type="currency" placeholder="Ingrese valor del concepto"
+                                                value="">
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="fixed_miltiplyable_cost">Fijo / CW</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" name="fixed_miltiplyable_cost">
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="observations">Observaciones</label>
+                                        <input type="text" class="form-control " name="observations"
+                                            placeholder="Ingrese alguna observación">
+                                    </div>
+
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="observations">Costo Final</label>
+                                        <input type="final_cost" class="form-control CurrencyInput " name="observations"
+                                            data-type="currency" placeholder="Ingrese el costo final" readonly>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-12 d-flex justify-content-center align-items-center pt-3 mb-2">
+                                    <button class="btn btn-indigo" type="button" id="btnAddConcept"
+                                        onclick="addConceptResponseFreight(this)">
+                                        Agregar
+                                    </button>
+
+                                </div>
+
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 10px">#</th>
+                                            <th>Cargos en Origen</th>
+                                            <th>Costo Unitario</th>
+                                            <th>Fijo / CW</th>
+                                            <th>Observaciones</th>
+                                            <th>Costo Final</th>
+                                            <th>x</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyAduanas">
+
+
+                                    </tbody>
+                                </table>
+
+                                <div class="row w-100 justify-content-end">
+
+                                    <div class="col-4 row">
+                                        <label for="total" class="col-sm-4 col-form-label">Total:</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="total" name="totalCustom"
+                                                value="0.00" @readonly(true)>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-save mr-2"></i> Guardar respuesta
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-lg" data-dismiss="modal">
+                            <i class="fas fa-times mr-2"></i> Cerrar
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -849,15 +1069,7 @@
 
 
 @push('scripts')
-    <!-- include summernote css/js -->
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('#quote-text').summernote();
-        });
-
-
         $('#sendFreightCost').on('submit', (e) => {
 
             e.preventDefault();
@@ -889,7 +1101,10 @@
                 form.submit();
             }
 
-        })
+        });
+
+
+
 
 
 
@@ -915,7 +1130,9 @@
         }
     </script>
 
-    <script>
+    {{-- Drop zone for documents --}}
+
+     <script>
         let commercial_quote = @json($quote->nro_quote_commercial);
         let freight_quote = @json($quote->nro_quote);
 

@@ -17,4 +17,15 @@ class StateCountry extends Model
     {
         return $this->belongsTo(Country::class, 'id_country');
     }
+
+     public function originCotizaciones()
+    {
+        return $this->hasMany(CommercialQuote::class, 'origin');
+    }
+
+    public function destinationCotizaciones()
+    {
+        return $this->hasMany(CommercialQuote::class, 'destination');
+    }
+
 }
