@@ -212,7 +212,7 @@
                                     </div>
                                     <div class="col-6">
                                         <p class="text-sm">Tipo de embalaje :
-                                            <b class="d-block">{{ $consolidated->packaging_type }}</b>
+                                            <b class="d-block">{{ $consolidated->packingType->name }}</b>
                                         </p>
                                     </div>
                                     @if ($consolidated->commercialQuote->type_shipment->description === 'Marítima')

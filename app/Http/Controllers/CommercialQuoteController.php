@@ -14,6 +14,7 @@ use App\Models\CustomerSupplierDocument;
 use App\Models\Freight;
 use App\Models\Incoterms;
 use App\Models\Modality;
+use App\Models\PackingType;
 use App\Models\QuoteFreight;
 use App\Models\QuoteTransport;
 use App\Models\Regime;
@@ -101,6 +102,7 @@ class CommercialQuoteController extends Controller
         $regimes = Regime::all();
         $incoterms = Incoterms::all();
         $types_services = TypeService::all();
+        $packingTypes = PackingType::all();
         $containers = Container::where('state', 'Activo')->get();
         //Customers
         $personalId = Auth::user()->personal->id;
@@ -109,7 +111,7 @@ class CommercialQuoteController extends Controller
             ->get();
 
 
-        return view("commercial_quote/register-commercial-quote", compact('stateCountrys', 'type_shipments', 'type_loads', 'regimes', 'incoterms', 'nro_quote_commercial', 'types_services', 'containers', 'customers'));
+        return view("commercial_quote/register-commercial-quote", compact('stateCountrys', 'type_shipments', 'type_loads', 'regimes', 'incoterms', 'nro_quote_commercial', 'types_services', 'containers', 'customers', 'packingTypes'));
     }
 
     /**
@@ -169,7 +171,7 @@ class CommercialQuoteController extends Controller
                 'id_incoterms' => $request->id_incoterms,
                 'commodity' => $request->commodity,
                 'nro_package' => $request->nro_package,
-                'packaging_type' => $request->packaging_type,
+                'id_packaging_type' => $request->id_packaging_type,
                 'id_containers' => $request->id_containers,
                 'container_quantity' => $request->container_quantity,
                 'id_customer' => $request->id_customer,
@@ -264,7 +266,7 @@ class CommercialQuoteController extends Controller
                 'commodity' => $shipper->commodity,
                 'load_value' => $this->parseDouble($shipper->load_value),
                 'nro_packages' => $shipper->nro_packages_consolidated,
-                'packaging_type' => $shipper->packaging_type_consolidated,
+                'id_packaging_type' => $shipper->id_packaging_type_consolidated,
                 'volumen' => $this->parseDouble($shipper->volumen),
                 'kilogram_volumen' => $this->parseDouble($shipper->kilogram_volumen),
                 'kilograms' => $this->parseDouble($shipper->kilograms),
@@ -289,7 +291,7 @@ class CommercialQuoteController extends Controller
                 'commodity' => $shipper->commodity,
                 'load_value' => $this->parseDouble($shipper->load_value),
                 'nro_packages' => $shipper->nro_packages_consolidated,
-                'packaging_type' => $shipper->packaging_type_consolidated,
+                'id_packaging_type' => $shipper->id_packaging_type_consolidated,
                 'volumen' => $this->parseDouble($shipper->volumen),
                 'kilogram_volumen' => $this->parseDouble($shipper->kilogram_volumen),
                 'kilograms' => $this->parseDouble($shipper->kilograms),
@@ -301,13 +303,18 @@ class CommercialQuoteController extends Controller
 
     public function createQuoteFreight($commercialQuote)
     {
+        $packing_type = null;
+        if ($commercialQuote->id_packaging_type) {
+            $packing_type = $commercialQuote->packingType->name;
+        }
+
         QuoteFreight::create([
             'shipping_date' => null,
             'response_date' => null,
             'origin' => $commercialQuote->originState->country->name . '-' . $commercialQuote->originState->name,
             'destination' =>  $commercialQuote->destinationState->country->name . '-' . $commercialQuote->destinationState->name,
             'commodity' => $commercialQuote->commodity,
-            'packaging_type' => $commercialQuote->packaging_type,
+            'packaging_type' => $packing_type,
             'load_type' => $commercialQuote->type_load->name,
             'container_type' => $commercialQuote->container_type,
             'ton_kilogram' => $commercialQuote->kilograms ? $commercialQuote->kilograms : $commercialQuote->tons,
@@ -324,6 +331,11 @@ class CommercialQuoteController extends Controller
     public function createQuoteTransport($commercialQuote)
     {
 
+         $packing_type = null;
+        if ($commercialQuote->id_packaging_type) {
+            $packing_type = $commercialQuote->packingType->name;
+        }
+
         QuoteTransport::create([
             /* 'pick_up' => $request->pick_up,
             'delivery' => $request->delivery,
@@ -331,7 +343,7 @@ class CommercialQuoteController extends Controller
             'gang' => $request->gang,
             'guard' => $request->guard, */
             'commodity' => $commercialQuote->commodity,
-            'packaging_type' => $commercialQuote->packaging_type,
+            'packaging_type' => $packing_type,
             'load_type' => $commercialQuote->type_load->name,
             'container_type' => $commercialQuote->container_type,
             'ton_kilogram' => ($commercialQuote->lcl_fcl === 'FCL') ? $commercialQuote->tons : $commercialQuote->kilograms,
@@ -854,7 +866,7 @@ class CommercialQuoteController extends Controller
         ])->find($id);
 
 
-        
+
 
         $personal = Auth::user()->personal;
 

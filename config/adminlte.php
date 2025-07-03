@@ -676,6 +676,33 @@ return [
             'can' => 'type_load.list',
         ],
         [
+            'text' => 'Aerolínea y Navieras',
+            'icon' => 'fas fa-clipboard-list',
+            'submenu' => [
+                [
+                    'text' => 'Aerolínea',
+                    'url'  => 'airline',
+                    'icon'  => 'fas fa-plane-departure',
+                    'active' => ['airline'],
+
+                ],
+                [
+                    'text' => 'Navieras',
+                    'url'  => 'shipping_company',
+                    'icon'  => 'fas fa-ship',
+                    'active' => ['shipping_company'],
+
+                ]
+            ]
+        ],
+        [
+            'text' => 'Tipo de embalaje',
+            'url'  => 'packing_type',
+            'icon' => 'fas fa-box',
+            'active' => ['packing_type', 'packing_type*', 'regex:@^content/[0-9]+$@'],
+            'can' => 'packing_type.list',
+        ],
+        [
             'text' => 'Contenedores',
             'icon' => 'fas fa-fw fa-box',
             

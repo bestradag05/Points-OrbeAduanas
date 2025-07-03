@@ -31,7 +31,7 @@ return new class extends Migration
             $table->boolean('is_consolidated')->nullable();
             $table->string('commodity')->nullable();
             $table->string('nro_package')->nullable();
-            $table->string('packaging_type')->nullable();
+            $table->unsignedBigInteger('id_packaging_type')->nullable();
             $table->decimal('kilograms', 8, 2)->nullable();
             $table->decimal('volumen', 8, 2)->nullable();
             $table->decimal('pounds', 8, 2)->nullable();
@@ -53,6 +53,7 @@ return new class extends Migration
             $table->foreign('id_regime')->references('id')->on('regime');
             $table->foreign('id_incoterms')->references('id')->on('incoterms');
             $table->foreign('id_type_load')->references('id')->on('type_load');
+            $table->foreign('id_packaging_type')->references('id')->on('packing_types');
 
 
         });

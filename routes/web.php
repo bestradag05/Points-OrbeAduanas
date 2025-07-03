@@ -2,6 +2,7 @@
 
 use App\Events\QuoteNotification;
 use App\Http\Controllers\AdditionalPointsController;
+use App\Http\Controllers\AirlineController;
 use App\Http\Controllers\CommercialQuoteController;
 use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\ConceptsController;
@@ -40,11 +41,14 @@ use App\Http\Controllers\ContainerController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PackingTypeController;
 use App\Http\Controllers\ResponseFreightQuotesController;
+use App\Http\Controllers\ShippingCompanyController;
 use App\Http\Controllers\TypeContainerController;
 use App\Models\CommercialQuote;
 use App\Models\ResponseFreightQuotes;
 use App\Models\ResponseTransportQuote;
+use App\Models\ShippingCompany;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 /*
@@ -285,7 +289,17 @@ Route::middleware('auth')->group(function () {
         ->name('commercial.quote.clientTrace');
 
 
+    /* Packing type */
 
+    Route::resource('packing_type', PackingTypeController::class);
+
+    /* Airlines */
+
+    Route::resource('airline', AirlineController::class);
+
+    /* Navieras */
+
+    Route::resource('shipping_company', ShippingCompanyController::class);
 
     /* Reportes */
 

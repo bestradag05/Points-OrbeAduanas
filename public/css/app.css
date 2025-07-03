@@ -212,7 +212,7 @@
 /* .status-respondido {
     color: blue;
 } */
-.status-aceptado {
+.status-aceptado, .status-activo {
     background: rgba(0, 128, 0, 0.1);
     color: rgb(0, 128, 0);
 }
@@ -222,15 +222,10 @@
     color: #00D3C7;
 }
 
-.status-notificado {
-    background: rgba(211, 0, 0, 0.1);
-    color: #d30700;
-}
-
 /* .status-observado {
     color: purple;
 } */
-.status-rechazada {
+.status-rechazada, .status-inactivo, .status-notificado {
     background: rgba(211, 0, 0, 0.1);
     color: #d30700;
 }

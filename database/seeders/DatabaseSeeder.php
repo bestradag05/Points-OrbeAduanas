@@ -12,6 +12,7 @@ use App\Models\Customer;
 use App\Models\CustomerSupplierDocument;
 use App\Models\Incoterms;
 use App\Models\Modality;
+use App\Models\PackingType;
 use App\Models\Personal;
 use App\Models\PersonalDocument;
 use App\Models\Regime;
@@ -250,6 +251,11 @@ class DatabaseSeeder extends Seeder
         TypeLoad::create(['name' => 'Carga peligrosa', 'description' => 'Carga peligrosa', 'state' => 'Activo']);
         TypeLoad::create(['name' => 'Carga perecedera', 'description' => 'Carga perecedera', 'state' => 'Activo']);
         TypeLoad::create(['name' => 'Carga fragil', 'description' => 'Carga fragil', 'state' => 'Activo']);
+
+        /* Packagin Type */
+
+        PackingType::create(['name' => 'Pallets']);
+        PackingType::create(['name' => 'Cajas']);
 
         /*  incoterms */
         Incoterms::create(['code' => 'EXW', 'name' => 'Ex Works', 'state' => 'Activo']);

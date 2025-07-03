@@ -20,7 +20,7 @@ class ConsolidatedCargos extends Model
         'commodity',
         'load_value',
         'nro_packages',
-        'packaging_type',
+        'id_packaging_type',
         'kilogram_volumen',
         'volumen',
         'kilograms',
@@ -41,5 +41,10 @@ class ConsolidatedCargos extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
+    }
+
+    public function packingType()
+    {
+        return $this->belongsTo(PackingType::class, 'id_packaging_type', 'id');
     }
 }

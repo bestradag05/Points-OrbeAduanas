@@ -19,8 +19,7 @@
               <x-adminlte-select2 name="origin" igroup-size="md" data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($stateCountrys as $stateCountry)
-                      <option
-                        value="{{$stateCountry->id}}">
+                      <option value="{{ $stateCountry->id }}">
                           {{ $stateCountry->country->name . ' - ' . $stateCountry->name }}
                       </option>
                   @endforeach
@@ -35,8 +34,7 @@
                   data-placeholder="Seleccione una opcion...">
                   <option />
                   @foreach ($stateCountrys as $stateCountry)
-                      <option
-                      value="{{$stateCountry->id}}">
+                      <option value="{{ $stateCountry->id }}">
                           {{ $stateCountry->country->name . ' - ' . $stateCountry->name }}
                       </option>
                   @endforeach
@@ -175,7 +173,8 @@
                       @foreach ($customers as $customer)
                           <option value="{{ $customer->id }}"
                               {{ (isset($routing->id_customer) && $routing->id_customer == $customer->id) || old('id_customer') == $customer->id ? 'selected' : '' }}>
-                             {{ $customer->name_businessname }} - {{$customer->document->name}}:{{$customer->document_number}}
+                              {{ $customer->name_businessname }} -
+                              {{ $customer->document->name }}:{{ $customer->document_number }}
                           </option>
                       @endforeach
                   </x-adminlte-select2>
@@ -276,18 +275,17 @@
 
               <div class="col-4">
                   <div class="form-group row">
-                      <label for="packaging_type" class="col-sm-4 col-form-label">Tipo de embalaje <span
+                      <label for="id_packaging_type" class="col-sm-4 col-form-label">Tipo de embalaje <span
                               class="text-danger">*</span></label>
                       <div class="col-sm-8">
-                          <input type="text" min="0" step="1"
-                              class="form-control @error('packaging_type') is-invalid @enderror" id="packaging_type"
-                              name="packaging_type" placeholder="Ingrese el tipo de embalaje.."
-                              value="{{ isset($routing) ? $routing->packaging_type : '' }}">
-                          @error('packaging_type')
-                              <span class="invalid-feedback d-block" role="alert">
-                                  <strong>{{ $message }}</strong>
-                              </span>
-                          @enderror
+                          <x-adminlte-select2 name="id_packaging_type" data-placeholder="Seleccione una opcion...">
+                              <option />
+                              @foreach ($packingTypes as $packingType)
+                                  <option value="{{ $packingType->id }}">
+                                      {{ $packingType->name }}
+                                  </option>
+                              @endforeach
+                          </x-adminlte-select2>
                       </div>
                   </div>
               </div>
@@ -1079,7 +1077,8 @@
                   'commodity': getValueByName('commodity'),
                   'load_value': getValueByName('load_value'),
                   'nro_packages_consolidated': getValueByName('nro_packages_consolidated'),
-                  'packaging_type_consolidated': getValueByName('packaging_type_consolidated'),
+                  'id_packaging_type_consolidated': getValueByName('id_packaging_type_consolidated'),
+                  'name_packaging_type_consolidated': $('#id_packaging_type_consolidated').find('option:selected').text().trim(),
                   'volumen': getValueByName('volumen'),
                   'kilogram_volumen': getValueByName('kilogram_volumen'),
                   'kilograms': getValueByName('kilograms'),
@@ -1102,7 +1101,7 @@
                         <td>${shipper.commodity}</td>
                         <td>${shipper.load_value}</td>
                         <td>${shipper.nro_packages_consolidated}</td>
-                        <td>${shipper.packaging_type_consolidated}</td>
+                        <td>${shipper.name_packaging_type_consolidated}</td>
                         <td>${shipper.volumen}</td>
                         <td>${shipper.kilogram_volumen}</td>
                         <td>${shipper.kilograms}</td>
@@ -1173,7 +1172,7 @@
                 <tr><th>Commodity</th><td>${shipper.commodity}</td></tr>
                 <tr><th>Valor de Carga</th><td>${shipper.load_value}</td></tr>
                 <tr><th>Nro. Paquetes</th><td>${shipper.nro_packages_consolidated}</td></tr>
-                <tr><th>Tipo de Empaque</th><td>${shipper.packaging_type_consolidated}</td></tr>
+                <tr><th>Tipo de Empaque</th><td>${shipper.name_packaging_type_consolidated}</td></tr>
                 <tr><th>Volumen</th><td>${shipper.volumen}</td></tr>
                 <tr><th>Kilogramos</th><td>${shipper.kilograms}</td></tr>
                 <tr><th>Medidas</th><td>
