@@ -18,4 +18,8 @@ class Airline extends Model
         'email',
         'status'
     ];
+
+    public function ResponseFreightQuote(){
+        return $this->hasMany(ResponseFreightQuotes::class, 'shipping_company_id', 'id');
+    }
 }

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Airline;
 use App\Models\Commission;
 use App\Models\Concept;
 use App\Models\Container;
@@ -18,6 +19,7 @@ use App\Models\PersonalDocument;
 use App\Models\Regime;
 use App\Models\Routing;
 use App\Models\Shipper;
+use App\Models\ShippingCompany;
 use App\Models\Supplier;
 use App\Models\TypeContainer;
 use App\Models\TypeInsurance;
@@ -286,6 +288,15 @@ class DatabaseSeeder extends Seeder
 
         $this->call(CountrySeeder::class);
         $this->call(StatesCountrySeeder::class);
+
+        /* Navieras y Aerolineas */
+
+        ShippingCompany::create(['name' => 'HAPAG LLOYD', 'contact' => 'Vania de la puente', 'cellphone' => '970032310', 'email' => 'AnaMaria.Coronado@hlag.com']);
+        ShippingCompany::create(['name' => 'EVERGREEN', 'contact' => 'Ricardo Loayza', 'cellphone' => '', 'email' => 'rloayza@evergreen-shipping.com.pe']);
+    
+
+        Airline::create(['name' => 'LATAM', 'contact' => 'Midory Lucero', 'cellphone' => '980083287', 'email' => 'midofy.gonzales@latam.com']);
+        Airline::create(['name' => 'AIRMAX CARGO', 'contact' => 'Nelly Sanchez', 'cellphone' => '998118980', 'email' => 'comercial@airmaxcargo.com.pe']);
 
 
 

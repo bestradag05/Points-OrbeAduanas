@@ -17,8 +17,8 @@ class ResponseFreightQuotes extends Model
         'nro_response',
         'validity_date',
         'id_supplier',
-        'airline',
-        'shipping_company',
+        'airline_id',
+        'shipping_company_id',
         'origin',
         'destination',
         'frequency',
@@ -105,5 +105,13 @@ class ResponseFreightQuotes extends Model
     public function traces()
     {
         return $this->morphMany(Trace::class, 'traceable');
+    }
+
+    public function shippingCompany(){
+        return $this->belongsTo(ShippingCompany::class, 'shipping_company_id', 'id');
+    }
+
+    public function airline(){
+        return $this->belongsTo(Airline::class, 'airline_id', 'id');
     }
 }

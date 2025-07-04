@@ -93,10 +93,10 @@
         <tr>
             @if ($response->quote->commercial_quote->type_shipment->description === 'Marítima')
                 <td class="highlight">NAVIERA</td>
-                <td>{{ $response->shipping_company }}</td>
+                <td>{{ $response->shippingCompany->name }}</td>
             @else
                 <td class="highlight">AEROLINEA</td>
-                <td>{{ $response->airline }}</td>
+                <td>{{ $response->airline->name }}</td>
             @endif
             <td class="highlight">FRECUENCIA</td>
             <td>{{ $response->frequency }}</td>

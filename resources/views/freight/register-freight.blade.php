@@ -51,6 +51,21 @@
                                             <strong class="d-block">{{ $acceptedResponse->service ?? '-' }}</strong>
                                         </p>
                                     </div>
+                                    @if ($acceptedResponse->quote->commercial_quote->type_shipment->description === 'Aérea')
+                                        <div class="col-md-4">
+                                            <p class="mb-1">Servicio:
+                                                <strong
+                                                    class="d-block">{{ $acceptedResponse->airline->name ?? '-' }}</strong>
+                                            </p>
+                                        </div>
+                                    @else
+                                        <div class="col-md-4">
+                                            <p class="mb-1">Servicio:
+                                                <strong class="d-block">{{ $acceptedResponse->shippingCompany->name ?? '-' }}</strong>
+                                            </p>
+                                        </div>
+                                    @endif
+
                                     <div class="col-md-4">
                                         <p class="mb-1">Frecuencia:
                                             <strong class="d-block">{{ $acceptedResponse->frequency ?? '-' }}</strong>

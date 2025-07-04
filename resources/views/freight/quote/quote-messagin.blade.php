@@ -526,9 +526,9 @@
                             <td>{{ $response->nro_response }}</td>
                             <td>{{ $response->supplier->name_businessname }}</td>
                             @if ($quote->commercial_quote->type_shipment->description === 'Aérea')
-                                <td>{{ $response->airline }}</td>
+                                <td>{{ $response->airline->name }}</td>
                             @else
-                                <td>{{ $response->shipping_company }}</td>
+                                <td>{{ $response->shippingCompany->name }}</td>
                             @endif
                             <td>{{ $response->validity_date_formatted }}</td>
                             <td>{{ $response->frequency }}</td>
@@ -723,19 +723,32 @@
                                             @if ($quote->commercial_quote->type_shipment->description === 'Aérea')
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label for="airline">Aerolinea <span
+                                                        <label for="airline_id">Aerolinea <span
                                                                 class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control" id="airline"
-                                                            name="airline">
+                                                        <x-adminlte-select2 name="airline_id" igroup-size="md"
+                                                            data-placeholder="seleccionar naviera..." style="width:100%">
+                                                            <option />
+                                                            @foreach ($airlines as $airline)
+                                                                <option value="{{ $airline->id }}">
+                                                                    {{ $airline->name }}</option>
+                                                            @endforeach
+                                                        </x-adminlte-select2>
+
                                                     </div>
                                                 </div>
                                             @endif
                                             @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label for="shipping_company">Naviera</label>
-                                                        <input type="text" class="form-control" id="shipping_company"
-                                                            name="shipping_company">
+                                                        <label for="shipping_company_id">Naviera</label>
+                                                        <x-adminlte-select2 name="shipping_company_id" igroup-size="md"
+                                                            data-placeholder="seleccionar naviera..." style="width:100%">
+                                                            <option />
+                                                            @foreach ($shipping_companies as $shipping_company)
+                                                                <option value="{{ $shipping_company->id }}">
+                                                                    {{ $shipping_company->name }}</option>
+                                                            @endforeach
+                                                        </x-adminlte-select2>
                                                     </div>
                                                 </div>
                                             @endif
@@ -1583,9 +1596,9 @@
                         $('#btnJustification').addClass('btn-primary').removeClass('btn-danger');
                         // Guardar temporalmente el responseId
                         $('#acceptResponseId').val(responseId);
-                         // Limpiar el campo de justificación
+                        // Limpiar el campo de justificación
                         const justification = $('#justification')
-                        
+
                         // Mostrar el modal de justificación
                         justification.removeClass('is-invalid');
                         hideError(justification[0]);
@@ -1616,7 +1629,7 @@
                         $('#acceptResponseId').val(responseId);
                         // Limpiar el campo de justificación
                         const justification = $('#justification')
-                        
+
                         // Mostrar el modal de justificación
                         justification.removeClass('is-invalid');
                         hideError(justification[0]);

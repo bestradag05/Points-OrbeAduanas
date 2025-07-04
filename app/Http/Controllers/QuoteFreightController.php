@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use Akaunting\Money\Money;
+use App\Models\Airline;
 use App\Models\Commission;
 use App\Models\Concept;
 use App\Models\Currency;
 use App\Models\QuoteFreight;
 use App\Models\ResponseFreightQuotes;
+use App\Models\ShippingCompany;
 use App\Models\Supplier;
 use App\Notifications\Notify;
 use App\Notifications\NotifyQuoteFreight;
@@ -204,6 +206,9 @@ class QuoteFreightController extends Controller
 
         $concepts = Concept::all();
         $currencies = Currency::all();
+        $airlines = Airline::all();
+        $shipping_companies = ShippingCompany::all();
+
 
         $folderPath = "commercial_quote/{$quote->commercial_quote->nro_quote_commercial}/quote_freight/{$quote->nro_quote}";
         $files = collect(Storage::disk('public')->files($folderPath))->map(function ($file) {
@@ -222,7 +227,7 @@ class QuoteFreightController extends Controller
         //Obtenemos las comisiones que se consideraran
         $commissions = Commission::all();
 
-        return view('freight/quote/quote-messagin', compact('quote', 'files', 'messages', 'suppliers', 'nro_response', 'concepts','commissions', 'currencies'));
+        return view('freight/quote/quote-messagin', compact('quote', 'files', 'messages', 'suppliers', 'nro_response', 'concepts','commissions', 'currencies', 'shipping_companies', 'airlines'));
     }
 
 
