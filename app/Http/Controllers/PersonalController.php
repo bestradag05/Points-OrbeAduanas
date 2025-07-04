@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Area;
 use App\Models\Document;
 use App\Models\Personal;
 use App\Models\PersonalDocument;
@@ -44,9 +45,11 @@ class PersonalController extends Controller
     {
 
         $documents = PersonalDocument::all();
+        $documents = PersonalDocument::all();
+        $areas = Area::where('state', 'Activo')->get();
 
-        //
-        return view("personal/register-personal", compact('documents'));
+
+        return view("personal/register-personal", compact('documents', 'areas'));
     }
 
     /**
@@ -105,6 +108,10 @@ class PersonalController extends Controller
             'id_user'  => (isset($user)) ? $user->id : null,
         ]);
 
+        if ($request->has('areas')) {
+            $personal->areas()->sync($request->areas);
+        }
+
         return redirect("personal");
     }
 
@@ -125,8 +132,9 @@ class PersonalController extends Controller
 
         $personal = Personal::findOrFail($id);
         $documents = PersonalDocument::all();
+        $areas = Area::where('state', 'Activo')->get();
 
-        return view('personal.edit-personal', compact('personal', 'documents'));
+        return view('personal.edit-personal', compact('personal', 'documents', 'areas'));
     }
 
     /**
@@ -181,6 +189,11 @@ class PersonalController extends Controller
 
 
         $personal->update($request->all());
+
+        if ($request->has('areas')) {
+            $personal->areas()->sync($request->areas);
+        }
+
 
 
         return redirect("personal");
@@ -256,7 +269,6 @@ class PersonalController extends Controller
         $personal->update(['state' => 'CESADO']);
 
         return redirect('personal')->with('eliminar', 'ok');
-
     }
 
 
@@ -277,6 +289,8 @@ class PersonalController extends Controller
             'email' => 'nullable|email',
             'address' => 'nullable',
             'id_document' => 'required',
+            'areas' => 'required|array',
+            'areas.*' => 'exists:areas,id',
             'document_number' => [
                 'nullable',
                 'numeric',

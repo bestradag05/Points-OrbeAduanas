@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Area;
 use App\Models\Team;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request;    
 use Illuminate\Support\Facades\Auth;
 
 class TeamController extends Controller
@@ -30,16 +31,22 @@ class TeamController extends Controller
 
     public function create()
     {
-        return view("teams/register-team");
-    }
+        $areas = Area::where('state', 'Activo')->get();
 
+        return view("teams/register-team", compact('areas'));
+    }
+    
     public function store(Request $request)
     {
         $this->validateForm($request, null);
 
-        Team::create([
-            'name' => $request->name,
+        $team = Team::create([
+            'name' => $request->name,   
         ]);
+
+        if ($request->has('areas')) {
+            $team->areas()->sync($request->areas);
+        }
 
         return redirect('teams');
     }
@@ -47,6 +54,8 @@ class TeamController extends Controller
     public function edit(string $id)
     {
         $team = Team::findOrFail($id);
+        $areas = Area::where('state', 'Activo')->get();
+
         return view("teams/edit-team", compact('team'));
     }
 
@@ -57,6 +66,10 @@ class TeamController extends Controller
         $team = Team::findOrFail($id);
         $team->fill($request->all());
         $team->save();
+
+        if ($request->has('areas')) {
+            $team->areas()->sync($request->areas);
+        }
 
         return redirect('teams');
     }
@@ -73,6 +86,8 @@ class TeamController extends Controller
     {
         $request->validate([
             'name' => 'required|string',
+            'areas' => 'nullable|array',
+            'areas.*' => 'exists:areas,id',
         ]);
     }
 }

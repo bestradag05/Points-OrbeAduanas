@@ -157,10 +157,56 @@ class RolesController extends Controller
         $userHasRoles =  User::role($rol->name)->get();
         $userHasRoles->load('personal');
 
+        $permissions = collect();
+        $modules = collect();
+
 
 
         return view('roles/group-roles', compact('rol', 'personals', 'userHasRoles', 'headsRolUser', 'tab'));
     }
+
+    public function templateTeams($id)
+    {
+        $rol = Role::findOrFail($id);
+
+        // Obtener todos los usuarios con este rol   y cargar relaciones necesarias
+        $users = User::role($rol->name)->with('personal.areas.teams', 'personal.team')->get();
+
+
+
+        $tab = 'equipos';
+
+        $permissions = collect();
+        $modules = collect();
+
+        return view('roles.group-roles', compact('rol', 'users', 'tab'));
+    }
+
+
+
+
+    public function assignTeam(Request $request)
+    {
+        $request->validate([
+            'id_user' => 'required|exists:users,id',
+            'id_team' => 'nullable|exists:teams,id'
+        ]);
+
+        $user = User::findOrFail($request->id_user);
+        $personal = $user->personal;
+
+        if (!$personal) {
+            return back()->withErrors(['msg' => 'Este usuario no tiene un perfil de personal asignado.']);
+        }
+
+        // Asignar el equipo
+        $personal->id_team = $request->id_team;
+        $personal->save();
+
+        return back()->with('success', 'Equipo asignado correctamente.');
+    }
+
+
 
 
     public function addPersonGroup(Request $request, $idRol)

@@ -111,6 +111,10 @@ Route::middleware('auth')->group(function () {
     Route::get('roles/grupos/add-all-permissions/{id_role}/{modulo}', [PermissionsController::class, 'addAllPermissions']);
     Route::get('roles/grupos/remove-all-permissions/{id_role}/{modulo}', [PermissionsController::class, 'removeAllPermissions']);
 
+    Route::get('roles/grupos/equipos/{id}', [RolesController::class, 'templateTeams'])->name('roles.equipos');
+    Route::post('roles/equipos/asignar', [RolesController::class, 'assignTeam'])->name('roles.assignTeam');
+
+
     // Áreas
     Route::get('areas', [AreaController::class, 'index'])->name('areas.list');
     Route::get('areas/create', [AreaController::class, 'create'])->name('areas.register');

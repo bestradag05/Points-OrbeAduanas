@@ -22,6 +22,7 @@ class Personal extends Model
         'cellphone',
         'email',
         'address',
+        'id_team',
         'img_url',
         'state',
         'id_user',
@@ -51,8 +52,9 @@ class Personal extends Model
 
     public function team()
     {
-        return $this->belongsTo(Team::class);
+        return $this->belongsTo(Team::class, 'id_team');
     }
+
 
     public function areas()
     {

@@ -338,7 +338,21 @@ return [
                     'icon' => 'fas fa-fw fa-users',
                     'active' => ['roles', 'roles*', 'regex:@^content/[0-9]+$@'],
                     'can' => 'users.listGroup',
-                ]
+                ],
+                [
+                    'text' => 'Areas',
+                    'url'  => 'areas',
+                    'icon' => 'fas fa-map',
+                    'active' => ['areas', 'areas*', 'regex:@^content/[0-9]+$@'],
+                    'can' => 'users.listGroup',
+                ],
+                [
+                    'text' => 'Equipos',
+                    'url'  => 'teams',
+                    'icon' => 'fas fa-layer-group',
+                    'active' => ['teams', 'teams*', 'regex:@^content/[0-9]+$@'],
+                    'can' => 'users.listGroup',
+                ]                               
             ]
         ],
         [

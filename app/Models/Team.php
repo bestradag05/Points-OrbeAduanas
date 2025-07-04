@@ -20,8 +20,8 @@ class Team extends Model
     }
 
     // Team → Personal (one-to-many)
-    public function personals(): HasMany
+    public function personals()
     {
-        return $this->hasMany(Personal::class);
+        return $this->hasMany(Personal::class, 'id_team');
     }
 }

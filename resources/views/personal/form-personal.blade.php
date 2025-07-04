@@ -55,9 +55,8 @@
             <select name="id_document" id="id_document" class="form-control">
                 <option value="" disabled selected> -- Seleccione --</option>
                 @foreach ($documents as $document)
-                    <option value="{{ $document->id }}" 
-                        {{ (isset($personal->id_document) && $personal->id_document == $document->id) || old('id_document') == $document->id ? 'selected' : '' }}
-                        >
+                    <option value="{{ $document->id }}"
+                        {{ (isset($personal->id_document) && $personal->id_document == $document->id) || old('id_document') == $document->id ? 'selected' : '' }}>
                         {{ $document->name }}
                     </option>
                 @endforeach
@@ -155,6 +154,26 @@
     </div>
 
     <div class="col-6">
+        <div class="form-group">
+            <label for="area_id">Asignar Area</label>
+            <select name="areas[]" id="area_id" class="form-control">
+                <option value="" disabled selected>-- Seleccione un área --</option>
+                @foreach ($areas as $area)
+                    <option value="{{ $area->id }}"
+                        {{ isset($personal) && $personal->areas->pluck('id')->contains($area->id) ? 'selected' : '' }}>
+                        {{ $area->name }}
+                    </option>
+                @endforeach
+            </select>
+            @error('areas')
+                <div class="text-danger">{{ $message }}</div>
+            @enderror
+        </div>
+    </div>
+
+
+
+    <div class="col-6">
 
         <div class="form-group">
             <label for="documento_identidad">Foto</label>
@@ -218,8 +237,8 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fas fa-key"></i></span>
                         </div>
-                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation"
-                            placeholder="confirme su password"
+                        <input type="password" class="form-control" id="password_confirmation"
+                            name="password_confirmation" placeholder="confirme su password"
                             value="{{ isset($personal->password_confirmation) ? $personal->password_confirmation : old('password_confirmation') }}">
 
                     </div>

@@ -19,11 +19,14 @@
                         href="{{ url('roles/grupos/' . $rol->id) }}">Usuarios</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ $tab == 'usuarios' ? '' : 'active' }}"
+                    <a class="nav-link {{ $tab == 'permissions' ? 'active' : '' }}"
                         href="{{ url('/roles/grupos/permissions/' . $rol->id) }}">Permisos
                         ({{ $rol->permissions->count() }})</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link {{ $tab == 'equipos' ? 'active' : '' }}"
+                        href="{{ url('/roles/grupos/equipos/' . $rol->id) }}">Equipos</a>
+                </li>
 
             </ul>
         </div>
@@ -34,6 +37,8 @@
 
                     @if ($tab == 'usuarios')
                         @include('roles/form-group-roles')
+                    @elseif ($tab == 'equipos')
+                        @include('roles/form-group-teams', ['users' => $users])
                     @else
                         @include('permissions.list-permissions', [
                             'permissions' => $permissions,

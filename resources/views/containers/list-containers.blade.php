@@ -69,7 +69,6 @@
                 this.submit();
             }
             });
-
         });
     </script>
 @endpush

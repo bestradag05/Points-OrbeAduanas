@@ -13,13 +13,13 @@ class Area extends Model
     protected $fillable = ['name', 'state'];
 
     // Areas ↔ Teams (many-to-many)
-    public function teams(): BelongsToMany
+    public function teams()
     {
         return $this->belongsToMany(Team::class, 'area_team')->withTimestamps();
     }
 
     // Areas ↔ Personal (many-to-many)
-    public function personals(): BelongsToMany
+    public function personals()
     {
         return $this->belongsToMany(Personal::class, 'area_personal')->withTimestamps();
     }
