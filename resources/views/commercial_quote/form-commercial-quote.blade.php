@@ -765,77 +765,68 @@
 
               var idShipment = $(e.target).find("option:selected").val();
 
-              $.ajax({
-                  type: "GET",
-                  url: "/getLCLFCL",
-                  data: {
-                      idShipment
-                  },
-                  dataType: "JSON",
-                  success: function(respu) {
-                      if (respu.description === "Marítima") {
+              var data = @json($type_shipments);
 
-                          typeShipmentCurrent = respu;
-
-                          $('#type_shipment_name').val(respu.description);
-
-                          $('#lclfcl_content').addClass('row');
-                          $('#lclfcl_content').children().first().removeClass('col-12 p-0').addClass(
-                              'col-8');
-                          $('#lclfcl_content').children().last().removeClass('d-none');
-
-                          $('#contenedor_volumen').removeClass('d-none');
-                          $('#contenedor_vol_consolidated').removeClass('d-none');
-                          $('#contenedor_kg_vol').addClass('d-none');
-                          $('#contenedor_kg_vol_consolidated').addClass('d-none');
-
-                          $('#contenedor_volumen').find('input').val("");
-                          $('#contenedor_kg_vol').find('input').val("");
-                          $('#contenedor_kg_vol_consolidated').find('input').val("");
+              var typeShipmentCurrent = data.find(typeShipment => typeShipment.id === parseInt(idShipment));
 
 
+              if (typeShipmentCurrent.description === "Marítima") {
 
+                  $('#type_shipment_name').val(typeShipmentCurrent.description);
 
-                      } else {
+                  $('#lclfcl_content').addClass('row');
+                  $('#lclfcl_content').children().first().removeClass('col-12 p-0').addClass(
+                      'col-8');
+                  $('#lclfcl_content').children().last().removeClass('d-none');
 
+                  $('#contenedor_volumen').removeClass('d-none');
+                  $('#contenedor_vol_consolidated').removeClass('d-none');
+                  $('#contenedor_kg_vol').addClass('d-none');
+                  $('#contenedor_kg_vol_consolidated').addClass('d-none');
 
-                          $('#type_shipment_name').val(respu.description);
+                  $('#contenedor_volumen').find('input').val("");
+                  $('#contenedor_kg_vol').find('input').val("");
+                  $('#contenedor_kg_vol_consolidated').find('input').val("");
 
-                          $('#lclfcl_content').removeClass('row');
-                          $('#lclfcl_content').children().first().removeClass('col-8').addClass(
-                              'col-12 p-0');
-                          $('#lclfcl_content').children().last().addClass('d-none');
-                          $('input[name="lcl_fcl"]').prop('checked', false);
+              } else {
 
-                          $('#contenedor_volumen').addClass('d-none');
-                          $('#contenedor_vol_consolidated').addClass('d-none');
-                          $('#contenedor_kg_vol').removeClass('d-none');
-                          $('#contenedor_kg_vol_consolidated').removeClass('d-none');
+                  $('#type_shipment_name').val(typeShipmentCurrent.description);
 
-                          $('#contenedor_kg_vol').find('input').val("");
-                          $('#contenedor_kg_vol_consolidated').find('input').val("");
-                          $('#contenedor_volumen').find('input').val("");
-                          $('#contenedor_vol_consolidated').find('input').val("");
+                  $('#lclfcl_content').removeClass('row');
+                  $('#lclfcl_content').children().first().removeClass('col-8').addClass(
+                      'col-12 p-0');
+                  $('#lclfcl_content').children().last().addClass('d-none');
+                  $('input[name="lcl_fcl"]').prop('checked', false);
 
-                          $('#containerTypeWrapper').find('input').val("");
-                          $('#containerTypeWrapper').addClass('d-none');
-                          $('#containerQuantityWrapper').find('input').val("");
-                          $('#containerQuantityWrapper').addClass('d-none');
+                  $('#contenedor_volumen').addClass('d-none');
+                  $('#contenedor_vol_consolidated').addClass('d-none');
+                  $('#contenedor_kg_vol').removeClass('d-none');
+                  $('#contenedor_kg_vol_consolidated').removeClass('d-none');
 
-                          $('#containerTypeWrapperConsolidated').find('input').val("");
-                          $('#containerTypeWrapperConsolidated').addClass('d-none');
-                          $('#containerQuantityWrapperConsolidated').find('input').val("");
-                          $('#containerQuantityWrapperConsolidated').addClass('d-none');
+                  $('#contenedor_kg_vol').find('input').val("");
+                  $('#contenedor_kg_vol_consolidated').find('input').val("");
+                  $('#contenedor_volumen').find('input').val("");
+                  $('#contenedor_vol_consolidated').find('input').val("");
 
-                          $('#contenedor_tons').find('input').val("");
-                          $('#contenedor_tons').addClass('d-none');
-                          $('#contenedor_weight').removeClass('d-none');
+                  $('#containerTypeWrapper').find('input').val("");
+                  $('#containerTypeWrapper').addClass('d-none');
+                  $('#containerQuantityWrapper').find('input').val("");
+                  $('#containerQuantityWrapper').addClass('d-none');
+
+                  $('#containerTypeWrapperConsolidated').find('input').val("");
+                  $('#containerTypeWrapperConsolidated').addClass('d-none');
+                  $('#containerQuantityWrapperConsolidated').find('input').val("");
+                  $('#containerQuantityWrapperConsolidated').addClass('d-none');
+
+                  $('#contenedor_tons').find('input').val("");
+                  $('#contenedor_tons').addClass('d-none');
+                  $('#contenedor_weight').removeClass('d-none');
 
 
 
-                      }
-                  }
-              });
+              }
+
+
 
 
           });
@@ -1078,7 +1069,8 @@
                   'load_value': getValueByName('load_value'),
                   'nro_packages_consolidated': getValueByName('nro_packages_consolidated'),
                   'id_packaging_type_consolidated': getValueByName('id_packaging_type_consolidated'),
-                  'name_packaging_type_consolidated': $('#id_packaging_type_consolidated').find('option:selected').text().trim(),
+                  'name_packaging_type_consolidated': $('#id_packaging_type_consolidated').find('option:selected').text()
+                      .trim(),
                   'volumen': getValueByName('volumen'),
                   'kilogram_volumen': getValueByName('kilogram_volumen'),
                   'kilograms': getValueByName('kilograms'),
