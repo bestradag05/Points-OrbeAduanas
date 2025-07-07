@@ -63,7 +63,6 @@
                     <th>Valor del concepto</th>
                     <th>Valor agregado</th>
                     <th>Puntos Adicionales</th>
-                    <th>x</th>
                 </tr>
             </thead>
             <tbody id="tbodyConcepts">
@@ -136,7 +135,7 @@
             @else
 
                 value_transport = @json($quote->cost_transport);
-                conceptsTransport = @json($response->conceptResponses);
+                conceptsTransport = @json($response->conceptResponseTransports);
 
                 // Ordenamiento corregido
                 conceptsTransport.sort((a, b) => {
@@ -341,26 +340,7 @@
 
                         if (isEditMode || !conceptsTransport || !conceptsTransport.some(concept => concept.name === item.name)) {
 
-
-                            // Insertar un botón para eliminar la fila en la cuarta celda de la fila
-                            let celdaEliminar = fila.insertCell(5);
-                            let botonEliminar = document.createElement('a');
-                            botonEliminar.href = '#';
-                            botonEliminar.innerHTML = '<p class="text-danger">X</p>';
-                            botonEliminar.addEventListener('click', function(event) {
-                                event.preventDefault();
-                                // Eliminar la fila correspondiente al hacer clic en el botón
-                                let fila = this.parentNode.parentNode;
-                                let indice = fila.rowIndex -
-                                    1; // Restar 1 porque el índice de las filas en tbody comienza en 0
-                                conceptsArray.splice(indice, 1); // Eliminar el elemento en el índice correspondiente
-                                updateTable(conceptsArray);
-                            });
-                            celdaEliminar.appendChild(botonEliminar);
-
                         }
-
-
 
                         TotalConcepts += parseFloat(item.value) + parseFloat(item.added);
                     }

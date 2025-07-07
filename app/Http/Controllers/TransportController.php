@@ -74,7 +74,7 @@ class TransportController extends Controller
 
         $response = $quote->responseTransportQuotes()
             ->where('status', 'Aceptado')
-            ->with('conceptResponses.concept')
+            ->with('conceptResponseTransports.concept')
             ->firstOrFail();
 
         return view('transport.register-transport', compact('quote', 'response', 'commercial_quote'));

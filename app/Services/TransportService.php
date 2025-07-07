@@ -128,7 +128,7 @@ class TransportService
         $concepts  = json_decode($request->concepts);
         $quoteId = $request->input('quote_transport_id');
         $quote = QuoteTransport::findOrFail($quoteId);
-        $response = $quote->responseTransportQuotes()->where('status', 'Aceptado')->with('conceptResponses')->first();
+        $response = $quote->responseTransportQuotes()->where('status', 'Aceptado')->with('conceptResponseTransports')->first();
 
         // 1. Creamos el transporte sin total aún (lo pondremos luego)
         $transport = $this->createOrUpdateTransport($request);
@@ -194,7 +194,7 @@ class TransportService
         $quoteId = $request->input('quote_transport_id');
         $quote = QuoteTransport::findOrFail($quoteId);
 
-        $response = $quote->responseTransportQuotes()->where('status', 'Aceptado')->with('conceptResponses')->first();
+        $response = $quote->responseTransportQuotes()->where('status', 'Aceptado')->with('conceptResponseTransports')->first();
 
         $this->syncTransportConcepts($transport, $concepts, $response);
 
@@ -268,7 +268,7 @@ class TransportService
 
             // 1 Obtener el net_amount desde concepts_response_transport
             $net = optional(
-                $response->conceptResponses->firstWhere('concepts_id', $concept->id)
+                $response->conceptResponseTransports->firstWhere('concepts_id', $concept->id)
             )->net_amount ?? 0;
 
 

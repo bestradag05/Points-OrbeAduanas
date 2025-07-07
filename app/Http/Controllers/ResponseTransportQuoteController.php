@@ -73,7 +73,7 @@ class ResponseTransportQuoteController extends Controller
                 $net += $data['commission'] ?? 0;
             }
 
-            $resp->conceptResponses()->create([
+            $resp->conceptResponseTransports()->create([
                 'concepts_id' => $conceptId,
                 'net_amount' => $net,
             ]);

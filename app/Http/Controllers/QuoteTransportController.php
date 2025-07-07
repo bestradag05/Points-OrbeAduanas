@@ -416,6 +416,9 @@ class QuoteTransportController extends Controller
 
 
         $nro_response = ResponseTransportQuote::generateNroResponse();
+        
+        $locked = in_array(optional($quote->transport)->state, ['Aceptado', 'Rechazado', 'Anulado']);
+
 
         // 7) Renderizar la misma vista y pasarle TODO lo necesario
         return view('transport.quote.quote-messagin', compact(
@@ -423,7 +426,8 @@ class QuoteTransportController extends Controller
             'messages',
             'files',
             'transportSuppliers',
-            'nro_response'
+            'nro_response',
+            'locked'
         ));
     }
 
@@ -667,7 +671,7 @@ class QuoteTransportController extends Controller
             'status' => 'Aceptado'
         ]);
 
-        $ids = $response->conceptResponses->pluck('concepts_id')->toArray();
+        $ids = $response->conceptResponseTransports->pluck('concepts_id')->toArray();
         $quote->transportConcepts()->sync($ids);
 
         return redirect('/transport/create/' . $quote->id);
