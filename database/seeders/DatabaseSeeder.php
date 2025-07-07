@@ -326,6 +326,7 @@ class DatabaseSeeder extends Seeder
         Routing::create(['nro_operation' => 'ORBE-25257', 'origin' => 'Chile - Atacama', 'destination' => 'Perú - Callao', 'wr_loading' => null, 'load_value' => 780.00, 'id_personal' => 99, 'id_customer' => 1, 'id_type_shipment' => 21, 'id_regime' => 1, 'id_incoterms' => 9, 'id_supplier' => 1, 'id_type_load' => 1, 'lcl_fcl' => null, 'commodity' => 'LLANTAS', 'nro_package' => '1', 'packaging_type' => 'CAJAS', 'container_type' => null, 'pounds' => 5158.14, 'kilograms' => 2334.00, 'volumen' => null, 'kilogram_volumen' => 233.00, 'tons' => null, 'measures' => '{"1":{"amount":1,"width":"433.00","length":"233.00","height":"433.00"}}', 'hs_code' => null, 'observation' => null, 'state' => 'Activo', 'created_at' => '2025-01-07 01:27:48', 'updated_at' => '2025-01-07 01:27:48']);
 
         Concept::create(['name' => 'AGENCIAMIENTO DE ADUANAS', 'id_type_shipment' => 8, 'id_type_service' => 1]);
+        Concept::create(['name' => 'AGENCIAMIENTO DE ADUANAS', 'id_type_shipment' => 21, 'id_type_service' => 1]);
         Concept::create(['name' => 'COMISION DE ADUANA', 'id_type_shipment' => 8, 'id_type_service' => 1]);
         Concept::create(['name' => 'GASTOS OPERATIVOS', 'id_type_shipment' => 8, 'id_type_service' => 1]);
         Concept::create(['name' => 'GASTOS ADMINISTRATIVOS', 'id_type_shipment' => 21, 'id_type_service' => 1]);

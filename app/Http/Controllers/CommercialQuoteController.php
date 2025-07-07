@@ -858,13 +858,12 @@ class CommercialQuoteController extends Controller
                     });
             },
             'quote_transport' => function ($query) {
-                $query->where('state', 'Pendiente')
+                $query->where('state', 'Aceptado') //TODO: (Task) verificar en que estados se va mantener la cotizacion cuando se agrege una respuesta y definirlo aqui
                     ->whereHas('responseTransportQuotes', function ($q) {
                         $q->where('status', 'Aceptado');
                     });
             }
         ])->find($id);
-
 
 
 
