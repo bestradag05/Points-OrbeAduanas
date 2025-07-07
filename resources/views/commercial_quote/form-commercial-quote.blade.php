@@ -194,57 +194,198 @@
   </div>
   <div id="detalle_producto" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepperDetalleProducto">
 
-      <div class="form-group">
-          <label>¿Es consolidado?</label>
-          <div class="form-check form-check-inline">
-              <input type="radio" id="consolidadoSi" name="is_consolidated" value="1"
-                  class="form-check-input" onchange="toggleConsolidatedSection()">
-              <label for="consolidadoSi" class="form-check-label">Sí</label>
-          </div>
-          <div class="form-check form-check-inline">
-              <input type="radio" id="consolidadoNo" name="is_consolidated" value="0"
-                  class="form-check-input" onchange="toggleConsolidatedSection()" checked>
-              <label for="consolidadoNo" class="form-check-label">No</label>
-          </div>
-      </div>
+      <div id="lcl_container" class="lcl-fields">
 
-      <div id="singleProviderSection">
-
-          <div class="form-group row">
-              <label for="commodity" class="col-sm-2 col-form-label">Producto <span
-                      class="text-danger">*</span></label>
-              <div class="col-sm-10">
-                  <input type="text" class="form-control @error('commodity') is-invalid @enderror" id="commodity"
-                      name="commodity" placeholder="Ingrese el producto.."
-                      value="{{ isset($routing->commodity) ? $routing->commodity : old('commodity') }}">
-                  @error('commodity')
-                      <span class="invalid-feedback d-block" role="alert">
-                          <strong>{{ $message }}</strong>
-                      </span>
-                  @enderror
+          <div class="form-group">
+              <label>¿Es consolidado?</label>
+              <div class="form-check form-check-inline">
+                  <input type="radio" id="consolidadoSi" name="is_consolidated" value="1"
+                      class="form-check-input" onchange="toggleConsolidatedSection()">
+                  <label for="consolidadoSi" class="form-check-label">Sí</label>
+              </div>
+              <div class="form-check form-check-inline">
+                  <input type="radio" id="consolidadoNo" name="is_consolidated" value="0"
+                      class="form-check-input" onchange="toggleConsolidatedSection()" checked>
+                  <label for="consolidadoNo" class="form-check-label">No</label>
               </div>
           </div>
 
-          <div class="row my-4">
+          <div id="singleProviderSection">
 
-              <div class="col-4">
-                  <div class="form-group row">
-                      <label for="load_value" class="col-sm-4 col-form-label">Valor de factura <span
-                              class="text-danger">*</span></label>
-                      <div class="col-sm-8">
-                          <div class="input-group">
-                              <div class="input-group-prepend">
-                                  <span class="input-group-text text-bold @error('load_value') is-invalid @enderror">
-                                      $
-                                  </span>
+              <div class="form-group row">
+                  <label for="commodity" class="col-sm-2 col-form-label">Producto <span
+                          class="text-danger">*</span></label>
+                  <div class="col-sm-10">
+                      <input type="text" class="form-control @error('commodity') is-invalid @enderror"
+                          id="commodity" name="commodity" placeholder="Ingrese el producto.."
+                          value="{{ isset($routing->commodity) ? $routing->commodity : old('commodity') }}">
+                      @error('commodity')
+                          <span class="invalid-feedback d-block" role="alert">
+                              <strong>{{ $message }}</strong>
+                          </span>
+                      @enderror
+                  </div>
+              </div>
+
+              <div class="row my-4">
+
+                  <div class="col-4">
+                      <div class="form-group row">
+                          <label for="load_value" class="col-sm-4 col-form-label">Valor de factura <span
+                                  class="text-danger">*</span></label>
+                          <div class="col-sm-8">
+                              <div class="input-group">
+                                  <div class="input-group-prepend">
+                                      <span
+                                          class="input-group-text text-bold @error('load_value') is-invalid @enderror">
+                                          $
+                                      </span>
+                                  </div>
+                                  <input type="text"
+                                      class="form-control CurrencyInput @error('load_value') is-invalid @enderror "
+                                      name="load_value" data-type="currency" placeholder="Ingrese valor de la carga"
+                                      value="{{ isset($routing->load_value) ? $routing->load_value : old('load_value') }}">
                               </div>
-                              <input type="text"
-                                  class="form-control CurrencyInput @error('load_value') is-invalid @enderror "
-                                  name="load_value" data-type="currency" placeholder="Ingrese valor de la carga"
-                                  value="{{ isset($routing->load_value) ? $routing->load_value : old('load_value') }}">
+                          </div>
+                          @error('load_value')
+                              <span class="invalid-feedback d-block" role="alert">
+                                  <strong>{{ $message }}</strong>
+                              </span>
+                          @enderror
+
+                      </div>
+                  </div>
+
+                  <div class="col-4">
+                      <div class="form-group row">
+                          <label for="nro_package" class="col-sm-4 col-form-label">N° Paquetes / Bultos <span
+                                  class="text-danger">*</span></label>
+                          <div class="col-sm-8">
+                              <input type="number" min="0" step="1"
+                                  class="form-control @error('nro_package') is-invalid @enderror" id="nro_package"
+                                  name="nro_package" placeholder="Ingrese el nro de paquetes.."
+                                  oninput="validarInputNumber(this)"
+                                  value="{{ isset($routing) ? $routing->nro_package : '' }}">
+                              @error('nro_package')
+                                  <span class="invalid-feedback d-block" role="alert">
+                                      <strong>{{ $message }}</strong>
+                                  </span>
+                              @enderror
                           </div>
                       </div>
-                      @error('load_value')
+
+                  </div>
+
+                  <div class="col-4">
+                      <div class="form-group row">
+                          <label for="id_packaging_type" class="col-sm-4 col-form-label">Tipo de embalaje <span
+                                  class="text-danger">*</span></label>
+                          <div class="col-sm-8">
+                              <x-adminlte-select2 name="id_packaging_type"
+                                  data-placeholder="Seleccione una opcion...">
+                                  <option />
+                                  @foreach ($packingTypes as $packingType)
+                                      <option value="{{ $packingType->id }}">
+                                          {{ $packingType->name }}
+                                      </option>
+                                  @endforeach
+                              </x-adminlte-select2>
+                          </div>
+                      </div>
+                  </div>
+
+                  {{-- <div class="col-4 d-none fcl-fields" id="containerTypeWrapper">
+                      <div class="form-group row">
+                          <label for="id_containers" class="col-sm-4 col-form-label">Tipo de contenedor <span
+                                  class="text-danger">*</span></label>
+                          <div class="col-sm-8">
+                              <select class="form-control @error('id_containers') is-invalid @enderror"
+                                  id="id_containers" name="id_containers">
+                                  <option value="">Seleccione un tipo</option>
+                                  @foreach ($containers as $container)
+                                      <option value="{{ $container->id }}"
+                                          {{ old('id_containers') == $container->id ? 'selected' : '' }}>
+                                          {{ $container->typeContainer->name }} - {{ $container->name }}
+                                      </option>
+                                  @endforeach
+                              </select>
+                              @error('id_containers')
+                                  <span class="invalid-feedback d-block" role="alert">
+                                      <strong>{{ $message }}</strong>
+                                  </span>
+                              @enderror
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-4 d-none fcl-fields" id="containerQuantityWrapper">
+                      <div class="form-group row">
+                          <label for="container_quantity" class="col-sm-4 col-form-label">Nº Contenedor <span
+                                  class="text-danger">*</span></label>
+                          <div class="col-sm-8">
+                              <input type="number" min="0" step="1"
+                                  class="form-control @error('container_quantity') is-invalid @enderror"
+                                  id="container_quantity" name="container_quantity"
+                                  placeholder="Ingrese el nro de contenedores.." oninput="validarInputNumber(this)"
+                                  value="{{ isset($routing) ? $routing->container_quantity : '' }}">
+                              @error('container_quantity')
+                                  <span class="invalid-feedback d-block" role="alert">
+                                      <strong>{{ $message }}</strong>
+                                  </span>
+                              @enderror
+                          </div>
+                      </div>
+                  </div> --}}
+
+
+
+                  <div id="container_measures" class="col-12 mt-2">
+
+                      <div id="div-measures" class="row justify-content-center">
+
+                          <div class="col-2">
+                              <input type="number" class="form-control" step="1" id="amount_package"
+                                  name="amount_package" placeholder="Ingresa la cantidad">
+                          </div>
+                          <div class="col-2">
+                              <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                  id="width" name="width" placeholder="Ancho">
+                          </div>
+                          <div class="col-2">
+                              <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                  id="length" name="length" placeholder="Largo">
+                          </div>
+                          <div class="col-2">
+                              <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                  id="height" name="height" placeholder="Alto">
+                          </div>
+                          <div class="col-2">
+                              <select class="form-control" id="units_measurements" name="units_measurements">
+                                  <option value="cm">cm</option>
+                                  <option value="in">in</option>
+                                  <option value="lbs">lbs</option>
+                              </select>
+                          </div>
+                          <div class="col-2">
+                              <button type="button" class="btn btn-indigo btn-sm" onclick="addMeasures()"><i
+                                      class="fa fa-plus"></i>Agregar</button>
+                          </div>
+
+                      </div>
+
+                      <table id="measures" class="table table-bordered" style="width:100%">
+                          <thead>
+                              <tr>
+                                  <th>Cantidad</th>
+                                  <th>Ancho</th>
+                                  <th>Largo</th>
+                                  <th>Alto</th>
+                                  <th>Unidad</th>
+                                  <th>Eliminar</th>
+                              </tr>
+                          </thead>
+                      </table>
+                      <input id="value_measures" type="hidden" name="value_measures" />
+                      @error('value_measures')
                           <span class="invalid-feedback d-block" role="alert">
                               <strong>{{ $message }}</strong>
                           </span>
@@ -253,316 +394,209 @@
                   </div>
               </div>
 
-              <div class="col-4">
-                  <div class="form-group row">
-                      <label for="nro_package" class="col-sm-4 col-form-label">N° Paquetes / Bultos <span
-                              class="text-danger">*</span></label>
-                      <div class="col-sm-8">
-                          <input type="number" min="0" step="1"
-                              class="form-control @error('nro_package') is-invalid @enderror" id="nro_package"
-                              name="nro_package" placeholder="Ingrese el nro de paquetes.."
-                              oninput="validarInputNumber(this)"
-                              value="{{ isset($routing) ? $routing->nro_package : '' }}">
-                          @error('nro_package')
+
+              <div class="row mt-4">
+
+                  <div class="col-4">
+                      <div class="form-group row">
+                          <label for="pounds" class="col-sm-4 col-form-label">Libras </label>
+                          <div class="col-sm-8">
+                              <input type="text" class="form-control CurrencyInput" id="pounds" name="pounds"
+                                  data-type="currency" placeholder="Ingrese las libras"
+                                  value="{{ isset($routing) ? $routing->pounds : '' }}" @readonly(true)>
+                              @error('pounds')
+                                  <div class="text-danger">{{ $message }}</div>
+                              @enderror
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="col-4">
+                      <div id="contenedor_weight" class="form-group row lcl-fields d-none">
+                          <label for="kilograms" class="col-sm-4 col-form-label">Peso Total <span
+                                  class="text-danger">*</span> </label>
+                          <div class="col-sm-8">
+                              <input type="text"
+                                  class="form-control CurrencyInput @error('kilograms') is-invalid @enderror"
+                                  id="kilograms" name="kilograms" data-type="currency"
+                                  placeholder="Ingrese el peso.."
+                                  value="{{ isset($routing->kilograms) ? $routing->kilograms : old('kilograms') }}">
+                              @error('kilograms')
+                                  <span class="invalid-feedback d-block" role="alert">
+                                      <strong>{{ $message }}</strong>
+                                  </span>
+                              @enderror
+                          </div>
+                      </div>
+
+                      <div id="contenedor_tons" class="form-group row fcl-fields d-none">
+                          <label for="tons" class="col-sm-4 col-form-label">Toneladas <span
+                                  class="text-danger">*</span> </label>
+                          <div class="col-sm-8">
+                              <input type="text"
+                                  class="form-control CurrencyInput @error('tons') is-invalid @enderror"
+                                  id="tons" name="tons" data-type="currency"
+                                  placeholder="Ingrese el peso en toneladas.."
+                                  value="{{ isset($routing->tons) ? $routing->tons : old('tons') }}">
+                          </div>
+                          @error('tons')
                               <span class="invalid-feedback d-block" role="alert">
                                   <strong>{{ $message }}</strong>
                               </span>
                           @enderror
                       </div>
+
                   </div>
 
-              </div>
 
-              <div class="col-4">
-                  <div class="form-group row">
-                      <label for="id_packaging_type" class="col-sm-4 col-form-label">Tipo de embalaje <span
-                              class="text-danger">*</span></label>
-                      <div class="col-sm-8">
-                          <x-adminlte-select2 name="id_packaging_type" data-placeholder="Seleccione una opcion...">
-                              <option />
-                              @foreach ($packingTypes as $packingType)
-                                  <option value="{{ $packingType->id }}">
-                                      {{ $packingType->name }}
-                                  </option>
-                              @endforeach
-                          </x-adminlte-select2>
-                      </div>
-                  </div>
-              </div>
+                  <div class="col-4">
+                      <div id="contenedor_volumen" class="form-group row  d-none">
+                          <label for="volumen" class="col-sm-4 col-form-label">Volumen </label>
+                          <div class="col-sm-8">
+                              {{-- Volumen --}}
+                              <input type="text"
+                                  class="form-control CurrencyInput @error('volumen') is-invalid @enderror"
+                                  id="volumen" name="volumen" data-type="currency"
+                                  placeholder="Ingrese el nro de paquetes.."
+                                  value="{{ isset($routing->volumen) ? $routing->volumen : old('volumen') }}">
+                          </div>
 
-              <div class="col-4 d-none fcl-fields" id="containerTypeWrapper">
-                  <div class="form-group row">
-                      <label for="id_containers" class="col-sm-4 col-form-label">Tipo de contenedor <span
-                              class="text-danger">*</span></label>
-                      <div class="col-sm-8">
-                          <select class="form-control @error('id_containers') is-invalid @enderror" id="id_containers"
-                              name="id_containers">
-                              <option value="">Seleccione un tipo</option>
-                              @foreach ($containers as $container)
-                                  <option value="{{ $container->id }}"
-                                      {{ old('id_containers') == $container->id ? 'selected' : '' }}>
-                                      {{ $container->typeContainer->name }} - {{ $container->name }}
-                                  </option>
-                              @endforeach
-                          </select>
-                          @error('id_containers')
+                          @error('volumen')
                               <span class="invalid-feedback d-block" role="alert">
                                   <strong>{{ $message }}</strong>
                               </span>
                           @enderror
                       </div>
-                  </div>
-              </div>
-              <div class="col-4 d-none fcl-fields" id="containerQuantityWrapper">
-                  <div class="form-group row">
-                      <label for="container_quantity" class="col-sm-4 col-form-label">Nº Contenedor <span
-                              class="text-danger">*</span></label>
-                      <div class="col-sm-8">
-                          <input type="number" min="0" step="1"
-                              class="form-control @error('container_quantity') is-invalid @enderror"
-                              id="container_quantity" name="container_quantity"
-                              placeholder="Ingrese el nro de contenedores.." oninput="validarInputNumber(this)"
-                              value="{{ isset($routing) ? $routing->container_quantity : '' }}">
-                          @error('container_quantity')
+                      <div id="contenedor_kg_vol" class="form-group row d-none">
+                          <label for="volumen" class="col-sm-4 col-form-label">Kg/vol: </label>
+                          <div class="col-sm-8">
+                              {{-- Kilogramo volumen --}}
+
+                              <input type="text"
+                                  class="form-control CurrencyInput @error('kilogram_volumen') is-invalid @enderror"
+                                  id="kilogram_volumen" name="kilogram_volumen" data-type="currency"
+                                  placeholder="Ingrese el nro de paquetes.."
+                                  value="{{ isset($routing->kilogram_volumen) ? $routing->kilogram_volumen : old('kilogram_volumen') }}">
+                          </div>
+                          @error('kilogram_volumen')
                               <span class="invalid-feedback d-block" role="alert">
                                   <strong>{{ $message }}</strong>
                               </span>
                           @enderror
                       </div>
+
                   </div>
               </div>
 
-
-
-              <div id="container_measures" class="col-12 mt-2">
-
-                  <div id="div-measures" class="row justify-content-center">
-
-                      <div class="col-2">
-                          <input type="number" class="form-control" step="1" id="amount_package"
-                              name="amount_package" placeholder="Ingresa la cantidad">
-                      </div>
-                      <div class="col-2">
-                          <input type="text" class="form-control CurrencyInput" data-type="currency"
-                              id="width" name="width" placeholder="Ancho">
-                      </div>
-                      <div class="col-2">
-                          <input type="text" class="form-control CurrencyInput" data-type="currency"
-                              id="length" name="length" placeholder="Largo">
-                      </div>
-                      <div class="col-2">
-                          <input type="text" class="form-control CurrencyInput" data-type="currency"
-                              id="height" name="height" placeholder="Alto">
-                      </div>
-                      <div class="col-2">
-                          <select class="form-control" id="units_measurements" name="units_measurements">
-                              <option value="cm">cm</option>
-                              <option value="in">in</option>
-                              <option value="lbs">lbs</option>
-                          </select>
-                      </div>
-                      <div class="col-2">
-                          <button type="button" class="btn btn-indigo btn-sm" onclick="addMeasures()"><i
-                                  class="fa fa-plus"></i>Agregar</button>
-                      </div>
-
-                  </div>
-
-                  <table id="measures" class="table table-bordered" style="width:100%">
-                      <thead>
-                          <tr>
-                              <th>Cantidad</th>
-                              <th>Ancho</th>
-                              <th>Largo</th>
-                              <th>Alto</th>
-                              <th>Unidad</th>
-                              <th>Eliminar</th>
-                          </tr>
-                      </thead>
-                  </table>
-                  <input id="value_measures" type="hidden" name="value_measures" />
-                  @error('value_measures')
-                      <span class="invalid-feedback d-block" role="alert">
-                          <strong>{{ $message }}</strong>
-                      </span>
-                  @enderror
-
-              </div>
           </div>
 
+          <div id="multipleProvidersSection" class="d-none">
+              <div class="row justify-content-between px-5 mb-3">
+                  <button type="button" class="btn btn-indigo" onclick="showItemConsolidated()"><i
+                          class="fas fa-plus"></i></button>
+              </div>
 
-          <div class="row mt-4">
+              <table class="table">
+                  <thead>
+                      <tr>
+                          <th>Proveedor</th>
+                          <th>Contacto</th>
+                          <th>Direccion</th>
+                          <th>Producto</th>
+                          <th>Valor de la carga</th>
+                          <th>Bultos</th>
+                          <th>Embalaje</th>
+                          <th>Volumen</th>
+                          <th>KGV</th>
+                          <th>Peso</th>
+                          <th>Accion</th>
+                      </tr>
+                  </thead>
+                  <tbody id="providersTable"></tbody>
+              </table>
 
-              <div class="col-4">
-                  <div class="form-group row">
-                      <label for="pounds" class="col-sm-4 col-form-label">Libras </label>
-                      <div class="col-sm-8">
-                          <input type="text" class="form-control CurrencyInput" id="pounds" name="pounds"
-                              data-type="currency" placeholder="Ingrese las libras"
-                              value="{{ isset($routing) ? $routing->pounds : '' }}" @readonly(true)>
-                          @error('pounds')
-                              <div class="text-danger">{{ $message }}</div>
-                          @enderror
+
+              <input id="shippers_consolidated" type="hidden" name="shippers_consolidated" />
+
+              <div class="row">
+                  <hr class="w-100">
+                  <div class="col-6 mt-4 d-none fcl-fields" id="containerTypeWrapperConsolidated">
+                      <div class="form-group row">
+                          <label for="id_containers_consolidated" class="col-sm-4 col-form-label">Tipo de
+                              contenedor <span class="text-danger">*</span></label>
+                          <div class="col-sm-8">
+                              <select class="form-control @error('id_containers_consolidated') is-invalid @enderror"
+                                  id="id_containers_consolidated" name="id_containers_consolidated">
+                                  <option value="">Seleccione un tipo</option>
+                                  @foreach ($containers as $container)
+                                      <option value="{{ $container->id }}"
+                                          {{ old('id_containers_consolidated') == $container->id ? 'selected' : '' }}>
+                                          {{ $container->typeContainer->name }} - {{ $container->name }}
+                                      </option>
+                                  @endforeach
+                              </select>
+                              @error('id_containers_consolidated')
+                                  <span class="invalid-feedback d-block" role="alert">
+                                      <strong>{{ $message }}</strong>
+                                  </span>
+                              @enderror
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-6 mt-4 d-none fcl-fields" id="containerQuantityWrapperConsolidated">
+                      <div class="form-group row">
+                          <label for="container_quantity_consolidated" class="col-sm-4 col-form-label">Nº
+                              Contenedor <span class="text-danger">*</span></label>
+                          <div class="col-sm-8">
+                              <input type="number" min="0" step="1"
+                                  class="form-control @error('container_quantity_consolidated') is-invalid @enderror"
+                                  id="container_quantity_consolidated" name="container_quantity_consolidated"
+                                  placeholder="Ingrese el nro de contenedores.." oninput="validarInputNumber(this)"
+                                  value="{{ isset($routing) ? $routing->container_quantity_consolidated : '' }}">
+                              @error('container_quantity_consolidated')
+                                  <span class="invalid-feedback d-block" role="alert">
+                                      <strong>{{ $message }}</strong>
+                                  </span>
+                              @enderror
+                          </div>
                       </div>
                   </div>
               </div>
 
-              <div class="col-4">
-                  <div id="contenedor_weight" class="form-group row lcl-fields d-none">
-                      <label for="kilograms" class="col-sm-4 col-form-label">Peso Total <span
-                              class="text-danger">*</span> </label>
-                      <div class="col-sm-8">
-                          <input type="text"
-                              class="form-control CurrencyInput @error('kilograms') is-invalid @enderror"
-                              id="kilograms" name="kilograms" data-type="currency" placeholder="Ingrese el peso.."
-                              value="{{ isset($routing->kilograms) ? $routing->kilograms : old('kilograms') }}">
-                          @error('kilograms')
-                              <span class="invalid-feedback d-block" role="alert">
-                                  <strong>{{ $message }}</strong>
-                              </span>
-                          @enderror
-                      </div>
-                  </div>
 
-                  <div id="contenedor_tons" class="form-group row fcl-fields d-none">
-                      <label for="tons" class="col-sm-4 col-form-label">Toneladas <span
-                              class="text-danger">*</span> </label>
-                      <div class="col-sm-8">
-                          <input type="text"
-                              class="form-control CurrencyInput @error('tons') is-invalid @enderror" id="tons"
-                              name="tons" data-type="currency" placeholder="Ingrese el peso en toneladas.."
-                              value="{{ isset($routing->tons) ? $routing->tons : old('tons') }}">
-                      </div>
-                      @error('tons')
-                          <span class="invalid-feedback d-block" role="alert">
-                              <strong>{{ $message }}</strong>
-                          </span>
-                      @enderror
-                  </div>
-
-              </div>
-
-
-              <div class="col-4">
-                  <div id="contenedor_volumen" class="form-group row  d-none">
-                      <label for="volumen" class="col-sm-4 col-form-label">Volumen </label>
-                      <div class="col-sm-8">
-                          {{-- Volumen --}}
-                          <input type="text"
-                              class="form-control CurrencyInput @error('volumen') is-invalid @enderror"
-                              id="volumen" name="volumen" data-type="currency"
-                              placeholder="Ingrese el nro de paquetes.."
-                              value="{{ isset($routing->volumen) ? $routing->volumen : old('volumen') }}">
-                      </div>
-
-                      @error('volumen')
-                          <span class="invalid-feedback d-block" role="alert">
-                              <strong>{{ $message }}</strong>
-                          </span>
-                      @enderror
-                  </div>
-                  <div id="contenedor_kg_vol" class="form-group row d-none">
-                      <label for="volumen" class="col-sm-4 col-form-label">Kg/vol: </label>
-                      <div class="col-sm-8">
-                          {{-- Kilogramo volumen --}}
-
-                          <input type="text"
-                              class="form-control CurrencyInput @error('kilogram_volumen') is-invalid @enderror"
-                              id="kilogram_volumen" name="kilogram_volumen" data-type="currency"
-                              placeholder="Ingrese el nro de paquetes.."
-                              value="{{ isset($routing->kilogram_volumen) ? $routing->kilogram_volumen : old('kilogram_volumen') }}">
-                      </div>
-                      @error('kilogram_volumen')
-                          <span class="invalid-feedback d-block" role="alert">
-                              <strong>{{ $message }}</strong>
-                          </span>
-                      @enderror
-                  </div>
-
-              </div>
           </div>
 
       </div>
 
-      <div id="multipleProvidersSection" class="d-none">
-
-
-          <div class="row justify-content-between px-5 mb-3">
-              <button type="button" class="btn btn-indigo" onclick="showItemConsolidated()"><i
-                      class="fas fa-plus"></i></button>
+      <div id="fcl_container" class="fcl-fields d-none">
+          <div class="text-center mb-4">
+              <h5 class="text-indigo text-center d-inline mx-2"> Agregar contenedores</h5>
+              <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
+                  data-target="#modalAddedContainer">
+                  <i class="fas fa-plus"></i>
+              </button>
           </div>
-
-
-
           <table class="table">
-              <thead>
+              <thead class="thead-dark">
                   <tr>
-                      <th>Proveedor</th>
-                      <th>Contacto</th>
-                      <th>Direccion</th>
-                      <th>Producto</th>
-                      <th>Valor de la carga</th>
-                      <th>Bultos</th>
-                      <th>Embalaje</th>
-                      <th>Volumen</th>
-                      <th>KGV</th>
-                      <th>Peso</th>
-                      <th>Accion</th>
+                      <th scope="col">#</th>
+                      <th scope="col">First</th>
+                      <th scope="col">Last</th>
+                      <th scope="col">Handle</th>
                   </tr>
               </thead>
-              <tbody id="providersTable"></tbody>
+              <tbody>
+                  <tr>
+                      <th scope="row">1</th>
+                      <td>Mark</td>
+                      <td>Otto</td>
+                      <td>@mdo</td>
+                  </tr>
+              </tbody>
           </table>
 
-
-          <input id="shippers_consolidated" type="hidden" name="shippers_consolidated" />
-
-          <div class="row">
-              <hr class="w-100">
-              <div class="col-6 mt-4 d-none fcl-fields" id="containerTypeWrapperConsolidated">
-                  <div class="form-group row">
-                      <label for="id_containers_consolidated" class="col-sm-4 col-form-label">Tipo de
-                          contenedor <span class="text-danger">*</span></label>
-                      <div class="col-sm-8">
-                          <select class="form-control @error('id_containers_consolidated') is-invalid @enderror"
-                              id="id_containers_consolidated" name="id_containers_consolidated">
-                              <option value="">Seleccione un tipo</option>
-                              @foreach ($containers as $container)
-                                  <option value="{{ $container->id }}"
-                                      {{ old('id_containers_consolidated') == $container->id ? 'selected' : '' }}>
-                                      {{ $container->typeContainer->name }} - {{ $container->name }}
-                                  </option>
-                              @endforeach
-                          </select>
-                          @error('id_containers_consolidated')
-                              <span class="invalid-feedback d-block" role="alert">
-                                  <strong>{{ $message }}</strong>
-                              </span>
-                          @enderror
-                      </div>
-                  </div>
-              </div>
-              <div class="col-6 mt-4 d-none fcl-fields" id="containerQuantityWrapperConsolidated">
-                  <div class="form-group row">
-                      <label for="container_quantity_consolidated" class="col-sm-4 col-form-label">Nº
-                          Contenedor <span class="text-danger">*</span></label>
-                      <div class="col-sm-8">
-                          <input type="number" min="0" step="1"
-                              class="form-control @error('container_quantity_consolidated') is-invalid @enderror"
-                              id="container_quantity_consolidated" name="container_quantity_consolidated"
-                              placeholder="Ingrese el nro de contenedores.." oninput="validarInputNumber(this)"
-                              value="{{ isset($routing) ? $routing->container_quantity_consolidated : '' }}">
-                          @error('container_quantity_consolidated')
-                              <span class="invalid-feedback d-block" role="alert">
-                                  <strong>{{ $message }}</strong>
-                              </span>
-                          @enderror
-                      </div>
-                  </div>
-              </div>
-          </div>
-
-
       </div>
+
 
 
       <input type="hidden" id="type_shipment_name" name="type_shipment_name">
@@ -617,7 +651,189 @@
       </div>
   </div>
 
+  {{-- Modal container --}}
 
+  <div class="modal fade" id="modalAddedContainer" tabindex="-1" aria-labelledby="modalAddedContainerLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+              <div class="modal-body">
+                  <div class="row">
+                      <div class="col-6">
+                          <div class="form-group">
+                              <label for="id_containers">Tipo de contenedor <span class="text-danger">*</span></label>
+
+                              <select class="form-control @error('id_containers') is-invalid @enderror"
+                                  id="id_containers" name="id_containers">
+                                  <option value="">Seleccione un tipo</option>
+                                  @foreach ($containers as $container)
+                                      <option value="{{ $container->id }}"
+                                          {{ old('id_containers') == $container->id ? 'selected' : '' }}>
+                                          {{ $container->typeContainer->name }} - {{ $container->name }}
+                                      </option>
+                                  @endforeach
+                              </select>
+                              @error('id_containers')
+                                  <span class="invalid-feedback d-block" role="alert">
+                                      <strong>{{ $message }}</strong>
+                                  </span>
+                              @enderror
+
+                          </div>
+                      </div>
+                      <div class="col-6">
+                          <div class="form-group">
+                              <label for="container_quantity">Nº de contenedores <span
+                                      class="text-danger">*</span></label>
+
+                              <input type="number" min="0" step="1"
+                                  class="form-control @error('container_quantity') is-invalid @enderror"
+                                  id="container_quantity" name="container_quantity"
+                                  placeholder="Ingrese el nro de contenedores.." oninput="validarInputNumber(this)"
+                                  value="{{ isset($routing) ? $routing->container_quantity : '' }}">
+                              @error('container_quantity')
+                                  <span class="invalid-feedback d-block" role="alert">
+                                      <strong>{{ $message }}</strong>
+                                  </span>
+                              @enderror
+
+                          </div>
+                      </div>
+
+                      <div class="col-6">
+                          <div class="form-group">
+                              <label for="commodity">Producto <span class="text-danger">*</span></label>
+
+                              <input type="text" class="form-control @error('commodity') is-invalid @enderror"
+                                  id="commodity" name="commodity" placeholder="Ingrese el producto.."
+                                  value="{{ isset($routing->commodity) ? $routing->commodity : old('commodity') }}">
+                              @error('commodity')
+                                  <span class="invalid-feedback d-block" role="alert">
+                                      <strong>{{ $message }}</strong>
+                                  </span>
+                              @enderror
+
+                          </div>
+
+                      </div>
+
+                      <div class="col-6">
+                          <div class="form-group">
+                              <label for="nro_package">N° Paquetes / Bultos <span class="text-danger">*</span></label>
+                              <input type="number" min="0" step="1"
+                                  class="form-control @error('nro_package') is-invalid @enderror" id="nro_package"
+                                  name="nro_package" placeholder="Ingrese el nro de paquetes.."
+                                  oninput="validarInputNumber(this)"
+                                  value="{{ isset($routing) ? $routing->nro_package : '' }}">
+                              @error('nro_package')
+                                  <span class="invalid-feedback d-block" role="alert">
+                                      <strong>{{ $message }}</strong>
+                                  </span>
+                              @enderror
+                          </div>
+
+                      </div>
+
+                      <div class="col-6">
+                          <label for="volumen">Volumen </label>
+
+                          {{-- Volumen --}}
+                          <input type="text"
+                              class="form-control CurrencyInput @error('volumen') is-invalid @enderror"
+                              id="volumen" name="volumen" data-type="currency"
+                              placeholder="Ingrese el nro de paquetes.."
+                              value="{{ isset($routing->volumen) ? $routing->volumen : old('volumen') }}">
+
+                          @error('volumen')
+                              <span class="invalid-feedback d-block" role="alert">
+                                  <strong>{{ $message }}</strong>
+                              </span>
+                          @enderror
+
+                      </div>
+
+                      <div class="col-6">
+                          <label for="kilograms" class="col-sm-4 col-form-label">Peso Total <span
+                                  class="text-danger">*</span> </label>
+
+                          <input type="text"
+                              class="form-control CurrencyInput @error('kilograms') is-invalid @enderror"
+                              id="kilograms" name="kilograms" data-type="currency" placeholder="Ingrese el peso.."
+                              value="{{ isset($routing->kilograms) ? $routing->kilograms : old('kilograms') }}">
+                          @error('kilograms')
+                              <span class="invalid-feedback d-block" role="alert">
+                                  <strong>{{ $message }}</strong>
+                              </span>
+                          @enderror
+                      </div>
+
+                      <div id="container_measures" class="col-12 mt-3">
+
+                          <div id="div-measures" class="row justify-content-center mb-2">
+
+                              <div class="col-2">
+                                  <input type="number" class="form-control" step="1" id="amount_package"
+                                      name="amount_package" placeholder="Ingresa la cantidad">
+                              </div>
+                              <div class="col-2">
+                                  <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                      id="width" name="width" placeholder="Ancho">
+                              </div>
+                              <div class="col-2">
+                                  <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                      id="length" name="length" placeholder="Largo">
+                              </div>
+                              <div class="col-2">
+                                  <input type="text" class="form-control CurrencyInput" data-type="currency"
+                                      id="height" name="height" placeholder="Alto">
+                              </div>
+                              <div class="col-2">
+                                  <select class="form-control" id="units_measurements" name="units_measurements">
+                                      <option value="cm">cm</option>
+                                      <option value="in">in</option>
+                                      <option value="lbs">lbs</option>
+                                  </select>
+                              </div>
+                              <div class="col-2">
+                                  <button type="button" class="btn btn-indigo btn-sm" onclick="addMeasures()"><i
+                                          class="fa fa-plus"></i>Agregar</button>
+                              </div>
+
+                          </div>
+
+                          <table id="measures" class="table table-bordered" style="width:100%">
+                              <thead>
+                                  <tr>
+                                      <th>Cantidad</th>
+                                      <th>Ancho</th>
+                                      <th>Largo</th>
+                                      <th>Alto</th>
+                                      <th>Unidad</th>
+                                      <th>Eliminar</th>
+                                  </tr>
+                              </thead>
+                          </table>
+                          <input id="value_measures" type="hidden" name="value_measures" />
+                          @error('value_measures')
+                              <span class="invalid-feedback d-block" role="alert">
+                                  <strong>{{ $message }}</strong>
+                              </span>
+                          @enderror
+
+                      </div>
+
+                  </div>
+
+              </div>
+
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                  <button type="button" class="btn btn-primary" onclick="addedContainer(this)">Agregar</button>
+              </div>
+
+          </div>
+      </div>
+  </div>
 
 
   @push('scripts')
@@ -822,12 +1038,10 @@
                   $('#contenedor_tons').addClass('d-none');
                   $('#contenedor_weight').removeClass('d-none');
 
-
+                  $('#lcl_container').removeClass('d-none');
+                  $('#fcl_container').addClass('d-none');
 
               }
-
-
-
 
           });
 
@@ -1045,6 +1259,83 @@
               }
 
           }
+
+
+
+          /* Agregar contenedores cuando es FCL */
+
+          function addedContainer(buton) {
+
+              let divConcepts = $('#divResponseFreight');
+              const inputs = divConcepts.find('input , select');
+              const currencies = @json($currencies);
+              let isValid = true;
+
+              inputs.each(function() {
+                  const input = this;
+
+                  if (input.closest('.d-none')) return;
+
+                  // Solo validar si el campo tiene el atributo data-required
+                  if (input.dataset.required === 'true') {
+                      if (input.value.trim() === '' || input.value == null) {
+                          input.classList.add('is-invalid');
+                          isValid = false;
+                          showError(input, 'Debe completar este campo');
+                      } else {
+                          input.classList.remove('is-invalid');
+                          hideError(input);
+                      }
+                  } else {
+                      // No requerido, aseguramos que no tenga error visible
+                      input.classList.remove('is-invalid');
+                      hideError(input);
+                  }
+              });
+
+              if (isValid) {
+
+                  let data = loadConceptData(inputs);
+
+
+                  const selectedCurrencyId = parseInt(data.currency.id);
+                  const selectedCurrency = currencies.find(c => c.id === selectedCurrencyId);
+                  const dollarCurrency = currencies.find(c => c.abbreviation === 'USD');
+
+                  if (!checkExchangeRateNotEmpyt(selectedCurrency, dollarCurrency)) return;
+
+
+                  const unitCost = parseFloat(data.unit_cost) || 0;
+                  let finalCost = unitCost;
+
+                  if (selectedCurrency.id !== dollarCurrency.id) {
+                      const exchangeRateInput = $('#exchange_rate')[0];
+                      const exchangeRate = parseFloat(exchangeRateInput.value) || 0;
+
+                      finalCost = unitCost * exchangeRate;
+                  }
+
+                  data.final_cost = finalCost.toFixed(2); // Formateo a 2 decimales
+
+
+                  const index = conceptsResponseFreightArray.findIndex(item => item.concept?.id === parseInt(data.concept
+                      .id));
+
+                  if (index !== -1) {
+
+                      conceptsResponseFreightArray[index] = data;
+
+                  } else {
+
+                      conceptsResponseFreightArray.push(data);
+                  }
+
+                  updateTableRespnoseFreight(conceptsResponseFreightArray);
+                  clearConceptsData(inputs);
+
+              }
+          };
+
 
 
           /* Agregar un item del consolidado  */
