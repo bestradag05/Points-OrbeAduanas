@@ -4,17 +4,22 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Airline;
+use App\Models\Commission;
 use App\Models\Concept;
 use App\Models\Container;
+use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\CustomerSupplierDocument;
 use App\Models\Incoterms;
 use App\Models\Modality;
+use App\Models\PackingType;
 use App\Models\Personal;
 use App\Models\PersonalDocument;
 use App\Models\Regime;
 use App\Models\Routing;
 use App\Models\Shipper;
+use App\Models\ShippingCompany;
 use App\Models\Supplier;
 use App\Models\TypeContainer;
 use App\Models\TypeInsurance;
@@ -23,6 +28,7 @@ use App\Models\TypeService;
 use App\Models\TypeShipment;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Current;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -342,6 +348,11 @@ class DatabaseSeeder extends Seeder
         TypeLoad::create(['name' => 'Carga perecedera', 'description' => 'Carga perecedera', 'state' => 'Activo']);
         TypeLoad::create(['name' => 'Carga fragil', 'description' => 'Carga fragil', 'state' => 'Activo']);
 
+        /* Packagin Type */
+
+        PackingType::create(['name' => 'Pallets']);
+        PackingType::create(['name' => 'Cajas']);
+
         /*  incoterms */
         Incoterms::create(['code' => 'EXW', 'name' => 'Ex Works', 'state' => 'Activo']);
         Incoterms::create(['code' => 'FCA', 'name' => 'Free Carrier', 'state' => 'Activo']);
@@ -366,13 +377,20 @@ class DatabaseSeeder extends Seeder
         TypeService::create(['name' => 'Transporte']);
 
         /* TypeInsurance */
-
-
         TypeInsurance::create(['name' => 'Seguro A', 'state' => 'Activo']);
         TypeInsurance::create(['name' => 'Seguro B', 'state' => 'Activo']);
 
         $this->call(CountrySeeder::class);
         $this->call(StatesCountrySeeder::class);
+
+        /* Navieras y Aerolineas */
+
+        ShippingCompany::create(['name' => 'HAPAG LLOYD', 'contact' => 'Vania de la puente', 'cellphone' => '970032310', 'email' => 'AnaMaria.Coronado@hlag.com']);
+        ShippingCompany::create(['name' => 'EVERGREEN', 'contact' => 'Ricardo Loayza', 'cellphone' => '', 'email' => 'rloayza@evergreen-shipping.com.pe']);
+    
+
+        Airline::create(['name' => 'LATAM', 'contact' => 'Midory Lucero', 'cellphone' => '980083287', 'email' => 'midofy.gonzales@latam.com']);
+        Airline::create(['name' => 'AIRMAX CARGO', 'contact' => 'Nelly Sanchez', 'cellphone' => '998118980', 'email' => 'comercial@airmaxcargo.com.pe']);
 
 
 
@@ -380,6 +398,21 @@ class DatabaseSeeder extends Seeder
         $customer = Customer::create(['document_number' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'address' => 'Av Elmer faucett 474', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'state' => 'Activo', 'id_document' => $customer_supplier_document->id, 'id_personal' => $personal->id]);
         Supplier::create(['name_businessname' => 'HENAN XINGSHENGDA', 'address' => 'North section of renmin road, changge city', 'contact_name' => 'Asten Zho', 'contact_number' => '944653246', 'contact_email' => 'asten@hnidel.com', 'state' => 'Activo']);
         Supplier::create(['name_businessname' => 'Transporte Jefferson', 'address' => 'Elmer Faucett 474', 'contact_name' => 'Jefferson Maravi', 'contact_number' => '944653246', 'contact_email' => 'jeffeson@hnidel.com', 'area_type' => 'transporte', 'state' => 'Activo']);
+        Supplier::create(['name_businessname' => 'MSL', 'address' => 'Av la Mar 45652', 'contact_name' => 'Lucho Cornejo', 'contact_number' => '944653346', 'contact_email' => 'lucho.cornejo@gmail.com', 'area_type' => 'pricing', 'state' => 'Activo']);
+
+
+        /* Commissions */
+
+        Commission::create(['name' => 'PRICING', 'default_amount' => '10', 'description' => 'COMISION DE PRICING POR CARGA CERRADA']);
+        Commission::create(['name' => 'OPERACIONES', 'default_amount' => '10', 'description' => 'COMISION DE OPERACIONES POR CARGA CERRADA']);
+        Commission::create(['name' => 'GASTOS ADMINISTRATIVOS', 'default_amount' => '10', 'description' => 'COMISION DE ADMINISTRACION POR CARGA CERRADA']);
+
+        /* Currencies */
+
+        Currency::create(['badge' => 'Dólar estadounidense', 'abbreviation' => 'USD', 'symbol' => '$']);
+        Currency::create(['badge' => 'Sol Peruano', 'abbreviation' => 'PEN', 'symbol' => 'S/']);
+        Currency::create(['badge' => 'Libra Esterlina','abbreviation' => 'GBP','symbol' => '£']);
+        Currency::create(['badge' => 'Euro','abbreviation' => 'EUR','symbol' => '€']);
 
         Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU - CALLAO', 'destination' => 'CHINA - SHANGAI', 'load_value' => '2700', 'id_personal' => $personal->id, 'id_customer' => $customer->id, 'id_type_shipment' => 8, 'lcl_fcl' => 'LCL', 'packaging_type' => 'Pallets', 'id_type_load' => 1, 'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'commodity' => 'CILINDRO']);
         Routing::create(['nro_operation' => 'ORBE-25255', 'origin' => 'China - Shanghai', 'destination' => 'Perú - Callao', 'wr_loading' => null, 'load_value' => 2600.00, 'id_personal' => 99, 'id_customer' => 1, 'id_type_shipment' => 8, 'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'id_type_load' => 1, 'lcl_fcl' => 'LCL', 'commodity' => 'TELESCOPIC ROD', 'nro_package' => '2', 'packaging_type' => 'CAJAS', 'container_type' => null, 'pounds' => 4209.61, 'kilograms' => 1904.80, 'volumen' => 8.37, 'kilogram_volumen' => null, 'tons' => null, 'measures' => '{"1":{"amount":2,"width":"233.00","length":"433.00","height":"533.00"}}', 'hs_code' => null, 'observation' => null, 'state' => 'Activo', 'created_at' => '2025-01-06 22:30:54', 'updated_at' => '2025-01-06 22:30:54']);

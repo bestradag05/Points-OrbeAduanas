@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('commodity', 255);
             $table->decimal('load_value', 10, 2);
             $table->integer('nro_packages');
-            $table->string('packaging_type');
+            $table->unsignedBigInteger('id_packaging_type');
             $table->unsignedBigInteger('id_incoterms');
             $table->decimal('kilogram_volumen', 10, 2)->nullable();
             $table->decimal('volumen', 10, 2)->nullable();
@@ -30,6 +30,7 @@ return new class extends Migration
             $table->foreign('commercial_quote_id')->references('id')->on('commercial_quote');
             $table->foreign('id_incoterms')->references('id')->on('incoterms');
             $table->foreign('supplier_id')->references('id')->on('suppliers');
+            $table->foreign('id_packaging_type')->references('id')->on('packing_types');
 
 
         });

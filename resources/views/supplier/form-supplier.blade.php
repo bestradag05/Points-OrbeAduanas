@@ -13,12 +13,31 @@
     </div>
     <div class="col-6">
         <div class="form-group">
+            <label for="area_type">Tipo de proveedor</label>
+            <select name="area_type" id="area_type" class="form-control @error('area_type') is-invalid @enderror">
+                <option value="">Seleccione...</option>
+                <option value="comercial"
+                    {{ old('area_type', $supplier->area_type ?? '') === 'comercial' ? 'selected' : '' }}>Comercial
+                </option>
+                <option value="transporte"
+                    {{ old('area_type', $supplier->area_type ?? '') === 'transporte' ? 'selected' : '' }}>Transporte
+                </option>
+                <option value="pricing"
+                    {{ old('area_type', $supplier->area_type ?? '') === 'agente' ? 'selected' : '' }}>Agente de Carga
+                </option>
+            </select>
+            @error('area_type')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="form-group">
             <label for="address">Dirección</label>
             <input type="text" class="form-control" name="address" id="address"
                 value="{{ old('address', $supplier->address ?? '') }}">
         </div>
     </div>
-
     <div class="col-6">
         <div class="form-group">
             <label for="contact_name">Nombre de Contacto</label>
@@ -26,7 +45,6 @@
                 value="{{ old('contact_name', $supplier->contact_name ?? '') }}">
         </div>
     </div>
-
     <div class="col-6">
         <div class="form-group">
             <label for="contact_number">Teléfono</label>
@@ -34,7 +52,6 @@
                 value="{{ old('contact_number', $supplier->contact_number ?? '') }}">
         </div>
     </div>
-
     <div class="col-6">
         <div class="form-group">
             <label for="contact_email">Correo</label>
@@ -42,7 +59,6 @@
                 value="{{ old('contact_email', $supplier->contact_email ?? '') }}">
         </div>
     </div>
-
     {{-- Campos condicionales (van debajo) --}}
     <div class="col-6 d-none" id="group-document">
         <div class="form-group">
@@ -51,7 +67,6 @@
                 value="{{ old('document_number', $supplier->document_number ?? '') }}">
         </div>
     </div>
-
     <div class="col-6 d-none" id="group-document-type">
         <div class="form-group">
             <label for="document_type">Tipo de Documento</label>
@@ -59,7 +74,6 @@
                 value="{{ old('document_type', $supplier->document_type ?? '') }}">
         </div>
     </div>
-
     <div class="col-6 d-none" id="group-cargo-type">
         <div class="form-group">
             <label for="cargo_type">Tipo de Carga</label>
@@ -67,14 +81,12 @@
                 value="{{ old('cargo_type', $supplier->cargo_type ?? '') }}">
         </div>
     </div>
-
     <div class="col-6 d-none" id="group-unit">
         <div class="form-group">
             <label for="unit">Unidad</label>
             <input type="text" name="unit" class="form-control" value="{{ old('unit', $supplier->unit ?? '') }}">
         </div>
     </div>
-
     <div class="col-6 d-none" id="group-country">
         <div class="form-group">
             <label for="country">País</label>
@@ -86,7 +98,8 @@
     <div class="col-6 d-none" id="group-city">
         <div class="form-group">
             <label for="city">Ciudad</label>
-            <input type="text" name="city" class="form-control" value="{{ old('city', $supplier->city ?? '') }}">
+            <input type="text" name="city" class="form-control"
+                value="{{ old('city', $supplier->city ?? '') }}">
         </div>
     </div>
 
@@ -97,7 +110,6 @@
         </button>
     </div>
 </div>
-
 
 @push('scripts')
     <script>

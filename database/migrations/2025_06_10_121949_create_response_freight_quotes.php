@@ -14,17 +14,24 @@ return new class extends Migration
         Schema::create('response_freight_quotes', function (Blueprint $table) {
             $table->id();
             $table->string('nro_response')->unique();
-            $table->string('validity_date');
+            $table->date('validity_date');
             $table->unsignedBigInteger('id_supplier');
+            $table->string('airline_id')->nullable();
+            $table->string('shipping_company_id')->nullable();
             $table->string('origin');
             $table->string('destination');
-            $table->enum('frequency', ['Diario', 'Semanal', 'Quincenal', 'Mensual']);
-            $table->string('service');
-            $table->string('transit_time');
+            $table->enum('frequency', ['Diario', 'Semanal', 'Quincenal', 'Mensual'])->nullable();
+            $table->string('service')->nullable();
+            $table->string('transit_time')->nullable();
+            $table->string('free_days')->nullable();
             $table->string('exchange_rate')->nullable();
+            $table->decimal('total', 8, 2);
+            $table->unsignedBigInteger('id_quote_freight');
+            $table->enum('status', ['Enviada', 'Aceptado', 'Rechazada'])->default('Enviada');
             $table->timestamps();
 
-             $table->foreign('id_supplier')->references('id')->on('suppliers');
+            $table->foreign('id_supplier')->references('id')->on('suppliers');
+            $table->foreign('id_quote_freight')->references('id')->on('quote_freight');
         });
     }
 

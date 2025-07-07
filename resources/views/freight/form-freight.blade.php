@@ -8,6 +8,8 @@
     <input type="hidden" name="nro_quote_commercial"
         value="{{ isset($commercial_quote->nro_quote_commercial) ? $commercial_quote->nro_quote_commercial : '' }}">
     <input type="hidden" name="id_quote_freight" value="{{ isset($quote->id) ? $quote->id : '' }}">
+    <input type="hidden" name="accepted_answer_value"
+        value="{{ isset($acceptedResponse->total) ? $acceptedResponse->total : '' }}">
 
     {{-- <input type="hidden" name="typeService" id="typeService"> --}}
 
@@ -24,15 +26,10 @@
                     </span>
                 </div>
                 {{-- Utilizamos el if solo por que podemos crear flete desde una cotizacion como no. --}}
-                @if (isset($freight->value_utility))
-                    <input type="text" class="form-control CurrencyInput" id="utility" name="utility"
-                        data-type="currency" @readonly(true) placeholder="Ingrese valor de la utilidad"
-                        value="{{ isset($freight->value_utility) ? $freight->value_utility : old('utility') }}">
-                @else
-                    <input type="text" class="form-control CurrencyInput" id="utility" name="utility"
-                        data-type="currency" @readonly(true) placeholder="Ingrese valor de la utilidad"
-                        value="{{ isset($quote->utility) ? $quote->utility : old('utility') }}">
-                @endif
+
+                <input type="text" class="form-control CurrencyInput" id="utility" name="utility"
+                    data-type="currency" placeholder="Ingrese valor de la utilidad"
+                    value="{{ isset($quote->utility) ? $quote->utility : old('utility') }}" data-required="true">
             </div>
 
         </div>
@@ -52,7 +49,7 @@
         <div class="col-3">
             <label for="type_insurance">Tipo de seguro</label>
             <select name="type_insurance" class="{{ isset($insurance) ? '' : 'd-none' }} form-control"
-                label="Tipo de seguro" igroup-size="md" data-placeholder="Seleccione una opcion...">
+                label="Tipo de seguro" igroup-size="md" data-placeholder="Seleccione una opcion..." data-required="true">
                 <option />
                 @foreach ($type_insurace as $type)
                     <option value="{{ $type->id }}"
@@ -75,7 +72,7 @@
                     <input type="text" class="form-control CurrencyInput {{ isset($insurance) ? '' : 'd-none' }} "
                         name="value_insurance" data-type="currency" placeholder="Ingrese valor de la carga"
                         value="{{ isset($insurance) ? $insurance->insurance_value : '' }}"
-                        onchange="updateInsuranceTotal(this)">
+                        onchange="updateInsuranceTotal(this)" data-required="true">
                 </div>
 
             </div>
@@ -105,8 +102,8 @@
 
                 <div class="input-group">
                     <input type="number" class="form-control {{ isset($insurance) ? '' : 'd-none' }}"
-                        id="insurance_points" name="insurance_points" min="0" oninput="addPointsInsurance(this)"
-                        onkeydown="return false;" value="{{ isset($insurance) ? $insurance->additional_points : 0 }}">
+                        id="insurance_points" name="insurance_points" min="0" onkeydown="return false;"
+                        value="{{ isset($insurance) ? $insurance->additional_points : 0 }}">
                 </div>
 
             </div>
@@ -125,9 +122,7 @@
                 <option />
                 @foreach ($concepts as $concept)
                     @if ($concept->typeService->name == 'Flete' && $commercial_quote->type_shipment->id == $concept->id_type_shipment)
-                        @if ($conceptFreight->name != $concept->name && $concept->name != 'SEGURO')
-                            <option value="{{ $concept->id }}">{{ $concept->name }}</option>
-                        @endif
+                        <option value="{{ $concept->id }}">{{ $concept->name }}</option>
                     @endif
                 @endforeach
             </x-adminlte-select2>
@@ -142,8 +137,8 @@
                             $
                         </span>
                     </div>
-                    <input type="text" class="form-control CurrencyInput " name="value_concept"
-                        data-type="currency" placeholder="Ingrese valor del concepto" value="">
+                    <input type="text" class="form-control CurrencyInput " name="value_concept" data-type="currency"
+                        placeholder="Ingrese valor del concepto" value="">
                 </div>
             </div>
 
@@ -159,7 +154,7 @@
                         </span>
                     </div>
                     <input type="text" class="form-control CurrencyInput " name="value_added"
-                        data-type="currency" placeholder="Ingrese valor agregado" value="0">
+                        data-type="currency" placeholder="Ingrese valor agregado" value="0.00">
                 </div>
             </div>
 
@@ -200,16 +195,43 @@
             </div>
 
         </div>
+        <div class="row w-100 justify-content-end mt-2">
+            <div class="col-4 row">
+                <label class="col-sm-4 col-form-label">Ganancia:</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" id="gananciaActual" name="profit_on_freight"
+                        value="0.00" readonly>
+                </div>
+            </div>
+        </div>
+        <div class="row w-100 justify-content-end mt-2">
+            <div class="col-4 row align-items-center">
+                <label class="col-sm-4 col-form-label">Puntos Adicionales:</label>
+                <div class="col-sm-8" id="puntosUsadosTexto">
+                    0 / 0
+                </div>
+
+                <input type="hidden" class="form-control" id="puntosPosibles" name="total_additional_points"
+                    value="0" readonly>
+                <input type="hidden" class="form-control" id="total_additional_points_used"
+                    name="total_additional_points_used" value="0" readonly>
+            </div>
+        </div>
 
     </div>
 
 
 
     <div class="container text-center mt-5">
-        <input class="btn btn-primary" type="submit" value="{{ $formMode === 'edit' ? 'Actualizar' : 'Guardar' }}">
+        <input class="btn btn-primary" type="submit" id="btnGuardarFreight"
+            value="{{ $formMode === 'edit' ? 'Actualizar' : 'Guardar' }}">
     </div>
 
 </div>
+
+@php
+    $totalRespuestaAceptada = isset($acceptedResponse) ? $acceptedResponse->total : 0;
+@endphp
 
 @push('scripts')
     <script>
@@ -221,7 +243,7 @@
         let valuea_added_insurance = 0;
         let countConcepts = 0;
         let value_ocean_freight = 0;
-        let conceptFreight = null
+        let puntosPosiblesPrevios = 0;
 
 
         //PAra editar, verificamos si tiene conceptos el flete: 
@@ -275,17 +297,6 @@
                 });
             @endif
         @else
-
-            value_ocean_freight = @json($quote->total_ocean_freight);
-            conceptFreight = @json($conceptFreight);
-
-
-            conceptsArray.push({
-                'id': conceptFreight.id,
-                'name': conceptFreight.name,
-                'value': formatValue(value_ocean_freight),
-                'added': 0,
-            });
         @endif
 
 
@@ -305,6 +316,8 @@
                 contenedorInsurance.addClass('d-none').removeClass('d-flex');
                 contenedorInsurance.find("input").val('').addClass('d-none').removeClass('is-invalid');
                 contenedorInsurance.find('select').val('').addClass('d-none').removeClass('is-invalid');
+
+                contenedorInsurance.find('.invalid-feedback').remove();
 
                 value_insurance = 0;
                 valuea_added_insurance = 0;
@@ -333,54 +346,63 @@
                 valuea_added_insurance = parseFloat(element.value.replace(/,/g, ''));
             }
 
-            //Cada que actualicemos el insurance_add borramos los puntos para poder volver a generar un maximo.
-            $(`#insurance_points`).val("");
-
             calcTotal(TotalConcepts, value_insurance, valuea_added_insurance);
         }
 
 
         function calcTotal(TotalConcepts, value_insurance, valuea_added_insurance) {
-
             total = TotalConcepts + value_insurance + valuea_added_insurance;
 
-            //Buscamos dentro del contenedor el campo total
-
             let inputTotal = $('#total');
-
             inputTotal.val(total.toFixed(2));
 
-        }
+            const totalRespuestaAceptada = parseFloat(@json($totalRespuestaAceptada));
+            let utilidad = parseFloat($('#utility').val().replace(/,/g, '')) || 0;
 
+            let btnGuardar = $('#btnGuardarFreight');
 
-        const addPointsInsurance = (input) => {
-
-            let value_added = 0;
-
-
-            value_added = $(`#insurance_added`).val();
-
-
-            if (!value_added.trim()) {
-                input.value = 0;
-                input.max = 0;
+            if (total >= (totalRespuestaAceptada + utilidad) && totalRespuestaAceptada > 0) {
+                btnGuardar.prop('disabled', false);
             } else {
-
-                //Indicamos el modal donde estemos trabajando y luego seleccionamos el campo.
-
-                let value_added_number = parseFloat(value_added.replace(/,/g, ''));
-
-                if (Math.floor(value_added_number / 45) === 0) {
-                    input.value = 0;
-                    input.max = 0;
-
-                } else {
-                    input.max = Math.floor(value_added_number / 45);
-                }
-
+                btnGuardar.prop('disabled', true);
             }
 
+            let ganancia = total - (totalRespuestaAceptada + utilidad);
+            if (ganancia < 0) ganancia = 0;
+
+            $('#gananciaActual').val(ganancia.toFixed(2));
+
+            // Puntos posibles por ganancia neta
+            let puntosPorGanancia = 0;
+            if (ganancia >= 45) {
+                puntosPorGanancia = Math.floor(ganancia / 45);
+            }
+
+
+            let puntosPosibles = puntosPorGanancia;
+            $('#puntosPosibles').val(puntosPosibles);
+            $('#puntosUsadosTexto').text(`0 / ${puntosPosibles}`);
+
+            if (puntosPosibles !== puntosPosiblesPrevios) {
+                // Reset puntos de conceptos
+                conceptsArray.forEach(c => c.pa = 0);
+                $('input[name="pa"]').val(0);
+
+                // Reset puntos de seguro
+                $('#insurance_points').val(0);
+
+                puntosPosiblesPrevios = puntosPosibles;
+                toastr.info(
+                    'Los puntos adicionales se han reiniciado debido a un cambio en los valores de ganancia o seguro.');
+            }
         }
+
+
+
+        $('#utility').on('change', function() {
+            calcTotal(TotalConcepts, value_insurance, valuea_added_insurance);
+        });
+
 
 
         function addConcept(buton) {
@@ -480,44 +502,9 @@
                     // Insertar el valor en la cuarta celda de la fila
 
                     let celdaAdded = fila.insertCell(3);
+                    // Si ocean_freight no existe, muestra el valor como texto plano
+                    celdaAdded.textContent = item.added;
 
-
-                    if (item.name === conceptFreight.name) {
-                        // Si ocean_freight existe, muestra un input editable
-                        let inputAdded = document.createElement('input');
-                        inputAdded.type = 'text';
-                        inputAdded.value = item.added;
-                        inputAdded.classList.add('form-control', 'CurrencyInput'); // Agregar clases
-                        inputAdded.setAttribute('data-type', 'currency'); // Establecer el atributo data-type
-                        celdaAdded.appendChild(inputAdded);
-
-                        inputAdded.addEventListener('input', (e) => {
-                            let newValue = parseFloat(e.target.value) || 0;
-
-                            // Actualiza el valor en `conceptsArray`
-                            conceptsArray[clave].added = newValue;
-
-
-                            // Actualiza el máximo para `inputPA`
-                            let maxPoints = Math.floor(newValue / 45);
-                            inputPA.max = maxPoints;
-
-                            // Ajusta el valor actual de `pa` si excede el nuevo máximo
-                            if (conceptsArray[clave].pa > maxPoints) {
-                                conceptsArray[clave].pa = maxPoints;
-                                inputPA.value = maxPoints;
-                            }
-
-                            // Recalcula el total
-                            TotalConcepts = calculateTotal(conceptsArray);
-
-                            calcTotal(TotalConcepts, value_insurance, valuea_added_insurance);
-
-                        });
-                    } else {
-                        // Si ocean_freight no existe, muestra el valor como texto plano
-                        celdaAdded.textContent = item.added;
-                    }
 
 
                     let celdaPA = fila.insertCell(4);
@@ -541,42 +528,27 @@
 
 
                     inputPA.addEventListener('input', (e) => {
-
-                        conceptsArray[clave].pa = e.target.value
-
-
+                        let val = parseInt(e.target.value) || 0;
+                        // Validar y ajustar si excede en tiempo real
+                        validateAndAdjustPointsOnInput(e.target);
                     });
 
-                    if (Math.floor(item.added / 45) === 0) {
 
-                        inputPA.max = 0;
-                    } else {
-                        inputPA.max = Math.floor(item.added / 45);
-                    }
-
-
-
-                    if (item.name != conceptFreight.name) {
-
-                        // Insertar un botón para eliminar la fila en la cuarta celda de la fila
-                        let celdaEliminar = fila.insertCell(5);
-                        let botonEliminar = document.createElement('a');
-                        botonEliminar.href = '#';
-                        botonEliminar.innerHTML = '<p class="text-danger">X</p>';
-                        botonEliminar.addEventListener('click', function(event) {
-                            event.preventDefault();
-                            // Eliminar la fila correspondiente al hacer clic en el botón
-                            let fila = this.parentNode.parentNode;
-                            let indice = fila.rowIndex -
-                                1; // Restar 1 porque el índice de las filas en tbody comienza en 0
-                            conceptsArray.splice(indice, 1); // Eliminar el elemento en el índice correspondiente
-                            updateTable(conceptsArray);
-                        });
-                        celdaEliminar.appendChild(botonEliminar);
-
-                    }
-
-
+                    // Insertar un botón para eliminar la fila en la cuarta celda de la fila
+                    let celdaEliminar = fila.insertCell(5);
+                    let botonEliminar = document.createElement('a');
+                    botonEliminar.href = '#';
+                    botonEliminar.innerHTML = '<p class="text-danger">X</p>';
+                    botonEliminar.addEventListener('click', function(event) {
+                        event.preventDefault();
+                        // Eliminar la fila correspondiente al hacer clic en el botón
+                        let fila = this.parentNode.parentNode;
+                        let indice = fila.rowIndex -
+                            1; // Restar 1 porque el índice de las filas en tbody comienza en 0
+                        conceptsArray.splice(indice, 1); // Eliminar el elemento en el índice correspondiente
+                        updateTable(conceptsArray);
+                    });
+                    celdaEliminar.appendChild(botonEliminar);
 
                     TotalConcepts += parseFloat(item.value) + parseFloat(item.added);
                 }
@@ -596,6 +568,133 @@
         }
 
 
+        $('#insurance_points').on('input', function() {
+            validateAndAdjustPointsOnInput(this);
+        });
+
+
+        function validateAndAdjustPointsOnInput(element) {
+            const puntosMaximos = parseInt($('#puntosPosibles').val()) || 0;
+            let sumaActual = 0;
+
+            // Sumar puntos en conceptos
+            $('input[name="pa"]').each(function() {
+                sumaActual += parseInt($(this).val()) || 0;
+            });
+
+            // Sumar puntos en seguro
+            sumaActual += parseInt($('#insurance_points').val()) || 0;
+
+            if (sumaActual > puntosMaximos) {
+                let exceso = sumaActual - puntosMaximos;
+                let valorActual = parseInt($(element).val()) || 0;
+                let nuevoValor = valorActual - exceso;
+
+                if (nuevoValor < 0) nuevoValor = 0;
+
+                $(element).val(nuevoValor);
+
+                let index = $(element).closest('tr').index();
+                if ($(element).attr('id') !== 'insurance_points') {
+                    conceptsArray[index].pa = nuevoValor;
+                }
+
+                toastr.warning(
+                    `El máximo de puntos permitidos es ${puntosMaximos}. Ajustado automáticamente para evitar exceder este límite.`
+                );
+            } else {
+                let index = $(element).closest('tr').index();
+                if ($(element).attr('id') !== 'insurance_points') {
+                    conceptsArray[index].pa = parseInt($(element).val()) || 0;
+                }
+            }
+
+
+            // ✅ Actualiza visualización de puntos usados
+            $('#puntosUsadosTexto').text(`${Math.min(sumaActual, puntosMaximos)} / ${puntosMaximos}`);
+            $('#total_additional_points_used').val(Math.min(sumaActual, puntosMaximos));
+        }
+
+
+        function validateTotalPoints() {
+            const puntosMaximos = parseInt($('#puntosPosibles').val()) || 0;
+            let sumaActual = 0;
+
+            // Sumar puntos de conceptos
+            $('input[name="pa"]').each(function() {
+                let val = parseInt($(this).val()) || 0;
+                sumaActual += val;
+            });
+
+            // Sumar puntos de seguro
+            let puntosSeguro = parseInt($('#insurance_points').val()) || 0;
+            sumaActual += puntosSeguro;
+
+            if (sumaActual > puntosMaximos) {
+                toastr.warning(
+                    `El máximo de puntos adicionales es ${puntosMaximos}. Ha ingresado ${sumaActual}. Ajuste los valores.`
+                );
+                return false;
+            }
+
+            return true;
+        }
+
+
+        function validateForm(inputs) {
+            inputs.forEach(input => {
+                if (input.closest('.d-none')) return;
+
+                const value = input.value?.trim();
+                if (!value || value === '') {
+                    input.classList.add('is-invalid');
+                    showError(input, 'Debe completar este campo');
+                    return;
+                } else {
+                    input.classList.remove('is-invalid');
+                    hideError(input);
+                }
+            });
+        }
+
+
+        // Mostrar mensaje de error
+        function showError(input, message) {
+            let container = input;
+
+            // Si es un SELECT2
+            if (input.tagName === 'SELECT' && $(input).hasClass('select2-hidden-accessible')) {
+                container = $(input).next('.select2')[0];
+            }
+
+            let errorSpan = container.nextElementSibling;
+
+            if (!errorSpan || !errorSpan.classList.contains('invalid-feedback')) {
+                errorSpan = document.createElement('span');
+                errorSpan.classList.add('invalid-feedback', 'd-block'); // Asegura visibilidad
+                container.after(errorSpan);
+            }
+
+            errorSpan.textContent = message;
+            errorSpan.style.display = 'block';
+        }
+
+        function hideError(input) {
+            let container = input;
+
+            if (input.tagName === 'SELECT' && $(input).hasClass('select2-hidden-accessible')) {
+                container = $(input).next('.select2')[0];
+            }
+
+            let errorSpan = container.nextElementSibling;
+
+            if (errorSpan && errorSpan.classList.contains('invalid-feedback')) {
+                errorSpan.classList.remove('d-block');
+                errorSpan.style.display = 'none';
+            }
+        }
+
+
         function formatValue(value) {
             return value.replace(/,/g, '');
         }
@@ -604,16 +703,32 @@
 
 
         $('#formFreight').on('submit', (e) => {
+            e.preventDefault(); // 🚩 Detiene el envío del formulario
 
-            e.preventDefault();
+            if (!validateTotalPoints()) {
+                return;
+            }
 
             let form = $('#formFreight');
-            let conceptops = JSON.stringify(conceptsArray);
+            let isValid = true;
 
+            const requiredInputs = form.find('[data-required="true"]').toArray();
+            validateForm(requiredInputs);
+
+            if ($('#seguroFreight').is(':checked')) {
+                const insuranceInputs = $('#content_seguroFreight').find('input[data-required="true"], select[data-required="true"]').toArray();
+                console.log(insuranceInputs);
+                validateForm(insuranceInputs);
+            }
+
+            if (form.find('.is-invalid').length > 0) {
+                return;
+            }
+
+            let conceptops = JSON.stringify(conceptsArray);
             form.append(`<input type="hidden" name="concepts" value='${conceptops}' />`);
 
             form[0].submit();
-
         });
     </script>
 @endpush

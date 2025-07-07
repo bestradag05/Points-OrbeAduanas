@@ -3,7 +3,9 @@
 use App\Events\QuoteNotification;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\AdditionalPointsController;
+use App\Http\Controllers\AirlineController;
 use App\Http\Controllers\CommercialQuoteController;
+use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\ConceptsController;
 use App\Http\Controllers\CustomController;
 use App\Http\Controllers\CustomerController;
@@ -38,10 +40,17 @@ use App\Models\MessageQuoteTransport;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ContainerController;
+use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PackingTypeController;
+use App\Http\Controllers\ResponseFreightQuotesController;
+use App\Http\Controllers\ShippingCompanyController;
 use App\Http\Controllers\TypeContainerController;
 use App\Models\CommercialQuote;
+use App\Models\ResponseFreightQuotes;
+use App\Models\ResponseTransportQuote;
+use App\Models\ShippingCompany;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 /*
@@ -148,7 +157,7 @@ Route::middleware('auth')->group(function () {
     Route::get('routing/{id_routing}/documents', [RoutingController::class, 'getTemplateDocumentsRouting']);
     Route::post('routing_service', [RoutingController::class, 'storeRoutingService']);
     Route::post('routing_insurance', [RoutingController::class, 'storeInsuranceService']);
-    Route::get('getLCLFCL', [RoutingController::class, 'getLCLFCL']);
+    /* Route::get('getLCLFCL', [RoutingController::class, 'getLCLFCL']); */
 
     Route::get('custom/pending', [CustomController::class, 'getCustomPending']);
     Route::resource('custom', CustomController::class);
@@ -163,6 +172,12 @@ Route::middleware('auth')->group(function () {
     /* Regimenes */
 
     Route::resource('regimes', RegimeController::class);
+
+    /* Comisiones */
+    Route::resource('commissions', CommissionController::class);
+
+    /* Currencies */
+    Route::resource('currencies', CurrencyController::class);
 
     Route::resource('containers', ContainerController::class);
     Route::resource('type_containers', TypeContainerController::class);
@@ -187,6 +202,29 @@ Route::middleware('auth')->group(function () {
     Route::get('transport/personal', [TransportController::class, 'getTransportPersonal']);
     Route::resource('transport', TransportController::class);
     Route::get('transport/create/{quoteId}', [TransportController::class, 'createTransport']);
+
+    //TODO: Modificar la ruta, ya que la respuesta debe ir en el controlador de ResponseTransportQuoteController
+    //TODO: Seguir las reglas de Api RESTful 
+    Route::post(
+        'transport/quote/{id}/prices',
+        [QuoteTransportController::class, 'storeConceptPrices']
+    )
+        ->name('transport.quote.storePrices');
+
+
+    /* Respuestas cotizaciones de flete */
+
+    Route::post(
+        'freight/quote/{quote}/responses',
+        [ResponseFreightQuotesController::class, 'store']
+    )->name('freight.quote.responses.store');
+
+    Route::prefix('quote/freight/response')->group(function() {
+    Route::get('{response}/show', [ResponseFreightQuotesController::class, 'show'])->name('quote.freight.response.show');
+    Route::post('{response}/accept', [ResponseFreightQuotesController::class, 'accept'])->name('quote.freight.response.accept');
+    Route::post('{response}/reject', [ResponseFreightQuotesController::class, 'reject'])->name('quote.freight.response.reject');
+    Route::get('{response}/generate', [ResponseFreightQuotesController::class, 'generate'])->name('quote.freight.response.generate');
+});
 
     Route::get('insurance/pending', [InsuranceController::class, 'getInsurancePending']);
     Route::resource('insurance', InsuranceController::class);
@@ -244,17 +282,15 @@ Route::middleware('auth')->group(function () {
     /* Cotizaciones de flete */
 
     Route::resource('quote/freight', QuoteFreightController::class)->names('quote.freight');
+    //TODO:Esta ruta ya no se usara
+    /*  Route::patch('quote/freight/cost/accept/{id}', [QuoteFreightController::class, 'acceptQuoteFreight']); */
+    /* Route::delete('quote/freight/{id}/{action}', [QuoteFreightController::class, 'updateStateQuoteFreight']); */
 
-    Route::patch('quote/freight/cost/accept/{id}', [QuoteFreightController::class, 'acceptQuoteFreight']);
     Route::post('quote/freight/file-upload-documents', [QuoteFreightController::class, 'uploadFilesQuoteFreight']);
     Route::post('quote/freight/file-delete-documents', [QuoteFreightController::class, 'deleteFilesQuoteFreight']);
     Route::get('quote/freight/sendQuote/{id}', [QuoteFreightController::class, 'sendQuote']);
-    Route::delete('quote/freight/{id}/{action}', [QuoteFreightController::class, 'updateStateQuoteFreight']);
+
     Route::patch('quote/freight/send-pricing/{id}', [QuoteFreightController::class, 'sendInfoAndNotifyPricing']);
-
-    /* Mensaje de cotizaciones de flete */
-
-    Route::resource('quote/freight/message', MessageQuoteFreightController::class);
 
 
     /* Cotizaciones comerciales */
@@ -276,7 +312,17 @@ Route::middleware('auth')->group(function () {
         ->name('commercial.quote.clientTrace');
 
 
+    /* Packing type */
 
+    Route::resource('packing_type', PackingTypeController::class);
+
+    /* Airlines */
+
+    Route::resource('airline', AirlineController::class);
+
+    /* Navieras */
+
+    Route::resource('shipping_company', ShippingCompanyController::class);
 
     /* Reportes */
 

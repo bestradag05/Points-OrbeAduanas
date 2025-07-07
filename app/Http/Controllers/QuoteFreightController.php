@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Akaunting\Money\Money;
+use App\Models\Airline;
+use App\Models\Commission;
 use App\Models\Concept;
+use App\Models\Currency;
 use App\Models\QuoteFreight;
 use App\Models\ResponseFreightQuotes;
+use App\Models\ShippingCompany;
 use App\Models\Supplier;
 use App\Notifications\Notify;
 use App\Notifications\NotifyQuoteFreight;
@@ -118,8 +123,8 @@ class QuoteFreightController extends Controller
         return redirect('/quote/freight/' . $quote->id);
     }
 
-
-    public function acceptQuoteFreight(Request $request, $id)
+    //TODO: Eliminar, ya no se usara
+    /* public function acceptQuoteFreight(Request $request, $id)
     {
 
         $quote = QuoteFreight::findOrFail($id);
@@ -141,7 +146,7 @@ class QuoteFreightController extends Controller
         ]);
 
         return redirect('/freight/create/' . $quote->id);
-    }
+    } */
 
     public function sendInfoAndNotifyPricing($id)
     {
@@ -195,11 +200,15 @@ class QuoteFreightController extends Controller
      */
     public function show(string $id)
     {
-        $quote = QuoteFreight::findOrFail($id);
+        $quote = QuoteFreight::with('responses.commissions')->findOrFail($id);
 
         $suppliers = Supplier::where('area_type', 'pricing')->get();
 
         $concepts = Concept::all();
+        $currencies = Currency::all();
+        $airlines = Airline::all();
+        $shipping_companies = ShippingCompany::all();
+
 
         $folderPath = "commercial_quote/{$quote->commercial_quote->nro_quote_commercial}/quote_freight/{$quote->nro_quote}";
         $files = collect(Storage::disk('public')->files($folderPath))->map(function ($file) {
@@ -213,10 +222,12 @@ class QuoteFreightController extends Controller
         //TODO: ya no se usara el messages
         $messages = QuoteFreight::findOrFail($id)->messages;
         
-        $response = new ResponseFreightQuotes();
-        $nro_response = $response->generateNroResponse();
+        $nro_response = ResponseFreightQuotes::generateNroResponse();
 
-        return view('freight/quote/quote-messagin', compact('quote', 'files', 'messages', 'suppliers', 'nro_response', 'concepts'));
+        //Obtenemos las comisiones que se consideraran
+        $commissions = Commission::all();
+
+        return view('freight/quote/quote-messagin', compact('quote', 'files', 'messages', 'suppliers', 'nro_response', 'concepts','commissions', 'currencies', 'shipping_companies', 'airlines'));
     }
 
 
@@ -269,7 +280,7 @@ class QuoteFreightController extends Controller
     }
 
 
-    public function updateStateQuoteFreight(string $id, string $action)
+   /*  public function updateStateQuoteFreight(string $id, string $action)
     {
 
         $quoteFreight = QuoteFreight::findOrFail($id)->first();
@@ -292,15 +303,13 @@ class QuoteFreightController extends Controller
                 'message' => 'Cotización rechazada'
             ]);
         }
-    }
+    } */
 
 
 
 
     public function validateForm($request, $id)
     {
-
-        /* dd($request->all()); */
 
         return Validator::make($request->all(), [
             'origin' => 'required|string',

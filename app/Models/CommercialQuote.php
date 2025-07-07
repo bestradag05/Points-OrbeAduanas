@@ -27,13 +27,9 @@ class CommercialQuote extends Model
         'id_supplier',
         'lcl_fcl',
         'is_consolidated',
-        'total_nro_package_consolidated',
-        'total_volumen_consolidated',
-        'total_kilogram_consolidated',
-        'total_kilogram_volumen_consolidated',
         'commodity',
         'nro_package',
-        'packaging_type',
+        'id_packaging_type',
         'id_containers',
         'container_quantity',
         'kilograms',
@@ -145,5 +141,10 @@ class CommercialQuote extends Model
             'commercial_quote_id',           // FK en la pivote hacia commercial_quote
             'concepts_id'                     // FK en la pivote hacia concepts
         );
+    }
+
+    public function packingType()
+    {
+        return $this->belongsTo(PackingType::class, 'id_packaging_type', 'id');
     }
 }

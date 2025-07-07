@@ -149,23 +149,12 @@ class FreightService
     {
 
         $quote = QuoteFreight::findOrFail($quoteId);
+        $acceptedResponse = $quote->responses()->where('status', 'Aceptado')->first();
         $commercial_quote = $quote->commercial_quote;
         $type_insurace = TypeInsurance::all();
         $concepts = Concept::all();
-        $conceptFreight = null;
 
-        foreach ($concepts as $concept) {
-
-            if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Flete' && $concept->name === 'OCEAN FREIGHT') {
-                $conceptFreight = $concept;
-            }
-
-            if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Flete' && $concept->name === 'AIR FREIGHT') {
-                $conceptFreight = $concept;
-            }
-        }
-
-        return compact('quote', 'type_insurace', 'concepts', 'conceptFreight', 'commercial_quote');
+        return compact('quote', 'type_insurace', 'concepts', 'commercial_quote', 'acceptedResponse');
     }
 
 
@@ -346,8 +335,12 @@ class FreightService
         }
 
         $freight->fill([
-            'value_freight' => $request->total,
             'value_utility' => $request->utility,
+            'accepted_answer_value' => $request->accepted_answer_value,
+            'total_freight_value' => $request->total,
+            'profit_on_freight' => $request->profit_on_freight,
+            'total_additional_points' => $request->total_additional_points,
+            'total_additional_points_used' => $request->total_additional_points_used,
             'state' => $request->state ?? 'Pendiente',
             'id_quote_freight' => $request->id_quote_freight,
             /* 'nro_operation' => $request->nro_operation, */
@@ -492,7 +485,7 @@ class FreightService
     {
 
         $additional_point = AdditionalPoints::create([
-            'type_of_service' => $conceptFreight->concepts->name,
+            'type_of_service' => $conceptFreight->concept->name,
             'amount' => $ne_amount,
             'points' => $conceptFreight->additional_points,
             'id_additional_concept_service' => $conceptFreight->id,

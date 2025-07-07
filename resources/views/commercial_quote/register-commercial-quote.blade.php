@@ -61,12 +61,12 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modal-consolidated-title">Consolidado</h5>
-                    <button  class="close" data-dismiss="modal" aria-label="Close">
+                    <button class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <form id="form-consolidated" method="POST">
-                   
+
                     <div class="modal-body">
                         <div class="row">
 
@@ -84,7 +84,8 @@
                             <div class="col-4">
                                 <div class="form-group">
                                     <label for="shipper_name">Proveedor:</label>
-                                    <input id="shipper_name" class="form-control required" type="text" name="shipper_name">
+                                    <input id="shipper_name" class="form-control required" type="text"
+                                        name="shipper_name">
                                 </div>
                             </div>
                             <div class="col-4">
@@ -126,8 +127,8 @@
                             <div class="col-4">
                                 <div class="form-group">
                                     <label for="load_value">Valor de la carga:</label>
-                                    <input id="load_value" class="form-control required CurrencyInput" data-type="currency"
-                                        type="text" name="load_value">
+                                    <input id="load_value" class="form-control required CurrencyInput"
+                                        data-type="currency" type="text" name="load_value">
                                 </div>
                             </div>
 
@@ -141,9 +142,19 @@
 
                             <div class="col-4">
                                 <div class="form-group">
-                                    <label for="packaging_type_consolidated">Tipo Embalaje:</label>
-                                    <input id="packaging_type_consolidated" class="form-control"
-                                        type="text" name="packaging_type_consolidated">
+                                    <label for="id_packaging_type_consolidated">Tipo Embalaje:</label>
+                                    {{-- <input id="id_packaging_type_consolidated" class="form-control"
+                                        type="text" name="id_packaging_type_consolidated"> --}}
+
+                                    <x-adminlte-select2 id="id_packaging_type_consolidated" name="id_packaging_type_consolidated"
+                                        data-placeholder="Seleccione una opcion...">
+                                        <option />
+                                        @foreach ($packingTypes as $packingType)
+                                            <option value="{{ $packingType->id }}">
+                                                {{ $packingType->name }}
+                                            </option>
+                                        @endforeach
+                                    </x-adminlte-select2>
                                 </div>
                             </div>
 
@@ -201,8 +212,8 @@
                                         </select>
                                     </div>
                                     <div class="col-2">
-                                        <button type="button" class="btn btn-indigo btn-sm" onclick="addMeasuresConsolidate()"><i
-                                                class="fa fa-plus"></i>Agregar</button>
+                                        <button type="button" class="btn btn-indigo btn-sm"
+                                            onclick="addMeasuresConsolidate()"><i class="fa fa-plus"></i>Agregar</button>
                                     </div>
 
                                 </div>
@@ -219,9 +230,9 @@
                                         </tr>
                                     </thead>
                                 </table>
-                               
+
                                 <input id="value-measures-consolidated" type="hidden"
-                                name="value-measures-consolidated" />
+                                    name="value-measures-consolidated" />
 
                                 @error('value-measures-consolidated')
                                     <span class="invalid-feedback d-block" role="alert">
@@ -236,16 +247,17 @@
 
                     </div>
                 </form>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" onclick="saveConsolidated(event)">Guardar</button>
-                        <button class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    </div>
-                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="saveConsolidated(event)">Guardar</button>
+                    <button class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="modal-detail" tabindex="-1" role="dialog" aria-labelledby="modalDetailLabel" aria-hidden="true">
+    <div class="modal fade" id="modal-detail" tabindex="-1" role="dialog" aria-labelledby="modalDetailLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -271,5 +283,4 @@
 
 
 @push('scripts')
-
 @endpush
