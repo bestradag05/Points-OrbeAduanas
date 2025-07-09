@@ -576,22 +576,20 @@
                   <i class="fas fa-plus"></i>
               </button>
           </div>
-          <table class="table">
+          <table class="table" id="table-containers">
               <thead class="thead-dark">
                   <tr>
-                      <th scope="col">#</th>
-                      <th scope="col">First</th>
-                      <th scope="col">Last</th>
-                      <th scope="col">Handle</th>
+                      <th scope="col">Contenedor</th>
+                      <th scope="col">Cantidad de contenedor</th>
+                      <th scope="col">Producto</th>
+                      <th scope="col">N° Bultos</th>
+                      <th scope="col">Volumen</th>
+                      <th scope="col">Peso</th>
+                      <th scope="col">Acciones</th>
                   </tr>
               </thead>
               <tbody>
-                  <tr>
-                      <th scope="row">1</th>
-                      <td>Mark</td>
-                      <td>Otto</td>
-                      <td>@mdo</td>
-                  </tr>
+
               </tbody>
           </table>
 
@@ -653,18 +651,19 @@
 
   {{-- Modal container --}}
 
-  <div class="modal fade" id="modalAddedContainer" tabindex="-1" aria-labelledby="modalAddedContainerLabel"
-      aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
+  <div id="modalAddedContainer" class="modal fade" tabindex="-1" role="dialog"
+      aria-labelledby="modalAddedContainer-title" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
+
               <div class="modal-body">
-                  <div class="row">
+                  <div class="row" id="formContainer">
                       <div class="col-6">
                           <div class="form-group">
                               <label for="id_containers">Tipo de contenedor <span class="text-danger">*</span></label>
 
                               <select class="form-control @error('id_containers') is-invalid @enderror"
-                                  id="id_containers" name="id_containers">
+                                  id="id_containers" name="id_containers" data-required="true">
                                   <option value="">Seleccione un tipo</option>
                                   @foreach ($containers as $container)
                                       <option value="{{ $container->id }}"
@@ -688,7 +687,7 @@
 
                               <input type="number" min="0" step="1"
                                   class="form-control @error('container_quantity') is-invalid @enderror"
-                                  id="container_quantity" name="container_quantity"
+                                  id="container_quantity" name="container_quantity" data-required="true"
                                   placeholder="Ingrese el nro de contenedores.." oninput="validarInputNumber(this)"
                                   value="{{ isset($routing) ? $routing->container_quantity : '' }}">
                               @error('container_quantity')
@@ -706,6 +705,7 @@
 
                               <input type="text" class="form-control @error('commodity') is-invalid @enderror"
                                   id="commodity" name="commodity" placeholder="Ingrese el producto.."
+                                  data-required="true"
                                   value="{{ isset($routing->commodity) ? $routing->commodity : old('commodity') }}">
                               @error('commodity')
                                   <span class="invalid-feedback d-block" role="alert">
@@ -719,7 +719,7 @@
 
                       <div class="col-6">
                           <div class="form-group">
-                              <label for="nro_package">N° Paquetes / Bultos <span class="text-danger">*</span></label>
+                              <label for="nro_package">N° Paquetes / Bultos</label>
                               <input type="number" min="0" step="1"
                                   class="form-control @error('nro_package') is-invalid @enderror" id="nro_package"
                                   name="nro_package" placeholder="Ingrese el nro de paquetes.."
@@ -753,8 +753,7 @@
                       </div>
 
                       <div class="col-6">
-                          <label for="kilograms" class="col-sm-4 col-form-label">Peso Total <span
-                                  class="text-danger">*</span> </label>
+                          <label for="kilograms" class="col-sm-4 col-form-label">Peso Total </label>
 
                           <input type="text"
                               class="form-control CurrencyInput @error('kilograms') is-invalid @enderror"
@@ -769,7 +768,7 @@
 
                       <div id="container_measures" class="col-12 mt-3">
 
-                          <div id="div-measures" class="row justify-content-center mb-2">
+                          <div id="div-measures-fcl" class="row justify-content-center mb-2">
 
                               <div class="col-2">
                                   <input type="number" class="form-control" step="1" id="amount_package"
@@ -795,13 +794,13 @@
                                   </select>
                               </div>
                               <div class="col-2">
-                                  <button type="button" class="btn btn-indigo btn-sm" onclick="addMeasures()"><i
+                                  <button type="button" class="btn btn-indigo btn-sm" onclick="addMeasuresFCL()"><i
                                           class="fa fa-plus"></i>Agregar</button>
                               </div>
 
                           </div>
 
-                          <table id="measures" class="table table-bordered" style="width:100%">
+                          <table id="measures-fcl" class="table table-bordered" style="width:100%">
                               <thead>
                                   <tr>
                                       <th>Cantidad</th>
@@ -822,6 +821,8 @@
 
                       </div>
 
+                      <input id="data_containers" type="hidden" name="data_containers" />
+
                   </div>
 
               </div>
@@ -836,17 +837,43 @@
   </div>
 
 
+  <div class="modal fade" id="modalDetailContainer" tabindex="-1" role="dialog" aria-labelledby="modalDetailContainerLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDetailContainerLabel">Detalles del contenedor</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped">
+                        <tbody id="container-details"></tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
   @push('scripts')
       <script>
           let tableMeasures = null;
+          let tableMeasuresFCL = null;
           let tableMeasuresConsolidated = null;
           let counter = 1;
           let shippers = [];
+          let containers = [];
 
           // Función para agregar una fila editable
           let rowIndex = 1; //
           let currentPackage = 0;
           let arrayMeasures = {};
+          let arrayMeasuresFCL = {};
           let arrayMeasuresConsolidated = {};
 
           //Tipo de embarque de la cotizacion:
@@ -858,6 +885,17 @@
               //Inicializamos la tabla de medidas
 
               tableMeasures = new DataTable('#measures', {
+                  paging: false, // Desactiva la paginación
+                  searching: false, // Oculta el cuadro de búsqueda
+                  info: false, // Oculta la información del estado de la tabla
+                  lengthChange: false, // Oculta el selector de cantidad de registros por página
+                  language: { // Traducciones al español
+                      emptyTable: "No hay medidas registradas"
+                  }
+              });
+
+
+              tableMeasuresFCL = new DataTable('#measures-fcl', {
                   paging: false, // Desactiva la paginación
                   searching: false, // Oculta el cuadro de búsqueda
                   info: false, // Oculta la información del estado de la tabla
@@ -1133,6 +1171,17 @@
               AddRowMeasures(divMeasures, nroPackage, tableMeasures, arrayMeasures, "arrayMeasures", valueMeasuresHidden);
 
           }
+
+          function addMeasuresFCL() {
+              let formContainer = document.getElementById('formContainer');
+              let divMeasures = document.getElementById("div-measures-fcl");
+              let nroPackage = parseInt(formContainer.querySelector("#nro_package").value); // Usar querySelector aquí también
+              let valueMeasuresHidden = formContainer.querySelector('#value_measures');
+
+              AddRowMeasures(divMeasures, nroPackage, tableMeasuresFCL, arrayMeasuresFCL, "arrayMeasuresFCL",
+                  valueMeasuresHidden);
+
+          }
           //Funcion para agregar las medidas en el consolidado: 
 
           function addMeasuresConsolidate() {
@@ -1266,9 +1315,8 @@
 
           function addedContainer(buton) {
 
-              let divConcepts = $('#divResponseFreight');
-              const inputs = divConcepts.find('input , select');
-              const currencies = @json($currencies);
+              let form = $('#formContainer');
+              const inputs = form.find('input , select');
               let isValid = true;
 
               inputs.each(function() {
@@ -1277,6 +1325,7 @@
                   if (input.closest('.d-none')) return;
 
                   // Solo validar si el campo tiene el atributo data-required
+
                   if (input.dataset.required === 'true') {
                       if (input.value.trim() === '' || input.value == null) {
                           input.classList.add('is-invalid');
@@ -1295,48 +1344,170 @@
 
               if (isValid) {
 
-                  let data = loadConceptData(inputs);
+                  let containerName = $('#id_containers option:selected').text();
+
+                  let container = {
+                      'id_container': getValueByNameFCL('id_containers'),
+                      'containerName': containerName,
+                      'container_quantity': getValueByNameFCL('container_quantity'),
+                      'commodity': getValueByNameFCL('commodity'),
+                      'nro_package': getValueByNameFCL('nro_package'),
+                      'volumen': getValueByNameFCL('volumen'),
+                      'kilograms': getValueByNameFCL('kilograms'),
+                      'value_measures': getValueByNameFCL('value_measures') ? JSON.parse(getValueByNameFCL(
+                          'value_measures')) : ''
+                  };
+
+                  let index = containers.length;
+                  containers.push(container);
+
+                  // Actualizar el input hidden con la nueva lista en JSON
+                  $('#data_containers').val(JSON.stringify(containers));
+
+                  let newRow = `
+                    <tr data-index="${index}">
+                        <td>${container.containerName}</td>
+                        <td>${container.container_quantity}</td>
+                        <td>${container.commodity}</td>
+                        <td>${container.nro_package}</td>
+                        <td>${container.volumen}</td>
+                        <td>${container.kilograms}</td>
+                        <td>
+                            <button class="btn btn-info btn-sm btn-detail"><i class="fas fa-folder-open"></i></button>
+                            <button class="btn btn-danger btn-sm delete-row"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
 
 
-                  const selectedCurrencyId = parseInt(data.currency.id);
-                  const selectedCurrency = currencies.find(c => c.id === selectedCurrencyId);
-                  const dollarCurrency = currencies.find(c => c.abbreviation === 'USD');
+                  $('#table-containers tbody').append(newRow);
+                  $('#modalAddedContainer .btn-secondary').click();
 
-                  if (!checkExchangeRateNotEmpyt(selectedCurrency, dollarCurrency)) return;
+                  //Reseteamos los inputs
 
+                  clearData(inputs);
 
-                  const unitCost = parseFloat(data.unit_cost) || 0;
-                  let finalCost = unitCost;
-
-                  if (selectedCurrency.id !== dollarCurrency.id) {
-                      const exchangeRateInput = $('#exchange_rate')[0];
-                      const exchangeRate = parseFloat(exchangeRateInput.value) || 0;
-
-                      finalCost = unitCost * exchangeRate;
-                  }
-
-                  data.final_cost = finalCost.toFixed(2); // Formateo a 2 decimales
-
-
-                  const index = conceptsResponseFreightArray.findIndex(item => item.concept?.id === parseInt(data.concept
-                      .id));
-
-                  if (index !== -1) {
-
-                      conceptsResponseFreightArray[index] = data;
-
-                  } else {
-
-                      conceptsResponseFreightArray.push(data);
-                  }
-
-                  updateTableRespnoseFreight(conceptsResponseFreightArray);
-                  clearConceptsData(inputs);
+                  //reseteamos las medidas
+                  arrayMeasuresFCL = {};
+                  document.getElementById('value_measures').value = '';
+                  tableMeasuresFCL.clear().draw();
+                  currentPackage = 0;
+                  rowIndex = 1;
 
               }
+
+
+
           };
 
 
+
+          $('#table-containers tbody').on('click', '.delete-row', function() {
+              let row = $(this).closest('tr'); // Obtener la fila
+              let index = row.data('index'); // Obtener el índice del array
+
+              // Eliminar del array si el índice es válido
+              if (index !== undefined && index < containers.length) {
+                  containers.splice(index, 1);
+              }
+
+
+              row.remove(); // Eliminar la fila del DOM
+
+
+              // Actualizar los índices de las filas restantes
+              $('#table-containers tbody tr').each(function(i) {
+                  $(this).attr('data-index', i);
+              });
+
+              // Actualizar el input hidden con la nueva lista
+               $('#data_containers').val(JSON.stringify(containers));
+          });
+
+
+          $('#table-containers tbody').on('click', '.btn-detail', function() {
+              let row = $(this).closest('tr');
+              let index = row.data('index');
+              let container = containers[index];
+              let detailsHtml = `
+                <tr><th>Contenedor</th><td>${container.containerName}</td></tr>
+                <tr><th>Cantidad de contenedores</th><td>${container.container_quantity}</td></tr>
+                <tr><th>Producto</th><td>${container.commodity}</td></tr>
+                <tr><th>N° de bultos</th><td>${container.nro_package}</td></tr>
+                <tr><th>Volumen</th><td>${container.volumen}</td></tr>
+                <tr><th>Peso</th><td>${container.kilograms}</td></tr>
+                <tr><th>Medidas</th><td>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Ítem</th>
+                                <th>Largo</th>
+                                <th>Ancho</th>
+                                <th>Alto</th>
+                                <th>Medida</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+              // Convertimos el objeto en un array de pares clave-valor y lo recorremos
+              Object.entries(container.value_measures).forEach(([key, measure]) => {
+                  detailsHtml += `
+                    <tr>
+                        <td>${measure.amount}</td>
+                        <td>${measure.length}</td>
+                        <td>${measure.width}</td>
+                        <td>${measure.height}</td>
+                        <td>${measure.unit_measurement}</td>
+                    </tr>
+                `;
+              });
+
+
+              detailsHtml += `
+                        </tbody>
+                    </table>
+                </td></tr>
+            `;
+
+              $('#container-details').html(detailsHtml);
+              $('#modalDetailContainer').modal('show');
+          });
+
+
+
+          function loadConceptData(inputs) {
+              let data = {};
+              inputs.each(function() {
+                  const input = this;
+                  let name = input.name;
+                  if (name) {
+                      if (input.tagName === 'SELECT') {
+
+                          data[name] = {
+                              id: parseInt(input.value),
+                              text: input.options[input.selectedIndex] ? input.options[input.selectedIndex].text :
+                                  ''
+                          };
+
+                      } else if (input.type === 'checkbox') {
+                          data[name] = $(input).is(':checked') ? input.value : '';
+                          console.log(name + ': ' + input.value);
+                      } else {
+                          // Si es un valor numérico formateado, lo limpiamos
+                          if (input.classList.contains('CurrencyInput')) {
+                              0
+                              // Elimina comas y convierte a número
+                              data[name] = parseFloat(input.value.replace(/,/g, '')) || 0;
+                          } else {
+                              data[name] = input.value;
+                          }
+                      }
+                  }
+              });
+
+              return data;
+          }
 
           /* Agregar un item del consolidado  */
 
@@ -1441,7 +1612,7 @@
               updateHiddenInput();
           });
 
-          $(document).on('click', '.btn-detail', function() {
+          $('#providersTable').on('click', '.btn-detail', function() {
 
               let row = $(this).closest('tr');
               let index = row.data('index');
@@ -1500,6 +1671,13 @@
           function getValueByName(name) {
 
               let inputs = $('#form-consolidated').find('input, select').toArray();
+              let element = inputs.find(el => $(el).attr('name') === name);
+              return element ? $(element).val() : null;
+          }
+
+          function getValueByNameFCL(name) {
+
+              let inputs = $('#formContainer').find('input, select').toArray();
               let element = inputs.find(el => $(el).attr('name') === name);
               return element ? $(element).val() : null;
           }
@@ -1570,6 +1748,59 @@
                   }
               });
           });
+
+
+          function showError(input, message) {
+              let container = input;
+
+              // Si es un SELECT2
+              if (input.tagName === 'SELECT' && $(input).hasClass('select2-hidden-accessible')) {
+                  container = $(input).next('.select2')[0];
+              }
+
+              let errorSpan = container.nextElementSibling;
+
+              if (!errorSpan || !errorSpan.classList.contains('invalid-feedback')) {
+                  errorSpan = document.createElement('span');
+                  errorSpan.classList.add('invalid-feedback', 'd-block'); // Asegura visibilidad
+                  container.after(errorSpan);
+              }
+
+              errorSpan.textContent = message;
+              errorSpan.style.display = 'block';
+          }
+
+          function hideError(input) {
+              let container = input;
+
+              if (input.tagName === 'SELECT' && $(input).hasClass('select2-hidden-accessible')) {
+                  container = $(input).next('.select2')[0];
+              }
+
+              let errorSpan = container.nextElementSibling;
+
+              if (errorSpan && errorSpan.classList.contains('invalid-feedback')) {
+                  errorSpan.classList.remove('d-block');
+                  errorSpan.style.display = 'none';
+              }
+          }
+
+          function clearData(inputs) {
+              inputs.each(function() {
+                  const input = this;
+
+                  if (input.tagName === 'SELECT') {
+                      $(input).val(null).trigger('change'); // Resetea select2
+                  } else if (input.type === 'checkbox') {
+                      input.checked = false; // Desmarca el checkbox
+                  } else {
+                      input.value = ''; // Limpia input de texto, número, etc.
+                  }
+
+                  input.classList.remove('is-invalid');
+                  hideError(input);
+              });
+          }
       </script>
 
 
