@@ -416,7 +416,7 @@ class QuoteTransportController extends Controller
 
 
         $nro_response = ResponseTransportQuote::generateNroResponse();
-        
+
         $locked = in_array(optional($quote->transport)->state, ['Aceptado', 'Rechazado', 'Anulado']);
 
 
@@ -450,16 +450,6 @@ class QuoteTransportController extends Controller
             ->where('id', '!=', $response->id)
             ->update(['status' => 'Rechazada']);
 
-        // 3. Registrar trazabilidad
-        QuoteTrace::create([
-            'quote_id' => $response->quote_transport_id,
-            'response_id' => $response->id,
-            'service_type' => 'transporte',
-            'action' => 'Aceptado',
-            'justification' => $request->justification,
-            'user_id' => auth()->id(),
-        ]);
-
         return redirect()
             ->route('transport.show', $response->quote_transport_id)
             ->with([
@@ -472,6 +462,7 @@ class QuoteTransportController extends Controller
 
 
 
+
     public function rejectResponse(Request $request)
     {
         $request->validate([
@@ -480,18 +471,10 @@ class QuoteTransportController extends Controller
         ]);
 
         $response = ResponseTransportQuote::findOrFail($request->response_id);
+
+        // Marcar como rechazada
         $response->update([
             'status' => 'Rechazada',
-        ]);
-
-        // Creamos un registro en la tabla de trazabilidad
-        QuoteTrace::create([
-            'quote_id' => $response->quote_transport_id,
-            'response_id' => $response->id,
-            'service_type' => 'transporte',
-            'action' => 'Rechazada',
-            'justification' => $request->justification,
-            'user_id' => auth()->id(),
         ]);
 
         return back()->with('success', 'Respuesta rechazada.');

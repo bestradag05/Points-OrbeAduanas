@@ -863,7 +863,7 @@
 
                             {{-- Total general (sólo lectura) --}}
                             <div class="form-group row mt-4">
-                                <label class="col-sm-6 font-weight-bold">Total (S/)</label>
+                                <label class="col-sm-6 font-weight-bold">Total</label>
                                 <div class="col-sm-6">
                                     <input type="text" class="form-control" id="totalConceptos" readonly
                                         value="0.00">

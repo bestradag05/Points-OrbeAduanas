@@ -24,7 +24,7 @@ class ResponseQuoteFreightObserver
         //
 
         if ($responseFreightQuotes->isDirty('status')) {
-            //Verificamos si viene la justificacion por parte del usuari y si no agregamos el mensaje por defecto.
+            //Verificamos si viene la justificacion por parte del usuario y si no agregamos el mensaje por defecto.
             $justification = Request::input('justification', 'Cambio de estado de la respuesta');
             $responseFreightQuotes->registerTrace($responseFreightQuotes->status, $justification);
         }

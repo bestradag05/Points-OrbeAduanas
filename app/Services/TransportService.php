@@ -269,7 +269,13 @@ class TransportService
             // 1 Obtener el net_amount desde concepts_response_transport
             $net = optional(
                 $response->conceptResponseTransports->firstWhere('concepts_id', $concept->id)
-            )->net_amount ?? 0;
+            )->net_amount;
+
+            // Si no hay valor original, tomamos el value ingresado en la vista
+            if ($net === null) {
+                $net = $this->parseDouble($concept->value); // ← usa el valor del formulario
+            }
+
 
 
             $concept_total = $net + $added; // total de este concepto

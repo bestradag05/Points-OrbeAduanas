@@ -52,6 +52,39 @@
         </div>
     </div>
 
+    <div class="col-12">
+        <div class="row align-items-end">
+            <div class="col-md-4">
+                <label for="conceptSelect">Agregar nuevo concepto</label>
+                <select id="conceptSelect" class="form-control">
+                    <option value="">Seleccione...</option>
+                    @foreach ($concepts as $concept)
+                        @if (
+                            $concept->typeService->name == 'Transporte' &&
+                                $commercial_quote->type_shipment->id == $concept->id_type_shipment &&
+                                $concept->name != 'TRANSPORTE')
+                            <option value="{{ $concept->id }}">
+                                {{ $concept->name }}
+                            </option>
+                        @endif
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="conceptValue">Valor del concepto</label>
+                <input type="text" class="form-control CurrencyInput" id="conceptValue" placeholder="Ingrese Valor de Concepto">
+            </div>
+            <div class="col-md-3">
+                <label for="addedValue">Valor agregado</label>
+                <input type="text" class="form-control CurrencyInput" id="addedValue" placeholder="Ingrese Valor Agregado">
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-success" onclick="addConceptFromDropdown()">Agregar</button>
+            </div>
+        </div>
+    </div>
+
+
     <div class="col-12 d-flex justify-content-center align-items-center pt-3 mb-2">
     </div>
     <div id="formConceptsTransport" class="col-12 d-flex formConcepts row">
@@ -219,8 +252,8 @@
                     inputs[2].value = '';
                 }
             };
-            
-            
+
+
 
             function updateTable(conceptsArray) {
 
@@ -261,7 +294,8 @@
                         let celdaAdded = fila.insertCell(3);
 
 
-                        if (isEditMode || (conceptsTransport && conceptsTransport.some(concept => concept.concept.name === item.name))) {
+                        if (isEditMode || (conceptsTransport && conceptsTransport.some(concept => concept.concept.name === item
+                                .name))) {
 
                             // Si concepto existe, muestra un input editable
                             let inputAdded = document.createElement('input');
@@ -338,7 +372,8 @@
                         }
 
 
-                        if (isEditMode || !conceptsTransport || !conceptsTransport.some(concept => concept.name === item.name)) {
+                        if (isEditMode || !conceptsTransport || !conceptsTransport.some(concept => concept.name === item
+                                .name)) {
 
                         }
 
@@ -383,5 +418,46 @@
                 form.off('submit'); // para evitar loop infinito
                 form.submit();
             });
+
+
+            function addConceptFromDropdown() {
+                const conceptSelect = document.getElementById('conceptSelect');
+                const conceptValueInput = document.getElementById('conceptValue');
+                const addedValueInput = document.getElementById('addedValue');
+
+                const conceptId = parseInt(conceptSelect.value);
+                const conceptName = conceptSelect.options[conceptSelect.selectedIndex].text;
+                const value = formatValue(conceptValueInput.value);
+                const added = formatValue(addedValueInput.value);
+
+                if (!conceptId || !value) {
+                    conceptSelect.classList.add('is-invalid');
+                    conceptValueInput.classList.add('is-invalid');
+                    return;
+                }
+
+                conceptSelect.classList.remove('is-invalid');
+                conceptValueInput.classList.remove('is-invalid');
+
+                const index = conceptsArray.findIndex(item => item.id === conceptId);
+                if (index !== -1) {
+                    conceptsArray[index].value = value;
+                    conceptsArray[index].added = added;
+                } else {
+                    conceptsArray.push({
+                        id: conceptId,
+                        name: conceptName,
+                        value: value,
+                        added: added,
+                        pa: 0
+                    });
+                }
+
+                conceptSelect.value = '';
+                conceptValueInput.value = '';
+                addedValueInput.value = '';
+
+                updateTable(conceptsArray);
+            }
         </script>
     @endpush
