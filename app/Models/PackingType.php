@@ -25,4 +25,9 @@ class PackingType extends Model
     {
         return $this->hasMany(CommercialQuote::class, 'id_packaging_type', 'id');
     }
+
+    public function commercialQuoteContainers()
+    {
+        return $this->hasMany(CommercialQuoteContainer::class, 'id_packaging_type', 'id');
+    }
 }

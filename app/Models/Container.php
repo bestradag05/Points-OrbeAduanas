@@ -18,7 +18,7 @@ class Container extends Model
         'max_load',
         'state'
     ];
-    
+
     protected $dates = [
         'created_at',
         'updated_at'
@@ -52,6 +52,15 @@ class Container extends Model
         return $this->hasMany(CommercialQuote::class, 'id');
     }
 
+    public function commercialQuoteContainers()
+    {
+        return $this->hasMany(CommercialQuoteContainer::class, 'commercial_quote_id');
+    }
 
+    public function commercialQuotesFcl()
+    {
+        return $this->belongsToMany(CommercialQuote::class, 'commercial_quote_containers', 'containers_id', 'commercial_quote_id')
+            ->withPivot('container_quantity', 'commodity', 'nro_package', 'id_packaging_type', 'kilograms', 'volumen', 'measures')
+            ->withTimestamps();
+    }
 }
-

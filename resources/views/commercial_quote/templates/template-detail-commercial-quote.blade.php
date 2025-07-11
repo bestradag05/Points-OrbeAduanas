@@ -79,7 +79,9 @@
                     <label class="col-sm-4 col-form-label">Origen : </label>
                     <div class="col-sm-8">
 
-                        <p class="form-control-plaintext text-uppercase">{{ $comercialQuote->originState->country->name}} - {{ $comercialQuote->originState->name }}</p>
+                        <p class="form-control-plaintext text-uppercase">
+                            {{ $comercialQuote->originState->country->name }} - {{ $comercialQuote->originState->name }}
+                        </p>
                     </div>
 
                 </div>
@@ -89,7 +91,8 @@
                     <label class="col-sm-4 col-form-label">Destino : </label>
                     <div class="col-sm-8">
 
-                        <p class="form-control-plaintext">{{ $comercialQuote->destinationState->country->name}} - {{ $comercialQuote->destinationState->name }}</p>
+                        <p class="form-control-plaintext">{{ $comercialQuote->destinationState->country->name }} -
+                            {{ $comercialQuote->destinationState->name }}</p>
                     </div>
 
                 </div>
@@ -125,7 +128,7 @@
                                 <div class="col-sm-8">
 
                                     <p class="form-control-plaintext">
-                                        {{ $comercialQuote->container_quantity }}x{{ $comercialQuote->container->name }}
+                                        {{-- {{ $comercialQuote->container_quantity }}x{{ $comercialQuote->container->name }} --}}
                                     </p>
                                 </div>
 
@@ -300,22 +303,23 @@
                     @if ($comercialQuote->lcl_fcl === 'FCL')
                         <div class="col-12 border-bottom border-bottom-2">
                             <div class="form-group row">
-                                <label class="col-sm-4 col-form-label">Contenedor : </label>
+                                <label class="col-sm-4 col-form-label">Contenedor(s) : </label>
                                 <div class="col-sm-8">
+                                    
+                                    {{-- {{dd($comercialQuote->commercialQuoteContainers)}} --}}
+                                    @foreach ($comercialQuote->commercialQuoteContainers as $commercialContainer)
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item pl-0 pt-2">
+                                                {{ $commercialContainer->container_quantity }} x {{ $commercialContainer->container->name }}
+                                                <button class="btn text-primary" data-toggle="modal"
+                                                    data-target="#detailContainer"
+                                                    data-commercialcontainer="{{ json_encode($commercialContainer) }}"><i
+                                                        class="fas fa-info-circle"></i></button>
+                                            </li>
 
-                                    <p class="form-control-plaintext">
-                                        {{ $comercialQuote->container_quantity }}x{{ $comercialQuote->container->name }}
-                                    </p>
-                                </div>
+                                        </ul>
+                                    @endforeach
 
-                            </div>
-                        </div>
-                        <div class="col-12 border-bottom border-bottom-2">
-                            <div class="form-group row">
-                                <label class="col-sm-4 col-form-label">Toneladas : </label>
-                                <div class="col-sm-8">
-
-                                    <p class="form-control-plaintext">{{ $comercialQuote->tons }}</p>
                                 </div>
 
                             </div>
@@ -553,6 +557,28 @@
     @include('commercial_quote/modals/modalGenerateRoutingOrder')
 @endif
 
+<div class="modal fade" id="detailContainer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Detalles del Contenedor</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="containerDetails">
+                    <!-- Aquí se llenará la información del contenedor -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal para justificar aceptación o rechazo del cliente -->
 <div class="modal fade" id="modalClientTrace" tabindex="-1" role="dialog" aria-labelledby="modalClientTraceLabel"
     aria-hidden="true">
@@ -612,66 +638,6 @@
 
         }
 
-
-
-        /*function handleActionCommercialQuote(action, id) {
-
-
-
-            let textAction = (action === 'accept') ? 'aceptar' : 'rechazar';
-
-            if (action === 'accept') {
-                //Verificamos si tiene asociado un cliente antes de aceptar.
-                let idCustomer = @json($comercialQuote->id_customer);
-                let nameCustomer = @json($comercialQuote->customer_company_name);
-                let isConsolidated = @json($comercialQuote->is_consolidated);
-
-                //cuando no hay idCustomer
-                //cuando no es consolidado
-
-                if (!idCustomer || !isConsolidated) {
-                    completeCustomerInformation(nameCustomer, idCustomer, isConsolidated);
-                } else {
-
-                    let formFillData = $('#forCommercialFillData');
-                    $('#has_customer_data').val(0);
-                    $('#has_supplier_data').val(0);
-
-                    Swal.fire({
-                        title: `¿Estas seguro que deseas ${textAction} esta cotización?`,
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#2e37a4",
-                        cancelButtonColor: "#6c757d",
-                        confirmButtonText: `Si, ${textAction}!`,
-                        cancelButtonText: 'No, cancelar',
-                        allowOutsideClick: false
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            formFillData.submit();
-                        }
-                    });
-
-                }
-
-            } else {
-                Swal.fire({
-                    title: `¿Estas seguro que deseas ${textAction} esta cotización?`,
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#2e37a4",
-                    cancelButtonColor: "#6c757d",
-                    confirmButtonText: `Si, ${textAction}!`,
-                    cancelButtonText: 'No, cancelar',
-                    allowOutsideClick: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-
-                    }
-                });
-            }
-
-        } */
 
         function handleActionCommercialQuote(action, id) {
             let textAction = (action === 'accept') ? 'aceptar' : 'rechazar';
@@ -880,6 +846,53 @@
                 formGenerateRoutingOrder.submit();
             }
         }
+
+
+        $('#detailContainer').on('show.bs.modal', function(event) {
+            // Obtener el botón que activó el modal
+            var button = $(event.relatedTarget);
+
+            // Extraer el objeto contenedor de los atributos data-*
+            var commercialcontainer = button.data('commercialcontainer'); // Convertimos el JSON de vuelta a un objeto
+            console.log(commercialcontainer);
+            // Acceder a las propiedades del objeto contenedor y colocarlas en el modal
+            var modalBody = $(this).find('.modal-body #containerDetails');
+
+            // Construir la tabla para las medidas
+            var measuresTable = '';
+            if (commercialcontainer.measures) {
+                var measures = JSON.parse(commercialcontainer.measures); // Asegúrate de que las medidas estén en formato JSON
+                measuresTable =
+                    '<table class="table table-bordered"><thead><tr><th>Cantidad</th><th>Anchura (cm)</th><th>Longitud (cm)</th><th>Altura (cm)</th><th>Unidad de Medida</th></tr></thead><tbody>';
+
+                // Iterar sobre las medidas y agregar filas a la tabla
+                $.each(measures, function(key, measure) {
+                    measuresTable += `
+                <tr>
+                    <td>${measure.amount}</td>
+                    <td>${measure.width}</td>
+                    <td>${measure.length}</td>
+                    <td>${measure.height}</td>
+                    <td>${measure.unit_measurement}</td>
+                </tr>
+            `;
+                });
+
+                measuresTable += '</tbody></table>';
+            }
+
+            modalBody.html(`
+        <p><strong>Nombre del Contenedor:</strong> ${commercialcontainer.container.name}</p>
+        <p><strong>Cantidad:</strong> ${commercialcontainer.container_quantity}</p>
+        <p><strong>Mercancía:</strong> ${commercialcontainer.commodity}</p>
+        <p><strong>Número de Paquete:</strong> ${commercialcontainer.nro_package}</p>
+        <p><strong>Tipo de Embalaje:</strong> ${commercialcontainer.packing_type.name}</p>
+        <p><strong>Valor de la carga:</strong> ${commercialcontainer.load_value}</p>
+        <p><strong>Kilogramos:</strong> ${commercialcontainer.kilograms}</p>
+        <p><strong>Volumen:</strong> ${commercialcontainer.volumen}</p>
+        <p><strong>Medidas:</strong> ${measuresTable}</p> <!-- Aquí se coloca la tabla de medidas -->
+    `);
+        });
 
 
         // Mostrar mensaje de error

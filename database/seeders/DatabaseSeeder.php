@@ -209,6 +209,16 @@ class DatabaseSeeder extends Seeder
             'max_load' => 20,
         ]);
 
+        Container::create([
+            'name' => "40'HQ",
+            'type_container_id' => $typeContainer->id,
+            'description' => '40 PIES STANDARD',
+            'length' => 40,
+            'width' => 40,
+            'height' => 40,
+            'max_load' => 2000,
+        ]);
+
         /*  Regime */
 
         Regime::create(['code' => '10', 'description' => 'IMPORTACION']);

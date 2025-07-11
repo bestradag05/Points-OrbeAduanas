@@ -120,7 +120,6 @@ class CommercialQuoteController extends Controller
     public function store(Request $request)
     {
         $shippersConsolidated = json_decode($request->shippers_consolidated);
-
         if ($request->is_consolidated) {
 
             $consolidated = [];
@@ -157,36 +156,88 @@ class CommercialQuoteController extends Controller
                 $this->storeConsolidateCarga($shipper, $commercialQuote->id);
             }
         } else {
-            $this->validateForm($request, null);
 
-            $commercialQuote = CommercialQuote::create([
-                'nro_quote_commercial' => $request->nro_quote_commercial,
-                'origin' => $request->origin,
-                'destination' => $request->destination,
-                'customer_company_name' => $request->customer_company_name,
-                'load_value' => $this->parseDouble($request->load_value),
-                'id_type_shipment' => $request->id_type_shipment,
-                'id_regime' => $request->id_regime,
-                'id_type_load' => $request->id_type_load,
-                'id_incoterms' => $request->id_incoterms,
-                'commodity' => $request->commodity,
-                'nro_package' => $request->nro_package,
-                'id_packaging_type' => $request->id_packaging_type,
-                'id_containers' => $request->id_containers,
-                'container_quantity' => $request->container_quantity,
-                'id_customer' => $request->id_customer,
-                'kilograms' => $request->kilograms != null ? $this->parseDouble($request->kilograms) : null,
-                'volumen' => $request->volumen != null ?  $this->parseDouble($request->volumen) : null,
-                'kilogram_volumen' => $request->kilogram_volumen != null ? $this->parseDouble($request->kilogram_volumen) : null,
-                'tons' => $request->tons != null ?  $this->parseDouble($request->tons) : null,
-                'lcl_fcl' => $request->lcl_fcl,
-                'is_consolidated' => $request->is_consolidated,
-                'measures' => $request->value_measures,
-                'pounds' => $request->pounds,
-                'nro_operation' => $request->nro_operation,
-                'valid_date' => now()->format('Y-m-d'),
-                'id_personal' => auth()->user()->personal->id,
-            ]);
+
+            //Verificamos si es Maritimo y si es FCL o LCL
+
+            if ($request->type_shipment_name === 'Marítima' && $request->lcl_fcl === 'FCL') {
+
+                $data_containers = json_decode($request->data_containers);
+
+                $calcContainers = $this->calculateDataContainers($data_containers);
+                $commercialQuote = CommercialQuote::create([
+                    'nro_quote_commercial' => $request->nro_quote_commercial,
+                    'origin' => $request->origin,
+                    'destination' => $request->destination,
+                    'commodity' => $calcContainers['commodity'],
+                    'customer_company_name' => $request->customer_company_name,
+                    'load_value' => $calcContainers['total_load_values'],
+                    'id_type_shipment' => $request->id_type_shipment,
+                    'id_regime' => $request->id_regime,
+                    'id_type_load' => $request->id_type_load,
+                    'id_incoterms' => $request->id_incoterms,
+                    'id_containers' =>  $request->id_containers_consolidated,
+                    'id_customer' => $request->id_customer,
+                    'container_quantity' => $request->container_quantity_consolidated,
+                    'lcl_fcl' => $request->lcl_fcl,
+                    'is_consolidated' => $request->is_consolidated,
+                    'nro_package' => $calcContainers['total_bultos'],
+                    'volumen' => ($calcContainers['total_volumen'] > 0) ? $calcContainers['total_volumen'] : null,
+                    'kilogram_volumen' => $request->kilogram_volumen,
+                    'kilograms' => $calcContainers['total_kilogram'],
+                    'pounds' => $request->pounds,
+                    'nro_operation' => $request->nro_operation,
+                    'valid_date' => now()->format('Y-m-d'),
+                    'id_personal' => auth()->user()->personal->id,
+                ]);
+
+                foreach ($data_containers as  $container) {
+
+                    $commercialQuote->containersFcl()->attach($container->id_container, [
+                        'container_quantity' => $container->container_quantity,
+                        'commodity' => $container->commodity,
+                        'nro_package' => $container->nro_package,
+                        'id_packaging_type' => $container->id_packaging_type,
+                        'load_value' =>  $this->parseDouble($container->load_value),
+                        'kilograms' => $container->kilograms,
+                        'volumen' => $container->volumen,
+                        'measures' => json_encode($container->value_measures)
+                    
+                    ]);
+                }
+
+            } else {
+                $this->validateForm($request, null);
+
+                $commercialQuote = CommercialQuote::create([
+                    'nro_quote_commercial' => $request->nro_quote_commercial,
+                    'origin' => $request->origin,
+                    'destination' => $request->destination,
+                    'customer_company_name' => $request->customer_company_name,
+                    'load_value' => $this->parseDouble($request->load_value),
+                    'id_type_shipment' => $request->id_type_shipment,
+                    'id_regime' => $request->id_regime,
+                    'id_type_load' => $request->id_type_load,
+                    'id_incoterms' => $request->id_incoterms,
+                    'commodity' => $request->commodity,
+                    'nro_package' => $request->nro_package,
+                    'id_packaging_type' => $request->id_packaging_type,
+                    'id_containers' => $request->id_containers,
+                    'container_quantity' => $request->container_quantity,
+                    'id_customer' => $request->id_customer,
+                    'kilograms' => $request->kilograms != null ? $this->parseDouble($request->kilograms) : null,
+                    'volumen' => $request->volumen != null ?  $this->parseDouble($request->volumen) : null,
+                    'kilogram_volumen' => $request->kilogram_volumen != null ? $this->parseDouble($request->kilogram_volumen) : null,
+                    'tons' => $request->tons != null ?  $this->parseDouble($request->tons) : null,
+                    'lcl_fcl' => $request->lcl_fcl,
+                    'is_consolidated' => $request->is_consolidated,
+                    'measures' => $request->value_measures,
+                    'pounds' => $request->pounds,
+                    'nro_operation' => $request->nro_operation,
+                    'valid_date' => now()->format('Y-m-d'),
+                    'id_personal' => auth()->user()->personal->id,
+                ]);
+            }
         }
 
 
@@ -241,6 +292,35 @@ class CommercialQuoteController extends Controller
             'commodity' => $commodity,
             'total_volumen' => $totalVolumen,
             'total_kilogram_volumen' => $totalKilogramVolumen,
+            'total_kilogram' => $totalKilogram,
+            'total_bultos' => $totalBultos,
+            'total_load_values' => $totalLoadValue
+
+        ];
+    }
+
+    public function calculateDataContainers($containers)
+    {
+        $commodityText = [];
+        $totalVolumen = 0;
+        $totalKilogram = 0;
+        $totalBultos = 0;
+        $totalLoadValue = 0;
+
+
+        foreach ($containers as $container) {
+            $commodityText[] = $container->commodity;
+            $totalVolumen += $this->parseDouble($container->volumen);
+            $totalKilogram += $this->parseDouble($container->kilograms);
+            $totalBultos += (int) $container->nro_package;
+            $totalLoadValue += $this->parseDouble($container->load_value);
+        }
+
+        $commodity = implode(', ', $commodityText);
+
+        return [
+            'commodity' => $commodity,
+            'total_volumen' => $totalVolumen,
             'total_kilogram' => $totalKilogram,
             'total_bultos' => $totalBultos,
             'total_load_values' => $totalLoadValue
@@ -331,7 +411,7 @@ class CommercialQuoteController extends Controller
     public function createQuoteTransport($commercialQuote)
     {
 
-         $packing_type = null;
+        $packing_type = null;
         if ($commercialQuote->id_packaging_type) {
             $packing_type = $commercialQuote->packingType->name;
         }
@@ -468,7 +548,8 @@ class CommercialQuoteController extends Controller
     public function getTemplateDetailCommercialQuote($id)
     {
 
-        $comercialQuote = CommercialQuote::find($id);
+        $comercialQuote = CommercialQuote::with(['commercialQuoteContainers.packingType'])->find($id);
+
         $type_services = TypeService::all();
         $modalitys = Modality::all();
         $concepts = Concept::all()->load('typeService');

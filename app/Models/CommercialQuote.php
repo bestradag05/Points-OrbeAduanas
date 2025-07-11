@@ -30,8 +30,6 @@ class CommercialQuote extends Model
         'commodity',
         'nro_package',
         'id_packaging_type',
-        'id_containers',
-        'container_quantity',
         'kilograms',
         'volumen',
         'pounds',
@@ -93,9 +91,22 @@ class CommercialQuote extends Model
         return $this->belongsTo(Regime::class, 'id_regime', 'id');
     }
 
-    public function container()
+    public function containers()
     {
         return $this->belongsTo(Container::class, 'id_containers');
+    }
+
+
+    public function containersFcl()
+    {
+         return $this->belongsToMany(Container::class, 'commercial_quote_containers', 'commercial_quote_id', 'containers_id')
+            ->withPivot('container_quantity', 'commodity', 'nro_package', 'id_packaging_type', 'kilograms', 'volumen', 'measures')
+            ->withTimestamps();
+    }
+
+    public function commercialQuoteContainers()
+    {
+        return $this->hasMany(CommercialQuoteContainer::class, 'commercial_quote_id');
     }
 
     public function typeService()

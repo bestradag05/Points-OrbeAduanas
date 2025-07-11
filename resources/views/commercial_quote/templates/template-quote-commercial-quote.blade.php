@@ -381,7 +381,6 @@
                 nombre: selectedOption.text().trim()
 
             };
-            console.log(concepto);
 
             // Verificar si el concepto ya fue agregado
             if (conceptosQuoteTransport.some(c => c.id === concepto.id)) {

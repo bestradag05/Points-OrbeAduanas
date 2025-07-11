@@ -583,6 +583,8 @@
                       <th scope="col">Cantidad de contenedor</th>
                       <th scope="col">Producto</th>
                       <th scope="col">N° Bultos</th>
+                      <th scope="col">Tipo de Embalaje</th>
+                      <th scope="col">Valor de factura</th>
                       <th scope="col">Volumen</th>
                       <th scope="col">Peso</th>
                       <th scope="col">Acciones</th>
@@ -592,6 +594,9 @@
 
               </tbody>
           </table>
+
+          <input id="data_containers" type="hidden" name="data_containers" />
+
 
       </div>
 
@@ -735,6 +740,42 @@
                       </div>
 
                       <div class="col-6">
+                          <div class="form-group">
+                              <label for="id_packaging_type">Tipo de embalaje</label>
+
+                              <x-adminlte-select2 name="id_packaging_type"
+                                  data-placeholder="Seleccione una opcion...">
+                                  <option />
+                                  @foreach ($packingTypes as $packingType)
+                                      <option value="{{ $packingType->id }}">
+                                          {{ $packingType->name }}
+                                      </option>
+                                  @endforeach
+                              </x-adminlte-select2>
+
+                          </div>
+                      </div>
+
+                      <div class="col-6">
+                          <div class="form-group row">
+                              <label for="load_value">Valor de factura </label>
+
+                              <div class="input-group">
+                                  <div class="input-group-prepend">
+                                      <span
+                                          class="input-group-text text-bold @error('load_value') is-invalid @enderror">
+                                          $
+                                      </span>
+                                  </div>
+                                  <input type="text"
+                                      class="form-control CurrencyInput @error('load_value') is-invalid @enderror "
+                                      name="load_value" data-type="currency" placeholder="Ingrese valor de la carga"
+                                      value="{{ isset($routing->load_value) ? $routing->load_value : old('load_value') }}">
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="col-6">
                           <label for="volumen">Volumen </label>
 
                           {{-- Volumen --}}
@@ -753,7 +794,7 @@
                       </div>
 
                       <div class="col-6">
-                          <label for="kilograms" class="col-sm-4 col-form-label">Peso Total </label>
+                          <label for="kilograms">Peso Total </label>
 
                           <input type="text"
                               class="form-control CurrencyInput @error('kilograms') is-invalid @enderror"
@@ -821,8 +862,6 @@
 
                       </div>
 
-                      <input id="data_containers" type="hidden" name="data_containers" />
-
                   </div>
 
               </div>
@@ -837,27 +876,27 @@
   </div>
 
 
-  <div class="modal fade" id="modalDetailContainer" tabindex="-1" role="dialog" aria-labelledby="modalDetailContainerLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalDetailContainerLabel">Detalles del contenedor</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <table class="table table-striped">
-                        <tbody id="container-details"></tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
+  <div class="modal fade" id="modalDetailContainer" tabindex="-1" role="dialog"
+      aria-labelledby="modalDetailContainerLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="modalDetailContainerLabel">Detalles del contenedor</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  <table class="table table-striped">
+                      <tbody id="container-details"></tbody>
+                  </table>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+              </div>
+          </div>
+      </div>
+  </div>
 
 
   @push('scripts')
@@ -1344,7 +1383,8 @@
 
               if (isValid) {
 
-                  let containerName = $('#id_containers option:selected').text();
+                  let containerName = $('#id_containers option:selected').text().trim();
+                  let packaginTypeName = $('#formContainer #id_packaging_type option:selected').text().trim();
 
                   let container = {
                       'id_container': getValueByNameFCL('id_containers'),
@@ -1352,6 +1392,9 @@
                       'container_quantity': getValueByNameFCL('container_quantity'),
                       'commodity': getValueByNameFCL('commodity'),
                       'nro_package': getValueByNameFCL('nro_package'),
+                      'id_packaging_type': getValueByNameFCL('id_packaging_type'),
+                      'packaginTypeName': packaginTypeName,
+                      'load_value': getValueByNameFCL('load_value'),
                       'volumen': getValueByNameFCL('volumen'),
                       'kilograms': getValueByNameFCL('kilograms'),
                       'value_measures': getValueByNameFCL('value_measures') ? JSON.parse(getValueByNameFCL(
@@ -1370,6 +1413,8 @@
                         <td>${container.container_quantity}</td>
                         <td>${container.commodity}</td>
                         <td>${container.nro_package}</td>
+                        <td>${container.packaginTypeName}</td>
+                        <td>${container.load_value}</td>
                         <td>${container.volumen}</td>
                         <td>${container.kilograms}</td>
                         <td>
@@ -1421,7 +1466,7 @@
               });
 
               // Actualizar el input hidden con la nueva lista
-               $('#data_containers').val(JSON.stringify(containers));
+              $('#data_containers').val(JSON.stringify(containers));
           });
 
 
@@ -1434,6 +1479,8 @@
                 <tr><th>Cantidad de contenedores</th><td>${container.container_quantity}</td></tr>
                 <tr><th>Producto</th><td>${container.commodity}</td></tr>
                 <tr><th>N° de bultos</th><td>${container.nro_package}</td></tr>
+                <tr><th>Tipo de embalaje</th><td>${container.packaginTypeName}</td></tr>
+                <tr><th>Valor de factura</th><td>${container.load_value}</td></tr>
                 <tr><th>Volumen</th><td>${container.volumen}</td></tr>
                 <tr><th>Peso</th><td>${container.kilograms}</td></tr>
                 <tr><th>Medidas</th><td>
@@ -1492,7 +1539,6 @@
 
                       } else if (input.type === 'checkbox') {
                           data[name] = $(input).is(':checked') ? input.value : '';
-                          console.log(name + ': ' + input.value);
                       } else {
                           // Si es un valor numérico formateado, lo limpiamos
                           if (input.classList.contains('CurrencyInput')) {
@@ -1818,7 +1864,6 @@
                   if (form.querySelectorAll(".is-invalid")) {
                       // Encuentra el contenedor del paso que contiene el campo de entrada inválido
                       var stepContainer = invalidInputs[0].parentNode.parentNode.closest('.bs-stepper-pane')
-                      /*  console.log(invalidInputs[0].parentNode.parentNode.closest('.bs-stepper-pane')); */
 
                       // Encuentra el índice del paso correspondiente
                       var stepIndex = Array.from(stepContainer.parentElement.children).indexOf(stepContainer);
