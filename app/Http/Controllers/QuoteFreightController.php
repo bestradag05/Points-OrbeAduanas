@@ -200,8 +200,7 @@ class QuoteFreightController extends Controller
      */
     public function show(string $id)
     {
-        $quote = QuoteFreight::with('responses.commissions')->findOrFail($id);
-
+        $quote = QuoteFreight::with(['responses.commissions', 'commercial_quote.commercialQuoteContainers.packingType'])->findOrFail($id);
         $suppliers = Supplier::where('area_type', 'pricing')->get();
 
         $concepts = Concept::all();
@@ -221,13 +220,13 @@ class QuoteFreightController extends Controller
 
         //TODO: ya no se usara el messages
         $messages = QuoteFreight::findOrFail($id)->messages;
-        
+
         $nro_response = ResponseFreightQuotes::generateNroResponse();
 
         //Obtenemos las comisiones que se consideraran
         $commissions = Commission::all();
 
-        return view('freight/quote/quote-messagin', compact('quote', 'files', 'messages', 'suppliers', 'nro_response', 'concepts','commissions', 'currencies', 'shipping_companies', 'airlines'));
+        return view('freight/quote/quote-messagin', compact('quote', 'files', 'messages', 'suppliers', 'nro_response', 'concepts', 'commissions', 'currencies', 'shipping_companies', 'airlines'));
     }
 
 
@@ -280,7 +279,7 @@ class QuoteFreightController extends Controller
     }
 
 
-   /*  public function updateStateQuoteFreight(string $id, string $action)
+    /*  public function updateStateQuoteFreight(string $id, string $action)
     {
 
         $quoteFreight = QuoteFreight::findOrFail($id)->first();

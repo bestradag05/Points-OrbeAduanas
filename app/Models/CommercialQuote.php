@@ -106,7 +106,7 @@ class CommercialQuote extends Model
 
     public function commercialQuoteContainers()
     {
-        return $this->hasMany(CommercialQuoteContainer::class, 'commercial_quote_id');
+       return $this->hasMany(CommercialQuoteContainer::class, 'commercial_quote_id');
     }
 
     public function typeService()

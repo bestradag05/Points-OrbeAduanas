@@ -207,6 +207,7 @@ class CommercialQuoteController extends Controller
                 }
 
             } else {
+                
                 $this->validateForm($request, null);
 
                 $commercialQuote = CommercialQuote::create([

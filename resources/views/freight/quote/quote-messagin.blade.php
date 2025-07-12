@@ -81,7 +81,9 @@
             <div class="row text-muted">
                 <div class="col-6">
                     <p class="text-sm">N° Cotizacion General :
-                        <b class="d-block">{{ $quote->nro_quote_commercial }}</b>
+                        <b class="d-block"><a href="{{ url('/commercial/quote/' . $quote->commercial_quote->id . '/detail') }}">
+                                {{ $quote->nro_quote_commercial }}
+                            </a></b>
                     </p>
                 </div>
                 <div class="col-6">
@@ -255,16 +257,11 @@
                             <b class="d-block">{{ $quote->commodity }}</b>
                         </p>
                     </div>
-                    <div class="col-6">
-                        <p class="text-sm">Tipo de embalaje :
-                            <b class="d-block">{{ $quote->packaging_type }}</b>
-                        </p>
-                    </div>
-                </div>
 
-                @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
 
-                    <div class="row text-muted">
+                    @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+
+
                         <div class="col-6">
                             <p class="text-sm">Volumen :
                                 <b class="d-block">{{ $quote->cubage_kgv }} CBM</b>
@@ -272,18 +269,31 @@
                         </div>
 
                         @if ($quote->commercial_quote->lcl_fcl === 'FCL')
-                            <div class="col-6">
-                                <p class="text-sm">Toneladas :
-                                    <b class="d-block">{{ $quote->ton_kilogram }} TON</b>
-                                </p>
-                            </div>
-                            <div class="col-6">
-                                <p class="text-sm">Tipo de contenedor :
-                                    <b
-                                        class="d-block">{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }}</b>
+                            <div class="col-12">
+                                <p class="text-sm">Contenedor(s) :
+                                <div class="d-flex flex-wrap">
+                                    @foreach ($quote->commercial_quote->commercialQuoteContainers as $commercialContainer)
+                                        <ul class="list-group list-group-flush text-bold d-inline-block mr-3">
+                                            <li class="list-group-item pl-0 pt-2">
+                                                {{ $commercialContainer->container_quantity }} x
+                                                {{ $commercialContainer->container->name }}
+                                                <button class="btn text-primary" data-toggle="modal"
+                                                    data-target="#detailContainer"
+                                                    data-commercialcontainer="{{ json_encode($commercialContainer) }}">
+                                                    <i class="fas fa-info-circle"></i>
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    @endforeach
+                                </div>
                                 </p>
                             </div>
                         @else
+                            <div class="col-6">
+                                <p class="text-sm">Tipo de embalaje :
+                                    <b class="d-block">{{ $quote->packaging_type }}</b>
+                                </p>
+                            </div>
                             <div class="col-6">
                                 <p class="text-sm">Peso total :
                                     <b class="d-block">{{ $quote->ton_kilogram }} KG</b>
@@ -291,50 +301,50 @@
                             </div>
                         @endif
 
-                    </div>
-                @else
-                    <div class="row text-muted">
-                        <div class="col-6">
-                            <p class="text-sm">Kilogramo volumen / KGV :
-                                <b class="d-block">{{ $quote->cubage_kgv }} KGV</b>
-                            </p>
-                        </div>
-                        <div class="col-6">
-                            <p class="text-sm">Peso total :
-                                <b class="d-block">{{ $quote->ton_kilogram }} KG</b>
-                            </p>
-                        </div>
-                    </div>
-                @endif
-
-
-
-                @if ($quote->commercial_quote->measures)
-
+                </div>
+            @else
+                <div class="row text-muted">
                     <div class="col-6">
-                        <p class="text-sm">Medidas : </p>
+                        <p class="text-sm">Kilogramo volumen / KGV :
+                            <b class="d-block">{{ $quote->cubage_kgv }} KGV</b>
+                        </p>
                     </div>
-                    <table class="table table-striped">
-                        <thead>
-                            <th>Cantidad</th>
-                            <th>Ancho</th>
-                            <th>Largo</th>
-                            <th>Alto</th>
-                            <th>Unidad</th>
-                        </thead>
-                        <tbody>
-                            @foreach (json_decode($quote->commercial_quote->measures) as $measure)
-                                <tr>
-                                    <td>{{ $measure->amount }}</td>
-                                    <td>{{ $measure->width }}</td>
-                                    <td>{{ $measure->length }}</td>
-                                    <td>{{ $measure->height }}</td>
-                                    <td>{{ $measure->unit_measurement }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @endif
+                    <div class="col-6">
+                        <p class="text-sm">Peso total :
+                            <b class="d-block">{{ $quote->ton_kilogram }} KG</b>
+                        </p>
+                    </div>
+                </div>
+            @endif
+
+
+
+            @if ($quote->commercial_quote->measures)
+
+                <div class="col-6">
+                    <p class="text-sm">Medidas : </p>
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <th>Cantidad</th>
+                        <th>Ancho</th>
+                        <th>Largo</th>
+                        <th>Alto</th>
+                        <th>Unidad</th>
+                    </thead>
+                    <tbody>
+                        @foreach (json_decode($quote->commercial_quote->measures) as $measure)
+                            <tr>
+                                <td>{{ $measure->amount }}</td>
+                                <td>{{ $measure->width }}</td>
+                                <td>{{ $measure->length }}</td>
+                                <td>{{ $measure->height }}</td>
+                                <td>{{ $measure->unit_measurement }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
 
             @endif
 
@@ -986,7 +996,6 @@
     </div>
 
 
-    {{-- Detail response --}}
 
     <!-- Modal para PDF -->
     <div class="modal fade" id="pdfDetailResponse" tabindex="-1" role="dialog"
@@ -1032,6 +1041,29 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="detailContainer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Detalles del Contenedor</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="containerDetails">
+                        <!-- Aquí se llenará la información del contenedor -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1098,7 +1130,7 @@
                             @if ($quote->commercial_quote->lcl_fcl === 'FCL')
                                 <tr>
                                     <td><strong>Tipo de contenedor</strong></td>
-                                    <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }}
+                                    {{-- <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }} --}}
                                     </td>
                                 </tr>
                             @endif
@@ -1189,7 +1221,7 @@
                         @if ($quote->commercial_quote->lcl_fcl === 'FCL')
                             <tr>
                                 <td><strong>Tipo de contenedor</strong></td>
-                                <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }}
+                                {{--  <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }} --}}
                                 </td>
                             </tr>
                             <tr>
@@ -1328,10 +1360,9 @@
             let final_cost = 0;
 
 
-            console.log(unit_cost);
-
+            
             //Verificamos que el C/W este marcado
-
+            
             if (cw.is(':checked')) {
                 higherCost = cubage_kgv > ton_kilogram ? cubage_kgv : ton_kilogram;
                 final_cost = unit_cost * higherCost;
@@ -1392,8 +1423,8 @@
 
             if (isValid) {
 
+                            console.log($('#final_cost').val())
                 let data = loadConceptData(inputs);
-
 
                 const selectedCurrencyId = parseInt(data.currency.id);
                 const selectedCurrency = currencies.find(c => c.id === selectedCurrencyId);
@@ -1447,7 +1478,6 @@
             conceptsResponseFreightArray.forEach((item, index) => {
                 contador++;
                 let fila = tbodyRouting.insertRow();
-                console.log(item);
                 fila.insertCell(0).textContent = contador;
                 fila.insertCell(1).textContent = item.concept.text;
                 fila.insertCell(2).textContent = item.currency.text + " " + item.unit_cost;
@@ -1533,13 +1563,12 @@
 
                     } else if (input.type === 'checkbox') {
                         data[name] = $(input).is(':checked') ? input.value : '';
-                        console.log(name + ': ' + input.value);
                     } else {
                         // Si es un valor numérico formateado, lo limpiamos
                         if (input.classList.contains('CurrencyInput')) {
-                            0
                             // Elimina comas y convierte a número
                             data[name] = parseFloat(input.value.replace(/,/g, '')) || 0;
+                            console.log("ingreso aqui y el monto es: ", data);
                         } else {
                             data[name] = input.value;
                         }
@@ -1567,6 +1596,73 @@
                 hideError(input);
             });
         }
+
+        $('#detailContainer').on('show.bs.modal', function(event) {
+            // Obtener el botón que activó el modal
+            var button = $(event.relatedTarget);
+
+            // Extraer el objeto contenedor de los atributos data-*
+            var commercialcontainer = button.data(
+                'commercialcontainer'); // Convertimos el JSON de vuelta a un objeto
+
+            // Acceder a las propiedades del objeto contenedor y colocarlas en el modal
+            var modalBody = $(this).find('.modal-body #containerDetails');
+
+            // Construir la tabla para las medidas
+            var measuresTable = '';
+            if (commercialcontainer.measures) {
+                var measures = JSON.parse(commercialcontainer
+                    .measures); // Asegúrate de que las medidas estén en formato JSON
+                measuresTable =
+                    '<table class="table table-bordered"><thead><tr><th>Cantidad</th><th>Anchura (cm)</th><th>Longitud (cm)</th><th>Altura (cm)</th><th>Unidad de Medida</th></tr></thead><tbody>';
+
+                // Iterar sobre las medidas y agregar filas a la tabla
+                $.each(measures, function(key, measure) {
+                    measuresTable += `
+            <tr>
+                <td>${measure.amount}</td>
+                <td>${measure.width}</td>
+                <td>${measure.length}</td>
+                <td>${measure.height}</td>
+                <td>${measure.unit_measurement}</td>
+            </tr>
+        `;
+                });
+
+                measuresTable += '</tbody></table>';
+            }
+
+            modalBody.html(`
+                <div class="row px-3">
+                    <div class="col-md-6">
+                        <p><strong>Nombre del Contenedor:</strong> ${commercialcontainer.container.name}</p>
+                        <p><strong>Mercancía:</strong> ${commercialcontainer.commodity}</p>
+                        <p><strong>Bultos:</strong> ${commercialcontainer.nro_package}</p>
+                        
+                       
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Cantidad:</strong> ${commercialcontainer.container_quantity}</p>
+                        <p><strong>Valor de la carga:</strong> ${commercialcontainer.load_value}</p>
+                        <p><strong>Tipo de Embalaje:</strong> ${commercialcontainer.packing_type.name}</p>
+                    </div>
+                </div>
+                <div class="row px-3">
+                    <div class="col-md-6">
+                        <p><strong>Kilogramos:</strong> ${commercialcontainer.kilograms}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Volumen:</strong> ${commercialcontainer.volumen}</p>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        ${measuresTable}
+                    </div>
+                </div>
+            `);
+        });
+
 
 
         function changeAcction(action, responseId) {
