@@ -81,7 +81,8 @@
             <div class="row text-muted">
                 <div class="col-6">
                     <p class="text-sm">N° Cotizacion General :
-                        <b class="d-block"><a href="{{ url('/commercial/quote/' . $quote->commercial_quote->id . '/detail') }}">
+                        <b class="d-block"><a
+                                href="{{ url('/commercial/quote/' . $quote->commercial_quote->id . '/detail') }}">
                                 {{ $quote->nro_quote_commercial }}
                             </a></b>
                     </p>
@@ -924,10 +925,9 @@
                                             <div class="col-4">
                                                 <div class="form-group">
                                                     <label for="observations">Costo Final</label>
-                                                    <input type="text" class="form-control CurrencyInput"
-                                                        id="final_cost" name="final_cost" data-type="currency"
-                                                        placeholder="Ingrese el costo final" data-required="true"
-                                                        readonly>
+                                                    <input type="text" class="form-control" id="final_cost"
+                                                        name="final_cost" placeholder="Ingrese el costo final"
+                                                        data-required="true" readonly>
                                                 </div>
 
                                             </div>
@@ -1360,9 +1360,9 @@
             let final_cost = 0;
 
 
-            
+
             //Verificamos que el C/W este marcado
-            
+
             if (cw.is(':checked')) {
                 higherCost = cubage_kgv > ton_kilogram ? cubage_kgv : ton_kilogram;
                 final_cost = unit_cost * higherCost;
@@ -1422,28 +1422,36 @@
             });
 
             if (isValid) {
-
-                            console.log($('#final_cost').val())
                 let data = loadConceptData(inputs);
-
+                console.log(data);
                 const selectedCurrencyId = parseInt(data.currency.id);
                 const selectedCurrency = currencies.find(c => c.id === selectedCurrencyId);
                 const dollarCurrency = currencies.find(c => c.abbreviation === 'USD');
 
                 if (!checkExchangeRateNotEmpyt(selectedCurrency, dollarCurrency)) return;
 
-
                 const unitCost = parseFloat(data.unit_cost) || 0;
-                let finalCost = unitCost;
 
                 if (selectedCurrency.id !== dollarCurrency.id) {
                     const exchangeRateInput = $('#exchange_rate')[0];
                     const exchangeRate = parseFloat(exchangeRateInput.value) || 0;
 
-                    finalCost = unitCost * exchangeRate;
-                }
+                    let finalCost = 0;
 
-                data.final_cost = finalCost.toFixed(2); // Formateo a 2 decimales
+                    finalCost = unitCost * exchangeRate;
+
+                    if (data.fixed_miltiplyable_cost === "C/W") {
+
+                        let cubage_kgv = parseFloat(@json($quote->cubage_kgv)) || 0;
+                        let ton_kilogram = parseFloat(@json($quote->ton_kilogram)) || 0;
+
+                        let higherCost = cubage_kgv > ton_kilogram ? cubage_kgv : ton_kilogram;
+                        finalCost = finalCost * higherCost;
+
+                    }
+
+                    data.final_cost = finalCost.toFixed(2);
+                }
 
 
                 const index = conceptsResponseFreightArray.findIndex(item => item.concept?.id === parseInt(data.concept
@@ -1568,7 +1576,6 @@
                         if (input.classList.contains('CurrencyInput')) {
                             // Elimina comas y convierte a número
                             data[name] = parseFloat(input.value.replace(/,/g, '')) || 0;
-                            console.log("ingreso aqui y el monto es: ", data);
                         } else {
                             data[name] = input.value;
                         }

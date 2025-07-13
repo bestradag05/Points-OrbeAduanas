@@ -163,6 +163,7 @@ class FreightService
         //Convertimos el json a un objeto
         $concepts = json_decode($request->concepts);
 
+        dd($request->all());
         $freight = $this->createOrUpdateFreight($request);
 
         $insurance = $this->createOrUpdateInsurance($request, $freight);
@@ -343,7 +344,6 @@ class FreightService
             'total_additional_points_used' => $request->total_additional_points_used,
             'state' => $request->state ?? 'Pendiente',
             'id_quote_freight' => $request->id_quote_freight,
-            /* 'nro_operation' => $request->nro_operation, */
             'nro_quote_commercial' => $request->nro_quote_commercial,
         ]);
 
@@ -467,14 +467,14 @@ class FreightService
                 'concepts_id' => $concept->id, // ID del concepto relacionado
                 'id_freight' => $freight->id, // Clave foránea al modelo Freight
                 'value_concept' => $this->parseDouble($concept->value),
-                'value_concept_added' => $concept->added,
-                'total_value_concept' => $this->parseDouble($concept->value) + $this->parseDouble($concept->added),
+               /*  'value_concept_added' => $concept->added,
+                'total_value_concept' => $this->parseDouble($concept->value) + $this->parseDouble($concept->added), */
                 'additional_points' => isset($concept->pa) ? $concept->pa : 0,
             ]);
 
             // Si hay puntos adicionales, ejecutamos la función
             if (isset($concept->pa)) {
-                $ne_amount = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
+                $ne_amount = $this->parseDouble($concept->value);
                 $this->add_aditionals_point($conceptFreight, $ne_amount);
             }
         }

@@ -16,8 +16,6 @@ class ConceptFreight extends Model
         'concepts_id',
         'id_freight',
         'value_concept',
-        'value_concept_added',
-        'total_value_concept',
         'additional_points'
     ];
 
