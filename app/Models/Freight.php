@@ -23,10 +23,11 @@ class Freight extends Model
         'eta',
         'value_utility',
         'accepted_answer_value',
+        'total_answer_utility',
         'total_freight_value',
         'profit_on_freight',
-        'total_additional_points',
-        'total_additional_points_used',
+/*         'total_additional_points',
+        'total_additional_points_used', */
         'state',
         'id_quote_freight',
         'nro_operation',
@@ -38,7 +39,7 @@ class Freight extends Model
     public function concepts()
     {
         return $this->belongsToMany(Concept::class, 'concepts_freight', 'id_freight', 'concepts_id')
-            ->withPivot(['value_concept', 'value_concept_added', 'total_value_concept', 'additional_points']);
+            ->withPivot(['value_concept' ]);
     }
 
 
@@ -64,7 +65,7 @@ class Freight extends Model
 
     public function quoteFreight()
     {
-        return $this->hasMany(QuoteFreight::class, 'id', 'id_quote_freight');
+        return $this->hasOne(QuoteFreight::class, 'id', 'id_quote_freight');
     }
 
     public function documents()

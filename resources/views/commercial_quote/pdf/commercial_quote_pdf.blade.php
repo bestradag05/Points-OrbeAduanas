@@ -270,7 +270,7 @@
                 <tbody>
                     <tr>
                         <td class="title-item-table">Cliente</td>
-                        <td class="text-item-table">{{ $commercialQuote->customer_company_name }}</td>
+                        <td class="text-item-table">{{ $commercialQuote->customer->name_businessname }}</td>
                     </tr>
                     <tr>
                         <td class="title-item-table">Puerto de salida</td>
@@ -397,7 +397,7 @@
                         <tr>
                             <td>{{ $concept->name }}</td>
                             <td id="observation"> - </td>
-                            <td> $ {{ $concept->pivot->total_value_concept }}</td>
+                            <td> $ {{ $concept->pivot->value_concept }}</td>
                         </tr>
                     @endforeach
                     <tr class="total-service">
@@ -603,7 +603,7 @@
             <div class="item-detail-quote">
                 <div class="total-quote">
                     TOTAL COTIZACION: $
-                    {{ number_format(($freight->value_freight ?? 0) + ($cats_destinations ?? 0), 2, '.', ',') }}
+                    {{ number_format(($freight->total_freight_value ?? 0) + ($cats_destinations ?? 0), 2, '.', ',') }}
                 </div>
             </div>
 

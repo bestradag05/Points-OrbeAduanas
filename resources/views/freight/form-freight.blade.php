@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row p-4">
 
 
     {{-- <input type="hidden" name="nro_operation"
@@ -17,7 +17,7 @@
     <div class="col-6 offset-3">
 
         <div class="form-group">
-            <label for="utility">Utilidad Orbe</label>
+            <label for="value_utility">Utilidad Orbe</label>
 
             <div class="input-group">
                 <div class="input-group-prepend">
@@ -27,9 +27,10 @@
                 </div>
                 {{-- Utilizamos el if solo por que podemos crear flete desde una cotizacion como no. --}}
 
-                <input type="text" class="form-control CurrencyInput" id="utility" name="utility"
+                <input type="text" class="form-control CurrencyInput" id="value_utility" name="value_utility"
                     data-type="currency" placeholder="Ingrese valor de la utilidad"
-                    value="{{ isset($quote->utility) ? $quote->utility : old('utility') }}" data-required="true">
+                    value="{{ isset($freight->value_utility) ? $freight->value_utility : old('value_utility') }}"
+                    data-required="true">
             </div>
 
         </div>
@@ -45,11 +46,12 @@
     </div>
 
     <hr>
-    <div class="col-12 row {{ isset($insurance) ? '' : 'd-none' }} justify-content-center" id="content_seguroFreight">
-        <div class="col-3">
+    <div class="col-12 row {{ isset($insurance) ? '' : 'd-none' }} justify-content-center " id="content_seguroFreight">
+        <div class="col-4">
             <label for="type_insurance">Tipo de seguro</label>
             <select name="type_insurance" class="{{ isset($insurance) ? '' : 'd-none' }} form-control"
-                label="Tipo de seguro" igroup-size="md" data-placeholder="Seleccione una opcion..." data-required="true">
+                label="Tipo de seguro" igroup-size="md" data-placeholder="Seleccione una opcion..."
+                data-required="true">
                 <option />
                 @foreach ($type_insurace as $type)
                     <option value="{{ $type->id }}"
@@ -59,7 +61,7 @@
                 @endforeach
             </select>
         </div>
-        <div class="col-3">
+        <div class="col-4">
             <div class="form-group">
                 <label for="load_value">Valor del seguro</label>
 
@@ -78,43 +80,14 @@
             </div>
         </div>
 
-        <div class="col-3">
-            <div class="form-group">
-                <label for="load_value">Valor ha agregar</label>
 
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text text-bold">
-                            $
-                        </span>
-                    </div>
-                    <input type="text" class="form-control CurrencyInput {{ isset($insurance) ? '' : 'd-none' }}"
-                        id="insurance_added" name="insurance_added" data-type="currency"
-                        value="{{ isset($insurance) ? $insurance->insurance_value_added : 0 }}"
-                        placeholder="Ingrese valor de la carga" onchange="updateInsuranceAddedTotal(this)">
-                </div>
-
-            </div>
-        </div>
-        <div class="col-3">
-            <div class="form-group">
-                <label for="load_value">Puntos</label>
-
-                <div class="input-group">
-                    <input type="number" class="form-control {{ isset($insurance) ? '' : 'd-none' }}"
-                        id="insurance_points" name="insurance_points" min="0" onkeydown="return false;"
-                        value="{{ isset($insurance) ? $insurance->additional_points : 0 }}">
-                </div>
-
-            </div>
-        </div>
     </div>
 
     <div class="col-12">
         <hr>
     </div>
 
-    <div id="formConceptsFlete" class="formConcepts row">
+    <div id="formConceptsFlete" class="formConcepts row justify-content-center w-100">
         <div class="col-4">
 
             <x-adminlte-select2 name="concept" id="concept_flete" label="Conceptos"
@@ -130,7 +103,7 @@
         </div>
         <div class="col-4">
             <div class="form-group">
-                <label for="value_concept">Valor del neto del concepto</label>
+                <label for="value_concept">Valor ha agregar</label>
                 <div class="input-group">
                     <div class="input-group-prepend">
                         <span class="input-group-text text-bold">
@@ -144,22 +117,7 @@
 
         </div>
 
-        <div class="col-4">
-            <div class="form-group">
-                <label for="value_concept">Valor ha agregar</label>
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text text-bold">
-                            $
-                        </span>
-                    </div>
-                    <input type="text" class="form-control CurrencyInput " name="value_added"
-                        data-type="currency" placeholder="Ingrese valor agregado" value="0.00">
-                </div>
-            </div>
-
-        </div>
-        <div class="col-12 d-flex justify-content-center align-items-center pt-3 mb-2">
+        <div class="col-4 d-flex align-items-center pt-3 mb-2">
             <button class="btn btn-indigo" type="button" id="btnAddConcept" onclick="addConcept(this)">
                 Agregar
             </button>
@@ -172,8 +130,6 @@
                     <th style="width: 10px">#</th>
                     <th>Concepto</th>
                     <th>Valor del concepto</th>
-                    <th>Valor agregado</th>
-                    <th>Puntos Adicionales</th>
                     <th>x</th>
                 </tr>
             </thead>
@@ -183,42 +139,54 @@
             </tbody>
         </table>
 
+    </div>
 
-        <div class="row w-100 justify-content-end">
 
-            <div class="col-4 row">
-                <label for="total" class="col-sm-4 col-form-label">Total:</label>
-                <div class="col-sm-8">
-                    <input type="text" class="form-control" name="total" id="total" value="0.00"
-                        @readonly(true)>
-                </div>
-            </div>
+    <div class="row w-100 justify-content-end mt-2">
 
-        </div>
-        <div class="row w-100 justify-content-end mt-2">
-            <div class="col-4 row">
-                <label class="col-sm-4 col-form-label">Ganancia:</label>
-                <div class="col-sm-8">
-                    <input type="text" class="form-control" id="gananciaActual" name="profit_on_freight"
-                        value="0.00" readonly>
-                </div>
-            </div>
-        </div>
-        <div class="row w-100 justify-content-end mt-2">
-            <div class="col-4 row align-items-center">
-                <label class="col-sm-4 col-form-label">Puntos Adicionales:</label>
-                <div class="col-sm-8" id="puntosUsadosTexto">
-                    0 / 0
-                </div>
-
-                <input type="hidden" class="form-control" id="puntosPosibles" name="total_additional_points"
-                    value="0" readonly>
-                <input type="hidden" class="form-control" id="total_additional_points_used"
-                    name="total_additional_points_used" value="0" readonly>
+        <div class="col-4 row">
+            <label for="total_answer_utility" class="col-sm-6 col-form-label">Total Flete: </label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" name="total_answer_utility" id="total_answer_utility"
+                    value="{{ isset($freight) ? $freight->total_answer_utility : '0.00' }}" @readonly(true)>
             </div>
         </div>
 
     </div>
+
+    <div class="row w-100 justify-content-end mt-2">
+
+        <div class="col-4 row">
+            <label for="total" class="col-sm-6 col-form-label">Total conceptos:</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" name="total_freight_value" id="total_freight_value"
+                    value="0.00" @readonly(true)>
+            </div>
+        </div>
+
+    </div>
+    <div class="row w-100 justify-content-end mt-2">
+        <div class="col-4 row">
+            <label class="col-sm-6 col-form-label">Ganancia:</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="profit_on_freight" name="profit_on_freight"
+                    value="0.00" readonly>
+            </div>
+        </div>
+    </div>
+    {{-- <div class="row w-100 justify-content-end mt-2">
+        <div class="col-4 row align-items-center">
+            <label class="col-sm-6 col-form-label">Maximo de Adicionales:</label>
+            <div class="col-sm-6" id="puntosUsadosTexto">
+                0
+            </div>
+
+            <input type="hidden" class="form-control" id="puntosPosibles" name="total_additional_points"
+                value="0" readonly>
+            <input type="hidden" class="form-control" id="total_additional_points_used"
+                name="total_additional_points_used" value="0" readonly>
+        </div>
+    </div> --}}
 
 
 
@@ -230,7 +198,7 @@
 </div>
 
 @php
-    $totalRespuestaAceptada = isset($acceptedResponse) ? $acceptedResponse->total : 0;
+    $totalAcceptedAnswer = isset($acceptedResponse) ? $acceptedResponse->total : 0;
 @endphp
 
 @push('scripts')
@@ -240,7 +208,6 @@
         let total = 0;
         let flete = 0;
         let value_insurance = 0;
-        let valuea_added_insurance = 0;
         let countConcepts = 0;
         let value_ocean_freight = 0;
         let puntosPosiblesPrevios = 0;
@@ -252,32 +219,15 @@
 
             conceptFreight = @json($conceptFreight);
             //Obtenemos los valores del seguro para sumarlo al total
+
             @if ($freight->insurance)
                 value_insurance = parseFloat(@json($freight->insurance->insurance_value));
-                valuea_added_insurance = parseFloat(@json($freight->insurance->insurance_value_added));
-
-                //Obtenemos el insurance added para poder calcular el maximo de puntos: 
-
-                let inputInsurancePoints = $('#insurance_points');
-
-                if (!valuea_added_insurance) {
-                    inputInsurancePoints.val(0); // Usamos .val() para establecer el valor
-                    inputInsurancePoints.attr('max', 0); // Usamos .attr() para establecer el atributo max
-                } else {
-                    if (Math.floor(valuea_added_insurance / 45) === 0) {
-                        inputInsurancePoints.val(0);
-                        inputInsurancePoints.attr('max', 0);
-                    } else {
-                        inputInsurancePoints.attr('max', Math.floor(valuea_added_insurance / 45));
-                    }
-                }
             @endif
-
 
             @if (isset($freight->concepts))
 
 
-                let concepts = @json($freight->concepts)
+                let concepts = @json($freight->concepts);
 
                 concepts.forEach((concept, index) => {
 
@@ -286,17 +236,15 @@
                         conceptsArray.push({
                             'id': concept.id,
                             'name': concept.name,
-                            'value': formatValue(concept.pivot.value_concept),
-                            'added': formatValue(concept.pivot.value_concept_added),
-                            'pa': concept.pivot.additional_points > 0 ? concept.pivot
-                                .additional_points : 0
+                            'value': formatValue(concept.pivot.value_concept)
                         });
 
                     }
 
                 });
             @endif
-        @else
+
+            calcTotal(TotalConcepts, value_insurance);
         @endif
 
 
@@ -322,7 +270,7 @@
                 value_insurance = 0;
                 valuea_added_insurance = 0;
 
-                calcTotal(TotalConcepts, value_insurance, valuea_added_insurance);
+                calcTotal(TotalConcepts, value_insurance);
 
             }
         }
@@ -334,11 +282,11 @@
                 value_insurance = parseFloat(element.value.replace(/,/g, ''));
             }
 
-            calcTotal(TotalConcepts, value_insurance, valuea_added_insurance);
+            calcTotal(TotalConcepts, value_insurance);
         }
 
 
-        function updateInsuranceAddedTotal(element) {
+        /* function updateInsuranceAddedTotal(element) {
 
             if (element.value === '') {
                 valuea_added_insurance = 0;
@@ -346,61 +294,60 @@
                 valuea_added_insurance = parseFloat(element.value.replace(/,/g, ''));
             }
 
-            calcTotal(TotalConcepts, value_insurance, valuea_added_insurance);
-        }
+            calcTotal(TotalConcepts, value_insurance);
+        } */
 
 
-        function calcTotal(TotalConcepts, value_insurance, valuea_added_insurance) {
-            total = TotalConcepts + value_insurance + valuea_added_insurance;
+        function calcTotal(TotalConcepts, value_insurance) {
+            total = TotalConcepts + value_insurance;
 
-            let inputTotal = $('#total');
+            let inputTotal = $('#total_freight_value');
             inputTotal.val(total.toFixed(2));
-
-            const totalRespuestaAceptada = parseFloat(@json($totalRespuestaAceptada));
-            let utilidad = parseFloat($('#utility').val().replace(/,/g, '')) || 0;
+            const totalAcceptedAnswer = parseFloat(@json($totalAcceptedAnswer));
+            let utilidad = parseFloat($('#value_utility').val().replace(/,/g, '')) || 0;
 
             let btnGuardar = $('#btnGuardarFreight');
 
-            if (total >= (totalRespuestaAceptada + utilidad) && totalRespuestaAceptada > 0) {
+            if (total >= (totalAcceptedAnswer + utilidad) && totalAcceptedAnswer > 0) {
                 btnGuardar.prop('disabled', false);
             } else {
                 btnGuardar.prop('disabled', true);
             }
 
-            let ganancia = total - (totalRespuestaAceptada + utilidad);
+            let ganancia = total - (totalAcceptedAnswer + utilidad);
             if (ganancia < 0) ganancia = 0;
 
-            $('#gananciaActual').val(ganancia.toFixed(2));
+            $('#profit_on_freight').val(ganancia.toFixed(2));
 
-            // Puntos posibles por ganancia neta
-            let puntosPorGanancia = 0;
-            if (ganancia >= 45) {
-                puntosPorGanancia = Math.floor(ganancia / 45);
-            }
+            $('#total_answer_utility').val((totalAcceptedAnswer + utilidad).toFixed(2));
+
+            /*  // Puntos posibles por ganancia neta
+             let puntosPorGanancia = 0;
+             if (ganancia >= 45) {
+                 puntosPorGanancia = Math.floor(ganancia / 45);
+             }
 
 
-            let puntosPosibles = puntosPorGanancia;
-            $('#puntosPosibles').val(puntosPosibles);
-            $('#puntosUsadosTexto').text(`0 / ${puntosPosibles}`);
+             let puntosPosibles = puntosPorGanancia;
+             $('#puntosPosibles').val(puntosPosibles);
+             $('#puntosUsadosTexto').text(`${puntosPosibles}`);
 
-            if (puntosPosibles !== puntosPosiblesPrevios) {
-                // Reset puntos de conceptos
-                conceptsArray.forEach(c => c.pa = 0);
-                $('input[name="pa"]').val(0);
+             if (puntosPosibles !== puntosPosiblesPrevios) {
+                 // Reset puntos de conceptos
+                 conceptsArray.forEach(c => c.pa = 0);
+                 $('input[name="pa"]').val(0);
 
-                // Reset puntos de seguro
-                $('#insurance_points').val(0);
+                 // Reset puntos de seguro
+                 $('#insurance_points').val(0);
 
-                puntosPosiblesPrevios = puntosPosibles;
-                toastr.info(
-                    'Los puntos adicionales se han reiniciado debido a un cambio en los valores de ganancia o seguro.');
-            }
+                 puntosPosiblesPrevios = puntosPosibles;
+             } */
         }
 
 
 
-        $('#utility').on('change', function() {
-            calcTotal(TotalConcepts, value_insurance, valuea_added_insurance);
+        $('#value_utility').on('change', function() {
+            calcTotal(TotalConcepts, value_insurance);
         });
 
 
@@ -438,7 +385,6 @@
                         'id': parseInt(inputs[0].value),
                         'name': inputs[0].options[inputs[0].selectedIndex].text,
                         'value': formatValue(inputs[1].value),
-                        'added': formatValue(inputs[2].value),
                     };
 
                 } else {
@@ -447,7 +393,6 @@
                         'id': parseInt(inputs[0].value),
                         'name': inputs[0].options[inputs[0].selectedIndex].text,
                         'value': formatValue(inputs[1].value),
-                        'added': formatValue(inputs[2].value),
                     });
                 }
 
@@ -457,7 +402,6 @@
 
                 inputs[0].value = '';
                 inputs[1].value = '';
-                inputs[2].value = '';
             }
         };
 
@@ -501,13 +445,8 @@
 
                     // Insertar el valor en la cuarta celda de la fila
 
-                    let celdaAdded = fila.insertCell(3);
-                    // Si ocean_freight no existe, muestra el valor como texto plano
-                    celdaAdded.textContent = item.added;
-
-
-
-                    let celdaPA = fila.insertCell(4);
+                    //TODO: Los puntos adicionales se calcularan desde el modulo comisiones
+                    /* let celdaPA = fila.insertCell(3);
                     celdaPA.style.width = '15%';
                     let inputPA = document.createElement('input');
                     inputPA.type = 'number';
@@ -519,7 +458,6 @@
                     celdaPA.appendChild(inputPA);
 
                     inputPA.addEventListener('keydown', (e) => {
-                        // Permitimos solo las flechas (arriba: 38, abajo: 40), Tab (9), Enter (13)
                         const allowedKeys = ['ArrowUp', 'ArrowDown', 'Tab', 'Enter'];
                         if (!allowedKeys.includes(e.key)) {
                             e.preventDefault();
@@ -529,13 +467,12 @@
 
                     inputPA.addEventListener('input', (e) => {
                         let val = parseInt(e.target.value) || 0;
-                        // Validar y ajustar si excede en tiempo real
                         validateAndAdjustPointsOnInput(e.target);
-                    });
+                    }); */
 
 
                     // Insertar un botón para eliminar la fila en la cuarta celda de la fila
-                    let celdaEliminar = fila.insertCell(5);
+                    let celdaEliminar = fila.insertCell(3);
                     let botonEliminar = document.createElement('a');
                     botonEliminar.href = '#';
                     botonEliminar.innerHTML = '<p class="text-danger">X</p>';
@@ -550,11 +487,11 @@
                     });
                     celdaEliminar.appendChild(botonEliminar);
 
-                    TotalConcepts += parseFloat(item.value) + parseFloat(item.added);
+                    TotalConcepts += parseFloat(item.value);
                 }
             }
 
-            calcTotal(TotalConcepts, value_insurance, valuea_added_insurance);
+            calcTotal(TotalConcepts, value_insurance);
 
 
 
@@ -572,8 +509,8 @@
             validateAndAdjustPointsOnInput(this);
         });
 
-
-        function validateAndAdjustPointsOnInput(element) {
+        //TODO: ahora la validacion de puntos adicionales se hara desde su modulo
+        /* function validateAndAdjustPointsOnInput(element) {
             const puntosMaximos = parseInt($('#puntosPosibles').val()) || 0;
             let sumaActual = 0;
 
@@ -613,32 +550,34 @@
             // ✅ Actualiza visualización de puntos usados
             $('#puntosUsadosTexto').text(`${Math.min(sumaActual, puntosMaximos)} / ${puntosMaximos}`);
             $('#total_additional_points_used').val(Math.min(sumaActual, puntosMaximos));
-        }
+        } */
 
 
-        function validateTotalPoints() {
-            const puntosMaximos = parseInt($('#puntosPosibles').val()) || 0;
-            let sumaActual = 0;
+        /*  function validateTotalPoints() {
+             const puntosMaximos = parseInt($('#puntosPosibles').val()) || 0;
+             let sumaActual = 0;
 
-            // Sumar puntos de conceptos
-            $('input[name="pa"]').each(function() {
-                let val = parseInt($(this).val()) || 0;
-                sumaActual += val;
-            });
+             // Sumar puntos de conceptos
+             $('input[name="pa"]').each(function() {
+                 let val = parseInt($(this).val()) || 0;
+                 sumaActual += val;
+             });
 
-            // Sumar puntos de seguro
-            let puntosSeguro = parseInt($('#insurance_points').val()) || 0;
-            sumaActual += puntosSeguro;
+             // Sumar puntos de seguro
+             let puntosSeguro = parseInt($('#insurance_points').val()) || 0;
+             sumaActual += puntosSeguro;
 
-            if (sumaActual > puntosMaximos) {
-                toastr.warning(
-                    `El máximo de puntos adicionales es ${puntosMaximos}. Ha ingresado ${sumaActual}. Ajuste los valores.`
-                );
-                return false;
-            }
+             if (sumaActual > puntosMaximos) {
+                 toastr.warning(
+                     `El máximo de puntos adicionales es ${puntosMaximos}. Ha ingresado ${sumaActual}. Ajuste los valores.`
+                 );
+                 return false;
+             }
 
-            return true;
-        }
+             return true;
+         } */
+
+        //TODO:: Fin
 
 
         function validateForm(inputs) {
@@ -705,10 +644,6 @@
         $('#formFreight').on('submit', (e) => {
             e.preventDefault(); // 🚩 Detiene el envío del formulario
 
-            if (!validateTotalPoints()) {
-                return;
-            }
-
             let form = $('#formFreight');
             let isValid = true;
 
@@ -716,7 +651,8 @@
             validateForm(requiredInputs);
 
             if ($('#seguroFreight').is(':checked')) {
-                const insuranceInputs = $('#content_seguroFreight').find('input[data-required="true"], select[data-required="true"]').toArray();
+                const insuranceInputs = $('#content_seguroFreight').find(
+                    'input[data-required="true"], select[data-required="true"]').toArray();
                 console.log(insuranceInputs);
                 validateForm(insuranceInputs);
             }

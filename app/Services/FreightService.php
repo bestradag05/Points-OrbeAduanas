@@ -163,7 +163,6 @@ class FreightService
         //Convertimos el json a un objeto
         $concepts = json_decode($request->concepts);
 
-        dd($request->all());
         $freight = $this->createOrUpdateFreight($request);
 
         $insurance = $this->createOrUpdateInsurance($request, $freight);
@@ -222,6 +221,8 @@ class FreightService
     {
 
         $freight = Freight::with('concepts')->find($id);
+        $quote = $freight->quoteFreight;
+        $acceptedResponse = $freight->quoteFreight->responses()->where('status', 'Aceptado')->first();
 
         $commercial_quote = $freight->commercial_quote;
         $insurance = null;
@@ -230,7 +231,6 @@ class FreightService
             $insurance = $freight->insurance;
         }
 
-        $quote = $freight->quoteFreight()->where('state', 'Aceptado')->first();
         $type_insurace = TypeInsurance::all();
         $concepts = Concept::all();
 
@@ -248,7 +248,7 @@ class FreightService
         }
 
 
-        return compact('freight', 'quote', 'type_insurace', 'concepts', 'conceptFreight', 'commercial_quote', 'insurance');
+        return compact('freight', 'quote', 'type_insurace', 'concepts', 'conceptFreight', 'commercial_quote', 'insurance', 'acceptedResponse');
     }
 
     public function showFreight($id)
@@ -263,7 +263,6 @@ class FreightService
                 ->where('data->freight_id', $freight->id)
                 ->latest()
                 ->first();
-
         }
 
 
@@ -336,12 +335,13 @@ class FreightService
         }
 
         $freight->fill([
-            'value_utility' => $request->utility,
+            'value_utility' => $request->value_utility,
             'accepted_answer_value' => $request->accepted_answer_value,
-            'total_freight_value' => $request->total,
+            'total_answer_utility' => $request->total_answer_utility,
+            'total_freight_value' => $request->total_freight_value,
             'profit_on_freight' => $request->profit_on_freight,
-            'total_additional_points' => $request->total_additional_points,
-            'total_additional_points_used' => $request->total_additional_points_used,
+            /* 'total_additional_points' => $request->total_additional_points,
+            'total_additional_points_used' => $request->total_additional_points_used, */
             'state' => $request->state ?? 'Pendiente',
             'id_quote_freight' => $request->id_quote_freight,
             'nro_quote_commercial' => $request->nro_quote_commercial,
@@ -367,7 +367,7 @@ class FreightService
         }
 
 
-        $sales_price = $this->parseDouble($request->value_insurance) + $this->parseDouble($request->insurance_added);
+        /*   $sales_price = $this->parseDouble($request->value_insurance) + $this->parseDouble($request->insurance_added); */
 
         $insurance = Insurance::where('id_insurable_service', $freight->id)
             ->where('model_insurable_service', Freight::class)
@@ -378,11 +378,9 @@ class FreightService
             // Si el seguro existe, actualizarlo
             $insurance->update([
                 'insurance_value' => $this->parseDouble($request->value_insurance),
-                'insurance_value_added' => $request->insurance_added,
-                'insurance_sale' => $sales_price,
-                'sales_value' => $sales_price * 0.18,
-                'sales_price' => $sales_price * 1.18,
-                'additional_points' => $request->insurance_points,
+                'sales_value' => $request->value_insurance * 0.18,
+                'sales_price' => $request->value_insurance * 1.18,
+                /* 'additional_points' => $request->insurance_points, */
                 'id_type_insurance' =>  $request->type_insurance,
                 'state' => 'Pendiente',
             ]);
@@ -390,10 +388,8 @@ class FreightService
             // Si no existe, crearlo
             $insurance = Insurance::create([
                 'insurance_value' => $this->parseDouble($request->value_insurance),
-                'insurance_value_added' => $request->insurance_added,
-                'insurance_sale' => $sales_price,
-                'sales_value' => $sales_price * 0.18,
-                'sales_price' => $sales_price * 1.18,
+                'sales_value' => $request->value_insurance * 0.18,
+                'sales_price' => $request->value_insurance * 1.18,
                 'additional_points' => $request->insurance_points,
                 'id_type_insurance' =>  $request->type_insurance,
                 'name_service' => 'Flete',
@@ -438,7 +434,7 @@ class FreightService
         $insuranceObject->id = $concept->id;
         $insuranceObject->name = 'SEGURO';
         $insuranceObject->value = $request->value_insurance;
-        $insuranceObject->added = $request->insurance_added;
+        /*         $insuranceObject->added = $request->insurance_added; */
         $insuranceObject->pa = $request->insurance_points;
 
         // Guardar el concepto actualizado en el array
@@ -467,21 +463,21 @@ class FreightService
                 'concepts_id' => $concept->id, // ID del concepto relacionado
                 'id_freight' => $freight->id, // Clave foránea al modelo Freight
                 'value_concept' => $this->parseDouble($concept->value),
-               /*  'value_concept_added' => $concept->added,
+                /*  'value_concept_added' => $concept->added,
                 'total_value_concept' => $this->parseDouble($concept->value) + $this->parseDouble($concept->added), */
-                'additional_points' => isset($concept->pa) ? $concept->pa : 0,
+                /* 'additional_points' => isset($concept->pa) ? $concept->pa : 0, */
             ]);
 
             // Si hay puntos adicionales, ejecutamos la función
-            if (isset($concept->pa)) {
+            /*  if (isset($concept->pa)) {
                 $ne_amount = $this->parseDouble($concept->value);
                 $this->add_aditionals_point($conceptFreight, $ne_amount);
-            }
+            } */
         }
     }
 
 
-    public function add_aditionals_point($conceptFreight,  $ne_amount = null, $igv = null, $total = null)
+    /*  public function add_aditionals_point($conceptFreight,  $ne_amount = null, $igv = null, $total = null)
     {
 
         $additional_point = AdditionalPoints::create([
@@ -496,7 +492,7 @@ class FreightService
 
 
         $conceptFreight->additional_point()->save($additional_point);
-    }
+    } */
 
     public function parseDouble($num)
     {
