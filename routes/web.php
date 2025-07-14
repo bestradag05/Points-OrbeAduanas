@@ -151,7 +151,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('regimes', RegimeController::class);
 
     /* Comisiones */
-    Route::resource('commissions', CommissionController::class);
+    Route::resource('commissions/fixed', CommissionController::class)->names('commissions.fixed');
+
+    Route::prefix('commissions/seller')->group(function () {
+        Route::get('/', [CommissionController::class, 'getCommissionsSeeller']);
+        Route::get('/{commercialQuote}/detail', [CommissionController::class, 'getDetalCommissionsSeeller']);
+    });
+
+
 
     /* Currencies */
     Route::resource('currencies', CurrencyController::class);
@@ -196,12 +203,12 @@ Route::middleware('auth')->group(function () {
         [ResponseFreightQuotesController::class, 'store']
     )->name('freight.quote.responses.store');
 
-    Route::prefix('quote/freight/response')->group(function() {
-    Route::get('{response}/show', [ResponseFreightQuotesController::class, 'show'])->name('quote.freight.response.show');
-    Route::post('{response}/accept', [ResponseFreightQuotesController::class, 'accept'])->name('quote.freight.response.accept');
-    Route::post('{response}/reject', [ResponseFreightQuotesController::class, 'reject'])->name('quote.freight.response.reject');
-    Route::get('{response}/generate', [ResponseFreightQuotesController::class, 'generate'])->name('quote.freight.response.generate');
-});
+    Route::prefix('quote/freight/response')->group(function () {
+        Route::get('{response}/show', [ResponseFreightQuotesController::class, 'show'])->name('quote.freight.response.show');
+        Route::post('{response}/accept', [ResponseFreightQuotesController::class, 'accept'])->name('quote.freight.response.accept');
+        Route::post('{response}/reject', [ResponseFreightQuotesController::class, 'reject'])->name('quote.freight.response.reject');
+        Route::get('{response}/generate', [ResponseFreightQuotesController::class, 'generate'])->name('quote.freight.response.generate');
+    });
 
     Route::get('insurance/pending', [InsuranceController::class, 'getInsurancePending']);
     Route::resource('insurance', InsuranceController::class);

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CommercialQuote;
 use App\Models\Commission;
+use App\Services\CommercialQuoteService;
 use Illuminate\Http\Request;
 
 class CommissionController extends Controller
@@ -10,17 +12,59 @@ class CommissionController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+
+    protected $commercialQuoteService;
+
+    public function __construct(CommercialQuoteService $commercialQuoteService)
+    {
+        $this->commercialQuoteService = $commercialQuoteService;
+    }
+
+
     public function index()
     {
         $commissions = Commission::all();
-         $heads = [
+        $heads = [
             '#',
             'Nombre',
             'Monto',
             'Descripción',
             'Acciones'
         ];
-        return view('commissions.list-commission', compact('commissions', 'heads'));
+        return view('commissions.fixed.list-commission', compact('commissions', 'heads'));
+    }
+
+
+    public function getCommissionsSeeller()
+    {
+
+        $compact = $this->commercialQuoteService->getQuotes(['state' => 'Aceptado']);
+
+        $heads = [
+            '#',
+            'N° de cotizacion',
+            'Origen',
+            'Destino',
+            'Cliente',
+            'Tipo de embarque',
+            'Asesor Comercial',
+            'Consolidado',
+            'Fecha',
+            'Estado',
+            'Acciones'
+        ];
+
+        return view('commissions/seller/list-seller-commission', array_merge($compact, compact('heads')));
+    }
+
+
+    public function getDetalCommissionsSeeller($id)
+    {
+
+        $commercialQuote = CommercialQuote::findOrFail($id);
+
+        return view('commissions/seller/detail-seller-commission', compact('commercialQuote'));
     }
 
     /**
@@ -28,7 +72,7 @@ class CommissionController extends Controller
      */
     public function create()
     {
-        return view('commissions.register-commission');
+        return view('commissions.fixed.register-commission');
     }
 
     /**
@@ -45,7 +89,7 @@ class CommissionController extends Controller
 
         Commission::create($data);
 
-        return redirect()->route('commissions.index')->with('success', 'Comisión creada correctamente.');
+        return redirect()->route('commissions.fixed.index')->with('success', 'Comisión creada correctamente.');
     }
 
     /**
@@ -53,7 +97,7 @@ class CommissionController extends Controller
      */
     public function show(string $id)
     {
-        return view('commissions.show', compact('commission'));
+        return view('commissions.fixed.show', compact('commission'));
     }
 
     /**
@@ -61,9 +105,9 @@ class CommissionController extends Controller
      */
     public function edit(string $id)
     {
-         $commission = Commission::findorFail($id)->first();
+        $commission = Commission::findorFail($id);
 
-        return view('commissions.edit-commission', compact('commission'));
+        return view('commissions.fixed.edit-commission', compact('commission'));
     }
 
     /**
@@ -72,7 +116,7 @@ class CommissionController extends Controller
     public function update(Request $request, string $id)
     {
 
-        $commission = Commission::findorFail($id)->first();
+        $commission = Commission::findorFail($id);
 
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -82,7 +126,7 @@ class CommissionController extends Controller
 
         $commission->update($data);
 
-        return redirect()->route('commissions.index')->with('success', 'Comisión actualizada correctamente.');
+        return redirect()->route('commissions.fixed.index')->with('success', 'Comisión actualizada correctamente.');
     }
 
     /**
@@ -90,9 +134,9 @@ class CommissionController extends Controller
      */
     public function destroy(string $id)
     {
-        $commission = Commission::findorFail($id)->first();
+        $commission = Commission::findorFail($id);
         $commission->delete();
 
-        return redirect()->route('commissions.index')->with('success', 'Comisión eliminada correctamente.');
+        return redirect()->route('commissions.fixed.index')->with('success', 'Comisión eliminada correctamente.');
     }
 }
