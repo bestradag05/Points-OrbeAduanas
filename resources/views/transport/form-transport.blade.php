@@ -72,11 +72,13 @@
             </div>
             <div class="col-md-3">
                 <label for="conceptValue">Valor del concepto</label>
-                <input type="text" class="form-control CurrencyInput" id="conceptValue" placeholder="Ingrese Valor de Concepto">
+                <input type="text" class="form-control CurrencyInput" id="conceptValue"
+                    placeholder="Ingrese Valor de Concepto">
             </div>
             <div class="col-md-3">
                 <label for="addedValue">Valor agregado</label>
-                <input type="text" class="form-control CurrencyInput" id="addedValue" placeholder="Ingrese Valor Agregado">
+                <input type="text" class="form-control CurrencyInput" id="addedValue"
+                    placeholder="Ingrese Valor Agregado">
             </div>
             <div class="col-md-2">
                 <button type="button" class="btn btn-success" onclick="addConceptFromDropdown()">Agregar</button>
@@ -91,34 +93,50 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th style="width: 10px">#</th>
-                    <th>Concepto</th>
-                    <th>Valor del concepto</th>
-                    <th>Valor agregado</th>
-                    <th>Puntos Adicionales</th>
+                    <th style="width: 5%;">#</th>
+                    <th style="width: 35%;">Concepto</th>
+                    <th style="width: 20%;">Valor del concepto</th>
+                    <th style="width: 20%;">Valor agregado</th>
                 </tr>
             </thead>
             <tbody id="tbodyConcepts">
-
-
             </tbody>
         </table>
 
 
-        <div class="row w-100 justify-content-end">
+        <div class="container mt-3">
+            <div class="row justify-content-end">
+                <div class="col-md-6">
 
-            <div class="col-4 row">
-                <label for="total" class="col-sm-4 col-form-label">Total:</label>
-                <div class="col-sm-8">
-                    <input type="text" class="form-control" id="total" name="total" value="0.00" readonly>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label for="totalRespuesta" class="form-label fw-bold mb-0">Total de la respuesta:</label>
+                        <input type="text" id="totalRespuesta" class="form-control text-end ms-2"
+                            style="width: 150px;" readonly value="{{ number_format($response->total, 2) }}">
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label for="total" class="form-label fw-bold mb-0">Total:</label>
+                        <input type="text" id="total" class="form-control text-end ms-2" style="width: 150px;"
+                            readonly value="0.00">
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label for="gananciaCalculada" class="form-label fw-bold mb-0">Ganancia:</label>
+                        <input type="text" id="gananciaCalculada" class="form-control text-end ms-2"
+                            style="width: 150px;" readonly value="0.00">
+                    </div>
+
                 </div>
             </div>
         </div>
+
+
         {{-- Mensaje de advertencia (se inyectará por JS si Total < response.total) --}}
         <div id="errorMinimo" class="p-3 text-center text-danger" style="display: none;">
             El valor total no puede ser menor que el total de la respuesta aceptada (
             {{ number_format($response->total, 2, '.', '') }}).
         </div>
+
 
     </div>
 
@@ -160,7 +178,6 @@
                             'name': concept.name,
                             'value': formatValue(concept.pivot.net_amount_response), // CAMBIO AQUÍ
                             'added': formatValue(concept.pivot.added_value),
-                            'pa': concept.pivot.additional_points > 0 ? concept.pivot.additional_points : 0
                         });
 
                     });
@@ -188,7 +205,6 @@
                         'name': concept.concept.name,
                         'value': formatValue(concept.net_amount), // ← REEMPLAZA formatValue(concept.net_amount)
                         'added': 0,
-                        'pa': 0 // ← NUEVO: inicializamos puntos en 0
                     });
                 });
             @endif
@@ -197,17 +213,21 @@
 
             updateTable(conceptsArray);
 
-            function calcTotal(TotalConcepts) {
+            function calcTotal(TotalConcepts, totalRespuestaParam = totalRespuesta) {
                 total = TotalConcepts;
 
-                //Buscamos dentro del contenedor el campo total
-                let inputTotal = $('#total');
-                inputTotal.val(total.toFixed(2));
+                $('#total').val(total.toFixed(2));
+
+                // Calcular ganancia real
+                let ganancia = total - totalRespuestaParam;
+                if (ganancia < 0) ganancia = 0;
+
+                $('#gananciaCalculada').val(ganancia.toFixed(2));
             }
 
             function addConcept(buton) {
                 let divConcepts = $('.formConcepts');
-                const inputs = divConcepts.find('input:not(.points), select');
+                const inputs = divConcepts.find('input, select');
 
                 // Busca todos los campos de entrada dentro del formulario
                 inputs.each(function(index, input) {
@@ -307,68 +327,20 @@
 
                             console.log('Edit Mode:', isEditMode);
 
-
                             inputAdded.addEventListener('input', (e) => {
-                                let newValue = parseFloat(e.target.value) || 0;
+                                const fila = e.target.closest('tr');
+                                const index = fila.rowIndex - 1;
 
-                                // Actualiza el valor en conceptsArray
-                                conceptsArray[clave].added = newValue;
+                                const newValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+                                conceptsArray[index].added = newValue;
 
-
-                                // Actualiza el máximo para inputPA
-                                let maxPoints = Math.floor(newValue / 45);
-                                inputPA.max = maxPoints;
-
-                                // Ajusta el valor actual de pa si excede el nuevo máximo
-                                if (conceptsArray[clave].pa > maxPoints) {
-                                    conceptsArray[clave].pa = maxPoints;
-                                    inputPA.value = maxPoints;
-                                }
-
-                                // Recalcula el total
-                                TotalConcepts = calculateTotal(conceptsArray);
-
-                                calcTotal(TotalConcepts);
-
+                                const totalConceptos = calculateTotal(conceptsArray);
+                                TotalConcepts = totalConceptos;
+                                calcTotal(totalConceptos, totalRespuesta);
                             });
                         } else {
                             // Si ocean_freight no existe, muestra el valor como texto plano
                             celdaAdded.textContent = item.added;
-                        }
-
-
-                        let celdaPA = fila.insertCell(4);
-                        celdaPA.style.width = '15%';
-                        let inputPA = document.createElement('input');
-                        inputPA.type = 'number';
-                        inputPA.value = (conceptsArray[clave].pa) ? conceptsArray[clave].pa : '';
-                        inputPA.name = 'pa';
-                        inputPA.classList.add('form-control', 'points');
-                        inputPA.classList.remove('is-invalid');
-                        inputPA.min = 0;
-                        celdaPA.appendChild(inputPA);
-
-                        inputPA.addEventListener('keydown', (e) => {
-                            // Permitimos solo las flechas (arriba: 38, abajo: 40), Tab (9), Enter (13)
-                            const allowedKeys = ['ArrowUp', 'ArrowDown', 'Tab', 'Enter'];
-                            if (!allowedKeys.includes(e.key)) {
-                                e.preventDefault();
-                            }
-                        });
-
-
-                        inputPA.addEventListener('input', (e) => {
-
-                            conceptsArray[clave].pa = e.target.value
-
-
-                        });
-
-                        if (Math.floor(item.added / 45) === 0) {
-
-                            inputPA.max = 0;
-                        } else {
-                            inputPA.max = Math.floor(item.added / 45);
                         }
 
 
@@ -449,7 +421,6 @@
                         name: conceptName,
                         value: value,
                         added: added,
-                        pa: 0
                     });
                 }
 
