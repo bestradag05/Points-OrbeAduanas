@@ -156,7 +156,7 @@ class TransportService
         $commercial_quote = $transport->commercial_quote;
 
 
-        $quote = $transport->quoteTransport()->where('state', 'Aceptado')->first();
+        $quote = $transport->quoteTransport()->where('state', 'Pendiente')->first();
         $concepts = Concept::all();
 
 

@@ -303,7 +303,7 @@
                             @if ($commercialQuote->volumen)
                                 <td class="text-item-table">{{ $commercialQuote->volumen }} CBM</td>
                             @else
-                            <td class="text-item-table">{{ $commercialQuote->kilogram_volumen }} KGV</td>
+                                <td class="text-item-table">{{ $commercialQuote->kilogram_volumen }} KGV</td>
                             @endif
                         </tr>
                         <tr>
@@ -320,19 +320,16 @@
                             <td class="text-item-table">{{ $commercialQuote->volumen }}</td>
                         </tr>
 
-                        @if($commercialQuote->lcl_fcl === 'FCL')
-
-                        <tr>
-                            <td class="title-item-table">Peso total</td>
-                            <td class="text-item-table">{{ $commercialQuote->tons }} TONS</td>
-                        </tr>
-
+                        @if ($commercialQuote->lcl_fcl === 'FCL')
+                            <tr>
+                                <td class="title-item-table">Peso total</td>
+                                <td class="text-item-table">{{ $commercialQuote->tons }} TONS</td>
+                            </tr>
                         @else
-                        <tr>
-                            <td class="title-item-table">Peso total</td>
-                            <td class="text-item-table">{{ $commercialQuote->kilograms }} KG</td>
-                        </tr>
-
+                            <tr>
+                                <td class="title-item-table">Peso total</td>
+                                <td class="text-item-table">{{ $commercialQuote->kilograms }} KG</td>
+                            </tr>
                         @endif
 
 
@@ -460,6 +457,9 @@
                     @endforeach
 
                     @if ($transport)
+
+                        <pre>{{ json_encode($transport->concepts, JSON_PRETTY_PRINT) }}</pre>
+
 
                         @foreach ($transport->concepts as $concept)
                             <tr>

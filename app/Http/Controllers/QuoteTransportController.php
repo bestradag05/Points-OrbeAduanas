@@ -647,7 +647,7 @@ class QuoteTransportController extends Controller
         $transportCost = $response->total;
         $quote->update([
             'withdrawal_date' => $dateFormat,   // equivale a format('Y-m-d')
-            'state'           => 'Aceptado',
+            'state'           => 'Pendiente',
         ]);
 
         $response->update([

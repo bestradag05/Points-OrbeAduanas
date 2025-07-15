@@ -176,8 +176,8 @@
                         conceptsArray.push({
                             'id': concept.id,
                             'name': concept.name,
-                            'value': formatValue(concept.pivot.net_amount_response), // CAMBIO AQUÍ
-                            'added': formatValue(concept.pivot.added_value),
+                            'value': formatValue(concept.pivot.net_amount_response || 0),
+                            'added': formatValue(concept.pivot.added_value || 0),
                         });
 
                     });
@@ -203,8 +203,8 @@
                     conceptsArray.push({
                         'id': concept.concepts_id,
                         'name': concept.concept.name,
-                        'value': formatValue(concept.net_amount), // ← REEMPLAZA formatValue(concept.net_amount)
-                        'added': 0,
+                        'value': '', // ← REEMPLAZA formatValue(concept.net_amount)
+                        'added': '',
                     });
                 });
             @endif
@@ -216,13 +216,22 @@
             function calcTotal(TotalConcepts, totalRespuestaParam = totalRespuesta) {
                 total = TotalConcepts;
 
-                $('#total').val(total.toFixed(2));
+                const btnGuardar = document.querySelector('#btnGuardar'); // Asegúrate de tener este ID en tu botón
+
+
+                $('#total').val((total || 0).toFixed(2));
 
                 // Calcular ganancia real
                 let ganancia = total - totalRespuestaParam;
                 if (ganancia < 0) ganancia = 0;
 
-                $('#gananciaCalculada').val(ganancia.toFixed(2));
+                if (total >= totalRespuesta) {
+                    btnGuardar.removeAttribute('disabled');
+                } else {
+                    btnGuardar.setAttribute('disabled', 'true');
+                }
+
+                $('#gananciaCalculada').val((ganancia || 0).toFixed(2));
             }
 
             function addConcept(buton) {
@@ -276,11 +285,9 @@
 
 
             function updateTable(conceptsArray) {
-
                 let tbodyRouting = $('#formConceptsTransport').find('tbody')[0];
 
                 if (tbodyRouting) {
-
                     tbodyRouting.innerHTML = '';
                 }
                 TotalConcepts = 0;
@@ -288,50 +295,61 @@
                 let contador = 0;
 
                 for (let clave in conceptsArray) {
-
                     let item = conceptsArray[clave];
 
                     if (conceptsArray.hasOwnProperty(clave)) {
-                        contador++; // Incrementar el contador en cada iteración
-                        // Crear una nueva fila
+                        contador++;
                         let fila = tbodyRouting.insertRow();
 
-                        // Insertar el número de iteración en la primera celda de la fila
+                        // Celda 1: número
                         let celdaNumero = fila.insertCell(0);
                         celdaNumero.textContent = contador;
 
-                        // Insertar la clave en la segunda celda de la fila
+                        // Celda 2: nombre del concepto
                         let celdaClave = fila.insertCell(1);
                         celdaClave.textContent = item.name;
 
-                        // Insertar el valor en la tercera celda de la fila
+                        // Celda 3: valor del concepto
                         let celdaValor = fila.insertCell(2);
-                        celdaValor.textContent = item.value;
 
-
-                        // Insertar el valor en la cuarta celda de la fila
-
+                        // Celda 4: valor agregado
                         let celdaAdded = fila.insertCell(3);
 
-
+                        // Mostrar campos como inputs si es modo edición o vienen desde la respuesta
                         if (isEditMode || (conceptsTransport && conceptsTransport.some(concept => concept.concept.name === item
                                 .name))) {
+                            // Input de valor
+                            let inputValor = document.createElement('input');
+                            inputValor.type = 'text';
+                            inputValor.value = item.value;
+                            inputValor.classList.add('form-control', 'CurrencyInput');
+                            inputValor.setAttribute('data-type', 'currency');
+                            celdaValor.appendChild(inputValor);
 
-                            // Si concepto existe, muestra un input editable
+                            // Input de valor agregado
                             let inputAdded = document.createElement('input');
                             inputAdded.type = 'text';
                             inputAdded.value = item.added;
-                            inputAdded.classList.add('form-control', 'CurrencyInput'); // Agregar clases
-                            inputAdded.setAttribute('data-type', 'currency'); // Establecer el atributo data-type
+                            inputAdded.classList.add('form-control', 'CurrencyInput');
+                            inputAdded.setAttribute('data-type', 'currency');
                             celdaAdded.appendChild(inputAdded);
 
-                            console.log('Edit Mode:', isEditMode);
+                            // Eventos
+                            inputValor.addEventListener('input', (e) => {
+                                const fila = e.target.closest('tr');
+                                const index = fila.rowIndex - 1;
+                                const newValue = formatValue(e.target.value);
+                                conceptsArray[index].value = newValue;
+
+                                const totalConceptos = calculateTotal(conceptsArray);
+                                TotalConcepts = totalConceptos;
+                                calcTotal(totalConceptos, totalRespuesta);
+                            });
 
                             inputAdded.addEventListener('input', (e) => {
                                 const fila = e.target.closest('tr');
                                 const index = fila.rowIndex - 1;
-
-                                const newValue = parseFloat(e.target.value.replace(/,/g, '')) || 0;
+                                const newValue = formatValue(e.target.value);
                                 conceptsArray[index].added = newValue;
 
                                 const totalConceptos = calculateTotal(conceptsArray);
@@ -339,25 +357,18 @@
                                 calcTotal(totalConceptos, totalRespuesta);
                             });
                         } else {
-                            // Si ocean_freight no existe, muestra el valor como texto plano
+                            // Mostrar valores como texto plano
+                            celdaValor.textContent = item.value;
                             celdaAdded.textContent = item.added;
                         }
 
-
-                        if (isEditMode || !conceptsTransport || !conceptsTransport.some(concept => concept.name === item
-                                .name)) {
-
-                        }
-
-                        TotalConcepts += parseFloat(item.value) + parseFloat(item.added);
+                        TotalConcepts += parseFloat(item.value || 0) + parseFloat(item.added || 0);
                     }
                 }
 
                 calcTotal(TotalConcepts);
-
-
-
             }
+
 
             function calculateTotal(conceptsArray) {
                 return Object.values(conceptsArray).reduce((acc, concept) => {
@@ -366,7 +377,8 @@
             }
 
             function formatValue(value) {
-                return value.replace(/,/g, '');
+                if (typeof value === 'number') return value;
+                return parseFloat(value.toString().replace(/,/g, '')) || 0;
             }
 
 
@@ -413,8 +425,8 @@
 
                 const index = conceptsArray.findIndex(item => item.id === conceptId);
                 if (index !== -1) {
-                    conceptsArray[index].value = value;
-                    conceptsArray[index].added = added;
+                    conceptsArray[index].value = formatValue(inputs[1].value);
+                    conceptsArray[index].added = formatValue(inputs[2].value);
                 } else {
                     conceptsArray.push({
                         id: conceptId,
