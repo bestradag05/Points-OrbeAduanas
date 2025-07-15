@@ -56,7 +56,7 @@ class CommercialQuoteController extends Controller
     {
         $compact = $this->commercialQuoteService->createCommercialQuote();
 
-        return view("commercial_quote/register-commercial-quote", compact('stateCountrys', 'type_shipments', 'type_loads', 'regimes', 'incoterms', 'nro_quote_commercial', 'types_services', 'containers', 'customers', 'packingTypes'));
+        return view("commercial_quote/register-commercial-quote", $compact);
     }
 
     /**

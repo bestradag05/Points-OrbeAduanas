@@ -14,6 +14,7 @@ class Freight extends Model
 
     protected $fillable =
     [
+        'nro_operation_freight',
         'wr_loading',
         'roi',
         'hawb_hbl',
@@ -26,7 +27,7 @@ class Freight extends Model
         'total_answer_utility',
         'total_freight_value',
         'profit_on_freight',
-/*         'total_additional_points',
+        /*         'total_additional_points',
         'total_additional_points_used', */
         'state',
         'id_quote_freight',
@@ -35,11 +36,42 @@ class Freight extends Model
     ];
 
 
+    // Evento que se ejecuta antes de guardar el modelo
+    protected static function booted()
+    {
+        static::creating(function ($freight) {
+            // Si no tiene un número de operación, generarlo
+            if (empty($freight->nro_operation_freight)) {
+                $freight->nro_operation_freight = $freight->generateNroOperation();
+            }
+        });
+    }
+
+    // Método para generar el número de operación
+    public function generateNroOperation()
+    {
+        // Obtener el último registro
+        $lastCode = self::latest('id')->first();
+        $year = date('y');
+        $prefix = 'FLETE-';
+
+        // Si no hay registros, empieza desde 1
+        if (!$lastCode) {
+            return $prefix . $year . '1';
+        } else {
+            // Extraer el número y aumentarlo
+            $number = (int) substr($lastCode->nro_operation_freight, 7);
+            $number++;
+            return $prefix . $year . $number;
+        }
+    }
+
+
 
     public function concepts()
     {
         return $this->belongsToMany(Concept::class, 'concepts_freight', 'id_freight', 'concepts_id')
-            ->withPivot(['value_concept' ]);
+            ->withPivot(['value_concept']);
     }
 
 
