@@ -156,6 +156,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('commissions/seller')->group(function () {
         Route::get('/', [CommissionController::class, 'getCommissionsSeeller']);
         Route::get('/{commercialQuote}/detail', [CommissionController::class, 'getDetalCommissionsSeeller']);
+        Route::post('/generate/points', [CommissionController::class, 'generatePointSeller']);
     });
 
 

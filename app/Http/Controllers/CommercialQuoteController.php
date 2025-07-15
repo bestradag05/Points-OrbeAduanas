@@ -126,7 +126,25 @@ class CommercialQuoteController extends Controller
     {
 
         $commercialQuote = $this->commercialQuoteService->handleActionCommercialQuote($action, $id);
-        return redirect('commercial/quote/' . $commercialQuote->id . '/detail');
+
+        // Condicionar el mensaje de éxito o error según la acción
+        if ($action === 'accept') {
+            $message = 'La cotización fue aceptada.';
+            $messageType = 'success'; // Tipo de mensaje para acción aceptada
+        } elseif ($action === 'decline') {
+            $message = 'La cotización fue rechazada.';
+            $messageType = 'error'; // Tipo de mensaje para acción rechazada
+        } else {
+            $message = 'Acción no válida.';
+            $messageType = 'error'; // Si la acción no es válida, es un error
+        }
+
+        return redirect('commercial/quote/' . $commercialQuote->id . '/detail')->with([
+            $messageType => $message,
+            'show_client_trace_modal' => true,
+            'quote_id' => $commercialQuote->id,
+            'type_action' => $action
+        ]);
     }
 
 

@@ -664,9 +664,7 @@
                         allowOutsideClick: false
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            $('#client_trace_quote_id').val(id);
-                            $('#client_trace_action').val('accept');
-                            $('#modalClientTrace').modal('show');
+                           window.location.href = `/commercial/quote/state/accept/${id}`
                         }
                     });
                 }
@@ -685,9 +683,7 @@
                     allowOutsideClick: false
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        $('#client_trace_quote_id').val(id);
-                        $('#client_trace_action').val('decline');
-                        $('#modalClientTrace').modal('show');
+                       window.location.href = `/commercial/quote/state/decline/${id}`
                     }
                 });
             }
@@ -966,7 +962,7 @@
         <script>
             $(document).ready(function() {
                 $('#client_trace_quote_id').val('{{ session('quote_id') }}');
-                $('#client_trace_action').val('accept');
+                $('#client_trace_action').val('{{ session('type_action') }}');
                 $('#modalClientTrace').modal('show');
             });
         </script>

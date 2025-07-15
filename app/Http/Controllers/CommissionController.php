@@ -67,6 +67,11 @@ class CommissionController extends Controller
         return view('commissions/seller/detail-seller-commission', compact('commercialQuote'));
     }
 
+
+    public function generatePointSeller(Request $request){
+        dd($request->all());
+    }
+
     /**
      * Show the form for creating a new resource.
      */

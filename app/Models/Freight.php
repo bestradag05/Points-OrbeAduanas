@@ -90,9 +90,9 @@ class Freight extends Model
         return $this->morphOne(Insurance::class, 'insurable', 'model_insurable_service', 'id_insurable_service');
     }
 
-    public function additional_point()
+    public function points()
     {
-        return $this->morphMany(AdditionalPoints::class, 'additional', 'model_additional_service', 'id_additional_service');
+        return $this->morphMany(Points::class, 'pointable'); // Relaciona con el modelo Point
     }
 
     public function quoteFreight()

@@ -338,6 +338,8 @@ class CommercialQuoteService
 
         $commercialQuote->update($updateData);
 
+        $this->generatePurePoint($commercialQuote);
+
         return $commercialQuote;
     }
 
@@ -565,6 +567,8 @@ class CommercialQuoteService
 
                 $commercialQuote->update(['state' => 'Aceptado']);
 
+                $this->generatePurePoint($commercialQuote);
+
                 break;
 
             case 'decline':
@@ -580,6 +584,34 @@ class CommercialQuoteService
         }
 
         return $commercialQuote;
+    }
+
+    public function generatePurePoint($commercialQuote)
+    {
+        if ($commercialQuote->state === 'Aceptado') {
+
+
+            $relations = [
+                'freight' => $commercialQuote->freight,
+                'custom' => $commercialQuote->custom,
+                'transport' => $commercialQuote->transport,
+                'insurance' => $commercialQuote->insurance
+            ];
+
+
+            foreach ($relations as $key => $relation) {
+                // Verificamos si la relación existe
+                if ($relation) {
+                    // Crear un punto para cada servicio relacionado
+                    $relation->points()->create([
+                        'pointable_id' => $relation->id,
+                        'pointable_type' => get_class($relation),
+                        'point_type' => 'puro', // Tipo de punto (puede ser 'pure' o 'additional')
+                        'quantity' => 1 // La cantidad de puntos generados
+                    ]);
+                }
+            }
+        }
     }
 
 
@@ -642,12 +674,6 @@ class CommercialQuoteService
         // Actualizamos el estado de la cotización según la decisión del cliente
         $quote->state = $request->client_decision === 'accept' ? 'Aceptado' : 'Rechazado';
         $quote->save();
-
-        // Actualizar el estado del transporte relacionado
-        $transport = $quote->transport; // Obtener el transporte relacionado
-        if ($transport) { // Verificar que exista el transporte
-            $transport->update(['state' => $quote->state]); // Cambiar el estado del transporte
-        }
 
         // Creamos el registro de trazabilidad del cliente
         ClientQuoteTrace::create([
