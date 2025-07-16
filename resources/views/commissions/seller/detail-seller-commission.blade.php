@@ -24,7 +24,7 @@
                             <th scope="col">Costo Neto</th>
                             <th scope="col">Utilidad</th>
                             <th scope="col">Ganacia</th>
-                            <th scope="col">Puntos Puros</th>
+                            <th scope="col">Puntos</th>
                             <th scope="col">Profit</th>
                             <th scope="col">Comision Generada</th>
                             <th scope="col">Total Ganancia</th>
@@ -43,14 +43,15 @@
                                 </div>
                             </td>
                             <td>{{ $commercialQuote->freight->points->sum('quantity') }}</td>
-                            <td>0</td>
-                            <td>0</td>
-                            <td>0</td>
+                            <td>$ 0.00</td>
+                            <td>$ 0.00</td>
+                            <td>$ 0.00</td>
                             <td>
                                 <!-- Select para elegir entre generar Puntos o Profit -->
                                 <select id="actionSelect" class="form-control">
                                     <option> --- Seleciona una opción --- </option>
-                                    <option value="puntos">Generar Puntos</option>
+                                    <option data-type="freight" data-id="{{ $commercialQuote->freight->id }}" value="puntos">
+                                        Generar Puntos</option>
                                     <option value="profit">Generar Profit</option>
                                 </select>
                             </td>
@@ -83,6 +84,9 @@
                     enctype="multipart/form-data">
                     <div class="modal-body">
                         @csrf
+
+                        <input type="hidden" id="typeService" name="typeService">
+                        <input type="hidden" id="idService" name="idService">
                         <div>
                             <label for="puntos">Puntos a Generar: </label>
                             <input type="number" id="points" name="points" class="form-control" value="0"
@@ -117,9 +121,20 @@
         $('#actionSelect').change(function() {
             const selectedAction = $(this).val();
 
+            const selectedOption = $(this).find('option:selected');
+
+            // Obtener el tipo de servicio y el id desde los data-* attributes
+            const typeService = selectedOption.data('type');
+            const serviceId = selectedOption.data('id');
+
+
             if (selectedAction === 'puntos') {
                 // Si selecciona Generar Puntos, abre el modal correspondiente
+                $('#calcularModalPoints input#typeService').val(typeService);
+                $('#calcularModalPoints input#idService').val(serviceId);
                 $('#calcularModalPoints').modal('show');
+
+
             } else if (selectedAction === 'profit') {
                 // Si selecciona Generar Profit, abre el modal correspondiente
                 $('#calcularModalProfit').modal('show');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CommercialQuote;
 use App\Models\Commission;
+use App\Models\Freight;
 use App\Services\CommercialQuoteService;
 use Illuminate\Http\Request;
 
@@ -68,8 +69,50 @@ class CommissionController extends Controller
     }
 
 
-    public function generatePointSeller(Request $request){
-        dd($request->all());
+    public function generatePointSeller(Request $request)
+    {
+
+        $typeService = $request->typeService; // Este valor debe ser 'freight' u otros tipos si es necesario
+        $serviceId = $request->idService;
+        $points = $request->points;
+
+        $pricePerPoint = 45;
+
+
+        switch ($typeService) {
+            case 'freight':
+                $freight = Freight::findOrFail($request->idService);
+                $revenue = $freight->profit_on_freight; //Ganancia
+                $totalPointsCost = $points * $pricePerPoint; //precio por puntos
+
+                if ($totalPointsCost > $revenue) {
+                    // Redirigir con un mensaje de error
+                    return redirect()->back()->with('error', 'No hay suficiente ganancia para generar los puntos solicitados.');
+                }
+
+                // Calcular la ganancia restante después de generar los puntos
+                $remaining_profit = $revenue - $totalPointsCost;
+
+                $freight->profit_on_freight = $remaining_profit;
+                $freight->save();
+
+
+                $freight->points()->create([
+                    'point_type' => 'adicional',  // Suponiendo que estos son puntos adicionales
+                    'quantity' => $points         // La cantidad de puntos generados
+                ]);
+
+
+                // Redirigir con un mensaje de éxito
+                return redirect()->back()->with('success', 'Puntos generados correctamente. Ganancia restante: $' . number_format($remaining_profit, 2));
+
+
+                break;
+
+            default:
+                # code...
+                break;
+        }
     }
 
     /**
