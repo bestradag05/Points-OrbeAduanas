@@ -27,7 +27,6 @@
                             <th scope="col">Puntos</th>
                             <th scope="col">Profit</th>
                             <th scope="col">Comision Generada</th>
-                            <th scope="col">Total Ganancia</th>
                             <th scope="col">Acciones</th>
                         </tr>
                     </thead>
@@ -38,22 +37,35 @@
                             <td>$ {{ $commercialQuote->freight->accepted_answer_value }}</td>
                             <td>$ {{ $commercialQuote->freight->value_utility }}</td>
                             <td>
-                                <div class="custom-badge status-{{ strtolower($commercialQuote->state) }}">
-                                    $ {{ $commercialQuote->freight->profit_on_freight }}
+                                <div class="custom-badge status-info">
+                                    $ {{ $commercialQuote->freight->profit }}
                                 </div>
                             </td>
                             <td>{{ $commercialQuote->freight->points->sum('quantity') }}</td>
                             <td>$ 0.00</td>
-                            <td>$ 0.00</td>
-                            <td>$ 0.00</td>
+                            <td>
+                                <div class="custom-badge status-success">
+                                    $ {{ number_format($commercialQuote->freight->sellerCommissions->sum('amount'), 2) }}
+                                </div>
+                            </td>
                             <td>
                                 <!-- Select para elegir entre generar Puntos o Profit -->
-                                <select id="actionSelect" class="form-control">
-                                    <option> --- Seleciona una opción --- </option>
-                                    <option data-type="freight" data-id="{{ $commercialQuote->freight->id }}" value="puntos">
-                                        Generar Puntos</option>
-                                    <option value="profit">Generar Profit</option>
-                                </select>
+                                @if ($commercialQuote->freight->profit >= 45)
+                                    <select id="actionSelect" class="form-control">
+                                        <option> --- Seleciona una opción --- </option>
+                                        <option data-type="freight" data-id="{{ $commercialQuote->freight->id }}"
+                                            value="puntos">
+                                            Generar Puntos</option>
+                                        <option {{ $enabledProfit['freight'] === false ? 'disabled' : '' }}
+                                            data-type="freight" data-id="{{ $commercialQuote->freight->id }}"
+                                            value="profit">
+                                            Generar Profit
+                                        </option>
+                                    </select>
+                                @else
+                                   <p class="text-muted">Sin acciones</p> 
+                                @endif
+
                             </td>
                         </tr>
 
@@ -75,7 +87,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="calcularModalPointsLabel">Calcular Puntos y Profit</h5>
+                    <h5 class="modal-title" id="calcularModalPointsLabel">Calcular Puntos</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -108,13 +120,47 @@
         </div>
     </div>
 
+    <div class="modal fade" id="calcularModalProfit" tabindex="-1" aria-labelledby="calcularModalProfitLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="calcularModalProfitLabel">Generar Profit</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action={{ url('/commissions/seller/generate/profit') }} id="formProfit" method="POST"
+                    enctype="multipart/form-data">
+                    @csrf
+
+                    <input type="hidden" id="typeService" name="typeService">
+                    <input type="hidden" id="idService" name="idService">
+                    <div class="modal-body">
+                        <p>Para generar profit, debes cumplir con las siguientes condiciones:</p>
+                        <ul>
+                            <li>Utilidad mínima de $250.00</li>
+                            <li>Generar al menos 10 puntos dentro del mes</li>
+                            <li>Ganancia restante mínima de $200.00</li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary" id="generateProfit">Generar Profit</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
 
 @stop
 
 
 @push('scripts')
     <script>
-        const ganancia = @json($commercialQuote->freight->profit_on_freight);
+        const ganancia = @json($commercialQuote->freight->profit);
         const costoPorPunto = 45;
 
 
@@ -137,6 +183,8 @@
 
             } else if (selectedAction === 'profit') {
                 // Si selecciona Generar Profit, abre el modal correspondiente
+                $('#calcularModalProfit input#typeService').val(typeService);
+                $('#calcularModalProfit input#idService').val(serviceId);
                 $('#calcularModalProfit').modal('show');
             }
         });
@@ -187,7 +235,7 @@
 
                 // Calcular y mostrar el monto restante después de descontar los puntos
                 const restante = ganancia - totalDescuento;
-                $('#restante').text(`Monto restante: $${restante.toFixed(2)}`);
+                $('#restante').text(`Ganancia restante: $${restante.toFixed(2)}`);
 
             }
 

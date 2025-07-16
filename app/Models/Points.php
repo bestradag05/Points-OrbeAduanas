@@ -14,10 +14,15 @@ class Points extends Model
     protected $fillable = [
         'pointable_id',   // ID de la entidad asociada (Flete, Aduana, etc.)
         'pointable_type', // Tipo de entidad asociada (Flete, Aduana, etc.)
+        'personal_id',
         'point_type',     // El tipo de punto (puro o adicional)
         'quantity'        // La cantidad de puntos generados
     ];
 
+    public function personal()
+    {
+        return $this->belongsTo(Personal::class);
+    }
 
     public function pointable()
     {

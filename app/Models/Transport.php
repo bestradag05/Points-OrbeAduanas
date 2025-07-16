@@ -80,11 +80,11 @@ class Transport extends Model
         return $this->belongsTo(CommercialQuote::class, 'nro_quote_commercial', 'nro_quote_commercial');
     }
 
-    public function additional_point()
+/*     public function additional_point()
     {
         return $this->morphMany(AdditionalPoints::class, 'additional', 'model_additional_service', 'id_additional_service');
     }
-
+ */
     // Inversa N:1 → QuoteTransport
     public function quoteTransport()
     {

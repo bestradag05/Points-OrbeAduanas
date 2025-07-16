@@ -26,7 +26,7 @@ class Freight extends Model
         'accepted_answer_value',
         'total_answer_utility',
         'total_freight_value',
-        'profit_on_freight',
+        'profit',
         /*         'total_additional_points',
         'total_additional_points_used', */
         'state',
@@ -93,6 +93,11 @@ class Freight extends Model
     public function points()
     {
         return $this->morphMany(Points::class, 'pointable'); // Relaciona con el modelo Point
+    }
+
+    public function sellerCommissions()
+    {
+        return $this->morphMany(SellersCommission::class, 'commissionable');
     }
 
     public function quoteFreight()

@@ -25,7 +25,7 @@ return new class extends Migration
             $table->decimal('accepted_answer_value', 8, 2);
             $table->decimal('total_answer_utility', 8, 2);
             $table->decimal('total_freight_value', 8, 2);
-            $table->decimal('profit_on_freight', 8, 2);
+            $table->decimal('profit', 8, 2);
 /*             $table->integer('total_additional_points');
             $table->integer('total_additional_points_used'); */
             $table->enum('state', ['Pendiente', 'En Proceso', 'Notificado', 'Cerrado'])->default('Pendiente');

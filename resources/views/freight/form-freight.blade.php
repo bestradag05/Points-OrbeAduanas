@@ -169,7 +169,7 @@
         <div class="col-4 row">
             <label class="col-sm-6 col-form-label">Ganancia:</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" id="profit_on_freight" name="profit_on_freight"
+                <input type="text" class="form-control" id="profit" name="profit"
                     value="0.00" readonly>
             </div>
         </div>
@@ -317,7 +317,7 @@
             let ganancia = total - (totalAcceptedAnswer + utilidad);
             if (ganancia < 0) ganancia = 0;
 
-            $('#profit_on_freight').val(ganancia.toFixed(2));
+            $('#profit').val(ganancia.toFixed(2));
 
             $('#total_answer_utility').val((totalAcceptedAnswer + utilidad).toFixed(2));
 

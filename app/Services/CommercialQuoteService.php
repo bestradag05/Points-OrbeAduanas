@@ -606,6 +606,7 @@ class CommercialQuoteService
                     $relation->points()->create([
                         'pointable_id' => $relation->id,
                         'pointable_type' => get_class($relation),
+                        'personal_id' => auth()->user()->personal->id,
                         'point_type' => 'puro', // Tipo de punto (puede ser 'pure' o 'additional')
                         'quantity' => 1 // La cantidad de puntos generados
                     ]);

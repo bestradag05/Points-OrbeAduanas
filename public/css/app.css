@@ -212,12 +212,12 @@
 /* .status-respondido {
     color: blue;
 } */
-.status-aceptado, .status-activo {
+.status-aceptado, .status-activo, .status-success {
     background: rgba(0, 128, 0, 0.1);
     color: rgb(0, 128, 0);
 }
 
-.status-en-proceso, .status-enviado {
+.status-en-proceso, .status-enviado, .status-info {
     background: rgba(0, 211, 199, 0.1);
     color: #00D3C7;
 }
