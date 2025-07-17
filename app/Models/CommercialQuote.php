@@ -158,4 +158,9 @@ class CommercialQuote extends Model
     {
         return $this->belongsTo(PackingType::class, 'id_packaging_type', 'id');
     }
+
+    public function quotesSentClients()
+    {
+        return $this->hasMany(QuotesSentClient::class, 'commercial_quote_id');
+    }
 }
