@@ -133,13 +133,6 @@ class TransportService
         // 1. Creamos el transporte sin total aún (lo pondremos luego)
         $transport = $this->createOrUpdateTransport($request);
 
-        // 2. Procesamos conceptos y obtenemos el total calculado
-        $total = $this->syncTransportConcepts($transport, $concepts, $response);
-
-        // 3. Actualizamos el transporte con el total correcto
-        $transport->update(['total_transport' => $total]);
-
-
         $this->syncTransportConcepts($transport, $concepts, $response);
 
 
@@ -231,12 +224,20 @@ class TransportService
 
         $dateRegisterFormat = Carbon::createFromFormat('d/m/Y', $request->withdrawal_date)->toDateString();
 
+        $valueUtility = $request->filled('value_utility')
+        ? $request->input('value_utility')
+        : null;
+
         $transport->fill([
             'origin' => $request->pick_up,
             'destination' => $request->delivery,
             'withdrawal_date' => $dateRegisterFormat,
             'quote_transport_id' => $request->quote_transport_id,
             'nro_quote_commercial' => $request->nro_quote_commercial,
+            'value_utility'            => $valueUtility,
+            'accepted_answer_value'    => $request->input('accepted_answer_value'),
+            'total_transport_value'    => $request->input('total_transport_value'),
+            'profit'                   => $request->input('profit'),
             'state' => 'Pendiente'
         ]);
 
@@ -247,7 +248,7 @@ class TransportService
     }
 
 
-    private function syncTransportConcepts($transport, $concepts, $response): float
+    private function syncTransportConcepts($transport, $concepts, $response): void
 
     {
         // Eliminar los conceptos previos si estamos actualizando, pero antes 
@@ -287,7 +288,7 @@ class TransportService
 
 
             // 3 Guardar todo en concepts_transport
-            $conceptTransport = ConceptsTransport::create([
+            $conceptsTransport = ConceptsTransport::create([
                 'concepts_id' => $concept->id,
                 'transport_id' => $transport->id,
                 'added_value' => $added,
@@ -296,20 +297,10 @@ class TransportService
                 'igv' => $igv,
                 'total' => $concept_total,
                 'additional_points' => $concept->pa ?? 0,
-
             ]);
 
-            // Si hay puntos adicionales, ejecutamos la función
-            if (isset($concept->pa)) {
-                $net_amount = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
-                $this->add_aditionals_point($conceptTransport, $net_amount);
-            }
         }
 
-        // Al final de syncTransportConcepts
-        $transport->update(['total_transport' => $totalTransport]);
-
-        return $totalTransport;
     }
 
 

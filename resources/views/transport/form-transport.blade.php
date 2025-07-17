@@ -398,6 +398,15 @@
                 // Inyecta el <input type="hidden" name="concepts" ...>
                 form.append(`<input type="hidden" name="concepts" value='${conceptops}' />`);
 
+                let acceptedAnswerValue = parseFloat($('#totalRespuesta').val().replace(/,/g, '')) || 0;
+                let totalTransportValue = parseFloat($('#total').val().replace(/,/g, '')) || 0;
+                let profitValue = parseFloat($('#gananciaCalculada').val().replace(/,/g, '')) || 0;
+
+                form.append(`<input type="hidden" name="accepted_answer_value" value='${acceptedAnswerValue.toFixed(2)}'>`);
+                form.append(`<input type="hidden" name="total_transport_value" value='${totalTransportValue.toFixed(2)}'>`); -
+                form.append(`<input type="hidden" name="profit"                value='${profitValue.toFixed(2)}'>`);
+
+
                 // Ahora sí envía normalmente
                 form.off('submit'); // para evitar loop infinito
                 form.submit();
