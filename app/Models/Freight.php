@@ -100,6 +100,11 @@ class Freight extends Model
         return $this->morphMany(SellersCommission::class, 'commissionable');
     }
 
+    public function profitability()
+    {
+        return $this->morphOne(Profit::class, 'profitability');  // 'profitability' corresponde a la relación polimórfica
+    }
+
     public function quoteFreight()
     {
         return $this->hasOne(QuoteFreight::class, 'id', 'id_quote_freight');

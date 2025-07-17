@@ -925,8 +925,9 @@
                                             <div class="col-4">
                                                 <div class="form-group">
                                                     <label for="observations">Costo Final</label>
-                                                    <input type="text" class="form-control" id="final_cost"
-                                                        name="final_cost" placeholder="Ingrese el costo final"
+                                                    <input type="text" class="form-control CurrencyInput"
+                                                        id="final_cost" name="final_cost"
+                                                        placeholder="Ingrese el costo final" data-type="currency"
                                                         data-required="true" readonly>
                                                 </div>
 
@@ -1423,7 +1424,6 @@
 
             if (isValid) {
                 let data = loadConceptData(inputs);
-                console.log(data);
                 const selectedCurrencyId = parseInt(data.currency.id);
                 const selectedCurrency = currencies.find(c => c.id === selectedCurrencyId);
                 const dollarCurrency = currencies.find(c => c.abbreviation === 'USD');
@@ -1473,7 +1473,7 @@
         };
 
 
-        function updateTableRespnoseFreight() {
+        function updateTableRespnoseFreight(conceptsResponseFreightArray) {
             let tbodyRouting = $(`#divResponseFreight`).find('tbody')[0];
             if (tbodyRouting) {
                 tbodyRouting.innerHTML = '';
@@ -1482,30 +1482,34 @@
             TotalResponseConcepts = 0;
             let contador = 0;
 
-            // 1. Primero renderizamos los conceptos normales
-            conceptsResponseFreightArray.forEach((item, index) => {
-                contador++;
-                let fila = tbodyRouting.insertRow();
-                fila.insertCell(0).textContent = contador;
-                fila.insertCell(1).textContent = item.concept.text;
-                fila.insertCell(2).textContent = item.currency.text + " " + item.unit_cost;
-                fila.insertCell(3).textContent = item.fixed_miltiplyable_cost;
-                fila.insertCell(4).textContent = item.observations;
-                fila.insertCell(5).textContent = "$ " + parseFloat(item.final_cost).toFixed(2);
+            if (conceptsResponseFreightArray && Array.isArray(conceptsResponseFreightArray)) {
 
-                let celdaEliminar = fila.insertCell(6);
-                let botonEliminar = document.createElement('a');
-                botonEliminar.href = '#';
-                botonEliminar.innerHTML = '<p class="text-danger">X</p>';
-                botonEliminar.addEventListener('click', function() {
-                    // Eliminar el concepto
-                    conceptsResponseFreightArray.splice(index, 1);
-                    updateTableRespnoseFreight(); // Re-renderizar tabla
+                // 1. Primero renderizamos los conceptos normales
+                conceptsResponseFreightArray.forEach((item, index) => {
+                    contador++;
+                    let fila = tbodyRouting.insertRow();
+                    fila.insertCell(0).textContent = contador;
+                    fila.insertCell(1).textContent = item.concept.text;
+                    fila.insertCell(2).textContent = item.currency.text + " " + item.unit_cost;
+                    fila.insertCell(3).textContent = item.fixed_miltiplyable_cost;
+                    fila.insertCell(4).textContent = item.observations;
+                    fila.insertCell(5).textContent = "$ " + parseFloat(item.final_cost).toFixed(2);
+
+                    let celdaEliminar = fila.insertCell(6);
+                    let botonEliminar = document.createElement('a');
+                    botonEliminar.href = '#';
+                    botonEliminar.innerHTML = '<p class="text-danger">X</p>';
+                    botonEliminar.addEventListener('click', function() {
+                        // Eliminar el concepto
+                        conceptsResponseFreightArray.splice(index, 1);
+                        updateTableRespnoseFreight(); // Re-renderizar tabla
+                    });
+                    celdaEliminar.appendChild(botonEliminar);
+
+                    TotalResponseConcepts += parseFloat(item.final_cost);
                 });
-                celdaEliminar.appendChild(botonEliminar);
 
-                TotalResponseConcepts += parseFloat(item.final_cost);
-            });
+            }
 
             // 2. Luego renderizamos las comisiones fijas
             commissionsResponseFreightArray.forEach((item) => {

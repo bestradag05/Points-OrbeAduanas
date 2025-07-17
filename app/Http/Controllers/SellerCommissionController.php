@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\CommercialQuote;
+use App\Models\Custom;
 use App\Models\Freight;
+use App\Models\Profit;
+use App\Models\Transport;
 use App\Services\CommercialQuoteService;
 use App\Services\ProfitValidationService;
 use Illuminate\Http\Request;
@@ -147,7 +150,51 @@ class SellerCommissionController extends Controller
 
     public function generateProfit(Request $request)
     {
-        dd($request->all());
+        $typeService = $request->typeService; // Este valor debe ser 'freight' u otros tipos si es necesario
+        $serviceId = $request->idService;
+
+        $totalProfit = 0;
+
+        switch ($typeService) {
+            case 'freight':
+                $service = Freight::findOrFail($serviceId); // Buscar el servicio de flete
+                $totalProfit = $service->profit;  // Obtén la ganancia del servicio
+                break;
+
+            case 'transport':
+                $service = Transport::findOrFail($serviceId); // Buscar el servicio de transporte
+                $totalProfit = $service->profit;
+                break;
+
+            case 'custom':
+                $service = Custom::findOrFail($serviceId); // Buscar el servicio de aduanas
+                $totalProfit = $service->profit;
+                break;
+
+            default:
+                return redirect()->back()->with('error', 'Servicio no válido.');
+        }
+
+
+        // Calcular la ganancia para el vendedor (50%)
+        $sellerProfit = $totalProfit / 2;
+
+        // Calcular la ganancia para la empresa (50%)
+        $companyProfit = $totalProfit / 2;
+
+        $profit = new Profit([
+            'profitability_id' => $service->id,  // ID del servicio (flete, transporte, aduanas)
+            'profitability_type' => get_class($service),  // Tipo de servicio (nombre de la clase)
+            'personal_id' => auth()->user()->personal->id,  // ID del vendedor autenticado
+            'seller_profit' => $sellerProfit,  // 50% de la ganancia para el vendedor
+            'company_profit' => $companyProfit,  // 50% de la ganancia para la empresa
+            'total_profit' => $totalProfit,  // Total del profit generado
+        ]);
+
+        $profit->save();
+
+
+        return redirect()->back()->with('success', 'Profit generado correctamente.');
     }
 
 
