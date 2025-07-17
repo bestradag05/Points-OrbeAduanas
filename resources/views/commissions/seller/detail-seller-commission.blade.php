@@ -42,7 +42,7 @@
                                 </div>
                             </td>
                             <td>{{ $commercialQuote->freight->points->sum('quantity') }}</td>
-                            <td>{{$commercialQuote->freight->profitability->seller_profit}}</td>
+                            <td>{{$commercialQuote->freight->profitability->seller_profit ?? 0.00}}</td>
                             <td>
                                 <div class="custom-badge status-success">
                                     $ {{ number_format($commercialQuote->freight->sellerCommissions->sum('amount'), 2) }}

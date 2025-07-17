@@ -223,7 +223,8 @@ class CommercialQuoteController extends Controller
 
     public function getPDF($id)
     {
-        $this->commercialQuoteService->getPDF($id);
+       $pdf = $this->commercialQuoteService->getPDF($id);
+        return $pdf->stream('Cotizacion Comercial.pdf');
     }
 
 

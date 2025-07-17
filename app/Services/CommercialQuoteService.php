@@ -775,7 +775,7 @@ class CommercialQuoteService
 
         $pdf = FacadePdf::loadView('commercial_quote.pdf.commercial_quote_pdf', compact('commercialQuote', 'freight', 'custom', 'transport', 'personal'));
 
-        return $pdf->stream('Cotizacion Comercial.pdf'); // Muestra el PDF en el navegador
+        return $pdf; // Muestra el PDF en el navegador
 
     }
 

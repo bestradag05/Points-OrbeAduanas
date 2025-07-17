@@ -673,7 +673,7 @@
             // Si es RECHAZAR
             else if (action === 'decline') {
                 Swal.fire({
-                    title: `¿Estas seguro que deseas ${textAction} esta cotización?`,
+                    title: `¿Estas seguro que el cliente ${textAction} esta cotización?`,
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#2e37a4",
