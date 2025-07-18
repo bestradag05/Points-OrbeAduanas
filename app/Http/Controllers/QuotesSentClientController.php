@@ -3,16 +3,45 @@
 namespace App\Http\Controllers;
 
 use App\Models\QuotesSentClient;
+use App\Services\QuotesSentClientService;
 use Illuminate\Http\Request;
 
 class QuotesSentClientController extends Controller
 {
+
+    protected $quotesSentClientService;
+
+
+    public function __construct(QuotesSentClientService $quotesSentClientService)
+    {
+        $this->quotesSentClientService = $quotesSentClientService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $compact = $this->quotesSentClientService->getQuotesSetClient();
+
+         $heads = [
+            '#',
+            'N° de cotizacion',
+            'Origen',
+            'Destino',
+            'Cliente',
+            'Tipo de embarque',
+            'Asesor Comercial',
+            'Consolidado',
+            'Fecha',
+            'Estado',
+            'Acciones'
+        ];
+
+        
+
+        return view('quotes_sent_client/list-quote-sent-client', array_merge($compact, compact('heads')));
+
     }
 
     /**
@@ -34,9 +63,10 @@ class QuotesSentClientController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(QuotesSentClient $quotesSentClient)
+    public function updateStateQuoteSentClient(QuotesSentClient $quotesSentClient)
     {
         //
+        dd($quotesSentClient);
     }
 
     /**

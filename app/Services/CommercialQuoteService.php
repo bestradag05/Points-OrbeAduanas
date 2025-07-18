@@ -59,10 +59,6 @@ class CommercialQuoteService
             $query->where('state', $filters['state']);
         }
 
-        if (!empty($filters['origin'])) {
-            $query->where('origin', 'like', '%' . $filters['origin'] . '%');
-        }
-
         // Puedes seguir agregando más filtros condicionales aquí...
 
         return [

@@ -781,6 +781,12 @@ return [
                     'icon' => 'fas fa-file-medical',
                     'active' => ['commercial/quote'],
                 ],
+                [
+                    'text' => 'Cotizaciones enviadas',
+                    'url'  => 'sent-client',
+                    'icon' => 'fas fa-user-tag',
+                    'active' => ['sent-client'],
+                ],
 
             ]
         ]

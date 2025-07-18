@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Models\CommercialQuote;
+use App\Models\QuotesSentClient;
 use App\Services\CommercialQuoteService;
 use App\Services\CustomService;
 use App\Services\FreightService;
@@ -30,7 +31,7 @@ class CommercialQuoteController extends Controller
 
     public function index()
     {
-        $compact = $this->commercialQuoteService->getQuotes(['state' => 'Activo', 'state' => 'Aceptado']);
+        $compact = $this->commercialQuoteService->getQuotes();
 
         $heads = [
             '#',
@@ -45,6 +46,8 @@ class CommercialQuoteController extends Controller
             'Estado',
             'Acciones'
         ];
+
+
 
         return view('commercial_quote/list-commercial-quote', array_merge($compact, compact('heads')));
     }
@@ -107,6 +110,44 @@ class CommercialQuoteController extends Controller
         $compact = $this->commercialQuoteService->getTemplateDocmentCommercialQuote($id);
 
         return view('commercial_quote/detail-commercial-quote', $compact);
+    }
+
+
+    public function editCommercialQuoteService($service, $id)
+    {
+        switch ($service) {
+            case 'flete':
+                # code...
+
+                $data = $this->freightService->editFreight($id);
+
+                return view('freight/edit-freight', $data);
+
+                break;
+
+            case 'aduanas':
+                # code...
+
+                $data = $this->customService->editCustom($id);
+
+                return view('custom/edit-custom', $data);
+
+                break;
+
+            case 'transporte':
+                # code...
+
+                $data = $this->transportService->editTransport($id);
+                return view('transport/edit-transport', $data);
+
+                break;
+
+            default:
+                # code...
+                break;
+        }
+
+        return $service;
     }
 
 
@@ -196,34 +237,47 @@ class CommercialQuoteController extends Controller
         return response()->json($customer);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function QuoteSentClient(Request $request)
     {
-        //
-    }
+        $commercialQuote = CommercialQuote::findOrFail($request->commercialQuoteId);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $existingQuote = $commercialQuote->quotesSentClients()->where('status', '!=', 'Anulado')->first();
+        
+        if ($existingQuote) {
+            return redirect()->back()->with("error","Debe anular la cotización {$existingQuote->nro_quote_commercial} antes de generar uno nuevo.");
+        }
+
+        $quoteSentClient = QuotesSentClient::create([
+            'commercial_quote_id' => $commercialQuote->id,
+        ]);
+
+        $commercialQuote->update([
+            'state' => 'Aceptado'
+        ]);
+
+
+        if ($commercialQuote->freight) {
+            $commercialQuote->freight->update(['state' => 'Aceptado']);
+        }
+
+        if ($commercialQuote->transport) {
+            $commercialQuote->transport->update(['state' => 'Aceptado']);
+        }
+
+        if ($commercialQuote->custom) {
+            $commercialQuote->custom->update(['state' => 'Aceptado']);
+        }
+
+
+
+        return redirect()->back()->with('quoteSentClient', $quoteSentClient->nro_quote_commercial);
     }
 
 
     public function getPDF($id)
     {
-       $pdf = $this->commercialQuoteService->getPDF($id);
+        $pdf = $this->commercialQuoteService->getPDF($id);
         return $pdf->stream('Cotizacion Comercial.pdf');
     }
 

@@ -494,20 +494,20 @@
                         </td>
 
 
-                        @if ($comercialQuote->state === 'Pendiente')
-                            <td>
-                                <a href="{{ url('/commercial/service/' . strtolower($index) . '/' . $service->id) }}"
-                                    class="text-indigo"><i class="fas fa-edit"></i></a>
-                            </td>
-                        @endif
-                        @if (strtolower($index) === 'flete' && $comercialQuote->state === 'Aceptado')
+
+                        <td>
+                            <a href="{{ url('/commercial/service/' . strtolower($index) . '/' . $service->id) }}"
+                                class="text-indigo"><i class="fas fa-edit"></i></a>
+                        </td>
+
+                        {{--  @if (strtolower($index) === 'flete' && $comercialQuote->state === 'Aceptado')
                             <td>
                                 <button class="btn btn-secondary btn-sm" onclick="openModalgenerateRoutingOrder()">
                                     <i class="fas fa-file-import"></i>
                                     Generar Routing
                                 </button>
                             </td>
-                        @endif
+                        @endif --}}
 
                     </tr>
                 @endforeach
@@ -527,7 +527,7 @@
     </div>
 
 
-    @if ($comercialQuote->typeService->count() > 0)
+    {{-- @if ($comercialQuote->typeService->count() > 0)
         @if ($comercialQuote->state === 'Pendiente')
             <div class="col-12">
                 <div class="row justify-content-center mt-5">
@@ -540,6 +540,22 @@
                 </div>
             </div>
         @endif
+
+    @endif --}}
+
+    @if ($comercialQuote->typeService->count() > 0)
+       
+            <div class="col-12">
+                <div class="row justify-content-center">
+                    <form id="formSentClient" action="/commercial/quote/sent-client" method="POST">
+                        @csrf
+                        <input type="hidden" name="commercialQuoteId" id="commercialQuoteId"
+                            value="{{ $comercialQuote->id }}">
+                        <button class="btn btn-indigo mx-2 text-bold"> <i class="fas fa-paper-plane"></i> GENERAR
+                            COTIZACIÓN AL CLIENTE</button>
+                    </form>
+                </div>
+            </div>
 
     @endif
 
@@ -640,7 +656,7 @@
         }
 
 
-        function handleActionCommercialQuote(action, id) {
+        /* function handleActionCommercialQuote(action, id) {
             let textAction = (action === 'accept') ? 'aceptar' : 'rechazar';
 
             // Validamos datos del cliente y consolidado (los traemos del backend via Blade)
@@ -687,8 +703,28 @@
                     }
                 });
             }
-        }
+        } */
 
+
+        $('#formSentClient').on('submit', (e) => {
+
+            e.preventDefault();
+            Swal.fire({
+                title: `¿Estas seguro que deseas generar esta cotizacion para el cliente?`,
+                text: "Esto generar un numero de cotización que se le asignara al cliente",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#2e37a4",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: `Si, generar !`,
+                cancelButtonText: 'No, cancelar',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    e.target.submit()
+                }
+            });
+        })
 
 
         function completeCustomerInformation(nameCustomer, idCustomer, isConsolidated) {
@@ -964,6 +1000,23 @@
                 $('#client_trace_quote_id').val('{{ session('quote_id') }}');
                 $('#client_trace_action').val('{{ session('type_action') }}');
                 $('#modalClientTrace').modal('show');
+            });
+        </script>
+    @endif
+    @if (session('quoteSentClient'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                html: 'Se genero la cotización para el cliente, el numero de cotizacion asignado es: <strong>{{ session('quoteSentClient') }}</strong>',
+                showConfirmButton: true,
+                confirmButtonText: 'Ir'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirige a la página después de que el usuario haga clic en "Ir"
+                    window.location.href =
+                    '{{ route('sent-client.index') }}'; // Ajusta esta URL a la ruta de tu lista de cotizaciones
+                }
             });
         </script>
     @endif

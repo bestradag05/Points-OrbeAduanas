@@ -246,4 +246,5 @@
             validarPuntos(); // Llamar para establecer el valor inicial del máximo
         });
     </script>
+      
 @endpush

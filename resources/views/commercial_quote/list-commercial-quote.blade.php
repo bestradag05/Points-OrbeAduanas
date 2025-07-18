@@ -21,7 +21,7 @@
                 </td>
                 <td class="text-uppercase">{{ $commercial_quote->originState->country->name }} - {{ $commercial_quote->originState->name }}</td>
                 <td class="text-uppercase">{{ $commercial_quote->destinationState->country->name }} - {{ $commercial_quote->destinationState->name }}</td>
-                <td class="text-uppercase">{{ $commercial_quote->customer_company_name }}</td>
+                <td class="text-uppercase">{{ $commercial_quote->customer->name_businessname }}</td>
                 <td>{{ $commercial_quote->type_shipment->description .' '.(($commercial_quote->type_shipment->description  === 'Marítima') ? $commercial_quote->lcl_fcl : '') }}</td>
                 <td>{{ $commercial_quote->personal->names }}</td>
                 <td>{{ $commercial_quote->is_consolidated ? 'SI' : 'NO'}}</td>
