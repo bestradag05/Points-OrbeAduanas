@@ -465,10 +465,10 @@
                                     @else
                                         {{-- Aún no hay ninguna aceptada, esta se puede aceptar o rechazar --}}
                                         <button class="btn btn-success btn-sm" data-toggle="modal"
-                                            data-target="#modalAcceptResponse" data-response-id="{{ $response->id }}">
+                                            data-target="#quote-transport" data-response-id="{{ $response->id }}"
+                                            data-response-nro="{{ $response->nro_response }}">
                                             Aceptar
                                         </button>
-
                                         <button class="btn btn-danger btn-sm" data-toggle="modal"
                                             data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
                                             Rechazar
@@ -484,8 +484,8 @@
     </div>
 
     {{-- Modal de “Cerrar Cotización” con selección de respuesta --}}
-    <div id="quote-transport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="quote-transport-title"
-        aria-hidden="true">
+    <div id="quote-transport" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" aria-labelledby="quote-transport-title" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <form action="{{ url('/quote/transport/cost/accept/' . $quote->id) }}" id="sendTransportCost"
@@ -501,8 +501,6 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-
-
                     <div class="modal-body">
                         {{-- 1) Campo solo lectura con la respuesta seleccionada --}}
                         <div class="form-group">
@@ -512,7 +510,6 @@
                             {{-- Valor real que se envía --}}
                             <input type="hidden" name="response_id" id="response_id">
                         </div>
-
                         {{-- 2) Cuadrilla, si aplica --}}
                         @if ($quote->gang === 'SI')
                             <div class="form-group">
@@ -539,7 +536,7 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" id="btnCerrarCotizacion">
                             Cerrar Cotización
                         </button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">
@@ -807,7 +804,8 @@
                         <div class="form-row align-items-center mb-4">
                             <div class="col-md-8">
                                 <label for="provider_id">Proveedor <span class="text-danger">*</span></label>
-                                <select name="provider_id" id="provider_id">
+                                <x-adminlte-select2 name="provider_id" igroup-size="md"
+                                    data-placeholder="Seleccione una opcion...">
                                     <option />
                                     @foreach ($transportSuppliers as $sup)
                                         <option value="{{ $sup->id }}"
@@ -815,8 +813,12 @@
                                             {{ $sup->name_businessname }}
                                         </option>
                                     @endforeach
-                                </select>
+
+                                </x-adminlte-select2>
                             </div>
+
+
+
 
                             <div class="col-md-4 text-right">
                                 <div class="bg-light p-3 rounded">
@@ -886,11 +888,15 @@
     </div>
 
 
-    <div class="modal fade" id="modalAcceptResponse" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade" id="modalAcceptResponse" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <form method="POST" action="{{ route('transport.quote.accept') }}">
                 @csrf
                 <input type="hidden" name="response_id" id="accept_response_id">
+                <input type="hidden" name="withdrawal_date" id="hidden_withdrawal_date">
+                <input type="hidden" name="cost_gang" id="hidden_cost_gang">
+                <input type="hidden" name="cost_guard" id="hidden_cost_guard">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Aceptar respuesta del proveedor</h5>
@@ -908,9 +914,6 @@
             </form>
         </div>
     </div>
-
-
-
 
     <div class="modal fade" id="modalRejectResponse" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -949,65 +952,54 @@
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
     <script>
         $(document).ready(function() {
+
+            // 1) Inicializar tus plugins normales
             $('#quote-text').summernote();
-        });
 
-        $('#provider_id').select2({
-            width: 'resolve',
-            placeholder: "Seleccione una opcion...",
-            allowClear: true
-        });
+            // 2) Delegar el click / submit de “Cerrar Cotización”
+            $(document)
+                // click en el botón → disparamos el submit
+                .on('click', '#btnCerrarCotizacion', function(e) {
+                    e.preventDefault();
+                    $('#sendTransportCost').submit();
+                })
+                // submit del form → recogemos datos, cerramos el primer modal y abrimos el segundo
+                .on('submit', '#sendTransportCost', function(e) {
+                    e.preventDefault();
+                    const $f = $(this);
+                    const respId = $f.find('#response_id').val();
+                    const retiro = $f.find('#withdrawal_date').val();
+                    const gang = $f.find('#cost_gang').val();
+                    const guard = $f.find('#cost_guard').val();
 
+                    // inyectamos en el modal de justificación
+                    $('#accept_response_id').val(respId);
+                    $('#hidden_withdrawal_date').val(retiro);
+                    $('#hidden_cost_gang').val(gang);
+                    $('#hidden_cost_guard').val(guard);
 
-        $('#sendTransportCost').on('submit', (e) => {
-
-            e.preventDefault();
-
-            let isValid = true; // Bandera para comprobar si el formulario es válido
-            let form = e.target;
-            const inputs = form.querySelectorAll('input');
-
-
-            inputs.forEach((input) => {
-                // Ignorar campos ocultos (d-none)
-                if (input.closest('.d-none')) {
-                    return;
-                }
-
-                // Validar si el campo está vacío
-                if (input.value.trim() === '') {
-                    input.classList.add('is-invalid');
-                    isValid = false; // Cambiar bandera si algún campo no es válido
-                    showError(input, 'Debe completar este campo');
-                } else {
-                    input.classList.remove('is-invalid');
-                    hideError(input);
-                }
-            });
-
-
-            if (isValid) {
-                form.submit();
-            }
+                    // cerramos el primero y, cuando termine de ocultarse, abrimos el segundo
+                    $('#quote-transport')
+                        .one('hidden.bs.modal', function() {
+                            $('#modalAcceptResponse').modal('show');
+                        })
+                        .modal('hide');
+                });
 
         });
 
-
-        $(function() {
-            // Prueba en consola que existe el modal
-            console.log('modalCotizar:', $('#modalCotizar').length);
-
-            // AJAX submit del modal
-            $('#formCotizarConceptos').on('submit', function(e) {
-                e.preventDefault();
-                $.post("{{ route('transport.quote.responses.store', $quote->id) }}", $(this).serialize())
-                    .done(res => {
-                        $('#modalCotizar').modal('hide');
-                        $('#priceSummary').html(res.html);
-                    })
-                    .fail(() => alert('Error guardando cotización.'));
+        //TODO: (Task) Poner funcion de forma global para todos los modales que tengan un select2
+        $('#modalCotizarTransporte').on('shown.bs.modal', function() {
+            $(this).find('#provider_id').select2({
+                dropdownParent: $(this),
+                width: '100%', // o 'resolve' según prefieras
+                placeholder: 'Seleccione una opción...',
+                allowClear: true
             });
         });
+
+
+
 
 
         let commercial_quote = @json($quote->nro_quote_commercial);
@@ -1079,7 +1071,6 @@
 
                     removeButton.addEventListener('click', function(event) {
                         event.preventDefault();
-
                         axios.post('/quote/transport/file-delete-documents', {
 
                             filename: response.filename,
@@ -1104,7 +1095,6 @@
 
                     tableBody.appendChild(row);
 
-                    console.log(tableBody);
 
                     // Guardar en el mapa de archivos subidos
                     /* uploadedFiles.set(response.filename, listItem); */
@@ -1251,6 +1241,8 @@
         }
 
 
+
+
         $('#modalAcceptResponse').on('show.bs.modal', function(e) {
             $('#accept_response_id').val($(e.relatedTarget).data('response-id'));
         });
@@ -1258,17 +1250,4 @@
             $('#reject_response_id').val($(e.relatedTarget).data('response-id'));
         });
     </script>
-    @if (session('open_close_quote_modal'))
-        <script>
-            $(document).ready(function() {
-                const responseId = '{{ session('response_id') }}';
-                const responseNro = '{{ session('response_nro') }}';
-
-                $('#response_id').val(responseId);
-                $('#response_display').val(responseNro);
-
-                $('#quote-transport').modal('show');
-            });
-        </script>
-    @endif
 @endpush
