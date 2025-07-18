@@ -304,7 +304,7 @@ Route::middleware('auth')->group(function () {
 
     /* Cotizaciones enviadas al cliente */
     Route::resource('sent-client', QuotesSentClientController::class);
-    Route::get('sent-client/{id}', [CommercialQuoteController::class, 'updateStateQuoteSentClient']);
+    Route::get('sent-client/{id}', [QuotesSentClientController::class, 'updateStateQuoteSentClient']);
 
     /* Packing type */
 
