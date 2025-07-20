@@ -26,6 +26,7 @@
                             <th scope="col">Ganacia</th>
                             <th scope="col">Puntos</th>
                             <th scope="col">Profit</th>
+                            <th scope="col">Saldo</th>
                             <th scope="col">Comision Generada</th>
                             <th scope="col">Acciones</th>
                         </tr>
@@ -43,6 +44,7 @@
                             </td>
                             <td>{{ $commercialQuote->freight->points->sum('quantity') }}</td>
                             <td>{{$commercialQuote->freight->profitability->seller_profit ?? 0.00}}</td>
+                            <td> 0.00</td>
                             <td>
                                 <div class="custom-badge status-success">
                                     $ {{ number_format($commercialQuote->freight->sellerCommissions->sum('amount'), 2) }}

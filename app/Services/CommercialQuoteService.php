@@ -942,18 +942,19 @@ class CommercialQuoteService
     public function getNroQuoteCommercial()
     {
         $lastCode = CommercialQuote::latest('id')->first();
-        $year = date('y');
-        $prefix = 'COTI-';
+        $prefix = 'TCOST';
 
         // Si no hay registros, empieza desde 1
         if (!$lastCode) {
-            $codigo = $prefix . $year . '1';
+            $number = 1;
         } else {
             // Extraer el número y aumentarlo
-            $number = (int) substr($lastCode->nro_quote_commercial, 7);
+            $number = (int) substr($lastCode->nro_quote_commercial, 5);
             $number++;
-            $codigo = $prefix . $year  . $number;
         }
+
+        // Formatear el número con ceros a la izquierda
+        $codigo = $prefix . str_pad($number, 3, '0', STR_PAD_LEFT);
 
         return $codigo;
     }

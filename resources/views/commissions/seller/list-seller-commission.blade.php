@@ -37,7 +37,7 @@
 
                 <td>
                     @if (!$commercial_quote->typeService()->exists() || auth()->user()->hasRole('Super-Admin'))
-                        <a href="{{ url('/commissions/seller/' . $commercial_quote->id . '/detail') }}"><i class="fas fa-coins"></i> Gestionar puntos</a>
+                        <a href="{{ url('/commissions/seller/' . $commercial_quote->id . '/detail') }}"><i class="fas fa-coins"></i> Gestionar comisiones</a>
                     @endif
                 </td>
             </tr>
