@@ -24,9 +24,10 @@ class QuotesSentClientController extends Controller
     {
         $compact = $this->quotesSentClientService->getQuotesSetClient();
 
-         $heads = [
+        $heads = [
             '#',
             'N° de cotizacion',
+            'ReF ##',
             'Origen',
             'Destino',
             'Cliente',
@@ -38,10 +39,9 @@ class QuotesSentClientController extends Controller
             'Acciones'
         ];
 
-        
+
 
         return view('quotes_sent_client/list-quote-sent-client', array_merge($compact, compact('heads')));
-
     }
 
     /**
@@ -63,10 +63,51 @@ class QuotesSentClientController extends Controller
     /**
      * Display the specified resource.
      */
-    public function updateStateQuoteSentClient(QuotesSentClient $quotesSentClient)
+    public function updateStateQuoteSentClient(String $id, String $action, Request $request)
     {
-        //
-        dd($quotesSentClient);
+
+        $quotesSentClient = QuotesSentClient::findOrFail($id);
+        $status = '';
+
+        if (!$quotesSentClient) {
+            return redirect()->back()->with('error', 'No se encontro la cotización enviada al cliente.');
+        }
+
+        $justification = $request->input('justification');
+
+        switch ($action) {
+            case 'accept':
+                # code...
+                $status = 'Aceptado';
+                break;
+            case 'decline':
+                # code...
+                $status = 'Rechazado';
+                break;
+            case 'expired':
+                # code...
+                $status = 'Caducado';
+                break;
+            case 'cancel':
+                # code...
+                $status = 'Anulado';
+                break;
+
+            default:
+                # code...
+                $status = 'Pendiente';
+                break;
+        }
+
+
+        $quotesSentClient->update(['status' => $status]);
+
+
+        if ($justification) {
+            $quotesSentClient->justification = $justification;
+        }
+
+        return redirect()->back()->with('success', 'Se actualizo el estado de la cotizacion enviada al cliente.');
     }
 
     /**

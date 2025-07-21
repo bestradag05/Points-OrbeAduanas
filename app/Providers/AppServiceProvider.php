@@ -41,7 +41,7 @@ class AppServiceProvider extends ServiceProvider
             }
         });
 
-        ResponseFreightQuotes::observe(ResponseQuoteFreightObserver::class);
+       
 
     }
 }

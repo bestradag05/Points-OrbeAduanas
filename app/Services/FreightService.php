@@ -452,7 +452,6 @@ class FreightService
 
         if ($conceptsFreight) {
             foreach ($conceptsFreight as $concept) {
-                $concept->additional_point()->delete();
                 $concept->forceDelete(); // Esto elimina el ConceptFreight definitivamente
             }
         }

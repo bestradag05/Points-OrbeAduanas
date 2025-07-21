@@ -1710,8 +1710,6 @@
                         justification.removeClass('is-invalid');
                         hideError(justification[0]);
                         $('#modalJustification').modal('show');
-                        // Mostrar el modal de justificación
-                        $('#modalJustification').modal('show');
 
                         $('#formModalJustification').attr('action', `/quote/freight/response/${responseId}/accept`);
 

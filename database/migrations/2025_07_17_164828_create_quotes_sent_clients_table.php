@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nro_quote_commercial')->unique();
             $table->unsignedBigInteger('commercial_quote_id');
-            $table->enum('status', ['Pendiente', 'Aceptado', 'Rechazado'])->default('Pendiente');
+            $table->enum('status', ['Pendiente', 'Aceptado', 'Rechazado', 'Caducado', 'Anulado'])->default('Pendiente');
             $table->timestamps();
 
             $table->foreign('commercial_quote_id')->references('id')->on('commercial_quote');
