@@ -15,7 +15,8 @@ class ResponseTransportQuote extends Model
         'quote_transport_id',
         'provider_id',
         'provider_cost',
-        'commission',
+        'exchange_rate',
+        'value_utility',
         'total',
         'status'
     ];

@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('nro_response')->unique()->default('');
             $table->foreignId('provider_id')->constrained('suppliers');
             $table->decimal('provider_cost', 12, 2);
-            $table->decimal('commission', 12, 2)->nullable();
+            $table->decimal('exchange_rate', 8, 4)->nullable();
+            $table->decimal('value_utility', 10, 2)->nullable();
             $table->decimal('total', 12, 2)->nullable();
             $table->enum('status', ['Aceptado', 'Rechazada', 'Enviada'])->default('Enviada');
             $table->timestamps();

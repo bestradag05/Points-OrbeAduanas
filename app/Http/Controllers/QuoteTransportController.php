@@ -450,13 +450,9 @@ class QuoteTransportController extends Controller
             ->where('id', '!=', $response->id)
             ->update(['status' => 'Rechazada']);
 
-        return redirect()
-            ->route('transport.show', $response->quote_transport_id)
-            ->with([
-                'open_close_quote_modal' => true,
-                'response_id' => $response->id,
-                'response_nro' => $response->nro_response,
-            ]);
+        $quote = QuoteTransport::findOrFail($response->quote_transport_id);
+
+        return redirect('/transport/create/' . $quote->id);
     }
 
 
@@ -639,26 +635,30 @@ class QuoteTransportController extends Controller
 
     public function acceptQuoteTransport(Request $request, string $id)
     {
-
-        // 1) Actualizas tu cotización…
         $quote = QuoteTransport::findOrFail($id);
         $response = ResponseTransportQuote::findOrFail($request->input('response_id'));
+
         $dateFormat = Carbon::createFromFormat('Y-m-d', $request->withdrawal_date)->toDateString();
-        $transportCost = $response->total;
+
         $quote->update([
-            'withdrawal_date' => $dateFormat,   // equivale a format('Y-m-d')
-            'state'           => 'Pendiente',
+            'withdrawal_date' => $dateFormat,
+            'state' => 'Pendiente',
         ]);
 
-        $response->update([
-            'status' => 'Aceptado'
-        ]);
+        // NOTA: no se acepta la respuesta aquí
+        // $response->update(['status' => 'Aceptado']);
 
         $ids = $response->conceptResponseTransports->pluck('concepts_id')->toArray();
         $quote->transportConcepts()->sync($ids);
 
-        return redirect('/transport/create/' . $quote->id);
+        return redirect()
+            ->route('transport.show', $quote->id)
+            ->with([
+                'open_modal_accept_justification' => true,
+                'response_id' => $response->id,
+            ]);
     }
+
 
     public function correctedQuoteTransport(string $id)
     {

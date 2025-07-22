@@ -430,7 +430,6 @@
                     <th>N° respuesta</th>
                     <th>Proveedor</th>
                     <th>Costo Neto</th>
-                    <th>Comision</th>
                     <th>Total</th>
                     <th>Estado</th>
                     <th>Acciones</th>
@@ -442,7 +441,6 @@
                             <td>{{ $response->nro_response }}</td>
                             <td>{{ optional($response->supplier)->name_businessname }}</td>
                             <td>{{ $response->provider_cost }}</td>
-                            <td>{{ $response->commission }}</td>
                             <td>{{ $response->total }}</td>
                             <td class="status-{{ strtolower($response->state) }}">
                                 {{ $response->status }}
@@ -510,23 +508,6 @@
                             {{-- Valor real que se envía --}}
                             <input type="hidden" name="response_id" id="response_id">
                         </div>
-                        {{-- 2) Cuadrilla, si aplica --}}
-                        @if ($quote->gang === 'SI')
-                            <div class="form-group">
-                                <label for="cost_gang">Cuadrilla</label>
-                                <input id="cost_gang" name="cost_gang" data-type="currency"
-                                    class="form-control CurrencyInput" type="text">
-                            </div>
-                        @endif
-
-                        {{-- 3) Resguardo, si aplica --}}
-                        @if ($quote->guard === 'SI')
-                            <div class="form-group">
-                                <label for="cost_guard">Resguardo</label>
-                                <input id="cost_guard" name="cost_guard" data-type="currency"
-                                    class="form-control CurrencyInput" type="text">
-                            </div>
-                        @endif
 
                         {{-- 4) Fecha aproximada de retiro --}}
                         <div class="form-group">
@@ -547,6 +528,8 @@
             </div>
         </div>
     </div>
+
+
 
     <div class="modal fade" id="modalQuoteTransportDocuments" tabindex="-1"
         aria-labelledby="modalQuoteTransportDocumentsLabel" aria-hidden="true">
@@ -839,7 +822,7 @@
                                 @if (!empty($tc->name))
                                     <div class="form-group row">
                                         <label class="col-sm-6 col-form-label font-weight-bold">
-                                            {{ $tc->name }}
+                                            {{ $tc->name }} (S/.)
                                         </label>
                                         <div class="col-sm-6">
                                             <input type="number" step="0.01"
@@ -850,25 +833,51 @@
                                 @endif
                             @endforeach
 
-                            <hr class="my-4">
-
-                            {{-- Comisión --}}
                             <div class="form-group row">
-                                <label for="commission" class="col-sm-6 col-form-label font-weight-bold">
-                                    Comisión
-                                </label>
+                                <label class="col-sm-6 font-weight-bold">Utilidad (US$)</label>
                                 <div class="col-sm-6">
-                                    <input type="number" step="0.01" name="commission" id="commission"
-                                        class="form-control concept-input" value="">
+                                    <input type="number" step="0.01" name="value_utility" id="value_utility"
+                                        class="form-control" value="{{ $quote->type_cargo === 'FCL' ? 80 : 55 }}">
                                 </div>
                             </div>
 
+                            <hr class="my-4">
+
+                            {{-- Campos adicionales --}}
+                            <div class="form-group row">
+                                <label class="col-sm-6 font-weight-bold">Tipo de cambio (S/.)</label>
+                                <div class="col-sm-6">
+                                    <input type="number" step="0.0001" name="exchange_rate" id="exchange_rate"
+                                        class="form-control" value="3.70">
+                                </div>
+                            </div>
+                            <hr class="my-4">
+
+                            {{-- Resumen calculado --}}
+                            <div class="form-group row">
+                                <label class="col-sm-6 font-weight-bold">Subtotal (S/.)</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="subtotalSoles" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-6 font-weight-bold">IGV (18%)</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="igvSoles" readonly>
+                                </div>
+                            </div>
                             {{-- Total general (sólo lectura) --}}
                             <div class="form-group row mt-4">
-                                <label class="col-sm-6 font-weight-bold">Total</label>
+                                <label class="col-sm-6 font-weight-bold">Total (S/.)</label>
                                 <div class="col-sm-6">
                                     <input type="text" class="form-control" id="totalConceptos" readonly
                                         value="0.00">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-6 font-weight-bold">Total (US$)</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="totalDolares" readonly>
                                 </div>
                             </div>
                         </div>
@@ -894,9 +903,6 @@
             <form method="POST" action="{{ route('transport.quote.accept') }}">
                 @csrf
                 <input type="hidden" name="response_id" id="accept_response_id">
-                <input type="hidden" name="withdrawal_date" id="hidden_withdrawal_date">
-                <input type="hidden" name="cost_gang" id="hidden_cost_gang">
-                <input type="hidden" name="cost_guard" id="hidden_cost_guard">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Aceptar respuesta del proveedor</h5>
@@ -952,41 +958,20 @@
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
     <script>
         $(document).ready(function() {
-
-            // 1) Inicializar tus plugins normales
             $('#quote-text').summernote();
 
-            // 2) Delegar el click / submit de “Cerrar Cotización”
-            $(document)
-                // click en el botón → disparamos el submit
-                .on('click', '#btnCerrarCotizacion', function(e) {
-                    e.preventDefault();
-                    $('#sendTransportCost').submit();
-                })
-                // submit del form → recogemos datos, cerramos el primer modal y abrimos el segundo
-                .on('submit', '#sendTransportCost', function(e) {
-                    e.preventDefault();
-                    const $f = $(this);
-                    const respId = $f.find('#response_id').val();
-                    const retiro = $f.find('#withdrawal_date').val();
-                    const gang = $f.find('#cost_gang').val();
-                    const guard = $f.find('#cost_guard').val();
+            @if (session('open_modal_accept_justification'))
+                $('#accept_response_id').val(@json(session('response_id')));
 
-                    // inyectamos en el modal de justificación
-                    $('#accept_response_id').val(respId);
-                    $('#hidden_withdrawal_date').val(retiro);
-                    $('#hidden_cost_gang').val(gang);
-                    $('#hidden_cost_guard').val(guard);
-
-                    // cerramos el primero y, cuando termine de ocultarse, abrimos el segundo
-                    $('#quote-transport')
-                        .one('hidden.bs.modal', function() {
-                            $('#modalAcceptResponse').modal('show');
-                        })
-                        .modal('hide');
-                });
-
+                setTimeout(function() {
+                    $('#modalAcceptResponse').appendTo('body').modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    }).modal('show');
+                }, 300);
+            @endif
         });
+
 
         //TODO: (Task) Poner funcion de forma global para todos los modales que tengan un select2
         $('#modalCotizarTransporte').on('shown.bs.modal', function() {
@@ -1129,17 +1114,45 @@
         }
 
         function recalcTotal() {
-            let sum = 0;
-            document.querySelectorAll('.concept-input').forEach(i => {
-                sum += parseFloat(i.value) || 0;
-            });
-            document.getElementById('totalConceptos').value = sum.toFixed(2);
+            const typeCargo = @json($quote->type_cargo); // "LCL" o "FCL"
+            const exchangeRate = parseFloat(document.getElementById('exchange_rate')?.value || 1);
+            const utility = parseFloat(document.getElementById('value_utility')?.value || 0);
+
+            const minUtility = typeCargo === 'FCL' ? 60 : 45;
+            const idealUtility = typeCargo === 'FCL' ? 80 : 55;
+
+            // Total soles: suma directa de conceptos
+            const totalSoles = [...document.querySelectorAll('.concept-input')]
+                .reduce((sum, input) => sum + parseFloat(input.value || 0), 0);
+
+            // Subtotal es total sin IGV
+            const subtotal = +(totalSoles / 1.18).toFixed(2);
+            const igv = +(totalSoles - subtotal).toFixed(2);
+
+            // Total USD = total soles / tipo cambio + utilidad
+            const totalUSD = +(totalSoles / exchangeRate).toFixed(2);
+            const totalUSDWithUtility = +(totalUSD + utility).toFixed(2);
+
+            // Validación visual
+            if (utility < minUtility) {
+                console.warn(
+                    `Utilidad menor al mínimo permitido para ${typeCargo}: $${minUtility}. Ideal: $${idealUtility}.`);
+            }
+
+            // Mostrar en campos
+            document.getElementById('subtotalSoles').value = subtotal.toFixed(2);
+            document.getElementById('igvSoles').value = igv.toFixed(2);
+            document.getElementById('totalConceptos').value = totalSoles.toFixed(2);
+            document.getElementById('totalDolares').value = totalUSDWithUtility.toFixed(2);
         }
+
+
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.concept-input')
-                .forEach(i => i.addEventListener('input', recalcTotal));
+            document.querySelectorAll('.concept-input, #exchange_rate, #value_utility')
+                .forEach(el => el.addEventListener('input', recalcTotal));
             recalcTotal();
         });
+
 
 
         (function() {
@@ -1240,12 +1253,6 @@
             }
         }
 
-
-
-
-        $('#modalAcceptResponse').on('show.bs.modal', function(e) {
-            $('#accept_response_id').val($(e.relatedTarget).data('response-id'));
-        });
         $('#modalRejectResponse').on('show.bs.modal', function(e) {
             $('#reject_response_id').val($(e.relatedTarget).data('response-id'));
         });
