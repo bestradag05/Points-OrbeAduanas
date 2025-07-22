@@ -104,7 +104,7 @@ class QuotesSentClientController extends Controller
 
 
         if ($justification) {
-            $quotesSentClient->justification = $justification;
+            $quotesSentClient->registerJustification($quotesSentClient, $status, $justification);
         }
 
         return redirect()->back()->with('success', 'Se actualizo el estado de la cotizacion enviada al cliente.');

@@ -222,6 +222,11 @@
     color: #00D3C7;
 }
 
+.status-caducado {
+    background: #e0ecfc;
+    color: #2f80ed;
+}
+
 /* .status-observado {
     color: purple;
 } */

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasJustifications;
 use App\Traits\HasTrace;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,6 +11,7 @@ class QuotesSentClient extends Model
 {
     use HasFactory;
     use HasTrace;
+    use HasJustifications;
 
     protected $fillable = [
         'nro_quote_commercial',
@@ -51,6 +53,11 @@ class QuotesSentClient extends Model
     public function commercialQuote()
     {
         return $this->belongsTo(CommercialQuote::class, 'commercial_quote_id');
+    }
+
+    public function justifications()
+    {
+        return $this->morphMany(QuoteJustifications::class, 'quotable');  // Polymorphic inverse relation
     }
 
     public function traces()

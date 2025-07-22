@@ -12,7 +12,7 @@ class QuoteSentClientObserver
      */
     public function created(QuotesSentClient $quotesSentClient): void
     {
-        $quotesSentClient->registerTrace('Creado', "Cotización enviada al cliente generada con el codigo {{$quotesSentClient->nro_quote_commercial}}");
+        $quotesSentClient->registerTrace('Creado', "Cotización enviada al cliente generada con el codigo {$quotesSentClient->nro_quote_commercial}");
     }
 
     /**

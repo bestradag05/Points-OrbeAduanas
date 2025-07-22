@@ -122,7 +122,7 @@
                         text: 'Eta acción cambiara ha caducada el estado de la cotización',
                         icon: 'warning',
                         showCancelButton: true,
-                        confirmButtonText: 'Rechazar',
+                        confirmButtonText: 'Caducado',
                         cancelButtonText: 'Cancelar',
                         confirmButtonColor: '#d33'
                     }).then((result) => {
@@ -143,7 +143,7 @@
                         text: 'Eta acción cambiara ha anulado el estado de la cotización',
                         icon: 'warning',
                         showCancelButton: true,
-                        confirmButtonText: 'Rechazar',
+                        confirmButtonText: 'Anular',
                         cancelButtonText: 'Cancelar',
                         confirmButtonColor: '#d33'
                     }).then((result) => {
