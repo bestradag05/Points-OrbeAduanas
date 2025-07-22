@@ -42,6 +42,12 @@ return new class extends Migration
             $table->decimal('cif_value', 8 , 2)->nullable();
             $table->date('valid_date')->nullable();
 
+            /* Guardar totales de los servicios */
+            $table->decimal('total_freight', 8,2)->nullable();
+            $table->decimal('total_transport', 8,2)->nullable();
+            $table->decimal('total_custom', 8,2)->nullable();
+
+            $table->decimal('total_quote_sent_client', 8,2)->nullable();
 
             $table->unsignedBigInteger('commercial_quote_id');
             $table->enum('status', ['Pendiente', 'Aceptado', 'Rechazado', 'Caducado', 'Anulado'])->default('Pendiente');

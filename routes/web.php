@@ -305,6 +305,7 @@ Route::middleware('auth')->group(function () {
     /* Cotizaciones enviadas al cliente */
     Route::resource('sent-client', QuotesSentClientController::class);
     Route::post('sent-client/{id}/{action}', [QuotesSentClientController::class, 'updateStateQuoteSentClient']);
+    Route::get('sent-client/generatePdf/{id}', [QuotesSentClientController::class, 'generatePDf']);
 
     /* Packing type */
 

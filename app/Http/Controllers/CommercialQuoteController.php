@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CommercialQuote;
+use App\Models\QuoteSentClientConcept;
 use App\Models\QuotesSentClient;
 use App\Services\CommercialQuoteService;
 use App\Services\CustomService;
@@ -243,14 +244,42 @@ class CommercialQuoteController extends Controller
         $commercialQuote = CommercialQuote::findOrFail($request->commercialQuoteId);
 
         $existingQuote = $commercialQuote->quotesSentClients()->where('status', '!=', 'Anulado')->first();
-        
+
         if ($existingQuote) {
-            return redirect()->back()->with("error","Debe anular la cotización {$existingQuote->nro_quote_commercial} antes de generar uno nuevo.");
+            return redirect()->back()->with("error", "Debe anular la cotización {$existingQuote->nro_quote_commercial} antes de generar uno nuevo.");
         }
 
+        $totalQuoteSentClient = 0;
+
         $quoteSentClient = QuotesSentClient::create([
+
+            'origin' => $commercialQuote->origin,
+            'destination' => $commercialQuote->destination,
+            'customer_company_name' => $commercialQuote->customer_company_name,
+            'load_value' => $commercialQuote->load_value,
+            'id_personal' => $commercialQuote->id_personal,
+            'id_type_shipment' => $commercialQuote->id_type_shipment,
+            'id_regime' => $commercialQuote->id_regime,
+            'id_incoterms' => $commercialQuote->id_incoterms,
+            'id_type_load' => $commercialQuote->id_type_load,
+            'id_customer' => $commercialQuote->id_customer,
+            'id_supplier' => $commercialQuote->id_supplier,
+            'lcl_fcl' => $commercialQuote->lcl_fcl,
+            'is_consolidated' => $commercialQuote->is_consolidated,
+            'commodity' => $commercialQuote->commodity,
+            'nro_package' => $commercialQuote->nro_package,
+            'id_packaging_type' => $commercialQuote->id_packaging_type,
+            'kilograms' => $commercialQuote->kilograms,
+            'volumen' => $commercialQuote->volumen,
+            'pounds' => $commercialQuote->pounds,
+            'kilogram_volumen' => $commercialQuote->kilogram_volumen,
+            'tons' => $commercialQuote->tons,
+            'measures' => $commercialQuote->measures,
+            'cif_value' => $commercialQuote->cif_value,
+            'valid_date' => $commercialQuote->valid_date,
             'commercial_quote_id' => $commercialQuote->id,
         ]);
+
 
         $commercialQuote->update([
             'state' => 'Aceptado'
@@ -259,15 +288,72 @@ class CommercialQuoteController extends Controller
 
         if ($commercialQuote->freight) {
             $commercialQuote->freight->update(['state' => 'Aceptado']);
+
+            /* Total del flete */
+
+            $quoteSentClient->update([
+                'total_freight' => $commercialQuote->freight->total_freight_value
+            ]);
+
+            /* Conceptos para quote_sent_client */
+
+            $concepts = $commercialQuote->freight->concepts;
+            foreach ($concepts as $concept) {
+
+                $quoteSentClient->concepts()->attach(
+                    $concept->id,  // El ID del concepto
+                    ['concept_value' => $concept->pivot->value_concept, 'service_type' => 'Flete']
+                );
+            }
+
+            $totalQuoteSentClient += $commercialQuote->freight->total_freight_value;
         }
 
         if ($commercialQuote->transport) {
             $commercialQuote->transport->update(['state' => 'Aceptado']);
+
+            /* Total del transporte */
+
+            $quoteSentClient->update([
+                'total_transport' => $commercialQuote->transport->total_transport
+            ]);
+
+            $concepts = $commercialQuote->transport->concepts;
+            
+            foreach ($concepts as $concept) {
+
+                $quoteSentClient->concepts()->attach(
+                    $concept->id,  // El ID del concepto
+                    ['concept_value' => $concept->pivot->total, 'service_type' => 'Transporte']
+                );
+            }
+
+            $totalQuoteSentClient += $commercialQuote->transport->total_transport;
         }
 
         if ($commercialQuote->custom) {
             $commercialQuote->custom->update(['state' => 'Aceptado']);
+            /* Total de la aduana */
+            $quoteSentClient->update([
+                'total_transport' => $commercialQuote->custom->total_custom
+            ]);
+
+            $concepts = $commercialQuote->custom->concepts;
+            foreach ($concepts as $concept) {
+
+                $quoteSentClient->concepts()->attach(
+                    $concept->id,  // El ID del concepto
+                    ['concept_value' => $concept->pivot->value_concept, 'service_type' => 'Aduana']
+                );
+            }
+
+            $totalQuoteSentClient += $commercialQuote->custom->total_custom;
         }
+
+
+        $quoteSentClient->update([
+            'total_quote_sent_client' => $totalQuoteSentClient
+        ]);
 
 
 

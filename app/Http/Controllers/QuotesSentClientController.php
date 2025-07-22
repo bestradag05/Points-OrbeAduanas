@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\QuotesSentClient;
 use App\Services\QuotesSentClientService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class QuotesSentClientController extends Controller
 {
@@ -58,6 +60,27 @@ class QuotesSentClientController extends Controller
     public function store(Request $request)
     {
         //
+    }
+
+
+
+    public function generatePDF($id)
+    {
+        $quoteSentClient = QuotesSentClient::findOrFail($id);
+
+        $personal = $quoteSentClient->personal;
+
+
+        $freightConcepts = $quoteSentClient->concepts()->wherePivot('service_type', 'Flete')->get();
+        $customConcepts = $quoteSentClient->concepts()->wherePivot('service_type', 'Aduanas')->get();
+        $transportConcepts = $quoteSentClient->concepts()->wherePivot('service_type', 'Transporte')->get();
+
+
+
+
+       $pdf = Pdf::loadView('commercial_quote.pdf.commercial_quote_pdf', compact('quoteSentClient', 'freightConcepts', 'customConcepts', 'transportConcepts', 'personal'));
+
+        return $pdf->stream('Cotizacion Comercial.pdf');
     }
 
     /**

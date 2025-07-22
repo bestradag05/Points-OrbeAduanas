@@ -256,7 +256,7 @@
 
 
     <div class="title">
-        <h1>Cotizacion {{ $commercialQuote->type_shipment->description }} </h1>
+        <h1>Cotizacion {{ $quoteSentClient->type_shipment->description }} </h1>
 
     </div>
 
@@ -270,69 +270,66 @@
                 <tbody>
                     <tr>
                         <td class="title-item-table">Cliente</td>
-                        <td class="text-item-table">{{ $commercialQuote->customer->name_businessname }}</td>
+                        <td class="text-item-table">{{ $quoteSentClient->customer->name_businessname }}</td>
                     </tr>
                     <tr>
                         <td class="title-item-table">Puerto de salida</td>
-                        <td class="text-item-table">{{ $commercialQuote->origin }}</td>
+                        <td class="text-item-table">{{ $quoteSentClient->origin }}</td>
                     </tr>
                     <tr>
                         <td class="title-item-table">Puerto de llegada</td>
-                        <td class="text-item-table">{{ $commercialQuote->destination }}</td>
+                        <td class="text-item-table">{{ $quoteSentClient->destination }}</td>
                     </tr>
                     <tr>
                         <td class="title-item-table">Incoterm</td>
-                        <td class="text-item-table">{{ $commercialQuote->incoterm->code }}</td>
+                        <td class="text-item-table">{{ $quoteSentClient->incoterm->code }}</td>
                     </tr>
                     <tr>
                         <td class="title-item-table">Tipo de embarque</td>
-                        <td class="text-item-table">{{ $commercialQuote->type_shipment->name }}</td>
+                        <td class="text-item-table">{{ $quoteSentClient->type_shipment->name }}</td>
                     </tr>
                     <tr>
                         <td class="title-item-table">Tipo de carga</td>
-                        <td class="text-item-table">{{ $commercialQuote->type_load->name }}</td>
+                        <td class="text-item-table">{{ $quoteSentClient->type_load->name }}</td>
                     </tr>
-                    @if ($commercialQuote->is_consolidated)
+                    @if ($quoteSentClient->is_consolidated)
 
                         <tr>
                             <td class="title-item-table">Bultos</td>
-                            <td class="text-item-table">{{ $commercialQuote->nro_package }}</td>
+                            <td class="text-item-table">{{ $quoteSentClient->nro_package }}</td>
                         </tr>
                         <tr>
                             <td class="title-item-table">Volumen / KGV</td>
-                            @if ($commercialQuote->volumen)
-                                <td class="text-item-table">{{ $commercialQuote->volumen }} CBM</td>
+                            @if ($quoteSentClient->volumen)
+                                <td class="text-item-table">{{ $quoteSentClient->volumen }} CBM</td>
                             @else
-                            <td class="text-item-table">{{ $commercialQuote->kilogram_volumen }} KGV</td>
+                                <td class="text-item-table">{{ $quoteSentClient->kilogram_volumen }} KGV</td>
                             @endif
                         </tr>
                         <tr>
                             <td class="title-item-table">Peso total</td>
-                            <td class="text-item-table">{{ $commercialQuote->kilograms }}</td>
+                            <td class="text-item-table">{{ $quoteSentClient->kilograms }}</td>
                         </tr>
                     @else
                         <tr>
                             <td class="title-item-table">Bultos</td>
-                            <td class="text-item-table">{{ $commercialQuote->nro_package }}</td>
+                            <td class="text-item-table">{{ $quoteSentClient->nro_package }}</td>
                         </tr>
                         <tr>
                             <td class="title-item-table">Volumen</td>
-                            <td class="text-item-table">{{ $commercialQuote->volumen }}</td>
+                            <td class="text-item-table">{{ $quoteSentClient->volumen }}</td>
                         </tr>
 
-                        @if($commercialQuote->lcl_fcl === 'FCL')
-
-                        <tr>
-                            <td class="title-item-table">Peso total</td>
-                            <td class="text-item-table">{{ $commercialQuote->tons }} TONS</td>
-                        </tr>
-
+                        @if ($quoteSentClient->lcl_fcl === 'FCL')
+                            <tr>
+                                <td class="title-item-table">Peso total</td>
+                                <td class="text-item-table">{{ $quoteSentClient->tons }} TONS</td>
+                            </tr>
                         @else
-                        <tr>
-                            <td class="title-item-table">Peso total</td>
-                            <td class="text-item-table">{{ $commercialQuote->kilograms }} KG</td>
-                        </tr>
-
+                            <tr>
+                                <td class="title-item-table">Peso total</td>
+                                <td class="text-item-table">{{ $quoteSentClient->kilograms }} KG</td>
+                            </tr>
                         @endif
 
 
@@ -340,11 +337,11 @@
 
                     <tr>
                         <td class="title-item-table">Valor de factura</td>
-                        <td class="text-item-table">{{ $commercialQuote->load_value }}</td>
+                        <td class="text-item-table">{{ $quoteSentClient->load_value }}</td>
                     </tr>
                     <tr>
                         <td class="title-item-table">Valor CIF</td>
-                        <td class="text-item-table">{{ $commercialQuote->cif_value }}</td>
+                        <td class="text-item-table">{{ $quoteSentClient->cif_value }}</td>
                     </tr>
                     {{--  <tr>
                         <td class="title-item-table">Valor Cif</td>
@@ -362,17 +359,17 @@
                     <tr>
                         <td class="title-item-table">Fecha de Creacion</td>
                         <td class="text-item-table" style="font-weight: bold">
-                            {{ $commercialQuote->created_at->format('d/m/Y') }}</td>
+                            {{ $quoteSentClient->created_at->format('d/m/Y') }}</td>
                     </tr>
                     <tr>
                         <td class="title-item-table">Cotizacion #</td>
                         <td class="text-item-table" style="font-weight: bold">
-                            {{ $commercialQuote->nro_quote_commercial }}</td>
+                            {{ $quoteSentClient->nro_quote_commercial }}</td>
                     </tr>
                     <tr>
                         <td class="title-item-table">Fecha de Validez</td>
                         <td class="text-item-table" style="font-weight: bold">
-                            {{ $commercialQuote->valid_date->format('d/m/Y') }}</td>
+                            {{ $quoteSentClient->valid_date->format('d/m/Y') }}</td>
 
                     </tr>
 
@@ -383,7 +380,8 @@
     </div>
 
 
-    @if ($freight)
+
+    @if ($freightConcepts)
 
         <div id="detail-freight" class="container-service">
             <table id="table-freight" class="table">
@@ -393,16 +391,16 @@
                     <th style="width: 15%">Total</th>
                 </thead>
                 <tbody>
-                    @foreach ($freight->concepts as $concept)
+                    @foreach ($freightConcepts as $concept)
                         <tr>
                             <td>{{ $concept->name }}</td>
                             <td id="observation"> - </td>
-                            <td> $ {{ $concept->pivot->value_concept }}</td>
+                            <td> $ {{ $concept->pivot->concept_value }}</td>
                         </tr>
                     @endforeach
                     <tr class="total-service">
                         <td colspan="2" style="text-align: right">Total Flete:</td>
-                        <td> $ {{ number_format($freight->total_freight_value, 2) }}</td>
+                        <td> $ {{ number_format($quoteSentClient->total_freight, 2) }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -411,9 +409,9 @@
     @endif
 
 
-    @if ($custom)
+    @if ($customConcepts)
 
-        <div id="detail-taxes-custom" class="container-service">
+{{--         <div id="detail-taxes-custom" class="container-service">
             <table id="table-taxes-custom" class="table">
                 <thead>
                     <th style="width: 45%; background-color: #234195">Impuesto de aduanas</th>
@@ -438,7 +436,7 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
+        </div> --}}
         <div id="detail-custom" class="container-service">
             <table id="table-custom" class="table">
                 <thead>
@@ -447,7 +445,7 @@
                     <th style="width: 15%">Total</th>
                 </thead>
                 <tbody>
-                    @foreach ($custom->concept as $concept)
+                    @foreach ($customConcepts as $concept)
                         <tr>
                             <td>{{ $concept->name }}</td>
                             @if ($concept->name === 'AGENCIAMIENTO DE ADUANAS')
@@ -459,9 +457,9 @@
                         </tr>
                     @endforeach
 
-                    @if ($transport)
+                    @if ($transportConcepts)
 
-                        @foreach ($transport->concepts as $concept)
+                        @foreach ($transportConcepts as $concept)
                             <tr>
                                 <td>{{ $concept->name }}</td>
                                 <td id="observation"> - </td>
@@ -471,7 +469,7 @@
 
 
                         @php
-                            $subtotal = $custom->total_custom + ($transport->total_transport ?? 0);
+                            $subtotal = $quoteSentClient->total_custom + ($quoteSentClient->total_transport ?? 0);
                             $igv = $subtotal * 0.18;
                             $cats_destinations = $subtotal * 1.18;
 
@@ -492,7 +490,7 @@
                         </tr>
                     @else
                         @php
-                            $subtotal = $custom->total_custom;
+                            $subtotal = $quoteSentClient->total_custom;
                             $igv = $subtotal * 0.18;
                             $cats_destinations = $subtotal * 1.18;
 
@@ -520,7 +518,7 @@
             </table>
         </div>
     @else
-        @if ($transport)
+        @if ($transportConcepts)
 
             <div id="detail-transport" class="container-service">
                 <table id="table-transport" class="table">
@@ -530,7 +528,7 @@
                         <th style="width: 15%">Total</th>
                     </thead>
                     <tbody>
-                        @foreach ($transport->concepts as $concept)
+                        @foreach ($transportConcepts as $concept)
                             <tr>
                                 <td>{{ $concept->name }}</td>
                                 <td id="observation"> - </td>
@@ -540,7 +538,7 @@
 
 
                         @php
-                            $subtotal = $transport->total_transport ?? 0;
+                            $subtotal = $quoteSentClient->total_transport ?? 0;
                             $igv = $subtotal * 0.18;
                             $cats_destinations = $subtotal * 1.18;
 
@@ -603,7 +601,7 @@
             <div class="item-detail-quote">
                 <div class="total-quote">
                     TOTAL COTIZACION: $
-                    {{ number_format(($freight->total_freight_value ?? 0) + ($cats_destinations ?? 0), 2, '.', ',') }}
+                    {{ $quoteSentClient->total_quote_sent_client}}
                 </div>
             </div>
 
@@ -618,6 +616,7 @@
         </div>
 
     </div>
+
 
 
 
