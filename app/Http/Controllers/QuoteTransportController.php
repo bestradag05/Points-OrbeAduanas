@@ -9,7 +9,7 @@ use App\Models\Customer;
 use App\Models\ConceptsTransport;
 use App\Models\CommercialQuote;
 use App\Models\Transport;
-use App\Models\ConceptsResponse;
+use App\Models\ConceptsResponseTransport;
 use App\Models\ResponseTransportQuote;
 use App\Models\MessageQuoteTransport;
 use App\Models\QuoteTransport;
@@ -417,13 +417,17 @@ class QuoteTransportController extends Controller
 
         $nro_response = ResponseTransportQuote::generateNroResponse();
 
+        $locked = in_array(optional($quote->transport)->state, ['Aceptado', 'Rechazado', 'Anulado']);
+
+
         // 7) Renderizar la misma vista y pasarle TODO lo necesario
         return view('transport.quote.quote-messagin', compact(
             'quote',
             'messages',
             'files',
             'transportSuppliers',
-            'nro_response'
+            'nro_response',
+            'locked'
         ));
     }
 
@@ -446,16 +450,6 @@ class QuoteTransportController extends Controller
             ->where('id', '!=', $response->id)
             ->update(['status' => 'Rechazada']);
 
-        // 3. Registrar trazabilidad
-        QuoteTrace::create([
-            'quote_id' => $response->quote_transport_id,
-            'response_id' => $response->id,
-            'service_type' => 'transporte',
-            'action' => 'Aceptado',
-            'justification' => $request->justification,
-            'user_id' => auth()->id(),
-        ]);
-
         return redirect()
             ->route('transport.show', $response->quote_transport_id)
             ->with([
@@ -468,6 +462,7 @@ class QuoteTransportController extends Controller
 
 
 
+
     public function rejectResponse(Request $request)
     {
         $request->validate([
@@ -476,18 +471,10 @@ class QuoteTransportController extends Controller
         ]);
 
         $response = ResponseTransportQuote::findOrFail($request->response_id);
+
+        // Marcar como rechazada
         $response->update([
             'status' => 'Rechazada',
-        ]);
-
-        // Creamos un registro en la tabla de trazabilidad
-        QuoteTrace::create([
-            'quote_id' => $response->quote_transport_id,
-            'response_id' => $response->id,
-            'service_type' => 'transporte',
-            'action' => 'Rechazada',
-            'justification' => $request->justification,
-            'user_id' => auth()->id(),
         ]);
 
         return back()->with('success', 'Respuesta rechazada.');
@@ -616,7 +603,7 @@ class QuoteTransportController extends Controller
 
             // Por cada concepto seleccionado, traigo su net_amount de concepts_response
             foreach ($data['concepts_id'] as $i => $conceptId) {
-                $conceptResp = ConceptsResponse::where('response_transport_quote_id', $data['response_id'])
+                $conceptResp = ConceptsResponseTransport::where('response_transport_quote_id', $data['response_id'])
                     ->where('concepts_id', $conceptId)
                     ->firstOrFail();
 
@@ -660,14 +647,14 @@ class QuoteTransportController extends Controller
         $transportCost = $response->total;
         $quote->update([
             'withdrawal_date' => $dateFormat,   // equivale a format('Y-m-d')
-            'state'           => 'Aceptado',
+            'state'           => 'Pendiente',
         ]);
 
         $response->update([
             'status' => 'Aceptado'
         ]);
 
-        $ids = $response->conceptResponses->pluck('concepts_id')->toArray();
+        $ids = $response->conceptResponseTransports->pluck('concepts_id')->toArray();
         $quote->transportConcepts()->sync($ids);
 
         return redirect('/transport/create/' . $quote->id);

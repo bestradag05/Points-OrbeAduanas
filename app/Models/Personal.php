@@ -11,21 +11,23 @@ class Personal extends Model
 
     protected $table = 'personal';
 
-    protected $fillable = [  
-    'document_number',
-    'names',
-    'last_name',
-    'mother_last_name',
-    'birthdate',
-    'civil_status',
-    'sexo',
-    'cellphone',
-    'email',
-    'address',
-    'img_url',
-    'state',
-    'id_user',
-    'id_document'];
+    protected $fillable = [
+        'document_number',
+        'names',
+        'last_name',
+        'mother_last_name',
+        'birthdate',
+        'civil_status',
+        'sexo',
+        'cellphone',
+        'email',
+        'address',
+        'id_team',
+        'img_url',
+        'state',
+        'id_user',
+        'id_document'
+    ];
 
 
     public function user()
@@ -43,11 +45,13 @@ class Personal extends Model
         return $this->belongsTo(PersonalDocument::class, 'id_document', 'id');
     }
 
-    public function routing(){
+    public function routing()
+    {
         return $this->hasMany(Routing::class, 'id_personal', 'id');
     }
 
-    public function commercialQuotes(){
+    public function commercialQuotes()
+    {
         return $this->hasMany(CommercialQuote::class, 'id_personal', 'id');
     }
 
@@ -61,4 +65,15 @@ class Personal extends Model
         return $this->hasMany(Points::class, 'personal_id');
     }
 
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class, 'id_team');
+    }
+
+
+    public function areas()
+    {
+        return $this->belongsToMany(Area::class, 'area_personal')->withTimestamps();
+    }
 }

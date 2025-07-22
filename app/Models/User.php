@@ -77,4 +77,8 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(MessageQuoteFreight::class, 'sender_id', 'id');
     }
+    public function teams()
+    {
+        return $this->hasOne(Personal::class, 'user_id')->with('teams');
+    }
 }

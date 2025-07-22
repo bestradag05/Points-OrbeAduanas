@@ -33,9 +33,9 @@ class Concept extends Model
     {
         return $this->hasMany(ConceptsTransport::class, 'concepts_id');
     }
-    public function conceptsResponse()
+    public function conceptsResponseTransport()
     {
-        return $this->hasMany(ConceptsResponse::class, 'concepts_id');
+        return $this->hasMany(ConceptsResponseTransport::class, 'concepts_id');
     }
     public function custom()
     {
@@ -75,7 +75,7 @@ class Concept extends Model
     {
         return $this->belongsToMany(
             ResponseTransportQuote::class,
-            'concepts_response',
+            'concepts_response_transport',
             'concepts_id',
             'response_transport_quote_id'
         )->withPivot('net_amount');

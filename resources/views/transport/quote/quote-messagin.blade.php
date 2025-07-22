@@ -410,70 +410,19 @@
                 </div>
             @endif
         </div>
-        <!-- <div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
-                                                                                                                        <div class="card direct-chat direct-chat-primary h-100">
-                                                                                                                            <div class="card-header bg-sisorbe-100 py-2">
-                                                                                                                                <h5 class="text-center text-bold text-uppercase text-indigo">Cotizacion : {{ $quote->nro_quote }}</h5>
-                                                                                                                            </div>
-                                                                                                                            <div class="card-body" style="max-height: 600px; overflow-y: auto;">
-                                                                                                                                <div class="direct-chat-messages h-100">
-                                                                                                                                    @foreach ($messages as $message)
-    <div class="direct-chat-msg {{ $message->sender_id != auth()->user()->id ? 'right' : '' }}">
-                                                                                                                                        <div class="direct-chat-infos clearfix">
-                                                                                                                                            <span
-                                                                                                                                                class="direct-chat-name float-left text-indigo text-bold">{{ $message->sender->personal->names }}</span>
-                                                                                                                                            <span
-                                                                                                                                                class="direct-chat-timestamp float-right text-bold">{{ $message->created_at }}</span>
-                                                                                                                                        </div>
-                                                                                                                                        @if ($message->sender->personal->img_url !== null)
-    <img src="{{ asset('storage/' . $message->sender->personal->img_url) }}"
-                                                                                                                                            class="direct-chat-img" alt="User Image">
-@else
-    <img src="{{ asset('storage/personals/user_default.png') }}" class="direct-chat-img"
-                                                                                                                                            alt="User Image">
-    @endif
-                                                                                                                                        <div class="direct-chat-text">
-                                                                                                                                            {!! $message->message !!}
-                                                                                                                                        </div>
-                                                                                                                                    </div>
-    @endforeach
-                                                                                                                                </div>
-
-                                                                                                                            </div>
-                                                                                                                            <div class="card-footer">
-                                                                                                                                <form action="/quote/transport/message" method="POST">
-                                                                                                                                    @csrf
-                                                                                                                                    <div class="row">
-                                                                                                                                        <div class="col-12">
-                                                                                                                                            <textarea id="quote-text" name="message"></textarea>
-                                                                                                                                            <input type="hidden" name="quote_id" value="{{ $quote->id }}">
-                                                                                                                                        </div>
-                                                                                                                                        <div class="col-12 row align-items-center justify-content-center mt-2">
-                                                                                                                                            <button type="submit" {{ $quote->state === 'Aceptada' ? 'disabled' : '' }} class="btn btn-indigo mr-2">
-                                                                                                                                                Enviar
-                                                                                                                                            </button>
-
-                                                                                                                                            {{-- Botón para abrir el modal de cotización --}}
-                                                                                                                                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalCotizarTransporte">
-                                                                                                                                                <i class="fas fa-dollar-sign"></i> Responder cotizacion
-                                                                                                                                            </button>
-                                                                                                                                        </div>
-                                                                                                                                    </div>
-                                                                                                                                </form>
-                                                                                                                            </div>
-                                                                                                                        </div>
-                                                                                                                    </div> -->
         <!-- Crear lista de respuestas -->
         <div class="col-12 col-md-12 col-lg-6">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="text-indigo"><i class="fas fa-file-alt"></i> Lista de respuestas</h5>
                 <!-- Botón para abrir el modal -->
-                @if (!$quote->responseTransportQuotes->contains('status', 'Aceptado'))
-                    <button type="button" class="btn btn-primary" data-toggle="modal"
-                        data-target="#modalCotizarTransporte">
-                        <i class="fas fa-truck mr-1"></i> Responder
-                    </button>
-                @endif
+                @can('transporte.quote.response')
+                    @if (!$quote->responseTransportQuotes->contains('status', 'Aceptado'))
+                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                            data-target="#modalCotizarTransporte">
+                            <i class="fas fa-truck mr-1"></i> Responder
+                        </button>
+                    @endif
+                @endcan
             </div>
             <table class="table table-sm text-sm my-5">
                 <thead class="thead-dark">
@@ -516,10 +465,10 @@
                                     @else
                                         {{-- Aún no hay ninguna aceptada, esta se puede aceptar o rechazar --}}
                                         <button class="btn btn-success btn-sm" data-toggle="modal"
-                                            data-target="#modalAcceptResponse" data-response-id="{{ $response->id }}">
+                                            data-target="#quote-transport" data-response-id="{{ $response->id }}"
+                                            data-response-nro="{{ $response->nro_response }}">
                                             Aceptar
                                         </button>
-
                                         <button class="btn btn-danger btn-sm" data-toggle="modal"
                                             data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
                                             Rechazar
@@ -527,21 +476,16 @@
                                     @endif
                                 @endif
                             </td>
-
                         </tr>
                     @endforeach
-
                 </tbody>
-
             </table>
         </div>
-        <!-- Fin lista de respuestas -->
     </div>
 
-
     {{-- Modal de “Cerrar Cotización” con selección de respuesta --}}
-    <div id="quote-transport" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="quote-transport-title"
-        aria-hidden="true">
+    <div id="quote-transport" class="modal fade" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" aria-labelledby="quote-transport-title" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <form action="{{ url('/quote/transport/cost/accept/' . $quote->id) }}" id="sendTransportCost"
@@ -557,8 +501,6 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-
-
                     <div class="modal-body">
                         {{-- 1) Campo solo lectura con la respuesta seleccionada --}}
                         <div class="form-group">
@@ -568,7 +510,6 @@
                             {{-- Valor real que se envía --}}
                             <input type="hidden" name="response_id" id="response_id">
                         </div>
-
                         {{-- 2) Cuadrilla, si aplica --}}
                         @if ($quote->gang === 'SI')
                             <div class="form-group">
@@ -595,7 +536,7 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" id="btnCerrarCotizacion">
                             Cerrar Cotización
                         </button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">
@@ -863,7 +804,8 @@
                         <div class="form-row align-items-center mb-4">
                             <div class="col-md-8">
                                 <label for="provider_id">Proveedor <span class="text-danger">*</span></label>
-                                <select name="provider_id" id="provider_id">
+                                <x-adminlte-select2 name="provider_id" igroup-size="md"
+                                    data-placeholder="Seleccione una opcion...">
                                     <option />
                                     @foreach ($transportSuppliers as $sup)
                                         <option value="{{ $sup->id }}"
@@ -871,8 +813,12 @@
                                             {{ $sup->name_businessname }}
                                         </option>
                                     @endforeach
-                                </select>
+
+                                </x-adminlte-select2>
                             </div>
+
+
+
 
                             <div class="col-md-4 text-right">
                                 <div class="bg-light p-3 rounded">
@@ -909,7 +855,7 @@
                             {{-- Comisión --}}
                             <div class="form-group row">
                                 <label for="commission" class="col-sm-6 col-form-label font-weight-bold">
-                                    Comisión (S/)
+                                    Comisión
                                 </label>
                                 <div class="col-sm-6">
                                     <input type="number" step="0.01" name="commission" id="commission"
@@ -919,7 +865,7 @@
 
                             {{-- Total general (sólo lectura) --}}
                             <div class="form-group row mt-4">
-                                <label class="col-sm-6 font-weight-bold">Total (S/)</label>
+                                <label class="col-sm-6 font-weight-bold">Total</label>
                                 <div class="col-sm-6">
                                     <input type="text" class="form-control" id="totalConceptos" readonly
                                         value="0.00">
@@ -942,11 +888,15 @@
     </div>
 
 
-    <div class="modal fade" id="modalAcceptResponse" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade" id="modalAcceptResponse" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <form method="POST" action="{{ route('transport.quote.accept') }}">
                 @csrf
                 <input type="hidden" name="response_id" id="accept_response_id">
+                <input type="hidden" name="withdrawal_date" id="hidden_withdrawal_date">
+                <input type="hidden" name="cost_gang" id="hidden_cost_gang">
+                <input type="hidden" name="cost_guard" id="hidden_cost_guard">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Aceptar respuesta del proveedor</h5>
@@ -964,9 +914,6 @@
             </form>
         </div>
     </div>
-
-
-
 
     <div class="modal fade" id="modalRejectResponse" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -1005,65 +952,54 @@
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
     <script>
         $(document).ready(function() {
+
+            // 1) Inicializar tus plugins normales
             $('#quote-text').summernote();
-        });
 
-        $('#provider_id').select2({
-            width: 'resolve',
-            placeholder: "Seleccione una opcion...",
-            allowClear: true
-        });
+            // 2) Delegar el click / submit de “Cerrar Cotización”
+            $(document)
+                // click en el botón → disparamos el submit
+                .on('click', '#btnCerrarCotizacion', function(e) {
+                    e.preventDefault();
+                    $('#sendTransportCost').submit();
+                })
+                // submit del form → recogemos datos, cerramos el primer modal y abrimos el segundo
+                .on('submit', '#sendTransportCost', function(e) {
+                    e.preventDefault();
+                    const $f = $(this);
+                    const respId = $f.find('#response_id').val();
+                    const retiro = $f.find('#withdrawal_date').val();
+                    const gang = $f.find('#cost_gang').val();
+                    const guard = $f.find('#cost_guard').val();
 
+                    // inyectamos en el modal de justificación
+                    $('#accept_response_id').val(respId);
+                    $('#hidden_withdrawal_date').val(retiro);
+                    $('#hidden_cost_gang').val(gang);
+                    $('#hidden_cost_guard').val(guard);
 
-        $('#sendTransportCost').on('submit', (e) => {
-
-            e.preventDefault();
-
-            let isValid = true; // Bandera para comprobar si el formulario es válido
-            let form = e.target;
-            const inputs = form.querySelectorAll('input');
-
-
-            inputs.forEach((input) => {
-                // Ignorar campos ocultos (d-none)
-                if (input.closest('.d-none')) {
-                    return;
-                }
-
-                // Validar si el campo está vacío
-                if (input.value.trim() === '') {
-                    input.classList.add('is-invalid');
-                    isValid = false; // Cambiar bandera si algún campo no es válido
-                    showError(input, 'Debe completar este campo');
-                } else {
-                    input.classList.remove('is-invalid');
-                    hideError(input);
-                }
-            });
-
-
-            if (isValid) {
-                form.submit();
-            }
+                    // cerramos el primero y, cuando termine de ocultarse, abrimos el segundo
+                    $('#quote-transport')
+                        .one('hidden.bs.modal', function() {
+                            $('#modalAcceptResponse').modal('show');
+                        })
+                        .modal('hide');
+                });
 
         });
 
-
-        $(function() {
-            // Prueba en consola que existe el modal
-            console.log('modalCotizar:', $('#modalCotizar').length);
-
-            // AJAX submit del modal
-            $('#formCotizarConceptos').on('submit', function(e) {
-                e.preventDefault();
-                $.post("{{ route('transport.quote.responses.store', $quote->id) }}", $(this).serialize())
-                    .done(res => {
-                        $('#modalCotizar').modal('hide');
-                        $('#priceSummary').html(res.html);
-                    })
-                    .fail(() => alert('Error guardando cotización.'));
+        //TODO: (Task) Poner funcion de forma global para todos los modales que tengan un select2
+        $('#modalCotizarTransporte').on('shown.bs.modal', function() {
+            $(this).find('#provider_id').select2({
+                dropdownParent: $(this),
+                width: '100%', // o 'resolve' según prefieras
+                placeholder: 'Seleccione una opción...',
+                allowClear: true
             });
         });
+
+
+
 
 
         let commercial_quote = @json($quote->nro_quote_commercial);
@@ -1135,7 +1071,6 @@
 
                     removeButton.addEventListener('click', function(event) {
                         event.preventDefault();
-
                         axios.post('/quote/transport/file-delete-documents', {
 
                             filename: response.filename,
@@ -1160,7 +1095,6 @@
 
                     tableBody.appendChild(row);
 
-                    console.log(tableBody);
 
                     // Guardar en el mapa de archivos subidos
                     /* uploadedFiles.set(response.filename, listItem); */
@@ -1307,6 +1241,8 @@
         }
 
 
+
+
         $('#modalAcceptResponse').on('show.bs.modal', function(e) {
             $('#accept_response_id').val($(e.relatedTarget).data('response-id'));
         });
@@ -1314,17 +1250,4 @@
             $('#reject_response_id').val($(e.relatedTarget).data('response-id'));
         });
     </script>
-    @if (session('open_close_quote_modal'))
-        <script>
-            $(document).ready(function() {
-                const responseId = '{{ session('response_id') }}';
-                const responseNro = '{{ session('response_nro') }}';
-
-                $('#response_id').val(responseId);
-                $('#response_display').val(responseNro);
-
-                $('#quote-transport').modal('show');
-            });
-        </script>
-    @endif
 @endpush

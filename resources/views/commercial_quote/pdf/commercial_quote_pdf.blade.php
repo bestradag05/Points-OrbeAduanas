@@ -304,6 +304,7 @@
                                 <td class="text-item-table">{{ $quoteSentClient->volumen }} CBM</td>
                             @else
                                 <td class="text-item-table">{{ $quoteSentClient->kilogram_volumen }} KGV</td>
+
                             @endif
                         </tr>
                         <tr>
@@ -324,11 +325,13 @@
                             <tr>
                                 <td class="title-item-table">Peso total</td>
                                 <td class="text-item-table">{{ $quoteSentClient->tons }} TONS</td>
+
                             </tr>
                         @else
                             <tr>
                                 <td class="title-item-table">Peso total</td>
                                 <td class="text-item-table">{{ $quoteSentClient->kilograms }} KG</td>
+
                             </tr>
                         @endif
 
@@ -460,6 +463,7 @@
                     @if ($transportConcepts)
 
                         @foreach ($transportConcepts as $concept)
+
                             <tr>
                                 <td>{{ $concept->name }}</td>
                                 <td id="observation"> - </td>

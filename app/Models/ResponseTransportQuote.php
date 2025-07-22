@@ -4,10 +4,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasTrace;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ResponseTransportQuote extends Model
 {
+    use HasTrace;
+
     protected $fillable = [
         'quote_transport_id',
         'provider_id',
@@ -61,7 +64,7 @@ class ResponseTransportQuote extends Model
     {
         return $this->belongsToMany(
             Concept::class,
-            'concepts_response',
+            'concepts_response_transport',
             'response_transport_quote_id',
             'concepts_id'
         )->withPivot('net_amount');
@@ -69,12 +72,16 @@ class ResponseTransportQuote extends Model
 
 
     // 1:N → ConceptsResponse
-    public function conceptResponses()
+    public function conceptResponseTransports()
     {
-        return $this->hasMany(ConceptsResponse::class, 'response_transport_quote_id', 'id');
+        return $this->hasMany(ConceptsResponseTransport::class, 'response_transport_quote_id', 'id');
     }
-    public function traces()
+/*     public function traces()
     {
         return $this->hasMany(QuoteTrace::class, 'response_id');
+    } */
+    public function traces()
+    {
+        return $this->morphMany(Trace::class, 'traceable');
     }
 }

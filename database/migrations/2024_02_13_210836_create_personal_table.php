@@ -26,11 +26,13 @@ return new class extends Migration
             $table->string('img_url')->nullable();
             $table->string('state')->nullable();
             $table->unsignedBigInteger('id_user')->nullable();
-            $table->unsignedBigInteger('id_document')->nullable();//TODO: Recordar cambiar el nullbale, no debe ser un valor null
+            $table->unsignedBigInteger('id_document');
+            $table->unsignedBigInteger('id_team')->nullable();
             $table->timestamps();
 
             $table->foreign('id_user')->references('id')->on('users');
             $table->foreign('id_document')->references('id')->on('personal_documents');
+            $table->foreign('id_team')->references('id')->on('teams')->onDelete('set null');
         });
     }
 

@@ -128,17 +128,10 @@ class TransportService
         $concepts  = json_decode($request->concepts);
         $quoteId = $request->input('quote_transport_id');
         $quote = QuoteTransport::findOrFail($quoteId);
-        $response = $quote->responseTransportQuotes()->where('status', 'Aceptado')->with('conceptResponses')->first();
+        $response = $quote->responseTransportQuotes()->where('status', 'Aceptado')->with('conceptResponseTransports')->first();
 
         // 1. Creamos el transporte sin total aún (lo pondremos luego)
         $transport = $this->createOrUpdateTransport($request);
-
-        // 2. Procesamos conceptos y obtenemos el total calculado
-        $total = $this->syncTransportConcepts($transport, $concepts, $response);
-
-        // 3. Actualizamos el transporte con el total correcto
-        $transport->update(['total_transport' => $total]);
-
 
         $this->syncTransportConcepts($transport, $concepts, $response);
 
@@ -156,7 +149,7 @@ class TransportService
         $commercial_quote = $transport->commercial_quote;
 
 
-        $quote = $transport->quoteTransport()->where('state', 'Aceptado')->first();
+        $quote = $transport->quoteTransport()->where('state', 'Pendiente')->first();
         $concepts = Concept::all();
 
 
@@ -194,7 +187,7 @@ class TransportService
         $quoteId = $request->input('quote_transport_id');
         $quote = QuoteTransport::findOrFail($quoteId);
 
-        $response = $quote->responseTransportQuotes()->where('status', 'Aceptado')->with('conceptResponses')->first();
+        $response = $quote->responseTransportQuotes()->where('status', 'Aceptado')->with('conceptResponseTransports')->first();
 
         $this->syncTransportConcepts($transport, $concepts, $response);
 
@@ -204,7 +197,15 @@ class TransportService
 
     private function createOrUpdateTransport(Request $request, $id = null)
     {
-        $transport = $id ? Transport::findOrFail($id) : new Transport();
+        /* $transport = $id ? Transport::findOrFail($id) : new Transport(); */
+
+        // Buscar transporte existente por nro_quote_commercial
+        $transport = Transport::where('nro_quote_commercial', $request->nro_quote_commercial)->first();
+
+        // Si no existe, se crea uno nuevo
+        if (! $transport) {
+            $transport = new Transport();
+        }
 
         $commercial = CommercialQuote::where('nro_quote_commercial', $request->nro_quote_commercial)->first();
 
@@ -223,12 +224,20 @@ class TransportService
 
         $dateRegisterFormat = Carbon::createFromFormat('d/m/Y', $request->withdrawal_date)->toDateString();
 
+        $valueUtility = $request->filled('value_utility')
+        ? $request->input('value_utility')
+        : null;
+
         $transport->fill([
             'origin' => $request->pick_up,
             'destination' => $request->delivery,
             'withdrawal_date' => $dateRegisterFormat,
             'quote_transport_id' => $request->quote_transport_id,
             'nro_quote_commercial' => $request->nro_quote_commercial,
+            'value_utility'            => $valueUtility,
+            'accepted_answer_value'    => $request->input('accepted_answer_value'),
+            'total_transport_value'    => $request->input('total_transport_value'),
+            'profit'                   => $request->input('profit'),
             'state' => 'Pendiente'
         ]);
 
@@ -239,7 +248,7 @@ class TransportService
     }
 
 
-    private function syncTransportConcepts($transport, $concepts, $response): float
+    private function syncTransportConcepts($transport, $concepts, $response): void
 
     {
         // Eliminar los conceptos previos si estamos actualizando, pero antes 
@@ -258,10 +267,16 @@ class TransportService
         foreach ($concepts as $concept) {
             $added = $this->parseDouble($concept->added);
 
-            // 1 Obtener el net_amount desde concepts_response
+            // 1 Obtener el net_amount desde concepts_response_transport
             $net = optional(
-                $response->conceptResponses->firstWhere('concepts_id', $concept->id)
-            )->net_amount ?? 0;
+                $response->conceptResponseTransports->firstWhere('concepts_id', $concept->id)
+            )->net_amount;
+
+            // Si no hay valor original, tomamos el value ingresado en la vista
+            if ($net === null) {
+                $net = $this->parseDouble($concept->value); // ← usa el valor del formulario
+            }
+
 
 
             $concept_total = $net + $added; // total de este concepto
@@ -273,7 +288,7 @@ class TransportService
 
 
             // 3 Guardar todo en concepts_transport
-            $conceptTransport = ConceptsTransport::create([
+            $conceptsTransport = ConceptsTransport::create([
                 'concepts_id' => $concept->id,
                 'transport_id' => $transport->id,
                 'added_value' => $added,
@@ -282,20 +297,10 @@ class TransportService
                 'igv' => $igv,
                 'total' => $concept_total,
                 'additional_points' => $concept->pa ?? 0,
-
             ]);
 
-            // Si hay puntos adicionales, ejecutamos la función
-            if (isset($concept->pa)) {
-                $net_amount = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
-                $this->add_aditionals_point($conceptTransport, $net_amount);
-            }
         }
 
-        // Al final de syncTransportConcepts
-        $transport->update(['total_transport' => $totalTransport]);
-
-        return $totalTransport;
     }
 
 

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AdditionalPoints;
-use App\Models\Concepts;
+use App\Models\Concept;
 use App\Models\ConceptsTransport;
 use App\Models\QuoteTransport;
 use App\Models\Supplier;
@@ -74,10 +74,12 @@ class TransportController extends Controller
 
         $response = $quote->responseTransportQuotes()
             ->where('status', 'Aceptado')
-            ->with('conceptResponses.concept')
+            ->with('conceptResponseTransports.concept')
             ->firstOrFail();
 
-        return view('transport.register-transport', compact('quote', 'response', 'commercial_quote'));
+        $concepts = Concept::with('typeService')->get();
+
+        return view('transport.register-transport', compact('quote', 'response', 'commercial_quote', 'concepts'));
     }
     /**
      * Store a newly created resource in storage.

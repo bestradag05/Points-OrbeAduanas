@@ -80,8 +80,12 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'transporte.quote.generate', 'alias' => 'Generar Cotizaciones', 'guard_name' => 'web']);
         Permission::create(['name' => 'transporte.quote.response', 'alias' => 'Responder Cotizaciones', 'guard_name' => 'web']);
 
-
-
+        Permission::create(['name' => 'commercial.transport.accept.or.reject', 'alias' => 'Aceptar o Rechazar respuesta de cotizacion', 'guard_name' => 'web']);
+        Permission::create(['name' => 'commercial.transport.close', 'alias' => 'Cerrar Cotizaciones', 'guard_name' => 'web']);
+        Permission::create(['name' => 'commercial.transport.edit', 'alias' => 'Editar Valor Agregado de Transporte', 'guard_name' => 'web']);
+        Permission::create(['name' => 'commercial.client.accept.or.reject', 'alias' => 'Aceptar o Rechazar cotizacion comercial', 'guard_name' => 'web']);
+        Permission::create(['name' => 'commercial.quote.list', 'alias' => 'Todas las cotizaciones', 'guard_name' => 'web']);
+        Permission::create(['name' => 'commercial.quote.list.personal', 'alias' => 'Cotizacion por personal', 'guard_name' => 'web']);
 
         Permission::create(['name' => 'additional.list', 'alias' => 'Listar Adicionales', 'guard_name' => 'web']);
         Permission::create(['name' => 'additional.listAll', 'alias' => 'Listar todos los adicionales', 'guard_name' => 'web']);
@@ -129,6 +133,10 @@ class DatabaseSeeder extends Seeder
 
         //Crear un rol de Super-Admin
         $role = Role::create(['guard_name' => 'web', 'name' => 'Super-Admin']);
+        $roleTransport = Role::create(['guard_name' => 'web', 'name' => 'Transporte']);
+        $roleComercial = Role::create(['guard_name' => 'web', 'name' => 'Comercial']);
+        $rolePricing = Role::create(['guard_name' => 'web', 'name' => 'Pricing']);
+
 
 
         $user = User::create([
@@ -143,7 +151,57 @@ class DatabaseSeeder extends Seeder
             'state' => 'Activo'
         ]);
 
+        $userTransport = User::create([
+            'email' => 'transporte@orbeaduanas.com',
+            'password' => bcrypt('Orbe2025'),
+            'state' => 'Activo'
+        ]);
+
+        $userCommercial = User::create([
+            'email' => 'jorge.laura@orbeaduanas.com',
+            'password' => bcrypt('Orbe2025'),
+            'state' => 'Activo'
+        ]);
+
         $user->assignRole($role);
+        $userTransport->assignRole($roleTransport);
+        $userCommercial->assignRole($roleComercial);
+        $userPricing->assignRole($rolePricing);
+
+
+
+
+        $transportPermissions = [
+            'supplier.module',
+            'supplier.create',
+            'supplier.update',
+            'supplier.delete',
+            'supplier.list',
+            'customer.list',
+            'transporte.module',
+            'transporte.list.points',
+            'transporte.generate',
+            'transporte.list',
+            'transporte.quote.list',
+            'transporte.quote.list.personal',
+            'transporte.quote.generate',
+            'transporte.quote.response',
+        ];
+
+        // Crear permisos si no existen
+        foreach ($transportPermissions as $perm) {
+            Permission::firstOrCreate(
+                ['name' => $perm],
+                ['alias' => ucwords(str_replace('.', ' ', $perm)), 'guard_name' => 'web']
+            );
+        }
+
+        // Asignar permisos al rol Transporte
+        $roleTransport = Role::where('name', 'Transporte')->first();
+        if ($roleTransport) {
+            $roleTransport->givePermissionTo($transportPermissions);
+        }
+
 
 
         $document = PersonalDocument::create([
@@ -177,7 +235,7 @@ class DatabaseSeeder extends Seeder
             'id_user' => $user->id
         ]);
 
-        Personal::create([
+        $personal = Personal::create([
             'id' => '100',
             'document_number' => '796521448',
             'names' => 'Victor',
@@ -193,6 +251,42 @@ class DatabaseSeeder extends Seeder
             'id_document' => $document->id,
             'id_user' => $userPricing->id
         ]);
+
+        $personal = Personal::create([
+            'id' => '101',
+            'document_number' => '41478898',
+            'names' => 'Jefferson',
+            'last_name' => 'Maravi',
+            'mother_last_name' => '',
+            'cellphone' => '945868543',
+            'email' => 'transporte@orbeaduanas.com',
+            'address' => 'Av Revolucion Calle Q - Villa el Salvador',
+            'img_url' =>  null,
+            'state' => 'Activo',
+            'sexo' => 'Masculino',
+            'civil_status' => 'Soltero',
+            'id_document' => $document->id,
+            'id_user' => $userTransport->id
+        ]);
+
+
+        $personal = Personal::create([
+            'id' => '102',
+            'document_number' => '79854269',
+            'names' => 'Jorge',
+            'last_name' => 'Laura',
+            'mother_last_name' => '',
+            'cellphone' => '942772672',
+            'email' => 'jorge.laura@orbeaduanas.com',
+            'address' => 'Av Revolucion Calle Q - Villa el Salvador',
+            'img_url' =>  null,
+            'state' => 'Activo',
+            'sexo' => 'Masculino',
+            'civil_status' => 'Soltero',
+            'id_document' => $document->id,
+            'id_user' => $userCommercial->id
+        ]);
+
 
         /* Tipo de contenedor */
 

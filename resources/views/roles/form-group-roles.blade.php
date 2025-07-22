@@ -35,7 +35,7 @@
             @foreach ($userHasRoles as $userHasRole)
                 <tr>
                     <td> {{ $loop->iteration }}</td>
-                    <td> {{ $userHasRole->personal->name . ' ' . $userHasRole->personal->last_name }}
+                    <td> {{ $userHasRole->personal->names . ' ' . $userHasRole->personal->last_name }}
                     </td>
                     <td>
                             <img src="{{ asset('storage/' . ($userHasRole->personal->img_url !== null ? $userHasRole->personal->img_url : 'personals/user_default.png')) }}" class="img-circle elevation-2" width="50px" height="50px" alt="User Image">

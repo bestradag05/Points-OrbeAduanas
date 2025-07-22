@@ -3,9 +3,10 @@
 namespace App\Providers;
 
 use App\Models\ResponseFreightQuotes;
-use App\Models\User;
 use App\Models\ResponseTransportQuote;
+use App\Models\User;
 use App\Observers\QuoteTraceObserver;
+use App\Observers\ResponseQuoteTransportObserver;
 use App\Observers\ResponseQuoteFreightObserver;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
@@ -42,6 +43,8 @@ class AppServiceProvider extends ServiceProvider
         });
 
        
+
+        ResponseTransportQuote::observe(ResponseQuoteTransportObserver::class);
 
     }
 }
