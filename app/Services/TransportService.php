@@ -167,7 +167,6 @@ class TransportService
 
 
         $transport = Transport::findOrFail($id);
-        $formMode  = 'edit';
         $commercial_quote = $transport->commercial_quote;
         $quote = $transport->quoteTransport()->where('state', 'Pendiente')->first();
         $concepts = Concept::all();
@@ -179,18 +178,10 @@ class TransportService
             ->first();
 
         // Mapeamos igual que en createTransport:
-        $conceptsTransport = $acceptedResponse
-            ->conceptResponseTransports
-            ->map(function ($pivot) {
-                return [
-                    'concepts_id' => $pivot->concepts_id,
-                    'concept'     => ['name' => $pivot->concept->name],
-                    'pivot'       => ['net_amount_response' => $pivot->net_amount],
-                ];
-            })
-            ->toArray();
+        $conceptsTransport = $transport->concepts;
 
-        return compact('transport', 'commercial_quote', 'quote', 'concepts', 'formMode', 'acceptedResponse', 'conceptsTransport');
+
+        return compact('transport', 'commercial_quote', 'quote', 'concepts',  'acceptedResponse', 'conceptsTransport');
     }
 
     /*    $conceptsTransport = $concepts->map(function ($concept) use ($quote, $commercial_quote) {
@@ -258,10 +249,11 @@ class TransportService
             'withdrawal_date' => $dateRegisterFormat,
             'quote_transport_id' => $request->quote_transport_id,
             'nro_quote_commercial' => $request->nro_quote_commercial,
-            'value_utility'            => $valueUtility,
-            'accepted_answer_value'    => $request->input('accepted_answer_value'),
-            'value_sale'    => $request->input('value_sale'),
-            'profit'                   => $request->input('profit'),
+            'accepted_answer_value' => $request->total_usd,
+            'total_answer_utility'=> $request->total_prices_usd,
+            'value_utility' => $request->value_utility,
+            'value_sale' => $request->total_transport_value,
+            'profit' => $request->profit,
             'state' => 'Pendiente'
         ]);
 
@@ -287,9 +279,7 @@ class TransportService
 
         // Relacionamos los nuevos conceptos con el tranporte
         foreach ($concepts as $concept) {
-
-           /*  $added = $this->parseDouble($concept->added);
-
+            /*  $added = $this->parseDouble($concept->added);
 
             // 1 Obtener el net_amount desde concepts_response_transport
             $net = optional(
@@ -302,9 +292,7 @@ class TransportService
             }
  */
 
-
-
-           /*  $concept_total = $net + $added;
+            /*  $concept_total = $net + $added;
 
             $base_sin_igv = $concept_total / 1.18;
             $igv = $concept_total - $base_sin_igv;
@@ -319,7 +307,7 @@ class TransportService
                 'transport_id' => $transport->id,
                 'value_concept' => $concept->value,
                 /* 'net_amount_response' => $net,
-
+                'net_amount_response' => $net,
                 'subtotal' => $subtotal,
                 'igv' => $igv,
                 'total' => $concept_total,
