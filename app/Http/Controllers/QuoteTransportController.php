@@ -646,7 +646,7 @@ class QuoteTransportController extends Controller
         ]);
 
         // NOTA: no se acepta la respuesta aquí
-        // $response->update(['status' => 'Aceptado']);
+         $response->update(['status' => 'Aceptado']);
 
         $ids = $response->conceptResponseTransports->pluck('concepts_id')->toArray();
         $quote->transportConcepts()->sync($ids);

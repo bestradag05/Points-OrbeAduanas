@@ -10,25 +10,28 @@ class CommissionController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+
     public function index()
     {
         $commissions = Commission::all();
-         $heads = [
+        $heads = [
             '#',
             'Nombre',
             'Monto',
             'Descripción',
             'Acciones'
         ];
-        return view('commissions.list-commission', compact('commissions', 'heads'));
+        return view('commissions.fixed.list-commission', compact('commissions', 'heads'));
     }
+
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        return view('commissions.register-commission');
+        return view('commissions.fixed.register-commission');
     }
 
     /**
@@ -45,7 +48,7 @@ class CommissionController extends Controller
 
         Commission::create($data);
 
-        return redirect()->route('commissions.index')->with('success', 'Comisión creada correctamente.');
+        return redirect()->route('commissions.fixed.index')->with('success', 'Comisión creada correctamente.');
     }
 
     /**
@@ -53,7 +56,7 @@ class CommissionController extends Controller
      */
     public function show(string $id)
     {
-        return view('commissions.show', compact('commission'));
+        return view('commissions.fixed.show', compact('commission'));
     }
 
     /**
@@ -61,9 +64,9 @@ class CommissionController extends Controller
      */
     public function edit(string $id)
     {
-         $commission = Commission::findorFail($id)->first();
+        $commission = Commission::findorFail($id);
 
-        return view('commissions.edit-commission', compact('commission'));
+        return view('commissions.fixed.edit-commission', compact('commission'));
     }
 
     /**
@@ -72,7 +75,7 @@ class CommissionController extends Controller
     public function update(Request $request, string $id)
     {
 
-        $commission = Commission::findorFail($id)->first();
+        $commission = Commission::findorFail($id);
 
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -82,7 +85,7 @@ class CommissionController extends Controller
 
         $commission->update($data);
 
-        return redirect()->route('commissions.index')->with('success', 'Comisión actualizada correctamente.');
+        return redirect()->route('commissions.fixed.index')->with('success', 'Comisión actualizada correctamente.');
     }
 
     /**
@@ -90,9 +93,9 @@ class CommissionController extends Controller
      */
     public function destroy(string $id)
     {
-        $commission = Commission::findorFail($id)->first();
+        $commission = Commission::findorFail($id);
         $commission->delete();
 
-        return redirect()->route('commissions.index')->with('success', 'Comisión eliminada correctamente.');
+        return redirect()->route('commissions.fixed.index')->with('success', 'Comisión eliminada correctamente.');
     }
 }

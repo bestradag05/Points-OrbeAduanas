@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\QuotesSentClient;
+use App\Models\ResponseFreightQuotes;
+use App\Observers\QuoteSentClientObserver;
+use App\Observers\ResponseQuoteFreightObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -26,6 +30,8 @@ class EventServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
+         ResponseFreightQuotes::observe(ResponseQuoteFreightObserver::class);
+         QuotesSentClient::observe(QuoteSentClientObserver::class);
     }
 
     /**

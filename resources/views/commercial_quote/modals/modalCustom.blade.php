@@ -287,12 +287,11 @@
                 let conceptCustomAgency = null;
 
 
-
+             
                 concepts.forEach(concept => {
 
                     if (concept.name === 'AGENCIAMIENTO DE ADUANAS' && comercialQuote.type_shipment.id === concept
                         .id_type_shipment && concept.id_type_service === customService.id) {
-
                         //Obtenemos el agenciamiento de aduanas
                         conceptCustomAgency = concept;
                     }

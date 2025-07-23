@@ -14,6 +14,7 @@ class Freight extends Model
 
     protected $fillable =
     [
+        'nro_operation_freight',
         'wr_loading',
         'roi',
         'hawb_hbl',
@@ -23,10 +24,11 @@ class Freight extends Model
         'eta',
         'value_utility',
         'accepted_answer_value',
-        'total_freight_value',
-        'profit_on_freight',
-        'total_additional_points',
-        'total_additional_points_used',
+        'total_answer_utility',
+        'value_sale',
+        'profit',
+        /*         'total_additional_points',
+        'total_additional_points_used', */
         'state',
         'id_quote_freight',
         'nro_operation',
@@ -34,11 +36,42 @@ class Freight extends Model
     ];
 
 
+    // Evento que se ejecuta antes de guardar el modelo
+    protected static function booted()
+    {
+        static::creating(function ($freight) {
+            // Si no tiene un número de operación, generarlo
+            if (empty($freight->nro_operation_freight)) {
+                $freight->nro_operation_freight = $freight->generateNroOperation();
+            }
+        });
+    }
+
+    // Método para generar el número de operación
+    public function generateNroOperation()
+    {
+        // Obtener el último registro
+        $lastCode = self::latest('id')->first();
+        $year = date('y');
+        $prefix = 'FLETE-';
+
+        // Si no hay registros, empieza desde 1
+        if (!$lastCode) {
+            return $prefix . $year . '1';
+        } else {
+            // Extraer el número y aumentarlo
+            $number = (int) substr($lastCode->nro_operation_freight, 7);
+            $number++;
+            return $prefix . $year . $number;
+        }
+    }
+
+
 
     public function concepts()
     {
         return $this->belongsToMany(Concept::class, 'concepts_freight', 'id_freight', 'concepts_id')
-            ->withPivot(['value_concept', 'value_concept_added', 'total_value_concept', 'additional_points']);
+            ->withPivot(['value_concept']);
     }
 
 
@@ -57,14 +90,24 @@ class Freight extends Model
         return $this->morphOne(Insurance::class, 'insurable', 'model_insurable_service', 'id_insurable_service');
     }
 
-    public function additional_point()
+    public function points()
     {
-        return $this->morphMany(AdditionalPoints::class, 'additional', 'model_additional_service', 'id_additional_service');
+        return $this->morphMany(Points::class, 'pointable'); // Relaciona con el modelo Point
+    }
+
+    public function sellerCommissions()
+    {
+        return $this->morphMany(SellersCommission::class, 'commissionable');
+    }
+
+    public function profitability()
+    {
+        return $this->morphOne(Profit::class, 'profitability');  // 'profitability' corresponde a la relación polimórfica
     }
 
     public function quoteFreight()
     {
-        return $this->hasMany(QuoteFreight::class, 'id', 'id_quote_freight');
+        return $this->hasOne(QuoteFreight::class, 'id', 'id_quote_freight');
     }
 
     public function documents()

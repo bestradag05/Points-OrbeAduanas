@@ -53,7 +53,6 @@ class ResponseFreightQuotesController extends Controller
         
         $quoteFreight = QuoteFreight::findOrFail($id)->first();
 
-
         $fecha = Carbon::createFromFormat('d/m/Y', $request->validity_date)->format('Y-m-d');
 
         $response = ResponseFreightQuotes::create([

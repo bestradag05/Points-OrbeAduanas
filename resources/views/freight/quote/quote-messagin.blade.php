@@ -81,7 +81,10 @@
             <div class="row text-muted">
                 <div class="col-6">
                     <p class="text-sm">N° Cotizacion General :
-                        <b class="d-block">{{ $quote->nro_quote_commercial }}</b>
+                        <b class="d-block"><a
+                                href="{{ url('/commercial/quote/' . $quote->commercial_quote->id . '/detail') }}">
+                                {{ $quote->nro_quote_commercial }}
+                            </a></b>
                     </p>
                 </div>
                 <div class="col-6">
@@ -255,16 +258,11 @@
                             <b class="d-block">{{ $quote->commodity }}</b>
                         </p>
                     </div>
-                    <div class="col-6">
-                        <p class="text-sm">Tipo de embalaje :
-                            <b class="d-block">{{ $quote->packaging_type }}</b>
-                        </p>
-                    </div>
-                </div>
 
-                @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
 
-                    <div class="row text-muted">
+                    @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+
+
                         <div class="col-6">
                             <p class="text-sm">Volumen :
                                 <b class="d-block">{{ $quote->cubage_kgv }} CBM</b>
@@ -272,18 +270,31 @@
                         </div>
 
                         @if ($quote->commercial_quote->lcl_fcl === 'FCL')
-                            <div class="col-6">
-                                <p class="text-sm">Toneladas :
-                                    <b class="d-block">{{ $quote->ton_kilogram }} TON</b>
-                                </p>
-                            </div>
-                            <div class="col-6">
-                                <p class="text-sm">Tipo de contenedor :
-                                    <b
-                                        class="d-block">{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }}</b>
+                            <div class="col-12">
+                                <p class="text-sm">Contenedor(s) :
+                                <div class="d-flex flex-wrap">
+                                    @foreach ($quote->commercial_quote->commercialQuoteContainers as $commercialContainer)
+                                        <ul class="list-group list-group-flush text-bold d-inline-block mr-3">
+                                            <li class="list-group-item pl-0 pt-2">
+                                                {{ $commercialContainer->container_quantity }} x
+                                                {{ $commercialContainer->container->name }}
+                                                <button class="btn text-primary" data-toggle="modal"
+                                                    data-target="#detailContainer"
+                                                    data-commercialcontainer="{{ json_encode($commercialContainer) }}">
+                                                    <i class="fas fa-info-circle"></i>
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    @endforeach
+                                </div>
                                 </p>
                             </div>
                         @else
+                            <div class="col-6">
+                                <p class="text-sm">Tipo de embalaje :
+                                    <b class="d-block">{{ $quote->packaging_type }}</b>
+                                </p>
+                            </div>
                             <div class="col-6">
                                 <p class="text-sm">Peso total :
                                     <b class="d-block">{{ $quote->ton_kilogram }} KG</b>
@@ -291,50 +302,50 @@
                             </div>
                         @endif
 
-                    </div>
-                @else
-                    <div class="row text-muted">
-                        <div class="col-6">
-                            <p class="text-sm">Kilogramo volumen / KGV :
-                                <b class="d-block">{{ $quote->cubage_kgv }} KGV</b>
-                            </p>
-                        </div>
-                        <div class="col-6">
-                            <p class="text-sm">Peso total :
-                                <b class="d-block">{{ $quote->ton_kilogram }} KG</b>
-                            </p>
-                        </div>
-                    </div>
-                @endif
-
-
-
-                @if ($quote->commercial_quote->measures)
-
+                </div>
+            @else
+                <div class="row text-muted">
                     <div class="col-6">
-                        <p class="text-sm">Medidas : </p>
+                        <p class="text-sm">Kilogramo volumen / KGV :
+                            <b class="d-block">{{ $quote->cubage_kgv }} KGV</b>
+                        </p>
                     </div>
-                    <table class="table table-striped">
-                        <thead>
-                            <th>Cantidad</th>
-                            <th>Ancho</th>
-                            <th>Largo</th>
-                            <th>Alto</th>
-                            <th>Unidad</th>
-                        </thead>
-                        <tbody>
-                            @foreach (json_decode($quote->commercial_quote->measures) as $measure)
-                                <tr>
-                                    <td>{{ $measure->amount }}</td>
-                                    <td>{{ $measure->width }}</td>
-                                    <td>{{ $measure->length }}</td>
-                                    <td>{{ $measure->height }}</td>
-                                    <td>{{ $measure->unit_measurement }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @endif
+                    <div class="col-6">
+                        <p class="text-sm">Peso total :
+                            <b class="d-block">{{ $quote->ton_kilogram }} KG</b>
+                        </p>
+                    </div>
+                </div>
+            @endif
+
+
+
+            @if ($quote->commercial_quote->measures)
+
+                <div class="col-6">
+                    <p class="text-sm">Medidas : </p>
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <th>Cantidad</th>
+                        <th>Ancho</th>
+                        <th>Largo</th>
+                        <th>Alto</th>
+                        <th>Unidad</th>
+                    </thead>
+                    <tbody>
+                        @foreach (json_decode($quote->commercial_quote->measures) as $measure)
+                            <tr>
+                                <td>{{ $measure->amount }}</td>
+                                <td>{{ $measure->width }}</td>
+                                <td>{{ $measure->length }}</td>
+                                <td>{{ $measure->height }}</td>
+                                <td>{{ $measure->unit_measurement }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
 
             @endif
 
@@ -915,9 +926,9 @@
                                                 <div class="form-group">
                                                     <label for="observations">Costo Final</label>
                                                     <input type="text" class="form-control CurrencyInput"
-                                                        id="final_cost" name="final_cost" data-type="currency"
-                                                        placeholder="Ingrese el costo final" data-required="true"
-                                                        readonly>
+                                                        id="final_cost" name="final_cost"
+                                                        placeholder="Ingrese el costo final" data-type="currency"
+                                                        data-required="true" readonly>
                                                 </div>
 
                                             </div>
@@ -986,7 +997,6 @@
     </div>
 
 
-    {{-- Detail response --}}
 
     <!-- Modal para PDF -->
     <div class="modal fade" id="pdfDetailResponse" tabindex="-1" role="dialog"
@@ -1032,6 +1042,29 @@
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="detailContainer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Detalles del Contenedor</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="containerDetails">
+                        <!-- Aquí se llenará la información del contenedor -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1098,7 +1131,7 @@
                             @if ($quote->commercial_quote->lcl_fcl === 'FCL')
                                 <tr>
                                     <td><strong>Tipo de contenedor</strong></td>
-                                    <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }}
+                                    {{-- <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }} --}}
                                     </td>
                                 </tr>
                             @endif
@@ -1189,7 +1222,7 @@
                         @if ($quote->commercial_quote->lcl_fcl === 'FCL')
                             <tr>
                                 <td><strong>Tipo de contenedor</strong></td>
-                                <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }}
+                                {{--  <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }} --}}
                                 </td>
                             </tr>
                             <tr>
@@ -1328,7 +1361,6 @@
             let final_cost = 0;
 
 
-            console.log(unit_cost);
 
             //Verificamos que el C/W este marcado
 
@@ -1391,28 +1423,35 @@
             });
 
             if (isValid) {
-
                 let data = loadConceptData(inputs);
-
-
                 const selectedCurrencyId = parseInt(data.currency.id);
                 const selectedCurrency = currencies.find(c => c.id === selectedCurrencyId);
                 const dollarCurrency = currencies.find(c => c.abbreviation === 'USD');
 
                 if (!checkExchangeRateNotEmpyt(selectedCurrency, dollarCurrency)) return;
 
-
                 const unitCost = parseFloat(data.unit_cost) || 0;
-                let finalCost = unitCost;
 
                 if (selectedCurrency.id !== dollarCurrency.id) {
                     const exchangeRateInput = $('#exchange_rate')[0];
                     const exchangeRate = parseFloat(exchangeRateInput.value) || 0;
 
-                    finalCost = unitCost * exchangeRate;
-                }
+                    let finalCost = 0;
 
-                data.final_cost = finalCost.toFixed(2); // Formateo a 2 decimales
+                    finalCost = unitCost * exchangeRate;
+
+                    if (data.fixed_miltiplyable_cost === "C/W") {
+
+                        let cubage_kgv = parseFloat(@json($quote->cubage_kgv)) || 0;
+                        let ton_kilogram = parseFloat(@json($quote->ton_kilogram)) || 0;
+
+                        let higherCost = cubage_kgv > ton_kilogram ? cubage_kgv : ton_kilogram;
+                        finalCost = finalCost * higherCost;
+
+                    }
+
+                    data.final_cost = finalCost.toFixed(2);
+                }
 
 
                 const index = conceptsResponseFreightArray.findIndex(item => item.concept?.id === parseInt(data.concept
@@ -1434,7 +1473,7 @@
         };
 
 
-        function updateTableRespnoseFreight() {
+        function updateTableRespnoseFreight(conceptsResponseFreightArray) {
             let tbodyRouting = $(`#divResponseFreight`).find('tbody')[0];
             if (tbodyRouting) {
                 tbodyRouting.innerHTML = '';
@@ -1443,31 +1482,34 @@
             TotalResponseConcepts = 0;
             let contador = 0;
 
-            // 1. Primero renderizamos los conceptos normales
-            conceptsResponseFreightArray.forEach((item, index) => {
-                contador++;
-                let fila = tbodyRouting.insertRow();
-                console.log(item);
-                fila.insertCell(0).textContent = contador;
-                fila.insertCell(1).textContent = item.concept.text;
-                fila.insertCell(2).textContent = item.currency.text + " " + item.unit_cost;
-                fila.insertCell(3).textContent = item.fixed_miltiplyable_cost;
-                fila.insertCell(4).textContent = item.observations;
-                fila.insertCell(5).textContent = "$ " + parseFloat(item.final_cost).toFixed(2);
+            if (conceptsResponseFreightArray && Array.isArray(conceptsResponseFreightArray)) {
 
-                let celdaEliminar = fila.insertCell(6);
-                let botonEliminar = document.createElement('a');
-                botonEliminar.href = '#';
-                botonEliminar.innerHTML = '<p class="text-danger">X</p>';
-                botonEliminar.addEventListener('click', function() {
-                    // Eliminar el concepto
-                    conceptsResponseFreightArray.splice(index, 1);
-                    updateTableRespnoseFreight(); // Re-renderizar tabla
+                // 1. Primero renderizamos los conceptos normales
+                conceptsResponseFreightArray.forEach((item, index) => {
+                    contador++;
+                    let fila = tbodyRouting.insertRow();
+                    fila.insertCell(0).textContent = contador;
+                    fila.insertCell(1).textContent = item.concept.text;
+                    fila.insertCell(2).textContent = item.currency.text + " " + item.unit_cost;
+                    fila.insertCell(3).textContent = item.fixed_miltiplyable_cost;
+                    fila.insertCell(4).textContent = item.observations;
+                    fila.insertCell(5).textContent = "$ " + parseFloat(item.final_cost).toFixed(2);
+
+                    let celdaEliminar = fila.insertCell(6);
+                    let botonEliminar = document.createElement('a');
+                    botonEliminar.href = '#';
+                    botonEliminar.innerHTML = '<p class="text-danger">X</p>';
+                    botonEliminar.addEventListener('click', function() {
+                        // Eliminar el concepto
+                        conceptsResponseFreightArray.splice(index, 1);
+                        updateTableRespnoseFreight(); // Re-renderizar tabla
+                    });
+                    celdaEliminar.appendChild(botonEliminar);
+
+                    TotalResponseConcepts += parseFloat(item.final_cost);
                 });
-                celdaEliminar.appendChild(botonEliminar);
 
-                TotalResponseConcepts += parseFloat(item.final_cost);
-            });
+            }
 
             // 2. Luego renderizamos las comisiones fijas
             commissionsResponseFreightArray.forEach((item) => {
@@ -1533,11 +1575,9 @@
 
                     } else if (input.type === 'checkbox') {
                         data[name] = $(input).is(':checked') ? input.value : '';
-                        console.log(name + ': ' + input.value);
                     } else {
                         // Si es un valor numérico formateado, lo limpiamos
                         if (input.classList.contains('CurrencyInput')) {
-                            0
                             // Elimina comas y convierte a número
                             data[name] = parseFloat(input.value.replace(/,/g, '')) || 0;
                         } else {
@@ -1567,6 +1607,73 @@
                 hideError(input);
             });
         }
+
+        $('#detailContainer').on('show.bs.modal', function(event) {
+            // Obtener el botón que activó el modal
+            var button = $(event.relatedTarget);
+
+            // Extraer el objeto contenedor de los atributos data-*
+            var commercialcontainer = button.data(
+                'commercialcontainer'); // Convertimos el JSON de vuelta a un objeto
+
+            // Acceder a las propiedades del objeto contenedor y colocarlas en el modal
+            var modalBody = $(this).find('.modal-body #containerDetails');
+
+            // Construir la tabla para las medidas
+            var measuresTable = '';
+            if (commercialcontainer.measures) {
+                var measures = JSON.parse(commercialcontainer
+                    .measures); // Asegúrate de que las medidas estén en formato JSON
+                measuresTable =
+                    '<table class="table table-bordered"><thead><tr><th>Cantidad</th><th>Anchura (cm)</th><th>Longitud (cm)</th><th>Altura (cm)</th><th>Unidad de Medida</th></tr></thead><tbody>';
+
+                // Iterar sobre las medidas y agregar filas a la tabla
+                $.each(measures, function(key, measure) {
+                    measuresTable += `
+            <tr>
+                <td>${measure.amount}</td>
+                <td>${measure.width}</td>
+                <td>${measure.length}</td>
+                <td>${measure.height}</td>
+                <td>${measure.unit_measurement}</td>
+            </tr>
+        `;
+                });
+
+                measuresTable += '</tbody></table>';
+            }
+
+            modalBody.html(`
+                <div class="row px-3">
+                    <div class="col-md-6">
+                        <p><strong>Nombre del Contenedor:</strong> ${commercialcontainer.container.name}</p>
+                        <p><strong>Mercancía:</strong> ${commercialcontainer.commodity}</p>
+                        <p><strong>Bultos:</strong> ${commercialcontainer.nro_package}</p>
+                        
+                       
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Cantidad:</strong> ${commercialcontainer.container_quantity}</p>
+                        <p><strong>Valor de la carga:</strong> ${commercialcontainer.load_value}</p>
+                        <p><strong>Tipo de Embalaje:</strong> ${commercialcontainer.packing_type.name}</p>
+                    </div>
+                </div>
+                <div class="row px-3">
+                    <div class="col-md-6">
+                        <p><strong>Kilogramos:</strong> ${commercialcontainer.kilograms}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Volumen:</strong> ${commercialcontainer.volumen}</p>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        ${measuresTable}
+                    </div>
+                </div>
+            `);
+        });
+
 
 
         function changeAcction(action, responseId) {
@@ -1602,8 +1709,6 @@
                         // Mostrar el modal de justificación
                         justification.removeClass('is-invalid');
                         hideError(justification[0]);
-                        $('#modalJustification').modal('show');
-                        // Mostrar el modal de justificación
                         $('#modalJustification').modal('show');
 
                         $('#formModalJustification').attr('action', `/quote/freight/response/${responseId}/accept`);

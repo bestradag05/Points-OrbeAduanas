@@ -15,11 +15,12 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('transport_id');
             $table->unsignedBigInteger('concepts_id');
-            $table->decimal('net_amount_response', 10, 2)->nullable()->comment('Valor base del proveedor, desde concepts_response_transport');
+            $table->decimal('value_concept', 8, 2);
+           /*  $table->decimal('net_amount_response', 10, 2)->nullable()->comment('Valor base del proveedor, desde concepts_response_transport');
             $table->decimal('subtotal', 10, 2)->nullable()->comment('Suma de net_amount_response + added_value');
             $table->decimal('igv', 8, 2)->comment('Impuesto aplicado');
             $table->decimal('total', 8, 2)->comment('Total (net_amount + igv)');
-            $table->integer('additional_points');
+            $table->integer('additional_points'); */
             $table->timestamps();
             // FK a transport
             $table->foreign('transport_id')->references('id')->on('transport');

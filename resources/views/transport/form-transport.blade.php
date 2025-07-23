@@ -318,32 +318,22 @@
                 // Carga inicial de conceptos desde PHP
                 conceptsTransport = @json($conceptsTransport);
 
-                @if ($formMode === 'edit')
-                    // En edición, usamos .pivot.value_concept
-                    conceptsTransport.forEach((concept, index) => {
-                        conceptsArray.push({
-                            id: concept.id,
-                            name: concept.name,
-                            value: formatValue(concept.pivot.value_concept)
-                        });
+                // opcional: ordenar transporte primero
+                conceptsTransport.sort((a, b) => {
+                    const A = (a.concept.name || '').toUpperCase();
+                    const B = (b.concept.name || '').toUpperCase();
+                    if (A === 'TRANSPORTE') return -1;
+                    if (B === 'TRANSPORTE') return 1;
+                    return A.localeCompare(B);
+                });
+
+                conceptsTransport.forEach(concept => {
+                    conceptsArray.push({
+                        id: concept.concepts_id,
+                        name: concept.concept.name,
+                        value: formatValue(concept.pivot.net_amount_response)
                     });
-                @else
-                    // En creación, usamos .concepts_id y .pivot.net_amount_response
-                    conceptsTransport.sort((a, b) => {
-                        const A = (a.concept.name || '').toUpperCase();
-                        const B = (b.concept.name || '').toUpperCase();
-                        if (A === 'TRANSPORTE') return -1;
-                        if (B === 'TRANSPORTE') return 1;
-                        return A.localeCompare(B);
-                    });
-                    conceptsTransport.forEach(concept => {
-                        conceptsArray.push({
-                            id: concept.concepts_id,
-                            name: concept.concept.name,
-                            value: formatValue(concept.pivot.net_amount_response)
-                        });
-                    });
-                @endif
+                });
 
                 // Poblamos la tabla por primera vez
                 updateTable(conceptsArray);
@@ -366,7 +356,7 @@
                     );
                     form.append(
                         `<input type="hidden" name="profit"                value='${profitValue.toFixed(2)}' />`
-                    );
+                        );
 
                     form.off('submit').submit();
                 });

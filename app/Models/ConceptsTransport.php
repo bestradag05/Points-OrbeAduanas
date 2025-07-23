@@ -12,11 +12,12 @@ class ConceptsTransport extends Model
     protected $fillable = [
         'transport_id',
         'concepts_id',
-        'net_amount_response',
+        'value_concept',
+        /*         'net_amount_response',
         'subtotal',
         'igv',
         'total',
-        'additional_points'
+        'additional_points' */
     ];
 
 
@@ -30,8 +31,5 @@ class ConceptsTransport extends Model
     {
         return $this->belongsTo(Concept::class, 'concepts_id');
     }
-    public function additional_point()
-    {
-        return $this->morphOne(AdditionalPoints::class, 'additional', 'model_additional_concept_service', 'id_additional_concept_service');
-    }
+
 }

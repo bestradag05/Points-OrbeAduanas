@@ -235,7 +235,7 @@ class DatabaseSeeder extends Seeder
             'id_user' => $user->id
         ]);
 
-        $personal = Personal::create([
+        Personal::create([
             'id' => '100',
             'document_number' => '796521448',
             'names' => 'Victor',
@@ -252,7 +252,7 @@ class DatabaseSeeder extends Seeder
             'id_user' => $userPricing->id
         ]);
 
-        $personal = Personal::create([
+        Personal::create([
             'id' => '101',
             'document_number' => '41478898',
             'names' => 'Jefferson',
@@ -270,7 +270,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
 
-        $personal = Personal::create([
+        Personal::create([
             'id' => '102',
             'document_number' => '79854269',
             'names' => 'Jorge',
@@ -301,6 +301,16 @@ class DatabaseSeeder extends Seeder
             'width' => 20,
             'height' => 20,
             'max_load' => 20,
+        ]);
+
+        Container::create([
+            'name' => "40'HQ",
+            'type_container_id' => $typeContainer->id,
+            'description' => '40 PIES STANDARD',
+            'length' => 40,
+            'width' => 40,
+            'height' => 40,
+            'max_load' => 2000,
         ]);
 
         /*  Regime */
@@ -387,7 +397,7 @@ class DatabaseSeeder extends Seeder
 
         ShippingCompany::create(['name' => 'HAPAG LLOYD', 'contact' => 'Vania de la puente', 'cellphone' => '970032310', 'email' => 'AnaMaria.Coronado@hlag.com']);
         ShippingCompany::create(['name' => 'EVERGREEN', 'contact' => 'Ricardo Loayza', 'cellphone' => '', 'email' => 'rloayza@evergreen-shipping.com.pe']);
-    
+
 
         Airline::create(['name' => 'LATAM', 'contact' => 'Midory Lucero', 'cellphone' => '980083287', 'email' => 'midofy.gonzales@latam.com']);
         Airline::create(['name' => 'AIRMAX CARGO', 'contact' => 'Nelly Sanchez', 'cellphone' => '998118980', 'email' => 'comercial@airmaxcargo.com.pe']);
@@ -411,8 +421,8 @@ class DatabaseSeeder extends Seeder
 
         Currency::create(['badge' => 'Dólar estadounidense', 'abbreviation' => 'USD', 'symbol' => '$']);
         Currency::create(['badge' => 'Sol Peruano', 'abbreviation' => 'PEN', 'symbol' => 'S/']);
-        Currency::create(['badge' => 'Libra Esterlina','abbreviation' => 'GBP','symbol' => '£']);
-        Currency::create(['badge' => 'Euro','abbreviation' => 'EUR','symbol' => '€']);
+        Currency::create(['badge' => 'Libra Esterlina', 'abbreviation' => 'GBP', 'symbol' => '£']);
+        Currency::create(['badge' => 'Euro', 'abbreviation' => 'EUR', 'symbol' => '€']);
 
         Routing::create(['nro_operation' => 'ORBE-24254', 'origin' => 'PERU - CALLAO', 'destination' => 'CHINA - SHANGAI', 'load_value' => '2700', 'id_personal' => $personal->id, 'id_customer' => $customer->id, 'id_type_shipment' => 8, 'lcl_fcl' => 'LCL', 'packaging_type' => 'Pallets', 'id_type_load' => 1, 'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'commodity' => 'CILINDRO']);
         Routing::create(['nro_operation' => 'ORBE-25255', 'origin' => 'China - Shanghai', 'destination' => 'Perú - Callao', 'wr_loading' => null, 'load_value' => 2600.00, 'id_personal' => 99, 'id_customer' => 1, 'id_type_shipment' => 8, 'id_regime' => 1, 'id_incoterms' => 1, 'id_supplier' => 1, 'id_type_load' => 1, 'lcl_fcl' => 'LCL', 'commodity' => 'TELESCOPIC ROD', 'nro_package' => '2', 'packaging_type' => 'CAJAS', 'container_type' => null, 'pounds' => 4209.61, 'kilograms' => 1904.80, 'volumen' => 8.37, 'kilogram_volumen' => null, 'tons' => null, 'measures' => '{"1":{"amount":2,"width":"233.00","length":"433.00","height":"533.00"}}', 'hs_code' => null, 'observation' => null, 'state' => 'Activo', 'created_at' => '2025-01-06 22:30:54', 'updated_at' => '2025-01-06 22:30:54']);
@@ -420,6 +430,7 @@ class DatabaseSeeder extends Seeder
         Routing::create(['nro_operation' => 'ORBE-25257', 'origin' => 'Chile - Atacama', 'destination' => 'Perú - Callao', 'wr_loading' => null, 'load_value' => 780.00, 'id_personal' => 99, 'id_customer' => 1, 'id_type_shipment' => 21, 'id_regime' => 1, 'id_incoterms' => 9, 'id_supplier' => 1, 'id_type_load' => 1, 'lcl_fcl' => null, 'commodity' => 'LLANTAS', 'nro_package' => '1', 'packaging_type' => 'CAJAS', 'container_type' => null, 'pounds' => 5158.14, 'kilograms' => 2334.00, 'volumen' => null, 'kilogram_volumen' => 233.00, 'tons' => null, 'measures' => '{"1":{"amount":1,"width":"433.00","length":"233.00","height":"433.00"}}', 'hs_code' => null, 'observation' => null, 'state' => 'Activo', 'created_at' => '2025-01-07 01:27:48', 'updated_at' => '2025-01-07 01:27:48']);
 
         Concept::create(['name' => 'AGENCIAMIENTO DE ADUANAS', 'id_type_shipment' => 8, 'id_type_service' => 1]);
+        Concept::create(['name' => 'AGENCIAMIENTO DE ADUANAS', 'id_type_shipment' => 21, 'id_type_service' => 1]);
         Concept::create(['name' => 'COMISION DE ADUANA', 'id_type_shipment' => 8, 'id_type_service' => 1]);
         Concept::create(['name' => 'GASTOS OPERATIVOS', 'id_type_shipment' => 8, 'id_type_service' => 1]);
         Concept::create(['name' => 'GASTOS ADMINISTRATIVOS', 'id_type_shipment' => 21, 'id_type_service' => 1]);

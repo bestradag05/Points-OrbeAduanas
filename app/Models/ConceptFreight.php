@@ -16,9 +16,6 @@ class ConceptFreight extends Model
         'concepts_id',
         'id_freight',
         'value_concept',
-        'value_concept_added',
-        'total_value_concept',
-        'additional_points'
     ];
 
 
@@ -31,11 +28,6 @@ class ConceptFreight extends Model
     public function freight()
     {
         return $this->belongsTo(Freight::class, 'id_freight');
-    }
-
-    public function additional_point()
-    {
-        return $this->morphOne(AdditionalPoints::class, 'additional', 'model_additional_concept_service', 'id_additional_concept_service');
     }
 
 

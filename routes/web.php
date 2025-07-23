@@ -44,7 +44,9 @@ use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PackingTypeController;
+use App\Http\Controllers\QuotesSentClientController;
 use App\Http\Controllers\ResponseFreightQuotesController;
+use App\Http\Controllers\SellerCommissionController;
 use App\Http\Controllers\ShippingCompanyController;
 use App\Http\Controllers\TypeContainerController;
 use App\Models\CommercialQuote;
@@ -174,7 +176,16 @@ Route::middleware('auth')->group(function () {
     Route::resource('regimes', RegimeController::class);
 
     /* Comisiones */
-    Route::resource('commissions', CommissionController::class);
+    Route::resource('commissions/fixed', CommissionController::class)->names('commissions.fixed');
+
+    Route::prefix('commissions/seller')->group(function () {
+        Route::get('/', [SellerCommissionController::class, 'getCommissionsSeeller']);
+        Route::get('/{commercialQuote}/detail', [SellerCommissionController::class, 'getDetalCommissionsSeeller']);
+        Route::get('/generate/points/{sellerCommission}', [SellerCommissionController::class, 'generatePointSeller']);
+        Route::get('/generate/profit/{sellerCommission}', [SellerCommissionController::class, 'generateProfit']);
+    });
+
+
 
     /* Currencies */
     Route::resource('currencies', CurrencyController::class);
@@ -219,12 +230,12 @@ Route::middleware('auth')->group(function () {
         [ResponseFreightQuotesController::class, 'store']
     )->name('freight.quote.responses.store');
 
-    Route::prefix('quote/freight/response')->group(function() {
-    Route::get('{response}/show', [ResponseFreightQuotesController::class, 'show'])->name('quote.freight.response.show');
-    Route::post('{response}/accept', [ResponseFreightQuotesController::class, 'accept'])->name('quote.freight.response.accept');
-    Route::post('{response}/reject', [ResponseFreightQuotesController::class, 'reject'])->name('quote.freight.response.reject');
-    Route::get('{response}/generate', [ResponseFreightQuotesController::class, 'generate'])->name('quote.freight.response.generate');
-});
+    Route::prefix('quote/freight/response')->group(function () {
+        Route::get('{response}/show', [ResponseFreightQuotesController::class, 'show'])->name('quote.freight.response.show');
+        Route::post('{response}/accept', [ResponseFreightQuotesController::class, 'accept'])->name('quote.freight.response.accept');
+        Route::post('{response}/reject', [ResponseFreightQuotesController::class, 'reject'])->name('quote.freight.response.reject');
+        Route::get('{response}/generate', [ResponseFreightQuotesController::class, 'generate'])->name('quote.freight.response.generate');
+    });
 
     Route::get('insurance/pending', [InsuranceController::class, 'getInsurancePending']);
     Route::resource('insurance', InsuranceController::class);
@@ -299,18 +310,24 @@ Route::middleware('auth')->group(function () {
     Route::get('commercial/quote/{id_quote}/quotes', [CommercialQuoteController::class, 'getTemplateQuoteCommercialQuote']);
     Route::get('commercial/quote/{id_quote}/documents', [CommercialQuoteController::class, 'getTemplateDocmentCommercialQuote']);
     Route::post('commercial/quote/completeData', [CommercialQuoteController::class, 'completeData']);
+    Route::post('commercial/quote/sent-client', [CommercialQuoteController::class, 'QuoteSentClient']);
 
+    
     Route::get('commercial/createQuote/{nro_quote_commercial}', [CommercialQuoteController::class, 'createQuote']);
-    Route::get('commercial/quote/getPDF/{id}', [CommercialQuoteController::class, 'getPDF']);
     Route::get('commercial/service/{service}/{id}', [CommercialQuoteController::class, 'editCommercialQuoteService']);
     Route::get('commercial/quote/state/{action}/{id}', [CommercialQuoteController::class, 'handleActionCommercialQuote']);
     Route::patch('commercial/quote/updatedate/{id}', [CommercialQuoteController::class, 'updateDate']);
     Route::get('commercial/customer/{name}', [CommercialQuoteController::class, 'showCustomerForName']);
     Route::resource('commercial/quote', CommercialQuoteController::class);
-
+    
     Route::post('commercial/quote/client-trace', [CommercialQuoteController::class, 'storeClientTrace'])
-        ->name('commercial.quote.clientTrace');
+    ->name('commercial.quote.clientTrace');
+    
 
+    /* Cotizaciones enviadas al cliente */
+    Route::resource('sent-client', QuotesSentClientController::class);
+    Route::post('sent-client/{id}/{action}', [QuotesSentClientController::class, 'updateStateQuoteSentClient']);
+    Route::get('sent-client/generatePdf/{id}', [QuotesSentClientController::class, 'generatePDf']);
 
     /* Packing type */
 

@@ -50,6 +50,22 @@ class Personal extends Model
         return $this->hasMany(Routing::class, 'id_personal', 'id');
     }
 
+    public function commercialQuotes()
+    {
+        return $this->hasMany(CommercialQuote::class, 'id_personal', 'id');
+    }
+
+    public function sellerCommissions()
+    {
+        return $this->hasMany(SellersCommission::class, 'personal_id');
+    }
+
+    public function points()
+    {
+        return $this->hasMany(Points::class, 'personal_id');
+    }
+
+
     public function team()
     {
         return $this->belongsTo(Team::class, 'id_team');

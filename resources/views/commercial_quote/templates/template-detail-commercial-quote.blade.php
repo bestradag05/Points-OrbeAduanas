@@ -59,15 +59,6 @@
                     <div class="col-sm-8 d-inline">
                         <p id="nro_quote_commercial" class="form-control-plaintext text-indigo d-inline">
                             {{ $comercialQuote->nro_quote_commercial }}</p>
-                        {{--  <a href="{{ url('/commercial/quote/getPDF/' . $comercialQuote->id) }}"
-                            class="text-indigo d-inline">
-                            <i class="fas fa-file-pdf"></i>
-                        </a> --}}
-                        <a href="{{ url('commercial/quote/getPDF/' . $comercialQuote->id) }}" target="_blank"
-                            class=" text-indigo d-inline">
-                            <i class="fas fa-file-pdf"></i>
-                        </a>
-
                     </div>
 
                 </div>
@@ -79,7 +70,9 @@
                     <label class="col-sm-4 col-form-label">Origen : </label>
                     <div class="col-sm-8">
 
-                        <p class="form-control-plaintext text-uppercase">{{ $comercialQuote->originState->country->name}} - {{ $comercialQuote->originState->name }}</p>
+                        <p class="form-control-plaintext text-uppercase">
+                            {{ $comercialQuote->originState->country->name }} - {{ $comercialQuote->originState->name }}
+                        </p>
                     </div>
 
                 </div>
@@ -89,7 +82,8 @@
                     <label class="col-sm-4 col-form-label">Destino : </label>
                     <div class="col-sm-8">
 
-                        <p class="form-control-plaintext">{{ $comercialQuote->destinationState->country->name}} - {{ $comercialQuote->destinationState->name }}</p>
+                        <p class="form-control-plaintext">{{ $comercialQuote->destinationState->country->name }} -
+                            {{ $comercialQuote->destinationState->name }}</p>
                     </div>
 
                 </div>
@@ -125,7 +119,7 @@
                                 <div class="col-sm-8">
 
                                     <p class="form-control-plaintext">
-                                        {{ $comercialQuote->container_quantity }}x{{ $comercialQuote->container->name }}
+                                        {{-- {{ $comercialQuote->container_quantity }}x{{ $comercialQuote->container->name }} --}}
                                     </p>
                                 </div>
 
@@ -300,22 +294,24 @@
                     @if ($comercialQuote->lcl_fcl === 'FCL')
                         <div class="col-12 border-bottom border-bottom-2">
                             <div class="form-group row">
-                                <label class="col-sm-4 col-form-label">Contenedor : </label>
+                                <label class="col-sm-4 col-form-label">Contenedor(s) : </label>
                                 <div class="col-sm-8">
 
-                                    <p class="form-control-plaintext">
-                                        {{ $comercialQuote->container_quantity }}x{{ $comercialQuote->container->name }}
-                                    </p>
-                                </div>
+                                    {{-- {{dd($comercialQuote->commercialQuoteContainers)}} --}}
+                                    @foreach ($comercialQuote->commercialQuoteContainers as $commercialContainer)
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item pl-0 pt-2">
+                                                {{ $commercialContainer->container_quantity }} x
+                                                {{ $commercialContainer->container->name }}
+                                                <button class="btn text-primary" data-toggle="modal"
+                                                    data-target="#detailContainer"
+                                                    data-commercialcontainer="{{ json_encode($commercialContainer) }}"><i
+                                                        class="fas fa-info-circle"></i></button>
+                                            </li>
 
-                            </div>
-                        </div>
-                        <div class="col-12 border-bottom border-bottom-2">
-                            <div class="form-group row">
-                                <label class="col-sm-4 col-form-label">Toneladas : </label>
-                                <div class="col-sm-8">
+                                        </ul>
+                                    @endforeach
 
-                                    <p class="form-control-plaintext">{{ $comercialQuote->tons }}</p>
                                 </div>
 
                             </div>
@@ -489,20 +485,20 @@
                         </td>
 
 
-                        @if ($comercialQuote->state === 'Pendiente')
-                            <td>
-                                <a href="{{ url('/commercial/service/' . strtolower($index) . '/' . $service->id) }}"
-                                    class="text-indigo"><i class="fas fa-edit"></i></a>
-                            </td>
-                        @endif
-                        @if (strtolower($index) === 'flete' && $comercialQuote->state === 'Aceptado')
+
+                        <td>
+                            <a href="{{ url('/commercial/service/' . strtolower($index) . '/' . $service->id) }}"
+                                class="text-indigo"><i class="fas fa-edit"></i></a>
+                        </td>
+
+                        {{--  @if (strtolower($index) === 'flete' && $comercialQuote->state === 'Aceptado')
                             <td>
                                 <button class="btn btn-secondary btn-sm" onclick="openModalgenerateRoutingOrder()">
                                     <i class="fas fa-file-import"></i>
                                     Generar Routing
                                 </button>
                             </td>
-                        @endif
+                        @endif --}}
 
                     </tr>
                 @endforeach
@@ -522,7 +518,7 @@
     </div>
 
 
-    @if ($comercialQuote->typeService->count() > 0)
+    {{-- @if ($comercialQuote->typeService->count() > 0)
         @if ($comercialQuote->state === 'Pendiente')
             <div class="col-12">
                 <div class="row justify-content-center mt-5">
@@ -535,6 +531,22 @@
                 </div>
             </div>
         @endif
+
+    @endif --}}
+
+    @if ($comercialQuote->typeService->count() > 0)
+       
+            <div class="col-12">
+                <div class="row justify-content-center">
+                    <form id="formSentClient" action="/commercial/quote/sent-client" method="POST">
+                        @csrf
+                        <input type="hidden" name="commercialQuoteId" id="commercialQuoteId"
+                            value="{{ $comercialQuote->id }}">
+                        <button class="btn btn-indigo mx-2 text-bold"> <i class="fas fa-paper-plane"></i> GENERAR
+                            COTIZACIÓN AL CLIENTE</button>
+                    </form>
+                </div>
+            </div>
 
     @endif
 
@@ -552,6 +564,28 @@
 @if ($comercialQuote->freight)
     @include('commercial_quote/modals/modalGenerateRoutingOrder')
 @endif
+
+<div class="modal fade" id="detailContainer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Detalles del Contenedor</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="containerDetails">
+                    <!-- Aquí se llenará la información del contenedor -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Modal para justificar aceptación o rechazo del cliente -->
 <div class="modal fade" id="modalClientTrace" tabindex="-1" role="dialog" aria-labelledby="modalClientTraceLabel"
@@ -613,67 +647,7 @@
         }
 
 
-
-        /*function handleActionCommercialQuote(action, id) {
-
-
-
-            let textAction = (action === 'accept') ? 'aceptar' : 'rechazar';
-
-            if (action === 'accept') {
-                //Verificamos si tiene asociado un cliente antes de aceptar.
-                let idCustomer = @json($comercialQuote->id_customer);
-                let nameCustomer = @json($comercialQuote->customer_company_name);
-                let isConsolidated = @json($comercialQuote->is_consolidated);
-
-                //cuando no hay idCustomer
-                //cuando no es consolidado
-
-                if (!idCustomer || !isConsolidated) {
-                    completeCustomerInformation(nameCustomer, idCustomer, isConsolidated);
-                } else {
-
-                    let formFillData = $('#forCommercialFillData');
-                    $('#has_customer_data').val(0);
-                    $('#has_supplier_data').val(0);
-
-                    Swal.fire({
-                        title: `¿Estas seguro que deseas ${textAction} esta cotización?`,
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#2e37a4",
-                        cancelButtonColor: "#6c757d",
-                        confirmButtonText: `Si, ${textAction}!`,
-                        cancelButtonText: 'No, cancelar',
-                        allowOutsideClick: false
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            formFillData.submit();
-                        }
-                    });
-
-                }
-
-            } else {
-                Swal.fire({
-                    title: `¿Estas seguro que deseas ${textAction} esta cotización?`,
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#2e37a4",
-                    cancelButtonColor: "#6c757d",
-                    confirmButtonText: `Si, ${textAction}!`,
-                    cancelButtonText: 'No, cancelar',
-                    allowOutsideClick: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-
-                    }
-                });
-            }
-
-        } */
-
-        function handleActionCommercialQuote(action, id) {
+        /* function handleActionCommercialQuote(action, id) {
             let textAction = (action === 'accept') ? 'aceptar' : 'rechazar';
 
             // Validamos datos del cliente y consolidado (los traemos del backend via Blade)
@@ -697,9 +671,7 @@
                         allowOutsideClick: false
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            $('#client_trace_quote_id').val(id);
-                            $('#client_trace_action').val('accept');
-                            $('#modalClientTrace').modal('show');
+                           window.location.href = `/commercial/quote/state/accept/${id}`
                         }
                     });
                 }
@@ -708,7 +680,7 @@
             // Si es RECHAZAR
             else if (action === 'decline') {
                 Swal.fire({
-                    title: `¿Estas seguro que deseas ${textAction} esta cotización?`,
+                    title: `¿Estas seguro que el cliente ${textAction} esta cotización?`,
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#2e37a4",
@@ -718,14 +690,32 @@
                     allowOutsideClick: false
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        $('#client_trace_quote_id').val(id);
-                        $('#client_trace_action').val('decline');
-                        $('#modalClientTrace').modal('show');
+                       window.location.href = `/commercial/quote/state/decline/${id}`
                     }
                 });
             }
-        }
+        } */
 
+
+        $('#formSentClient').on('submit', (e) => {
+
+            e.preventDefault();
+            Swal.fire({
+                title: `¿Estas seguro que deseas generar esta cotizacion para el cliente?`,
+                text: "Esto generar un numero de cotización que se le asignara al cliente",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#2e37a4",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: `Si, generar !`,
+                cancelButtonText: 'No, cancelar',
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    e.target.submit()
+                }
+            });
+        })
 
 
         function completeCustomerInformation(nameCustomer, idCustomer, isConsolidated) {
@@ -882,6 +872,74 @@
         }
 
 
+        $('#detailContainer').on('show.bs.modal', function(event) {
+            // Obtener el botón que activó el modal
+            var button = $(event.relatedTarget);
+
+            // Extraer el objeto contenedor de los atributos data-*
+            var commercialcontainer = button.data(
+                'commercialcontainer'); // Convertimos el JSON de vuelta a un objeto
+
+            // Acceder a las propiedades del objeto contenedor y colocarlas en el modal
+            var modalBody = $(this).find('.modal-body #containerDetails');
+
+            // Construir la tabla para las medidas
+            var measuresTable = '';
+            if (commercialcontainer.measures) {
+                var measures = JSON.parse(commercialcontainer
+                    .measures); // Asegúrate de que las medidas estén en formato JSON
+                measuresTable =
+                    '<table class="table table-bordered"><thead><tr><th>Cantidad</th><th>Anchura (cm)</th><th>Longitud (cm)</th><th>Altura (cm)</th><th>Unidad de Medida</th></tr></thead><tbody>';
+
+                // Iterar sobre las medidas y agregar filas a la tabla
+                $.each(measures, function(key, measure) {
+                    measuresTable += `
+            <tr>
+                <td>${measure.amount}</td>
+                <td>${measure.width}</td>
+                <td>${measure.length}</td>
+                <td>${measure.height}</td>
+                <td>${measure.unit_measurement}</td>
+            </tr>
+        `;
+                });
+
+                measuresTable += '</tbody></table>';
+            }
+
+            modalBody.html(`
+                <div class="row px-3">
+                    <div class="col-md-6">
+                        <p><strong>Nombre del Contenedor:</strong> ${commercialcontainer.container.name}</p>
+                        <p><strong>Mercancía:</strong> ${commercialcontainer.commodity}</p>
+                        <p><strong>Bultos:</strong> ${commercialcontainer.nro_package}</p>
+                        
+                       
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Cantidad:</strong> ${commercialcontainer.container_quantity}</p>
+                        <p><strong>Valor de la carga:</strong> ${commercialcontainer.load_value}</p>
+                        <p><strong>Tipo de Embalaje:</strong> ${commercialcontainer.packing_type.name}</p>
+                    </div>
+                </div>
+                <div class="row px-3">
+                    <div class="col-md-6">
+                        <p><strong>Kilogramos:</strong> ${commercialcontainer.kilograms}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Volumen:</strong> ${commercialcontainer.volumen}</p>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        ${measuresTable}
+                    </div>
+                </div>
+            `);
+        });
+
+
+
         // Mostrar mensaje de error
         function showError(input, message) {
             let errorSpan = input.nextElementSibling;
@@ -931,8 +989,25 @@
         <script>
             $(document).ready(function() {
                 $('#client_trace_quote_id').val('{{ session('quote_id') }}');
-                $('#client_trace_action').val('accept');
+                $('#client_trace_action').val('{{ session('type_action') }}');
                 $('#modalClientTrace').modal('show');
+            });
+        </script>
+    @endif
+    @if (session('quoteSentClient'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                html: 'Se genero la cotización para el cliente, el numero de cotizacion asignado es: <strong>{{ session('quoteSentClient') }}</strong>',
+                showConfirmButton: true,
+                confirmButtonText: 'Ir'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirige a la página después de que el usuario haga clic en "Ir"
+                    window.location.href =
+                    '{{ route('sent-client.index') }}'; // Ajusta esta URL a la ruta de tu lista de cotizaciones
+                }
             });
         </script>
     @endif

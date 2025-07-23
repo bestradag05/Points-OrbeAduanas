@@ -174,7 +174,7 @@ class TransportService
             )
         ])->findOrFail($id);
 
-        $formMode         = 'edit';
+        $transport = Transport::findOrFail($id);
         $commercial_quote = $transport->commercial_quote;
         $quote            = $transport->quoteTransport()
             ->where('state', 'Pendiente')
@@ -187,18 +187,12 @@ class TransportService
             ->with('conceptResponseTransports.concept')
             ->first();
 
-        // 2. Mapeo a un array plano para el JS
+        // Mapeamos igual que en createTransport:
         $conceptsTransport = $transport->concepts;
 
-        return compact(
-            'transport',
-            'commercial_quote',
-            'quote',
-            'concepts',
-            'formMode',
-            'conceptsTransport',
-            'acceptedResponse',
-        );
+
+        return compact('transport', 'commercial_quote', 'quote', 'concepts',  'acceptedResponse', 'conceptsTransport');
+
     }
 
     /*    $conceptsTransport = $concepts->map(function ($concept) use ($quote, $commercial_quote) {
@@ -266,11 +260,11 @@ class TransportService
             'withdrawal_date' => $dateRegisterFormat,
             'quote_transport_id' => $request->quote_transport_id,
             'nro_quote_commercial' => $request->nro_quote_commercial,
-            'accepted_answer_value'  => $request->total_usd,
-            'total_answer_utility'  => $request->total_prices_usd,
-            'value_utility'          => $request->value_utility,
-            'total_transport_value'    => $request->input('total_transport_value'),
-            'profit'                   => $request->input('profit'),
+            'accepted_answer_value' => $request->total_usd,
+            'total_answer_utility'=> $request->total_prices_usd,
+            'value_utility' => $request->value_utility,
+            'value_sale' => $request->total_transport_value,
+            'profit' => $request->profit,
             'state' => 'Pendiente'
         ]);
 
@@ -288,7 +282,6 @@ class TransportService
 
         if ($conceptsTransport) {
             foreach ($conceptsTransport as $concept) {
-                $concept->additional_point()->delete();
                 $concept->forceDelete(); // Esto elimina el ConceptTransport definitivamente
             }
         }
@@ -297,7 +290,7 @@ class TransportService
 
         // Relacionamos los nuevos conceptos con el tranporte
         foreach ($concepts as $concept) {
-
+            /*  $added = $this->parseDouble($concept->added);
 
             // 1 Obtener el net_amount desde concepts_response_transport
             $net = optional(
@@ -308,32 +301,34 @@ class TransportService
             if ($net === null) {
                 $net = $this->parseDouble($concept->value); // ← usa el valor del formulario
             }
+ */
 
+            /*  $concept_total = $net + $added;
 
-
-            $concept_total = $net; // total de este concepto
             $base_sin_igv = $concept_total / 1.18;
             $igv = $concept_total - $base_sin_igv;
             $subtotal = $concept_total - $igv;
 
-            $totalTransport += $concept_total;
+            $totalTransport += $concept_total; */
 
 
             // 3 Guardar todo en concepts_transport
             $conceptsTransport = ConceptsTransport::create([
                 'concepts_id' => $concept->id,
                 'transport_id' => $transport->id,
+                'value_concept' => $concept->value,
+                /* 'net_amount_response' => $net,
                 'net_amount_response' => $net,
                 'subtotal' => $subtotal,
                 'igv' => $igv,
                 'total' => $concept_total,
-                'additional_points' => $concept->pa ?? 0,
+                'additional_points' => $concept->pa ?? 0, */
             ]);
         }
     }
 
 
-    public function add_aditionals_point($conceptTransport, $net_amount = null, $igv = null, $total = null)
+    /* public function add_aditionals_point($conceptTransport, $net_amount = null, $igv = null, $total = null)
     {
 
         $additional_point = AdditionalPoints::create([
@@ -350,7 +345,7 @@ class TransportService
 
 
         $conceptTransport->additional_point()->save($additional_point);
-    }
+    } */
 
     public function parseDouble($num)
     {

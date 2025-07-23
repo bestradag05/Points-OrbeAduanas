@@ -89,4 +89,15 @@ class Concept extends Model
             'transport_id'
         )->withPivot('added_value', 'igv', 'total');
     }
+
+
+    /* Relacion con cotizacion enviada al cliente */
+
+    public function quoteSentClient()
+    {
+        return $this->belongsToMany(QuotesSentClient::class, 'quote_sent_client_concepts', 'quote_sent_client_id', 'concept_id')
+            ->withPivot(['value_concept']);
+    }
+
+
 }

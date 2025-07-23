@@ -16,11 +16,11 @@ class Insurance extends Model
         'insured_references',
         'date',
         'insurance_value', // valor neto del seguro
-        'insurance_value_added', // valor agregado del asesor
-        'insurance_sale', // Valor venta del seguro (suma de valor del seguro + el valor agregado por el asesor)
+        /* 'insurance_value_added', // valor agregado del asesor
+        'insurance_sale', // Valor venta del seguro (suma de valor del seguro + el valor agregado por el asesor) */
         'sales_value', // valor venta prima ( valor venta del seguro + igv)
         'sales_price', // precio de venta ( valor venta del seguro + valor venta prima)
-        'additional_points',
+        /* 'additional_points', */
         'id_type_insurance',
         'id_insurable_service',
         'model_insurable_service',

@@ -753,10 +753,23 @@ return [
         ],
         [
             'text' => 'Comisiones',
-            'url'  => 'commissions',
             'icon' => 'fas fa-funnel-dollar', 
-            'active' => ['incoterms', 'incoterms*', 'regex:@^content/[0-9]+$@'],
-            'can' => 'incoterms.list',
+            'submenu' => [
+                [
+                    'text' => 'Comisiones fijas',
+                    'url'  => 'commissions/fixed',
+                    'icon' => 'fas fa-funnel-dollar',
+                    'active' => ['commissions/fixed'],
+                ],
+                [
+                    'text' => 'Gestionar comisiones',
+                    'url'  => 'commissions/seller',
+                    'icon' => 'fas fa-search-dollar',
+                    'active' => ['commissions/seller'],
+                ],
+
+            ]
+
         ],
 
         [
@@ -781,6 +794,12 @@ return [
                     'url'  => 'commercial/quote',
                     'icon' => 'fas fa-file-medical',
                     'active' => ['commercial/quote'],
+                ],
+                [
+                    'text' => 'Cotizaciones enviadas',
+                    'url'  => 'sent-client',
+                    'icon' => 'fas fa-user-tag',
+                    'active' => ['sent-client'],
                 ],
 
             ]

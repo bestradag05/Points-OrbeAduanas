@@ -10,9 +10,9 @@
 
 @stop
 @section('dinamic-content')
-    <form action="/commissions" method="post" enctype="multipart/form-data">
+    <form action="/commissions/fixed" method="post" enctype="multipart/form-data">
         @csrf
-        @include ('commissions.form-commission', ['formMode' => 'create'])
+        @include ('commissions.fixed_commissions.form-commission', ['formMode' => 'create'])
     </form>
 
 

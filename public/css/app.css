@@ -212,26 +212,37 @@
 /* .status-respondido {
     color: blue;
 } */
-.status-aceptado, .status-activo {
+.status-aceptado, .status-activo, .status-success {
     background: rgba(0, 128, 0, 0.1);
     color: rgb(0, 128, 0);
 }
 
-.status-en-proceso, .status-enviado {
+.status-en-proceso, .status-enviado, .status-info {
     background: rgba(0, 211, 199, 0.1);
     color: #00D3C7;
+}
+
+.status-caducado {
+    background: #e0ecfc;
+    color: #2f80ed;
 }
 
 /* .status-observado {
     color: purple;
 } */
-.status-rechazada, .status-inactivo, .status-notificado {
+.status-rechazada,.status-rechazado, .status-inactivo, .status-notificado {
     background: rgba(211, 0, 0, 0.1);
     color: #d30700;
 }
 
 .status-anulado {
-    color: gray;
+    background: rgb(128, 128, 128, 0.1);
+    color: rgb(128, 128, 128);
+}
+
+.bg-anulado {
+    background: rgb(128, 128, 128, 0.1);
+    color: rgb(128, 128, 128);
 }
 
 .direct-chat-text {
