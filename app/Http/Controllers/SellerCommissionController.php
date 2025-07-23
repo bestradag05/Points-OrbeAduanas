@@ -6,6 +6,7 @@ use App\Models\CommercialQuote;
 use App\Models\Custom;
 use App\Models\Freight;
 use App\Models\Profit;
+use App\Models\SellersCommission;
 use App\Models\Transport;
 use App\Services\CommercialQuoteService;
 use App\Services\ProfitValidationService;
@@ -32,7 +33,20 @@ class SellerCommissionController extends Controller
     public function getCommissionsSeeller()
     {
 
-        $compact = $this->commercialQuoteService->getQuotes(['state' => 'Aceptado']);
+        // Obtener el personal autenticado
+        $personal = auth()->user()->personal;
+
+        // Filtrar los commercialQuotes que tienen al menos un servicio con una comisión registrada
+        $commercialQuotes = CommercialQuote::whereHas('freight.sellerCommissions', function ($query) use ($personal) {
+            $query->where('personal_id', $personal->id);  // Verificamos si el vendedor tiene comisiones en flete
+        })
+            ->orWhereHas('transport.sellerCommissions', function ($query) use ($personal) {
+                $query->where('personal_id', $personal->id);  // Verificamos si el vendedor tiene comisiones en transporte
+            })
+            ->orWhereHas('custom.sellerCommissions', function ($query) use ($personal) {
+                $query->where('personal_id', $personal->id);  // Verificamos si el vendedor tiene comisiones en aduana
+            })
+            ->get();
 
         $heads = [
             '#',
@@ -48,153 +62,113 @@ class SellerCommissionController extends Controller
             'Acciones'
         ];
 
-        return view('commissions/seller/list-seller-commission', array_merge($compact, compact('heads')));
+        return view('commissions/seller/list-seller-commission', compact('commercialQuotes', 'heads'));
     }
 
 
     public function getDetalCommissionsSeeller($id)
     {
 
+        // Obtener la cotización comercial (commercialQuote) por su ID
         $commercialQuote = CommercialQuote::findOrFail($id);
 
-        $enabledProfit = [
+        // Obtener el personal autenticado
+        $personal = auth()->user()->personal;
+
+        // Comisiones de Flete
+        $freightCommissions = collect();
+        if ($commercialQuote->freight) {
+            $freightCommissions = SellersCommission::where('commissionable_id', $commercialQuote->freight->id)
+                ->where('commissionable_type', 'App\Models\Freight')  // Aseguramos que sean comisiones de "flete"
+                ->where('personal_id', $personal->id)
+                ->get();
+        }
+
+        // Comisiones de Transporte
+        $transportCommissions = collect();
+        if ($commercialQuote->transport) {
+            $transportCommissions = SellersCommission::where('commissionable_id', $commercialQuote->transport->id)
+                ->where('commissionable_type', 'App\Models\Transport')  // Aseguramos que sean comisiones de "transporte"
+                ->where('personal_id', $personal->id)
+                ->get();
+        }
+
+        // Comisiones de Aduana
+        $customCommissions = collect();
+        if ($commercialQuote->custom) {
+            $customCommissions = SellersCommission::where('commissionable_id', $commercialQuote->custom->id)
+                ->where('commissionable_type', 'App\Models\Custom')  // Aseguramos que sean comisiones de "aduana"
+                ->where('personal_id', $personal->id)
+                ->get();
+        }
+
+
+        // Validar si el vendedor puede generar profit por cada servicio
+        $canGenerateProfit = [
             'freight' => false,
             'transport' => false,
             'custom' => false
         ];
 
-        //Verificamos si el personal autenticado tiene puntos:
-        $personal = auth()->user()->personal;
-        $currentMonth = now()->month;
-        $currentYear = now()->year;
-
-
-        // Creamos una instancia del servicio de validación de profit
-        $profitService = new ProfitValidationService();
-
         // Validamos las condiciones para cada servicio
-        if ($commercialQuote->freight) {
-            $enabledProfit['freight'] = $profitService->validateAllConditions($commercialQuote->freight);
+        if ($commercialQuote->freight && $freightCommissions->isNotEmpty()) {
+            $canGenerateProfit['freight'] = $this->profitValidationService->validateAllConditions($freightCommissions->first());
         }
 
-        if ($commercialQuote->transport) {
-            $enabledProfit['transport'] = $profitService->validateAllConditions($commercialQuote->transport);
+        if ($commercialQuote->transport && $transportCommissions->isNotEmpty()) {
+            $canGenerateProfit['transport'] = $this->profitValidationService->validateAllConditions($transportCommissions->first());
         }
 
-        if ($commercialQuote->custom) {
-            $enabledProfit['custom'] = $profitService->validateAllConditions($commercialQuote->custom);
+        if ($commercialQuote->custom && $customCommissions->isNotEmpty()) {
+            $canGenerateProfit['custom'] = $this->profitValidationService->validateAllConditions($customCommissions->first());
         }
 
 
-        return view('commissions/seller/detail-seller-commission', compact('commercialQuote', 'enabledProfit'));
+        // Pasar los datos a la vista
+        return view('commissions/seller/detail-seller-commission', compact(
+            'commercialQuote',
+            'canGenerateProfit',
+            'freightCommissions',
+            'transportCommissions',
+            'customCommissions'
+        ));
     }
 
 
-    public function generatePointSeller(Request $request)
+    public function generatePointSeller(SellersCommission $sellerCommission)
     {
-        $typeService = $request->typeService; // Este valor debe ser 'freight' u otros tipos si es necesario
-        $serviceId = $request->idService;
-        $points = $request->points;
-
-        $pricePerPoint = 45;
-
-
-        switch ($typeService) {
-            case 'freight':
-                $freight = Freight::findOrFail($serviceId);
-                $revenue = $freight->profit;
-                $totalPointsCost = $points * $pricePerPoint;
-
-                if ($totalPointsCost > $revenue) {
-                    // Redirigir con un mensaje de error
-                    return redirect()->back()->with('error', 'No hay suficiente ganancia para generar los puntos solicitados.');
-                }
-
-                // Calcular la ganancia restante después de generar los puntos
-                $remaining_profit = $revenue - $totalPointsCost;
-
-                $freight->profit = $remaining_profit;
-                $freight->save();
-
-
-                $freight->points()->create([
-                    'personal_id' => auth()->user()->personal->id,
-                    'point_type' => 'adicional',  // Suponiendo que estos son puntos adicionales
-                    'quantity' => $points         // La cantidad de puntos generados
-                ]);
-
-
-                /* Calculamos las comisiones x la cantidad de puntos obtenidos */
-                $totalPoints = $freight->points->sum('quantity');
-                $commisionAmount = $totalPoints * 10;
-
-                $freight->sellerCommissions()->create([
-                    'personal_id' => auth()->user()->personal->id,  // Suponiendo que el vendedor está autenticado
-                    'points' => $totalPoints,
-                    'amount' => $commisionAmount,
-                ]);
-
-
-                // Redirigir con un mensaje de éxito
-                return redirect()->back()->with('success', 'Puntos generados correctamente. Ganancia restante: $' . number_format($remaining_profit, 2));
-
-
-                break;
-
-            default:
-                # code...
-                break;
+        if ($sellerCommission->additional_points > 0) {
+            return redirect()->back()->with('error', 'Los puntos ya han sido generados para este servicio.');
         }
-    }
+        // Calcular los puntos adicionales
+        $points = floor($sellerCommission->gross_profit / 45);
+        $remainingBalance = $sellerCommission->gross_profit - ($points * 45);
+        $generatedCommission = $points * 10;
 
 
-    public function generateProfit(Request $request)
-    {
-        $typeService = $request->typeService; // Este valor debe ser 'freight' u otros tipos si es necesario
-        $serviceId = $request->idService;
-
-        $totalProfit = 0;
-
-        switch ($typeService) {
-            case 'freight':
-                $service = Freight::findOrFail($serviceId); // Buscar el servicio de flete
-                $totalProfit = $service->profit;  // Obtén la ganancia del servicio
-                break;
-
-            case 'transport':
-                $service = Transport::findOrFail($serviceId); // Buscar el servicio de transporte
-                $totalProfit = $service->profit;
-                break;
-
-            case 'custom':
-                $service = Custom::findOrFail($serviceId); // Buscar el servicio de aduanas
-                $totalProfit = $service->profit;
-                break;
-
-            default:
-                return redirect()->back()->with('error', 'Servicio no válido.');
-        }
-
-
-        // Calcular la ganancia para el vendedor (50%)
-        $sellerProfit = $totalProfit / 2;
-
-        // Calcular la ganancia para la empresa (50%)
-        $companyProfit = $totalProfit / 2;
-
-        $profit = new Profit([
-            'profitability_id' => $service->id,  // ID del servicio (flete, transporte, aduanas)
-            'profitability_type' => get_class($service),  // Tipo de servicio (nombre de la clase)
-            'personal_id' => auth()->user()->personal->id,  // ID del vendedor autenticado
-            'seller_profit' => $sellerProfit,  // 50% de la ganancia para el vendedor
-            'company_profit' => $companyProfit,  // 50% de la ganancia para la empresa
-            'total_profit' => $totalProfit,  // Total del profit generado
+        $sellerCommission->update([
+            'additional_points' => $points,  // Asignar los puntos calculados
+            'remaining_balance' => $remainingBalance,
+            'generated_commission' => $generatedCommission
         ]);
 
-        $profit->save();
+        // Retornar un mensaje o redirigir a una vista
+        return redirect()->back()->with('success', "Se generaron $points puntos adicionales.");
+    }
 
 
-        return redirect()->back()->with('success', 'Profit generado correctamente.');
+    public function generateProfit(SellersCommission $sellerCommission)
+    {
+
+        $sellerProfit = $sellerCommission->gross_profit / 2;
+        $companyProfit = $sellerCommission->gross_profit / 2;
+        
+
+         $sellerCommission->update([
+            'distributed_profit' => $sellerProfit,  // Asignar los puntos calculados
+        ]);
+
+        return redirect()->back()->with('success', 'Profit generado correctamente para este servicio.');
     }
 
 

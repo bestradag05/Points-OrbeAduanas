@@ -403,7 +403,7 @@
                 let profitValue = parseFloat($('#gananciaCalculada').val().replace(/,/g, '')) || 0;
 
                 form.append(`<input type="hidden" name="accepted_answer_value" value='${acceptedAnswerValue.toFixed(2)}'>`);
-                form.append(`<input type="hidden" name="total_transport_value" value='${totalTransportValue.toFixed(2)}'>`); -
+                form.append(`<input type="hidden" name="value_sale" value='${totalTransportValue.toFixed(2)}'>`); -
                 form.append(`<input type="hidden" name="profit"                value='${profitValue.toFixed(2)}'>`);
 
 

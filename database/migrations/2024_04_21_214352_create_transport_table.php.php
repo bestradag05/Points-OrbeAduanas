@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('destination')->nullable();
             $table->decimal('value_utility', 8, 2)->nullable();
             $table->decimal('accepted_answer_value', 8, 2);
-            $table->decimal('total_transport_value', 8, 2);
+            $table->decimal('value_sale', 8, 2);
             $table->decimal('profit', 8, 2);
             $table->string('payment_state')->nullable();
             $table->date('payment_date')->nullable();

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Points;
 use App\Models\QuotesSentClient;
+use App\Models\SellersCommission;
 use App\Services\QuotesSentClientService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -78,7 +80,7 @@ class QuotesSentClientController extends Controller
 
 
 
-       $pdf = Pdf::loadView('commercial_quote.pdf.commercial_quote_pdf', compact('quoteSentClient', 'freightConcepts', 'customConcepts', 'transportConcepts', 'personal'));
+        $pdf = Pdf::loadView('commercial_quote.pdf.commercial_quote_pdf', compact('quoteSentClient', 'freightConcepts', 'customConcepts', 'transportConcepts', 'personal'));
 
         return $pdf->stream('Cotizacion Comercial.pdf');
     }
@@ -102,6 +104,12 @@ class QuotesSentClientController extends Controller
             case 'accept':
                 # code...
                 $status = 'Aceptado';
+
+                /* Si es aceptado se debe generar un registro para la gestion de comisiones, ademas se debe generar al punto automatico para los servicios puros */
+
+                //2. Generamos el registro para gestionar comisiones
+                $this->createSellerCommission($quotesSentClient);
+
                 break;
             case 'decline':
                 # code...
@@ -132,6 +140,51 @@ class QuotesSentClientController extends Controller
 
         return redirect()->back()->with('success', 'Se actualizo el estado de la cotizacion enviada al cliente.');
     }
+
+
+    private function createSellerCommission(QuotesSentClient $quotesSentClient)
+    {
+        // Obtener el comercial relacionado (commercialQuote)
+        $commercialQuote = $quotesSentClient->commercialQuote;
+
+        if ($commercialQuote) {
+            // Array de servicios
+            $services = [];
+
+            // Verificar si tiene servicios relacionados y agregarlos al array
+            if ($commercialQuote->freight) {
+                $services[] = $commercialQuote->freight;  // Agregar el servicio de flete
+            }
+            if ($commercialQuote->custom) {
+                $services[] = $commercialQuote->custom;  // Agregar el servicio de aduana
+            }
+            if ($commercialQuote->transport) {
+                $services[] = $commercialQuote->transport;  // Agregar el servicio de transporte
+            }
+
+
+            foreach ($services as $service) {
+
+                // Crear el registro de comisión
+                SellersCommission::create([
+                    'commissionable_id' => $service->id,
+                    'commissionable_type' => get_class($service),  // Tipo de servicio (QuotesSentClient)
+                    'personal_id' => $commercialQuote->id_personal,  // Relacionado al vendedor
+                    'cost_of_sale' => $service->value_sale,  // Costo de venta total
+                    'net_cost' => $service->accepted_answer_value + $service->value_utility,  // Costo neto
+                    'utility' => $service->value_utility,  // Utilidad
+                    'gross_profit' => $service->profit,  // Ganancia bruta total
+                    'pure_points' => 1,  // Puntos puros generados
+                    'additional_points' => 0,  // Puntos adicionales generados
+                    'distributed_profit' => 0,  // Ganancia distribuida
+                    'remaining_balance' => 0,  // Saldo restante para el vendedor
+                    'generated_commission' => 0,  // Comisión generada
+                ]);
+            }
+        }
+    }
+
+
 
     /**
      * Show the form for editing the specified resource.

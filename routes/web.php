@@ -181,8 +181,8 @@ Route::middleware('auth')->group(function () {
     Route::prefix('commissions/seller')->group(function () {
         Route::get('/', [SellerCommissionController::class, 'getCommissionsSeeller']);
         Route::get('/{commercialQuote}/detail', [SellerCommissionController::class, 'getDetalCommissionsSeeller']);
-        Route::post('/generate/points', [SellerCommissionController::class, 'generatePointSeller']);
-        Route::post('/generate/profit', [SellerCommissionController::class, 'generateProfit']);
+        Route::get('/generate/points/{sellerCommission}', [SellerCommissionController::class, 'generatePointSeller']);
+        Route::get('/generate/profit/{sellerCommission}', [SellerCommissionController::class, 'generateProfit']);
     });
 
 
@@ -314,7 +314,6 @@ Route::middleware('auth')->group(function () {
 
     
     Route::get('commercial/createQuote/{nro_quote_commercial}', [CommercialQuoteController::class, 'createQuote']);
-    Route::get('commercial/quote/getPDF/{id}', [CommercialQuoteController::class, 'getPDF']);
     Route::get('commercial/service/{service}/{id}', [CommercialQuoteController::class, 'editCommercialQuoteService']);
     Route::get('commercial/quote/state/{action}/{id}', [CommercialQuoteController::class, 'handleActionCommercialQuote']);
     Route::patch('commercial/quote/updatedate/{id}', [CommercialQuoteController::class, 'updateDate']);

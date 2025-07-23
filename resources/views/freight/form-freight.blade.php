@@ -159,7 +159,7 @@
         <div class="col-4 row">
             <label for="total" class="col-sm-6 col-form-label">Total conceptos:</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" name="total_freight_value" id="total_freight_value"
+                <input type="text" class="form-control" name="value_sale" id="value_sale"
                     value="0.00" @readonly(true)>
             </div>
         </div>
@@ -301,7 +301,7 @@
         function calcTotal(TotalConcepts, value_insurance) {
             total = TotalConcepts + value_insurance;
 
-            let inputTotal = $('#total_freight_value');
+            let inputTotal = $('#value_sale');
             inputTotal.val(total.toFixed(2));
             const totalAcceptedAnswer = parseFloat(@json($totalAcceptedAnswer));
             let utilidad = parseFloat($('#value_utility').val().replace(/,/g, '')) || 0;

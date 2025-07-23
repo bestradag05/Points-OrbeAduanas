@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Freight;
+use App\Models\SellersCommission;
 
 class ProfitValidationService
 {
@@ -11,7 +12,7 @@ class ProfitValidationService
      */
     public function checkMinUtility($service)
     {
-        return $service->value_utility >= 200;  // Aquí adaptamos para cada tipo de servicio
+        return $service->utility >= 250;  // Aquí adaptamos para cada tipo de servicio
     }
 
     /**
@@ -19,21 +20,33 @@ class ProfitValidationService
      */
     public function checkMinPoints($service)
     {
-        // Obtenemos el personal asociado a la cotización comercial
-        $commercialQuote = $service->commercial_quote;
+        if (isset($service->commissionable)) {
+            // Obtener el personal asociado a la cotización comercial
+            $personal = $service->commissionable->commercial_quote->personal;
 
-        // Verificamos si la cotización tiene un personal relacionado
-        if ($commercialQuote && $commercialQuote->personal) {
-            $personal = $commercialQuote->personal;
+            // Si no hay personal relacionado, devolver false
+            if (!$personal) {
+                return false;
+            }
+
+            // Obtener los puntos generados por este personal en el mes y año actuales
             $currentMonth = now()->month;
             $currentYear = now()->year;
 
-            // Sumar los puntos de todas las cotizaciones comerciales asociadas al personal
-            $totalPointsThisMonth = $this->getTotalPointsForPersonal($personal, $currentYear, $currentMonth);
+            // Calcular la suma de puntos (pure_points + additional_points) en la tabla seller_commission
+            $totalPointsThisMonth = SellersCommission::where('personal_id', $personal->id)
+                ->whereYear('created_at', $currentYear)
+                ->whereMonth('created_at', $currentMonth)
+                ->sum('pure_points') + SellersCommission::where('personal_id', $personal->id)
+                ->whereYear('created_at', $currentYear)
+                ->whereMonth('created_at', $currentMonth)
+                ->sum('additional_points');
 
+            // Verificar si el personal ha generado al menos 10 puntos
             return $totalPointsThisMonth >= 10;
         }
 
+        // Si el servicio no tiene relación con commercialQuote, no podemos verificar los puntos
         return false;
     }
 
@@ -42,7 +55,7 @@ class ProfitValidationService
      */
     public function checkMinRemainingProfit($service)
     {
-        return $service->profit >= 200;  // Aquí adaptamos para cada tipo de servicio
+        return $service->gross_profit >= 200;  // Aquí adaptamos para cada tipo de servicio
     }
 
 

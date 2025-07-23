@@ -24,7 +24,7 @@ return new class extends Migration
             $table->decimal('value_utility', 8, 2);
             $table->decimal('accepted_answer_value', 8, 2);
             $table->decimal('total_answer_utility', 8, 2);
-            $table->decimal('total_freight_value', 8, 2);
+            $table->decimal('value_sale', 8, 2);
             $table->decimal('profit', 8, 2);
 /*             $table->integer('total_additional_points');
             $table->integer('total_additional_points_used'); */

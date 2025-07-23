@@ -21,7 +21,7 @@ class Transport extends Model
         'destination',
         'value_utility',
         'accepted_answer_value',
-        'total_transport_value',
+        'value_sale',
         'profit',
         'payment_state',
         'payment_date',
@@ -82,8 +82,12 @@ class Transport extends Model
     {
         return $this->belongsTo(CommercialQuote::class, 'nro_quote_commercial', 'nro_quote_commercial');
     }
+    public function sellerCommissions()
+    {
+        return $this->morphMany(SellersCommission::class, 'commissionable');
+    }
 
-/*     public function additional_point()
+    /*     public function additional_point()
     {
         return $this->morphMany(AdditionalPoints::class, 'additional', 'model_additional_service', 'id_additional_service');
     }
@@ -104,6 +108,6 @@ class Transport extends Model
             'concepts_transport', // nombre de la tabla pivot
             'transport_id',       // clave foránea en la tabla pivot hacia este modelo
             'concepts_id'         // clave foránea en la tabla pivot hacia el modelo Concept
-        )->withPivot('added_value', 'net_amount_response', 'subtotal', 'igv','total', 'additional_points'); // si tienes más campos en la tabla intermedia
+        )->withPivot('value_concept'); // si tienes más campos en la tabla intermedia
     }
 }

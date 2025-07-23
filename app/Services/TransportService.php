@@ -236,7 +236,7 @@ class TransportService
             'nro_quote_commercial' => $request->nro_quote_commercial,
             'value_utility'            => $valueUtility,
             'accepted_answer_value'    => $request->input('accepted_answer_value'),
-            'total_transport_value'    => $request->input('total_transport_value'),
+            'value_sale'    => $request->input('value_sale'),
             'profit'                   => $request->input('profit'),
             'state' => 'Pendiente'
         ]);
@@ -256,7 +256,6 @@ class TransportService
 
         if ($conceptsTransport) {
             foreach ($conceptsTransport as $concept) {
-                $concept->additional_point()->delete();
                 $concept->forceDelete(); // Esto elimina el ConceptTransport definitivamente
             }
         }
@@ -265,7 +264,7 @@ class TransportService
 
         // Relacionamos los nuevos conceptos con el tranporte
         foreach ($concepts as $concept) {
-            $added = $this->parseDouble($concept->added);
+           /*  $added = $this->parseDouble($concept->added);
 
             // 1 Obtener el net_amount desde concepts_response_transport
             $net = optional(
@@ -276,27 +275,27 @@ class TransportService
             if ($net === null) {
                 $net = $this->parseDouble($concept->value); // ← usa el valor del formulario
             }
+ */
 
 
-
-            $concept_total = $net + $added; // total de este concepto
+           /*  $concept_total = $net + $added;
             $base_sin_igv = $concept_total / 1.18;
             $igv = $concept_total - $base_sin_igv;
             $subtotal = $concept_total - $igv;
 
-            $totalTransport += $concept_total;
+            $totalTransport += $concept_total; */
 
 
             // 3 Guardar todo en concepts_transport
             $conceptsTransport = ConceptsTransport::create([
                 'concepts_id' => $concept->id,
                 'transport_id' => $transport->id,
-                'added_value' => $added,
-                'net_amount_response' => $net,
+                'value_concept' => $concept->value,
+                /* 'net_amount_response' => $net,
                 'subtotal' => $subtotal,
                 'igv' => $igv,
                 'total' => $concept_total,
-                'additional_points' => $concept->pa ?? 0,
+                'additional_points' => $concept->pa ?? 0, */
             ]);
 
         }
@@ -304,7 +303,7 @@ class TransportService
     }
 
 
-    public function add_aditionals_point($conceptTransport, $net_amount = null, $igv = null, $total = null)
+    /* public function add_aditionals_point($conceptTransport, $net_amount = null, $igv = null, $total = null)
     {
 
         $additional_point = AdditionalPoints::create([
@@ -321,7 +320,7 @@ class TransportService
 
 
         $conceptTransport->additional_point()->save($additional_point);
-    }
+    } */
 
     public function parseDouble($num)
     {

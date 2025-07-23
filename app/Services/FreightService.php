@@ -338,7 +338,7 @@ class FreightService
             'value_utility' => $request->value_utility,
             'accepted_answer_value' => $request->accepted_answer_value,
             'total_answer_utility' => $request->total_answer_utility,
-            'total_freight_value' => $request->total_freight_value,
+            'value_sale' => $request->value_sale,
             'profit' => $request->profit,
             /* 'total_additional_points' => $request->total_additional_points,
             'total_additional_points_used' => $request->total_additional_points_used, */

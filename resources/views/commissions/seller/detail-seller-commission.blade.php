@@ -3,250 +3,253 @@
 @section('dinamic-content')
 
     <div class="row">
-        <div class="row p-3 w-100">
+
+
+        <div class="col-12 my-3">
+            <h3 class="text-center text-indigo">Gestion de comisiones</h3>
+        </div>
+
+        <div class="col-12">
+            <div class="alert alert-sm text-center text-muted" role="alert" style="font-size: 14px;">
+                <strong>Estimado vendedor:</strong> Para poder generar profit, primero debe pasar el mínimo de 10
+                puntos. Si aún no se completa la ganancia se pasará de forma automática a puntos adicionales, una vez
+                pasado el minimo tendrá la opción de generar profit tomando en cuenta que debe dejar como mínimo de
+                utilidad <strong>$ 250.00</strong>.
+            </div>
+        </div>
+
+        <!-- Comisiones de Flete -->
+        @if ($freightCommissions->isNotEmpty())
             <div class="col-12 my-3">
-                <h3 class="text-center text-indigo">Comisiones en flete</h3>
-            </div>
-            <div class="col-12">
-                <div class="alert alert-sm text-center text-muted" role="alert" style="font-size: 14px;">
-                    <strong>Estimado vendedor:</strong> Para poder generar profit, primero debe pasar el mínimo de 10
-                    puntos. Si aún no se completa la ganancia se pasará de forma automática a puntos adicionales, una vez
-                    pasado el minimo tendra la opcion de generar profit tomando en cuanta que debe dejar como minimo de
-                    utilidad <strong>$ 250.00</strong> .
-                </div>
-            </div>
-            <div class="col-12">
+                <h4 class="text-center text-indigo">Flete</h4>
                 <table class="table">
                     <thead>
                         <tr>
+                            <th scope="col">N° de cotización</th>
                             <th scope="col">Flete</th>
-                            <th scope="col">Costo venta</th>
+                            <th scope="col">Costo Venta</th>
                             <th scope="col">Costo Neto</th>
                             <th scope="col">Utilidad</th>
-                            <th scope="col">Ganacia</th>
-                            <th scope="col">Puntos</th>
+                            <th scope="col">Ganancia</th>
+                            <th scope="col">Puntos Puro</th>
+                            <th scope="col">Puntos Adicional</th>
                             <th scope="col">Profit</th>
                             <th scope="col">Saldo</th>
-                            <th scope="col">Comision Generada</th>
+                            <th scope="col">Comisión Generada</th>
                             <th scope="col">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <th scope="row">{{ $commercialQuote->freight->nro_operation_freight }}</th>
-                            <td>$ {{ $commercialQuote->freight->total_freight_value }}</td>
-                            <td>$ {{ $commercialQuote->freight->accepted_answer_value }}</td>
-                            <td>$ {{ $commercialQuote->freight->value_utility }}</td>
-                            <td>
-                                <div class="custom-badge status-info">
-                                    $ {{ $commercialQuote->freight->profit }}
-                                </div>
-                            </td>
-                            <td>{{ $commercialQuote->freight->points->sum('quantity') }}</td>
-                            <td>{{$commercialQuote->freight->profitability->seller_profit ?? 0.00}}</td>
-                            <td> 0.00</td>
-                            <td>
-                                <div class="custom-badge status-success">
-                                    $ {{ number_format($commercialQuote->freight->sellerCommissions->sum('amount'), 2) }}
-                                </div>
-                            </td>
-                            <td>
-                                <!-- Select para elegir entre generar Puntos o Profit -->
-                                @if ($commercialQuote->freight->profit >= 45)
-                                    <select id="actionSelect" class="form-control">
-                                        <option> --- Seleciona una opción --- </option>
-                                        <option data-type="freight" data-id="{{ $commercialQuote->freight->id }}"
-                                            value="puntos">
-                                            Generar Puntos</option>
-                                        <option {{ $enabledProfit['freight'] === false ? 'disabled' : '' }}
-                                            data-type="freight" data-id="{{ $commercialQuote->freight->id }}"
-                                            value="profit">
-                                            Generar Profit
-                                        </option>
-                                    </select>
-                                @else
-                                   <p class="text-muted">Sin acciones</p> 
-                                @endif
+                        @foreach ($freightCommissions as $commission)
+                            <tr>
+                                <td class="text-indigo text-bold">
+                                    {{ $commission->commissionable->commercial_quote->nro_quote_commercial }}</td>
+                                <td>{{ $commission->commissionable->nro_operation_freight }}</td>
+                                <td>${{ $commission->cost_of_sale }}</td>
+                                <td>${{ $commission->net_cost }}</td>
+                                <td>${{ $commission->utility }}</td>
+                                <td>${{ $commission->gross_profit }}</td>
+                                <td>{{ $commission->pure_points }}</td>
+                                <td>{{ $commission->additional_points }}</td>
+                                <td>
+                                    <div class="custom-badge status-info">
+                                        ${{ $commission->distributed_profit }}
+                                    </div>
+                                </td>
+                                <td>${{ $commission->remaining_balance }}</td>
 
-                            </td>
-                        </tr>
-
-
+                                <td>
+                                    <div class="custom-badge status-success">
+                                        $ {{ number_format($commission->generated_commission, 2) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm"
+                                        onclick="confirmPointsGeneration({{ $commission->gross_profit }}, {{ $commission->id }})"
+                                        @if ($commission->distributed_profit || $commission->generated_commission > 0) disabled @endif>Calcular
+                                        puntos</button>
+                                    <button class="btn btn-secondary btn-sm"
+                                        @if (!$canGenerateProfit['freight']) disabled @endif
+                                        onclick="confirmProfitGeneration({{ $commission->gross_profit }}, {{ $commission->id }})"
+                                        @if ($commission->distributed_profit || $commission->generated_commission > 0) disabled @endif>Calcular
+                                        profit</button>
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
+        @endif
 
-
-        </div>
-
-
-    </div>
-
-
-    <!-- Modal -->
-    <div class="modal fade" id="calcularModalPoints" tabindex="-1" aria-labelledby="calcularModalPointsLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="calcularModalPointsLabel">Calcular Puntos</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <form action={{ url('/commissions/seller/generate/points') }} id="formPoints" method="POST"
-                    enctype="multipart/form-data">
-                    <div class="modal-body">
-                        @csrf
-
-                        <input type="hidden" id="typeService" name="typeService">
-                        <input type="hidden" id="idService" name="idService">
-                        <div>
-                            <label for="puntos">Puntos a Generar: </label>
-                            <input type="number" id="points" name="points" class="form-control" value="0"
-                                min="0" oninput="validarPuntos()">
-                            <small id="maxPuntos" class="form-text text-muted"></small>
-                            <small id="descuentoPorPunto" class="form-text text-muted"></small>
-                            <small id="restante" class="form-text text-muted"></small>
-                        </div>
-                        <br>
-
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-indigo">Generar</button>
-                    </div>
-                </form>
+        <!-- Comisiones de Transporte -->
+        @if ($transportCommissions->isNotEmpty())
+            <div class="col-12 my-3">
+                <h4 class="text-center text-indigo">Transporte</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">N° de cotización</th>
+                            <th scope="col">Transporte</th>
+                            <th scope="col">Costo Venta</th>
+                            <th scope="col">Costo Neto</th>
+                            <th scope="col">Utilidad</th>
+                            <th scope="col">Ganancia</th>
+                            <th scope="col">Puntos Puros</th>
+                            <th scope="col">Puntos Adicionales</th>
+                            <th scope="col">Profit</th>
+                            <th scope="col">Saldo</th>
+                            <th scope="col">Comisión Generada</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($transportCommissions as $commission)
+                            <tr>
+                                <td class="text-indigo text-bold">
+                                    {{ $commission->commissionable->commercial_quote->nro_quote_commercial }}</td>
+                                <td>{{ $commission->commissionable->nro_operation_transport }}</td>
+                                <td>${{ $commission->cost_of_sale }}</td>
+                                <td>${{ $commission->net_cost }}</td>
+                                <td>${{ $commission->utility }}</td>
+                                <td>${{ $commission->gross_profit }}</td>
+                                <td>{{ $commission->pure_points }}</td>
+                                <td>{{ $commission->additional_points }}</td>
+                                <td>
+                                    <div class="custom-badge status-info">
+                                        ${{ $commission->distributed_profit }}
+                                    </div>
+                                </td>
+                                <td>${{ $commission->remaining_balance }}</td>
+                                <td>
+                                    <div class="custom-badge status-success">
+                                        $ {{ number_format($commission->generated_commission, 2) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm"
+                                        onclick="confirmPointsGeneration({{ $commission->gross_profit }}, {{ $commission->id }})"
+                                        @if ($commission->distributed_profit || $commission->generated_commission > 0) disabled @endif>Calcular
+                                        puntos</button>
+                                    <button class="btn btn-secondary btn-sm"
+                                        @if (!$canGenerateProfit['transport']) disabled @endif
+                                        onclick="confirmProfitGeneration({{ $commission->gross_profit }}, {{ $commission->id }})"
+                                        @if ($commission->distributed_profit || $commission->generated_commission > 0) disabled @endif>Calcular
+                                        profit</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
-        </div>
-    </div>
+        @endif
 
-    <div class="modal fade" id="calcularModalProfit" tabindex="-1" aria-labelledby="calcularModalProfitLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="calcularModalProfitLabel">Generar Profit</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <form action={{ url('/commissions/seller/generate/profit') }} id="formProfit" method="POST"
-                    enctype="multipart/form-data">
-                    @csrf
-
-                    <input type="hidden" id="typeService" name="typeService">
-                    <input type="hidden" id="idService" name="idService">
-                    <div class="modal-body">
-                        <p>Para generar profit, debes cumplir con las siguientes condiciones:</p>
-                        <ul>
-                            <li>Utilidad mínima de $250.00</li>
-                            <li>Generar al menos 10 puntos dentro del mes</li>
-                            <li>Ganancia restante mínima de $200.00</li>
-                        </ul>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-primary" id="generateProfit">Generar Profit</button>
-                    </div>
-
-                </form>
+        <!-- Comisiones de Aduana -->
+        @if ($customCommissions->isNotEmpty())
+            <div class="col-12 my-3">
+                <h4 class="text-center text-indigo">Aduana</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Aduana</th>
+                            <th scope="col">Costo Venta</th>
+                            <th scope="col">Costo Neto</th>
+                            <th scope="col">Utilidad</th>
+                            <th scope="col">Ganancia</th>
+                            <th scope="col">Puntos</th>
+                            <th scope="col">Profit</th>
+                            <th scope="col">Saldo</th>
+                            <th scope="col">Comisión Generada</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($customCommissions as $commission)
+                            <tr>
+                                <td class="text-indigo text-bold">
+                                    {{ $commission->commissionable->commercial_quote->nro_quote_commercial }}</td>
+                                <td>{{ $commission->commissionable->nro_operation_custom }}</td>
+                                <td>${{ $commission->cost_of_sale }}</td>
+                                <td>${{ $commission->net_cost }}</td>
+                                <td>${{ $commission->utility }}</td>
+                                <td>${{ $commission->gross_profit }}</td>
+                                <td>{{ $commission->pure_points }}</td>
+                                <td>{{ $commission->additional_points }}</td>
+                                <td>
+                                    <div class="custom-badge status-info">
+                                        ${{ $commission->distributed_profit }}
+                                    </div>
+                                </td>
+                                <td>${{ $commission->remaining_balance }}</td>
+                                <td>
+                                    <div class="custom-badge status-success">
+                                        $ {{ number_format($commission->generated_commission, 2) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm"
+                                        onclick="confirmPointsGeneration({{ $commission->gross_profit }}, {{ $commission->id }})"
+                                        @if ($commission->distributed_profit || $commission->generated_commission > 0) disabled @endif>Calcular
+                                        puntos</button>
+                                    <button class="btn btn-secondary btn-sm"
+                                        @if (!$canGenerateProfit['custom']) disabled @endif
+                                        onclick="confirmProfitGeneration({{ $commission->gross_profit }}, {{ $commission->id }})"
+                                        @if ($commission->distributed_profit || $commission->generated_commission > 0) disabled @endif>Calcular
+                                        profit</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
-        </div>
+        @endif
     </div>
-
 
 @stop
 
-
 @push('scripts')
     <script>
-        const ganancia = @json($commercialQuote->freight->profit);
-        const costoPorPunto = 45;
+        // Función para mostrar la alerta de confirmación antes de generar los puntos
+        function confirmPointsGeneration(profit, commissionId) {
+            // Calcular los puntos a generar
+            const points = Math.floor(profit / 45);
 
-
-        $('#actionSelect').change(function() {
-            const selectedAction = $(this).val();
-
-            const selectedOption = $(this).find('option:selected');
-
-            // Obtener el tipo de servicio y el id desde los data-* attributes
-            const typeService = selectedOption.data('type');
-            const serviceId = selectedOption.data('id');
-
-
-            if (selectedAction === 'puntos') {
-                // Si selecciona Generar Puntos, abre el modal correspondiente
-                $('#calcularModalPoints input#typeService').val(typeService);
-                $('#calcularModalPoints input#idService').val(serviceId);
-                $('#calcularModalPoints').modal('show');
-
-
-            } else if (selectedAction === 'profit') {
-                // Si selecciona Generar Profit, abre el modal correspondiente
-                $('#calcularModalProfit input#typeService').val(typeService);
-                $('#calcularModalProfit input#idService').val(serviceId);
-                $('#calcularModalProfit').modal('show');
-            }
-        });
-
-
-        $('#formPoints').submit(function(e) {
-            // Obtener el valor de los puntos
-            const puntos = parseInt($('#points').val());
-
-            // Verificar si los puntos son 0 o menor
-            if (puntos <= 0) {
-                // Si los puntos son 0 o menores, prevenir el envío del formulario
-                e.preventDefault(); // Evitar que el formulario se envíe
-                $('#points').addClass('is-invalid');
-                // Mostrar un mensaje de error
-                toastr.error('Debe generar almenos un punto para poder registrarlo');
-            }
-        });
-
-        // Calcular el máximo de puntos posibles
-        function calcularMaxPuntos() {
-            return Math.floor(ganancia / costoPorPunto);
+            // Mostrar la alerta de SweetAlert
+            Swal.fire({
+                title: '¿Estás seguro?',
+                html: `Vas a generar <strong class="text-indigo">${points}</strong> puntos adicionales para este servicio. ¿Deseas continuar?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, generar puntos',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/commissions/seller/generate/points/${commissionId}`;
+                }
+            });
         }
 
-        // Actualizar el máximo de puntos en el formulario y validarlo
-        function validarPuntos() {
-            const maxPuntos = calcularMaxPuntos();
 
-            let puntos = parseInt($('#points').val());
+        function confirmProfitGeneration(profit, commissionId) {
+            // Calcular los puntos a generar
+            const sellerProfit = profit / 2;
 
-            // Mostrar el máximo de puntos posibles
-            $('#maxPuntos').text(`Máximo de puntos posibles: ${maxPuntos}`);
-
-            // Evitar que se ingresen más puntos de los posibles
-            if (puntos > maxPuntos) {
-                $('#points').val(maxPuntos); // Limitar a la cantidad máxima
-            }
-
-            // Evitar que el valor sea negativo
-            if (puntos < 0) {
-                $('#points').val(0); // Ajustar a 0 si el valor es negativo
-            }
-
-            if (puntos <= maxPuntos) {
-                // Mostrar el descuento por punto y el monto restante
-                const totalDescuento = puntos * costoPorPunto;
-                $('#descuentoPorPunto').text(`Descuento total por ${puntos} puntos: $${totalDescuento}`);
-
-                // Calcular y mostrar el monto restante después de descontar los puntos
-                const restante = ganancia - totalDescuento;
-                $('#restante').text(`Ganancia restante: $${restante.toFixed(2)}`);
-
-            }
-
-
+            // Mostrar la alerta de SweetAlert
+            Swal.fire({
+                title: '¿Estás seguro?',
+                html: `Estimado vendedor usted es candidado para obtener un profit del 50% de la ganancia, el monto que obtendra sera <strong class="text-indigo">${sellerProfit}</strong> y el otro 50% sera para la empresa, ¿Esta de acuerdo?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, generar profit',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/commissions/seller/generate/profit/${commissionId}`;
+                }
+            });
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            validarPuntos(); // Llamar para establecer el valor inicial del máximo
-        });
     </script>
-      
 @endpush

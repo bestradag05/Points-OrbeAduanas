@@ -13,10 +13,17 @@ return new class extends Migration
     {
         Schema::create('sellers_commission', function (Blueprint $table) {
             $table->id();
-            $table->morphs('commissionable'); // Crea commissionable_id y commissionable_type
-            $table->unsignedBigInteger('personal_id'); // Relaciona la comisión con el vendedor
-            $table->integer('points'); // Cantidad de puntos generados
-            $table->decimal('amount', 10, 2); // Comisión generada
+            $table->morphs('commissionable'); 
+            $table->unsignedBigInteger('personal_id'); 
+            $table->decimal('cost_of_sale', 10, 2); 
+            $table->decimal('net_cost', 10, 2); 
+            $table->decimal('utility', 10, 2); 
+            $table->decimal('gross_profit', 10, 2); 
+            $table->integer('pure_points'); 
+            $table->integer('additional_points')->nullable(); 
+            $table->decimal('distributed_profit', 10, 2)->nullable(); 
+            $table->decimal('remaining_balance', 10, 2)->nullable(); 
+            $table->decimal('generated_commission', 10, 2)->nullable(); 
             $table->timestamps();
 
             $table->foreign('personal_id')->references('id')->on('personal');

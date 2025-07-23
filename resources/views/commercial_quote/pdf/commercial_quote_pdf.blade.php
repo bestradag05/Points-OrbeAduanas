@@ -257,6 +257,7 @@
 
     <div class="title">
         <h1>Cotizacion {{ $quoteSentClient->type_shipment->description }} </h1>
+        <h3>N ° {{$quoteSentClient->nro_quote_commercial }}</h3>
 
     </div>
 
@@ -365,9 +366,9 @@
                             {{ $quoteSentClient->created_at->format('d/m/Y') }}</td>
                     </tr>
                     <tr>
-                        <td class="title-item-table">Cotizacion #</td>
+                        <td class="title-item-table">ReF ##</td>
                         <td class="text-item-table" style="font-weight: bold">
-                            {{ $quoteSentClient->nro_quote_commercial }}</td>
+                            {{ $quoteSentClient->commercialQuote->nro_quote_commercial }}</td>
                     </tr>
                     <tr>
                         <td class="title-item-table">Fecha de Validez</td>
@@ -467,7 +468,7 @@
                             <tr>
                                 <td>{{ $concept->name }}</td>
                                 <td id="observation"> - </td>
-                                <td> $ {{ $concept->pivot->total }}</td>
+                                <td> $ {{ $concept->pivot->concept_value }}</td>
                             </tr>
                         @endforeach
 
@@ -603,9 +604,10 @@
             </div>
 
             <div class="item-detail-quote">
+                {{-- TODO: Modificar para calcular el total de forma automatica --}}
                 <div class="total-quote">
                     TOTAL COTIZACION: $
-                    {{ $quoteSentClient->total_quote_sent_client}}
+                    {{ $quoteSentClient->total_quote_sent_client + $igv}}
                 </div>
             </div>
 

@@ -730,51 +730,6 @@ class CommercialQuoteService
     }
 
 
-    public function getPDF($id)
-    {
-        $commercialQuote = CommercialQuote::with([
-            'quote_freight' => function ($query) {
-                $query->where('state', 'Pendiente')
-                    ->whereHas('responses', function ($q) {
-                        $q->where('status', 'Aceptado');
-                    });
-            },
-            'quote_transport' => function ($query) {
-                $query->where('state', 'Aceptado') //TODO: (Task) verificar en que estados se va mantener la cotizacion cuando se agrege una respuesta y definirlo aqui
-                    ->whereHas('responseTransportQuotes', function ($q) {
-                        $q->where('status', 'Aceptado');
-                    });
-            }
-        ])->find($id);
-
-
-
-        $personal = Auth::user()->personal;
-
-
-        $freight = [];
-        $custom  = [];
-        $transport = [];
-
-
-        if ($commercialQuote->quote_freight->isNotEmpty()) {
-            $freight = $commercialQuote->quote_freight->first()?->freight;
-        }
-
-        if ($commercialQuote->custom && $commercialQuote->custom->exists()) {
-            $custom = $commercialQuote->custom;
-        }
-
-        if ($commercialQuote->quote_transport->isNotEmpty()) {
-            $transport = $commercialQuote->quote_transport->first()?->transport;
-        }
-
-        $pdf = FacadePdf::loadView('commercial_quote.pdf.commercial_quote_pdf', compact('commercialQuote', 'freight', 'custom', 'transport', 'personal'));
-
-        return $pdf; // Muestra el PDF en el navegador
-
-    }
-
     public function generateRoPdf($commercialQuote)
     {
 

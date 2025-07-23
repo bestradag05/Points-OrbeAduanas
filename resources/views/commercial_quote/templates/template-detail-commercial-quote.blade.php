@@ -59,15 +59,6 @@
                     <div class="col-sm-8 d-inline">
                         <p id="nro_quote_commercial" class="form-control-plaintext text-indigo d-inline">
                             {{ $comercialQuote->nro_quote_commercial }}</p>
-                        {{--  <a href="{{ url('/commercial/quote/getPDF/' . $comercialQuote->id) }}"
-                            class="text-indigo d-inline">
-                            <i class="fas fa-file-pdf"></i>
-                        </a> --}}
-                        <a href="{{ url('commercial/quote/getPDF/' . $comercialQuote->id) }}" target="_blank"
-                            class=" text-indigo d-inline">
-                            <i class="fas fa-file-pdf"></i>
-                        </a>
-
                     </div>
 
                 </div>

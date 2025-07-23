@@ -25,7 +25,7 @@ class Freight extends Model
         'value_utility',
         'accepted_answer_value',
         'total_answer_utility',
-        'total_freight_value',
+        'value_sale',
         'profit',
         /*         'total_additional_points',
         'total_additional_points_used', */

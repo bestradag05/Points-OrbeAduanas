@@ -11,7 +11,20 @@ class SellersCommission extends Model
 
     protected $table = 'sellers_commission';
 
-    protected $fillable = ['commissionable_id', 'commissionable_type', 'personal_id', 'points', 'amount'];
+    protected $fillable = [
+        'commissionable_id', 
+        'commissionable_type', 
+        'personal_id',
+        'cost_of_sale',
+        'net_cost',
+        'utility',
+        'gross_profit',
+        'pure_points',
+        'additional_points',
+        'distributed_profit',
+        'remaining_balance',
+        'generated_commission'
+    ];
 
     // Relación con el modelo `Personal`
     public function personal()

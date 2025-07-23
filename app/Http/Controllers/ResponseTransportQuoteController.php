@@ -36,46 +36,41 @@ class ResponseTransportQuoteController extends Controller
 
     public function store(Request $request, $quoteId)
     {
-        // 1) Validamos
         $data = $request->validate([
             'provider_id'     => 'required|exists:suppliers,id',
             'price_concept.*' => 'required|numeric|min:0',
-            'commission'      => 'nullable|numeric|min:0',
-        ], [
-            'provider_id.required'     => 'Debes seleccionar un proveedor.',
-            'price_concept.*.required' => 'Todos los precios de concepto son obligatorios.',
-            'commission.required'      => 'La comisión es obligatoria.',
+            'exchange_rate'   => 'required|numeric|min:0.1',
+            'value_utility'   => 'required|numeric|min:0',
         ]);
 
         $quote = QuoteTransport::findOrFail($quoteId);
 
-        //  Calculamos el total de conceptos
-        $totalConceptos = array_sum($data['price_concept']);
+        $totalSoles = array_sum($data['price_concept']);
+        $totalUSD = $totalSoles / $data['exchange_rate'];
+        $totalFinalUSD = $totalUSD + $data['value_utility'];
 
+        // Validación: utilidad mínima
+        $minUtility = $quote->type_cargo === 'FCL' ? 60 : 45;
+        if ($data['value_utility'] < $minUtility) {
+            return back()->withErrors([
+                'value_utility' => 'La utilidad mínima para ' . $quote->type_cargo . ' es de $' . $minUtility,
+            ])->withInput();
+        }
 
-
-        // Creamos la respuesta de transporte
         $resp = ResponseTransportQuote::create([
             'quote_transport_id' => $quote->id,
-            'provider_id'    => $data['provider_id'],
-            'provider_cost'  => $totalConceptos, // ahora lo tomamos de conceptos
-            'commission'     => $data['commission'] ?? 0,
-            'total'          => $totalConceptos + ($data['commission'] ?? 0), // recalcularemos abajo
-            'status'         => 'Enviada',
+            'provider_id'        => $data['provider_id'],
+            'provider_cost'      => $totalSoles,
+            'exchange_rate'      => $data['exchange_rate'],
+            'value_utility'      => $data['value_utility'],
+            'total'              => round($totalFinalUSD, 2),
+            'status'             => 'Enviada',
         ]);
 
         foreach ($data['price_concept'] as $conceptId => $price) {
-            $concept = Concept::find($conceptId);
-
-            // Suma la comisión SOLO si el concepto es "TRANSPORTE"
-            $net = $price;
-            if (strtoupper($concept->name) === 'TRANSPORTE') {
-                $net += $data['commission'] ?? 0;
-            }
-
             $resp->conceptResponseTransports()->create([
                 'concepts_id' => $conceptId,
-                'net_amount' => $net,
+                'net_amount'  => $price,
             ]);
         }
 
@@ -83,6 +78,8 @@ class ResponseTransportQuoteController extends Controller
             ->route('transport.show', $quoteId)
             ->with('success', 'Cotización de transporte registrada.');
     }
+
+
 
     public function update(Request $request, string $id)
     {

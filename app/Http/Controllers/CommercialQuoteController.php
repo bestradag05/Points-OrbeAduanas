@@ -292,7 +292,7 @@ class CommercialQuoteController extends Controller
             /* Total del flete */
 
             $quoteSentClient->update([
-                'total_freight' => $commercialQuote->freight->total_freight_value
+                'total_freight' => $commercialQuote->freight->value_sale
             ]);
 
             /* Conceptos para quote_sent_client */
@@ -306,7 +306,7 @@ class CommercialQuoteController extends Controller
                 );
             }
 
-            $totalQuoteSentClient += $commercialQuote->freight->total_freight_value;
+            $totalQuoteSentClient += $commercialQuote->freight->value_sale;
         }
 
         if ($commercialQuote->transport) {
@@ -315,7 +315,7 @@ class CommercialQuoteController extends Controller
             /* Total del transporte */
 
             $quoteSentClient->update([
-                'total_transport' => $commercialQuote->transport->total_transport
+                'total_transport' => $commercialQuote->transport->value_sale
             ]);
 
             $concepts = $commercialQuote->transport->concepts;
@@ -324,11 +324,11 @@ class CommercialQuoteController extends Controller
 
                 $quoteSentClient->concepts()->attach(
                     $concept->id,  // El ID del concepto
-                    ['concept_value' => $concept->pivot->total, 'service_type' => 'Transporte']
+                    ['concept_value' => $concept->pivot->value_concept, 'service_type' => 'Transporte']
                 );
             }
 
-            $totalQuoteSentClient += $commercialQuote->transport->total_transport;
+            $totalQuoteSentClient += $commercialQuote->transport->value_sale;
         }
 
         if ($commercialQuote->custom) {
@@ -358,13 +358,6 @@ class CommercialQuoteController extends Controller
 
 
         return redirect()->back()->with('quoteSentClient', $quoteSentClient->nro_quote_commercial);
-    }
-
-
-    public function getPDF($id)
-    {
-        $pdf = $this->commercialQuoteService->getPDF($id);
-        return $pdf->stream('Cotizacion Comercial.pdf');
     }
 
 
