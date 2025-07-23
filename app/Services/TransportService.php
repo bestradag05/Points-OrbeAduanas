@@ -164,13 +164,22 @@ class TransportService
 
     public function editTransport(string $id)
     {
+        // 1. Traigo el transporte con sus conceptos y pivots
+        $transport = Transport::with([
+            'concepts' => fn($q) => $q->withPivot(
+                'net_amount_response',
+                'subtotal',
+                'igv',
+                'total'
+            )
+        ])->findOrFail($id);
 
-
-        $transport = Transport::findOrFail($id);
-        $formMode  = 'edit';
+        $formMode         = 'edit';
         $commercial_quote = $transport->commercial_quote;
-        $quote = $transport->quoteTransport()->where('state', 'Pendiente')->first();
-        $concepts = Concept::all();
+        $quote            = $transport->quoteTransport()
+            ->where('state', 'Pendiente')
+            ->first();
+        $concepts         = Concept::all();
 
         // Cargamos la respuesta aceptada con sus pivots y el concepto
         $acceptedResponse = ResponseTransportQuote::where('quote_transport_id', $quote->id)
@@ -178,19 +187,18 @@ class TransportService
             ->with('conceptResponseTransports.concept')
             ->first();
 
-        // Mapeamos igual que en createTransport:
-        $conceptsTransport = $acceptedResponse
-            ->conceptResponseTransports
-            ->map(function ($pivot) {
-                return [
-                    'concepts_id' => $pivot->concepts_id,
-                    'concept'     => ['name' => $pivot->concept->name],
-                    'pivot'       => ['net_amount_response' => $pivot->net_amount],
-                ];
-            })
-            ->toArray();
+        // 2. Mapeo a un array plano para el JS
+        $conceptsTransport = $transport->concepts;
 
-        return compact('transport', 'commercial_quote', 'quote', 'concepts', 'formMode', 'acceptedResponse', 'conceptsTransport');
+        return compact(
+            'transport',
+            'commercial_quote',
+            'quote',
+            'concepts',
+            'formMode',
+            'conceptsTransport',
+            'acceptedResponse',
+        );
     }
 
     /*    $conceptsTransport = $concepts->map(function ($concept) use ($quote, $commercial_quote) {

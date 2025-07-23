@@ -160,7 +160,14 @@
             // —– FUNCIONES AUXILIARES —–
 
             function formatValue(value) {
-                if (typeof value === 'number') return value;
+                if (value === null || value === undefined) {
+                    return 0; // O el valor predeterminado que desees
+                }
+
+                if (typeof value === 'number') {
+                    return value;
+                }
+
                 return parseFloat(value.toString().replace(/,/g, '')) || 0;
             }
 
@@ -209,7 +216,7 @@
                     // Valor
                     const celdaVal = fila.insertCell(2);
                     if (isEditMode || (conceptsTransport && conceptsTransport.some(c => c.concept.name === item
-                        .name))) {
+                            .name))) {
                         const input = document.createElement('input');
                         input.type = 'text';
                         input.value = item.value;
@@ -311,22 +318,32 @@
                 // Carga inicial de conceptos desde PHP
                 conceptsTransport = @json($conceptsTransport);
 
-                // opcional: ordenar transporte primero
-                conceptsTransport.sort((a, b) => {
-                    const A = (a.concept.name || '').toUpperCase();
-                    const B = (b.concept.name || '').toUpperCase();
-                    if (A === 'TRANSPORTE') return -1;
-                    if (B === 'TRANSPORTE') return 1;
-                    return A.localeCompare(B);
-                });
-
-                conceptsTransport.forEach(concept => {
-                    conceptsArray.push({
-                        id: concept.concepts_id,
-                        name: concept.concept.name,
-                        value: formatValue(concept.pivot.net_amount_response)
+                @if ($formMode === 'edit')
+                    // En edición, usamos .pivot.value_concept
+                    conceptsTransport.forEach((concept, index) => {
+                        conceptsArray.push({
+                            id: concept.id,
+                            name: concept.name,
+                            value: formatValue(concept.pivot.value_concept)
+                        });
                     });
-                });
+                @else
+                    // En creación, usamos .concepts_id y .pivot.net_amount_response
+                    conceptsTransport.sort((a, b) => {
+                        const A = (a.concept.name || '').toUpperCase();
+                        const B = (b.concept.name || '').toUpperCase();
+                        if (A === 'TRANSPORTE') return -1;
+                        if (B === 'TRANSPORTE') return 1;
+                        return A.localeCompare(B);
+                    });
+                    conceptsTransport.forEach(concept => {
+                        conceptsArray.push({
+                            id: concept.concepts_id,
+                            name: concept.concept.name,
+                            value: formatValue(concept.pivot.net_amount_response)
+                        });
+                    });
+                @endif
 
                 // Poblamos la tabla por primera vez
                 updateTable(conceptsArray);
@@ -346,10 +363,10 @@
 
                     form.append(
                         `<input type="hidden" name="total_transport_value" value='${totalTransportValue.toFixed(2)}' />`
-                        );
+                    );
                     form.append(
                         `<input type="hidden" name="profit"                value='${profitValue.toFixed(2)}' />`
-                        );
+                    );
 
                     form.off('submit').submit();
                 });
