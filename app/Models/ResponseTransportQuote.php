@@ -16,9 +16,12 @@ class ResponseTransportQuote extends Model
         'provider_id',
         'provider_cost',
         'exchange_rate',
+        'igv',
         'value_utility',
         'total',
-        'status'
+        'total_usd',
+        'total_prices_usd',
+        'status',
     ];
 
 
@@ -77,7 +80,7 @@ class ResponseTransportQuote extends Model
     {
         return $this->hasMany(ConceptsResponseTransport::class, 'response_transport_quote_id', 'id');
     }
-/*     public function traces()
+    /*     public function traces()
     {
         return $this->hasMany(QuoteTrace::class, 'response_id');
     } */

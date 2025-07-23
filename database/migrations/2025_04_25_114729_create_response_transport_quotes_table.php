@@ -18,8 +18,13 @@ return new class extends Migration
             $table->foreignId('provider_id')->constrained('suppliers');
             $table->decimal('provider_cost', 12, 2);
             $table->decimal('exchange_rate', 8, 4)->nullable();
+            $table->decimal('igv', 12, 2);
             $table->decimal('value_utility', 10, 2)->nullable();
             $table->decimal('total', 12, 2)->nullable();
+            // Total convertido a US$ (total en S/. ÷ exchange_rate)
+            $table->decimal('total_usd', 12, 2);
+            // Suma de utilidad + total_usd
+            $table->decimal('total_prices_usd', 12, 2);
             $table->enum('status', ['Aceptado', 'Rechazada', 'Enviada'])->default('Enviada');
             $table->timestamps();
         });

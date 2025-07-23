@@ -416,7 +416,7 @@
                 <h5 class="text-indigo"><i class="fas fa-file-alt"></i> Lista de respuestas</h5>
                 <!-- Botón para abrir el modal -->
                 @can('transporte.quote.response')
-                    @if (!$quote->responseTransportQuotes->contains('status', 'Aceptado'))
+                    @if (!$quote->responses->contains('status', 'Aceptado'))
                         <button type="button" class="btn btn-primary" data-toggle="modal"
                             data-target="#modalCotizarTransporte">
                             <i class="fas fa-truck mr-1"></i> Responder
@@ -435,7 +435,7 @@
                     <th>Acciones</th>
                 </thead>
                 <tbody>
-                    @foreach ($quote->responseTransportQuotes as $response)
+                    @foreach ($quote->responses as $response)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $response->nro_response }}</td>
@@ -457,7 +457,7 @@
                                             data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
                                             Rechazar
                                         </button>
-                                    @elseif ($quote->responseTransportQuotes->contains('status', 'Aceptado'))
+                                    @elseif ($quote->responses->contains('status', 'Aceptado'))
                                         {{-- Ya hay una aceptada y esta no lo es, no se muestran acciones --}}
                                         <span class="text-muted">Sin acciones</span>
                                     @else
@@ -774,21 +774,26 @@
                     id="formCotizarTransporte">
                     @csrf
 
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalCotizarTransporte-title">Respuesta Proveedor</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                            <span aria-hidden="true">&times;</span>
+                    {{-- HEADER --}}
+                    <div class="modal-header py-2">
+                        <h4 class="modal-title mb-0">
+                            Respuesta: <strong>{{ $nro_response }}</strong>
+                        </h4>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
                         </button>
                     </div>
 
+                    {{-- BODY --}}
+                    <div class="modal-body py-2">
 
-                    <div class="modal-body">
-                        {{-- Fila: Proveedor + RPTA --}}
-                        <div class="form-row align-items-center mb-4">
-                            <div class="col-md-8">
-                                <label for="provider_id">Proveedor <span class="text-danger">*</span></label>
-                                <x-adminlte-select2 name="provider_id" igroup-size="md"
-                                    data-placeholder="Seleccione una opcion...">
+                        {{-- Proveedor --}}
+                        <div class="form-group row mb-3 align-items-center">
+                            <label for="provider_id" class="col-sm-3 col-form-label small font-weight-bold">
+                                Proveedor <span class="text-danger">*</span>
+                            </label>
+                            <div class="col-sm-9">
+                                <x-adminlte-select2 name="provider_id" igroup-size="sm" data-placeholder="Seleccione...">
                                     <option />
                                     @foreach ($transportSuppliers as $sup)
                                         <option value="{{ $sup->id }}"
@@ -796,104 +801,106 @@
                                             {{ $sup->name_businessname }}
                                         </option>
                                     @endforeach
-
                                 </x-adminlte-select2>
                             </div>
-
-
-
-
-                            <div class="col-md-4 text-right">
-                                <div class="bg-light p-3 rounded">
-                                    <div class="small text-muted mb-1">RPTA</div>
-                                    <b class="d-block">{{ $nro_response }}</b>
-                                </div>
-                            </div>
                         </div>
 
+                        <hr class="my-2">
 
-                        <hr class="mb-4">
-
-                        {{-- Conceptos elegidos por Comercial --}}
-                        <div class="mb-4">
-                            <h4 class="mb-3">Precios de conceptos</h4>
-
-                            @foreach ($quote->transportConcepts->unique('id') as $tc)
-                                @if (!empty($tc->name))
-                                    <div class="form-group row">
-                                        <label class="col-sm-6 col-form-label font-weight-bold">
-                                            {{ $tc->name }} (S/.)
-                                        </label>
-                                        <div class="col-sm-6">
-                                            <input type="number" step="0.01"
-                                                name="price_concept[{{ $tc->id }}]"
-                                                class="form-control concept-input" value="">
-                                        </div>
+                        {{-- Precios de conceptos --}}
+                        @foreach ($quote->transportConcepts->unique('id') as $tc)
+                            @if (!empty($tc->name))
+                                <div class="form-group row mb-1">
+                                    <label class="col-sm-6 col-form-label small">
+                                        {{ $tc->name }} (S/.)
+                                    </label>
+                                    <div class="col-sm-6">
+                                        <input type="number" step="0.01" name="price_concept[{{ $tc->id }}]"
+                                            class="form-control form-control-sm concept-input">
                                     </div>
-                                @endif
-                            @endforeach
+                                </div>
+                            @endif
+                        @endforeach
 
-                            <div class="form-group row">
-                                <label class="col-sm-6 font-weight-bold">Utilidad (US$)</label>
-                                <div class="col-sm-6">
-                                    <input type="number" step="0.01" name="value_utility" id="value_utility"
-                                        class="form-control" value="{{ $quote->type_cargo === 'FCL' ? 80 : 55 }}">
-                                </div>
-                            </div>
+                        <hr class="my-2">
 
-                            <hr class="my-4">
+                        {{-- Exchange + Utilidad --}}
+                        <div class="form-row mb-3">
+                            <div class="col pr-1">
+                                <label for="exchange_rate" class="small">Tipo de cambio (S/.)</label>
+                                <input type="number" step="0.0001" name="exchange_rate" id="exchange_rate"
+                                    class="form-control form-control-sm" value="3.70">
+                            </div>
+                            <div class="col pl-1">
+                                <label for="value_utility" class="small">Utilidad (US$)</label>
+                                <input type="number" step="0.01" name="value_utility" id="value_utility"
+                                    class="form-control form-control-sm"
+                                    value="{{ $quote->type_cargo === 'FCL' ? 80 : 55 }}">
+                            </div>
+                        </div>
 
-                            {{-- Campos adicionales --}}
-                            <div class="form-group row">
-                                <label class="col-sm-6 font-weight-bold">Tipo de cambio (S/.)</label>
-                                <div class="col-sm-6">
-                                    <input type="number" step="0.0001" name="exchange_rate" id="exchange_rate"
-                                        class="form-control" value="3.70">
-                                </div>
-                            </div>
-                            <hr class="my-4">
+                        <hr class="my-2">
 
-                            {{-- Resumen calculado --}}
-                            <div class="form-group row">
-                                <label class="col-sm-6 font-weight-bold">Subtotal (S/.)</label>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control" id="subtotalSoles" readonly>
+                        {{-- RESUMEN ABAJO --}}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group row mb-1">
+                                    <label class="col-sm-6 col-form-label small">Subtotal (S/.)</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control form-control-sm" id="subtotalSoles"
+                                            readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-1">
+                                    <label class="col-sm-6 col-form-label small">IGV (18%)</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control form-control-sm" id="igvSoles"
+                                            readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-1">
+                                    <label class="col-sm-6 col-form-label small">Total (S/.)</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control form-control-sm" id="totalConceptos"
+                                            readonly>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="form-group row">
-                                <label class="col-sm-6 font-weight-bold">IGV (18%)</label>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control" id="igvSoles" readonly>
+                            <div class="col-md-6">
+                                <div class="form-group row mb-1">
+                                    <label class="col-sm-6 col-form-label small">Total (US$)</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control form-control-sm" id="totalDolares"
+                                            readonly>
+                                    </div>
                                 </div>
-                            </div>
-                            {{-- Total general (sólo lectura) --}}
-                            <div class="form-group row mt-4">
-                                <label class="col-sm-6 font-weight-bold">Total (S/.)</label>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control" id="totalConceptos" readonly
-                                        value="0.00">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-6 font-weight-bold">Total (US$)</label>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control" id="totalDolares" readonly>
+                                <div class="form-group row mb-0">
+                                    <label class="col-sm-6 col-form-label small">Total + Utilidad (US$)</label>
+                                    <div class="col-sm-6">
+                                        <input type="text" class="form-control form-control-sm" + id="totalPricesUsd"
+                                            readonly>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
                     </div>
 
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success btn-lg">
-                            <i class="fas fa-save mr-2"></i> Guardar respuesta
+                    {{-- FOOTER --}}
+                    <div class="modal-footer py-2">
+                        <button type="submit" class="btn btn-success btn-sm">
+                            <i class="fas fa-save mr-1"></i> Guardar
                         </button>
-                        <button type="button" class="btn btn-secondary btn-lg" data-dismiss="modal">
-                            <i class="fas fa-times mr-2"></i> Cerrar
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
+                            <i class="fas fa-times mr-1"></i> Cerrar
                         </button>
                     </div>
+
                 </form>
             </div>
         </div>
+
+
     </div>
 
 
@@ -1114,37 +1121,44 @@
         }
 
         function recalcTotal() {
-            const typeCargo = @json($quote->type_cargo); // "LCL" o "FCL"
+            const typeCargo = @json($quote->type_cargo);
             const exchangeRate = parseFloat(document.getElementById('exchange_rate')?.value || 1);
             const utility = parseFloat(document.getElementById('value_utility')?.value || 0);
 
             const minUtility = typeCargo === 'FCL' ? 60 : 45;
             const idealUtility = typeCargo === 'FCL' ? 80 : 55;
 
-            // Total soles: suma directa de conceptos
-            const totalSoles = [...document.querySelectorAll('.concept-input')]
+            // 1) Subtotal = suma de precios netos de conceptos
+            const subtotal = [...document.querySelectorAll('.concept-input')]
                 .reduce((sum, input) => sum + parseFloat(input.value || 0), 0);
 
-            // Subtotal es total sin IGV
-            const subtotal = +(totalSoles / 1.18).toFixed(2);
-            const igv = +(totalSoles - subtotal).toFixed(2);
+            // 2) IGV = 18% del subtotal
+            const igv = +(subtotal * 0.18).toFixed(2);
 
-            // Total USD = total soles / tipo cambio + utilidad
-            const totalUSD = +(totalSoles / exchangeRate).toFixed(2);
-            const totalUSDWithUtility = +(totalUSD + utility).toFixed(2);
+            // 3) Total en soles (subtotal + igv)
+            const totalSol = +(subtotal + igv).toFixed(2);
+
+            // 4) Total en US$ (totalSol / tipo de cambio)
+            const totalUSD = +(totalSol / exchangeRate).toFixed(2);
+
+            // 5) Total + Utilidad
+            const totalPricesUsd = +(totalUSD + utility).toFixed(2);
 
             // Validación visual
             if (utility < minUtility) {
                 console.warn(
-                    `Utilidad menor al mínimo permitido para ${typeCargo}: $${minUtility}. Ideal: $${idealUtility}.`);
+                    `Utilidad menor al mínimo permitido para ${typeCargo}: $${minUtility}. Ideal: $${idealUtility}.`
+                );
             }
 
-            // Mostrar en campos
+            // Asignar a los campos
             document.getElementById('subtotalSoles').value = subtotal.toFixed(2);
             document.getElementById('igvSoles').value = igv.toFixed(2);
-            document.getElementById('totalConceptos').value = totalSoles.toFixed(2);
-            document.getElementById('totalDolares').value = totalUSDWithUtility.toFixed(2);
+            document.getElementById('totalConceptos').value = totalSol.toFixed(2);
+            document.getElementById('totalDolares').value = totalUSD.toFixed(2);
+            document.getElementById('totalPricesUsd').value = totalPricesUsd.toFixed(2);
         }
+
 
 
         document.addEventListener('DOMContentLoaded', () => {

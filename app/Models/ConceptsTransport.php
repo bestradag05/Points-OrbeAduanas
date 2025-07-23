@@ -12,7 +12,6 @@ class ConceptsTransport extends Model
     protected $fillable = [
         'transport_id',
         'concepts_id',
-        'added_value',
         'net_amount_response',
         'subtotal',
         'igv',

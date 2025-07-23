@@ -238,15 +238,15 @@ class QuoteTransportController extends Controller
             'messages.sender.personal',
             'commercial_quote',
             'transportConcepts',
-            'responseTransportQuotes.supplier',
-            'responseTransportQuotes',
+            'responses.supplier',
+            'responses',
         ])->findOrFail($id);
 
         $displayConcepts = $quote->transportConcepts
             ->map(fn($tc) => $tc->setRelation('concepts', $tc->concepts));
 
         $latestResp = $quote
-            ->responseTransportQuotes()
+            ->responses()
             ->orderBy('id', 'desc')
             ->first();
 

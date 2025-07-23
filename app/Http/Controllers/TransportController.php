@@ -68,18 +68,9 @@ class TransportController extends Controller
 
     public function createTransport($quoteId)
     {
+       $compact = $this->trasnportService->createTransport($quoteId);
 
-        $quote = QuoteTransport::findOrFail($quoteId);
-        $commercial_quote = $quote->commercial_quote;
-
-        $response = $quote->responseTransportQuotes()
-            ->where('status', 'Aceptado')
-            ->with('conceptResponseTransports.concept')
-            ->firstOrFail();
-
-        $concepts = Concept::with('typeService')->get();
-
-        return view('transport.register-transport', compact('quote', 'response', 'commercial_quote', 'concepts'));
+        return view('transport.register-transport', $compact);
     }
     /**
      * Store a newly created resource in storage.

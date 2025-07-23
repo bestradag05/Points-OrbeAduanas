@@ -23,6 +23,7 @@ class Transport extends Model
         'accepted_answer_value',
         'total_transport_value',
         'profit',
+        'total_answer_utility',
         'payment_state',
         'payment_date',
         'weight',
@@ -104,6 +105,6 @@ class Transport extends Model
             'concepts_transport', // nombre de la tabla pivot
             'transport_id',       // clave foránea en la tabla pivot hacia este modelo
             'concepts_id'         // clave foránea en la tabla pivot hacia el modelo Concept
-        )->withPivot('added_value', 'net_amount_response', 'subtotal', 'igv','total', 'additional_points'); // si tienes más campos en la tabla intermedia
+        )->withPivot('net_amount_response', 'subtotal', 'igv','total'); // si tienes más campos en la tabla intermedia
     }
 }

@@ -98,8 +98,32 @@ class TransportService
 
     public function createTransport($quoteId)
     {
-
         $quote = QuoteTransport::findOrFail($quoteId);
+        $commercial_quote = $quote->commercial_quote;
+        $acceptedResponse = $quote
+            ->responses()
+            ->where('status', 'Aceptado')
+            ->with(['conceptResponseTransports.concept'])
+            ->first();
+        $type_insurace = TypeInsurance::all();
+        $concepts = Concept::all();
+        $conceptsTransport = [];
+
+        $conceptsTransport = $acceptedResponse
+            ->conceptResponseTransports
+            ->map(function ($pivot) {
+                return [
+                    'concepts_id'         => $pivot->concepts_id,
+                    'concept'             => ['name' => $pivot->concept->name],
+                    'pivot'               => ['net_amount_response' => $pivot->net_amount_response],
+                ];
+            });
+
+        return compact('quote', 'acceptedResponse', 'commercial_quote', 'concepts', 'conceptsTransport');
+    }
+
+    /*  $quote = QuoteTransport::findOrFail($quoteId);
+        $acceptedResponse = $quote->responses()->where('status', 'Aceptado')->first();
         $commercial_quote = $quote->commercial_quote;
         $type_insurace = TypeInsurance::all();
         $concepts = Concept::all();
@@ -114,21 +138,20 @@ class TransportService
                     return $data->merge(['cost' => $quote->cost_transport]);
                 }
             }
-
             return null; // Si no cumple ninguna condición, no lo incluye
-        })->filter()->values(); // Filtra los `null` y reindexa la colección
+        })->filter()->values(); // Filtra los `null` y reindexa la colecció
 
 
-        return compact('quote', 'type_insurace', 'concepts', 'conceptsTransport', 'commercial_quote');
+        return compact('quote', 'type_insurace', 'concepts', 'conceptsTransport', 'commercial_quote', 'acceptedResponse');
     }
-
+ */
     public function storeTransport($request)
     {
 
         $concepts  = json_decode($request->concepts);
         $quoteId = $request->input('quote_transport_id');
         $quote = QuoteTransport::findOrFail($quoteId);
-        $response = $quote->responseTransportQuotes()->where('status', 'Aceptado')->with('conceptResponseTransports')->first();
+        $response = $quote->responses()->where('status', 'Aceptado')->with('conceptResponseTransports')->first();
 
         // 1. Creamos el transporte sin total aún (lo pondremos luego)
         $transport = $this->createOrUpdateTransport($request);
@@ -154,12 +177,14 @@ class TransportService
 
 
         // Obtenemos la respuesta aceptada para esa cotización de transporte
-        $response = ResponseTransportQuote::where('quote_transport_id', $quote->id)
+        $acceptedResponse  = ResponseTransportQuote::where('quote_transport_id', $quote->id)
             ->where('status', 'Aceptado')
             ->first();
 
+        return compact('transport', 'commercial_quote', 'quote', 'concepts', 'formMode', 'acceptedResponse');
+    }
 
-        /*         $conceptsTransport = $concepts->map(function ($concept) use ($quote, $commercial_quote) {
+        /*    $conceptsTransport = $concepts->map(function ($concept) use ($quote, $commercial_quote) {
             $data = collect($concept)->only(['id', 'name']); // Atributos que deseas conservar
 
             if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Transporte') {
@@ -172,11 +197,6 @@ class TransportService
         })->filter()->values(); // Filtra los `null` y reindexa la colección */
 
 
-
-        return compact('transport', 'commercial_quote', 'quote', 'concepts', 'formMode', 'response');
-    }
-
-
     public function updateTransport($request, $id)
     {
 
@@ -187,7 +207,7 @@ class TransportService
         $quoteId = $request->input('quote_transport_id');
         $quote = QuoteTransport::findOrFail($quoteId);
 
-        $response = $quote->responseTransportQuotes()->where('status', 'Aceptado')->with('conceptResponseTransports')->first();
+        $response = $quote->responses()->where('status', 'Aceptado')->with('conceptResponseTransports')->first();
 
         $this->syncTransportConcepts($transport, $concepts, $response);
 
@@ -221,12 +241,7 @@ class TransportService
             }
         }
 
-
         $dateRegisterFormat = Carbon::createFromFormat('d/m/Y', $request->withdrawal_date)->toDateString();
-
-        $valueUtility = $request->filled('value_utility')
-        ? $request->input('value_utility')
-        : null;
 
         $transport->fill([
             'origin' => $request->pick_up,
@@ -234,15 +249,15 @@ class TransportService
             'withdrawal_date' => $dateRegisterFormat,
             'quote_transport_id' => $request->quote_transport_id,
             'nro_quote_commercial' => $request->nro_quote_commercial,
-            'value_utility'            => $valueUtility,
-            'accepted_answer_value'    => $request->input('accepted_answer_value'),
+            'accepted_answer_value'  => $request->total_usd,
+            'total_answer_utility'  => $request->total_prices_usd,
+            'value_utility'          => $request->value_utility,
             'total_transport_value'    => $request->input('total_transport_value'),
             'profit'                   => $request->input('profit'),
             'state' => 'Pendiente'
         ]);
 
         $transport->save();
-
 
         return $transport;
     }
@@ -265,7 +280,7 @@ class TransportService
 
         // Relacionamos los nuevos conceptos con el tranporte
         foreach ($concepts as $concept) {
-            $added = $this->parseDouble($concept->added);
+            
 
             // 1 Obtener el net_amount desde concepts_response_transport
             $net = optional(
@@ -279,7 +294,7 @@ class TransportService
 
 
 
-            $concept_total = $net + $added; // total de este concepto
+            $concept_total = $net; // total de este concepto
             $base_sin_igv = $concept_total / 1.18;
             $igv = $concept_total - $base_sin_igv;
             $subtotal = $concept_total - $igv;
@@ -291,16 +306,13 @@ class TransportService
             $conceptsTransport = ConceptsTransport::create([
                 'concepts_id' => $concept->id,
                 'transport_id' => $transport->id,
-                'added_value' => $added,
                 'net_amount_response' => $net,
                 'subtotal' => $subtotal,
                 'igv' => $igv,
                 'total' => $concept_total,
                 'additional_points' => $concept->pa ?? 0,
             ]);
-
         }
-
     }
 
 
