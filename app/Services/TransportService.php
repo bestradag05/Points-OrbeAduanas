@@ -166,25 +166,34 @@ class TransportService
     {
 
 
-        $transport = Transport::with('concepts')->findOrFail($id);
-        $formMode = 'edit';
-
+        $transport = Transport::findOrFail($id);
+        $formMode  = 'edit';
         $commercial_quote = $transport->commercial_quote;
-
-
         $quote = $transport->quoteTransport()->where('state', 'Pendiente')->first();
         $concepts = Concept::all();
 
-
-        // Obtenemos la respuesta aceptada para esa cotización de transporte
-        $acceptedResponse  = ResponseTransportQuote::where('quote_transport_id', $quote->id)
+        // Cargamos la respuesta aceptada con sus pivots y el concepto
+        $acceptedResponse = ResponseTransportQuote::where('quote_transport_id', $quote->id)
             ->where('status', 'Aceptado')
+            ->with('conceptResponseTransports.concept')
             ->first();
 
-        return compact('transport', 'commercial_quote', 'quote', 'concepts', 'formMode', 'acceptedResponse');
+        // Mapeamos igual que en createTransport:
+        $conceptsTransport = $acceptedResponse
+            ->conceptResponseTransports
+            ->map(function ($pivot) {
+                return [
+                    'concepts_id' => $pivot->concepts_id,
+                    'concept'     => ['name' => $pivot->concept->name],
+                    'pivot'       => ['net_amount_response' => $pivot->net_amount],
+                ];
+            })
+            ->toArray();
+
+        return compact('transport', 'commercial_quote', 'quote', 'concepts', 'formMode', 'acceptedResponse', 'conceptsTransport');
     }
 
-        /*    $conceptsTransport = $concepts->map(function ($concept) use ($quote, $commercial_quote) {
+    /*    $conceptsTransport = $concepts->map(function ($concept) use ($quote, $commercial_quote) {
             $data = collect($concept)->only(['id', 'name']); // Atributos que deseas conservar
 
             if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Transporte') {
@@ -280,7 +289,7 @@ class TransportService
 
         // Relacionamos los nuevos conceptos con el tranporte
         foreach ($concepts as $concept) {
-            
+
 
             // 1 Obtener el net_amount desde concepts_response_transport
             $net = optional(

@@ -148,215 +148,211 @@
     {{--     {{dd($response->conceptResponses)}} --}}
 
     @push('scripts')
-<script>
-    // —– VARIABLES GLOBALES (disponibles para funciones) —–
-    let conceptsArray;
-    let conceptsTransport;
-    let total;
-    const totalRespuesta = parseFloat(@json($acceptedResponse->total_prices_usd)) || 0;
-    const totalUsd       = parseFloat(@json($acceptedResponse->total_usd))       || 0;
-    const isEditMode     = "{{ $formMode ?? '' }}" === "edit";
+        <script>
+            // —– VARIABLES GLOBALES (disponibles para funciones) —–
+            let conceptsArray;
+            let conceptsTransport;
+            let total;
+            const totalRespuesta = parseFloat(@json($acceptedResponse->total_prices_usd)) || 0;
+            const totalUsd = parseFloat(@json($acceptedResponse->total_usd)) || 0;
+            const isEditMode = "{{ $formMode ?? '' }}" === "edit";
 
-    // —– FUNCIONES AUXILIARES —–
+            // —– FUNCIONES AUXILIARES —–
 
-    function formatValue(value) {
-        if (typeof value === 'number') return value;
-        return parseFloat(value.toString().replace(/,/g, '')) || 0;
-    }
+            function formatValue(value) {
+                if (typeof value === 'number') return value;
+                return parseFloat(value.toString().replace(/,/g, '')) || 0;
+            }
 
-    function calculateTotal(conceptsArray) {
-        return Object.values(conceptsArray).reduce((acc, concept) => {
-            return acc + parseFloat(concept.value || 0);
-        }, 0);
-    }
+            function calculateTotal(conceptsArray) {
+                return Object.values(conceptsArray).reduce((acc, concept) => {
+                    return acc + parseFloat(concept.value || 0);
+                }, 0);
+            }
 
-    function calcTotal(TotalConcepts, totalRespuestaParam = totalRespuesta) {
-        total = TotalConcepts;
-        const btnGuardar = document.querySelector('#btnGuardar');
-        $('#total').val((total || 0).toFixed(2));
+            function calcTotal(TotalConcepts, totalRespuestaParam = totalRespuesta) {
+                total = TotalConcepts;
+                const btnGuardar = document.querySelector('#btnGuardar');
+                $('#total').val((total || 0).toFixed(2));
 
-        let ganancia = total - totalRespuestaParam;
-        if (ganancia < 0) ganancia = 0;
+                let ganancia = total - totalRespuestaParam;
+                if (ganancia < 0) ganancia = 0;
 
-        if (total >= totalRespuesta) {
-            btnGuardar.removeAttribute('disabled');
-        } else {
-            btnGuardar.setAttribute('disabled', 'true');
-        }
+                if (total >= totalRespuesta) {
+                    btnGuardar.removeAttribute('disabled');
+                } else {
+                    btnGuardar.setAttribute('disabled', 'true');
+                }
 
-        $('#gananciaCalculada').val((ganancia).toFixed(2));
-    }
+                $('#gananciaCalculada').val((ganancia).toFixed(2));
+            }
 
-    function updateTable(conceptsArray) {
-        const tbody = $('#formConceptsTransport').find('tbody')[0];
-        if (tbody) tbody.innerHTML = '';
+            function updateTable(conceptsArray) {
+                const tbody = $('#formConceptsTransport').find('tbody')[0];
+                if (tbody) tbody.innerHTML = '';
 
-        let TotalConcepts = 0;
-        let contador = 0;
+                let TotalConcepts = 0;
+                let contador = 0;
 
-        conceptsArray.forEach(item => {
-            contador++;
-            const fila = tbody.insertRow();
+                conceptsArray.forEach(item => {
+                    contador++;
+                    const fila = tbody.insertRow();
 
-            // Nº
-            const celdaNum = fila.insertCell(0);
-            celdaNum.textContent = contador;
+                    // Nº
+                    const celdaNum = fila.insertCell(0);
+                    celdaNum.textContent = contador;
 
-            // Nombre
-            const celdaName = fila.insertCell(1);
-            celdaName.textContent = item.name;
+                    // Nombre
+                    const celdaName = fila.insertCell(1);
+                    celdaName.textContent = item.name;
 
-            // Valor
-            const celdaVal = fila.insertCell(2);
-            if (isEditMode || (conceptsTransport && conceptsTransport.some(c => c.concept.name === item.name))) {
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.value = item.value;
-                input.classList.add('form-control', 'CurrencyInput');
-                input.setAttribute('data-type', 'currency');
-                input.addEventListener('input', e => {
-                    const idx = e.target.closest('tr').rowIndex - 1;
-                    const newVal = formatValue(e.target.value);
-                    conceptsArray[idx].value = newVal;
-                    const tot = calculateTotal(conceptsArray);
-                    calcTotal(tot);
+                    // Valor
+                    const celdaVal = fila.insertCell(2);
+                    if (isEditMode || (conceptsTransport && conceptsTransport.some(c => c.concept.name === item
+                        .name))) {
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.value = item.value;
+                        input.classList.add('form-control', 'CurrencyInput');
+                        input.setAttribute('data-type', 'currency');
+                        input.addEventListener('input', e => {
+                            const idx = e.target.closest('tr').rowIndex - 1;
+                            const newVal = formatValue(e.target.value);
+                            conceptsArray[idx].value = newVal;
+                            const tot = calculateTotal(conceptsArray);
+                            calcTotal(tot);
+                        });
+                        celdaVal.appendChild(input);
+                    } else {
+                        celdaVal.textContent = item.value;
+                    }
+
+                    TotalConcepts += parseFloat(item.value || 0);
                 });
-                celdaVal.appendChild(input);
-            } else {
-                celdaVal.textContent = item.value;
+
+                calcTotal(TotalConcepts);
             }
 
-            TotalConcepts += parseFloat(item.value || 0);
-        });
+            function addConceptFromDropdown() {
+                const sel = document.getElementById('conceptSelect');
+                const inp = document.getElementById('conceptValue');
+                const conceptId = parseInt(sel.value);
+                const conceptName = sel.options[sel.selectedIndex].text;
+                const value = formatValue(inp.value);
 
-        calcTotal(TotalConcepts);
-    }
+                if (!conceptId || !value) {
+                    sel.classList.add('is-invalid');
+                    inp.classList.add('is-invalid');
+                    return;
+                }
+                sel.classList.remove('is-invalid');
+                inp.classList.remove('is-invalid');
 
-    function addConceptFromDropdown() {
-        const sel = document.getElementById('conceptSelect');
-        const inp = document.getElementById('conceptValue');
-        const conceptId = parseInt(sel.value);
-        const conceptName = sel.options[sel.selectedIndex].text;
-        const value = formatValue(inp.value);
-
-        if (!conceptId || !value) {
-            sel.classList.add('is-invalid');
-            inp.classList.add('is-invalid');
-            return;
-        }
-        sel.classList.remove('is-invalid');
-        inp.classList.remove('is-invalid');
-
-        const idx = conceptsArray.findIndex(item => item.id === conceptId);
-        if (idx !== -1) {
-            conceptsArray[idx].value = value;
-        } else {
-            conceptsArray.push({
-                id: conceptId,
-                name: conceptName,
-                value
-            });
-        }
-        sel.value = '';
-        inp.value = '';
-        updateTable(conceptsArray);
-    }
-
-    function addConcept(buton) {
-        let divConcepts = $('.formConcepts');
-        const inputs = divConcepts.find('input, select');
-
-        inputs.each(function() {
-            if ($(this).val() === '') {
-                $(this).addClass('is-invalid');
-            } else {
-                $(this).removeClass('is-invalid');
+                const idx = conceptsArray.findIndex(item => item.id === conceptId);
+                if (idx !== -1) {
+                    conceptsArray[idx].value = value;
+                } else {
+                    conceptsArray.push({
+                        id: conceptId,
+                        name: conceptName,
+                        value
+                    });
+                }
+                sel.value = '';
+                inp.value = '';
+                updateTable(conceptsArray);
             }
-        });
-        var camposInvalidos = divConcepts.find('.is-invalid').length;
 
-        if (camposInvalidos === 0) {
-            const index = conceptsArray.findIndex(item => item.id === parseInt(inputs[0].value));
+            function addConcept(buton) {
+                let divConcepts = $('.formConcepts');
+                const inputs = divConcepts.find('input, select');
 
-            if (index !== -1) {
-                conceptsArray[index] = {
-                    id:    parseInt(inputs[0].value),
-                    name:  inputs[0].options[inputs[0].selectedIndex].text,
-                    value: formatValue(inputs[1].value),
-                };
-            } else {
-                conceptsArray.push({
-                    id:    parseInt(inputs[0].value),
-                    name:  inputs[0].options[inputs[0].selectedIndex].text,
-                    value: formatValue(inputs[1].value),
+                inputs.each(function() {
+                    if ($(this).val() === '') {
+                        $(this).addClass('is-invalid');
+                    } else {
+                        $(this).removeClass('is-invalid');
+                    }
                 });
+                var camposInvalidos = divConcepts.find('.is-invalid').length;
+
+                if (camposInvalidos === 0) {
+                    const index = conceptsArray.findIndex(item => item.id === parseInt(inputs[0].value));
+
+                    if (index !== -1) {
+                        conceptsArray[index] = {
+                            id: parseInt(inputs[0].value),
+                            name: inputs[0].options[inputs[0].selectedIndex].text,
+                            value: formatValue(inputs[1].value),
+                        };
+                    } else {
+                        conceptsArray.push({
+                            id: parseInt(inputs[0].value),
+                            name: inputs[0].options[inputs[0].selectedIndex].text,
+                            value: formatValue(inputs[1].value),
+                        });
+                    }
+
+                    updateTable(conceptsArray);
+
+                    inputs[0].value = '';
+                    inputs[1].value = '';
+                    inputs[2].value = '';
+                }
             }
 
-            updateTable(conceptsArray);
+            // —– INICIALIZACIÓN & HOOKS —–
+            $(document).ready(function() {
+                // reiniciamos el array y demás
+                conceptsArray = [];
+                conceptsTransport = null;
+                total = 0;
 
-            inputs[0].value = '';
-            inputs[1].value = '';
-            inputs[2].value = '';
-        }
-    }
+                // Carga inicial de conceptos desde PHP
+                conceptsTransport = @json($conceptsTransport);
 
-    // —– INICIALIZACIÓN & HOOKS —–
-    $(document).ready(function() {
-        // reiniciamos el array y demás
-        conceptsArray    = [];
-        conceptsTransport = null;
-        total = 0;
+                // opcional: ordenar transporte primero
+                conceptsTransport.sort((a, b) => {
+                    const A = (a.concept.name || '').toUpperCase();
+                    const B = (b.concept.name || '').toUpperCase();
+                    if (A === 'TRANSPORTE') return -1;
+                    if (B === 'TRANSPORTE') return 1;
+                    return A.localeCompare(B);
+                });
 
-        // Carga inicial de conceptos desde PHP
-        @if (isset($formMode) && $formMode === 'edit')
-            @if (isset($transport->concepts))
-                @json($transport->concepts).forEach(concept => {
+                conceptsTransport.forEach(concept => {
                     conceptsArray.push({
                         id: concept.concepts_id,
                         name: concept.concept.name,
-                        value: formatValue(concept.net_amount_response || 0),
+                        value: formatValue(concept.pivot.net_amount_response)
                     });
                 });
-            @endif
-        @else
-            conceptsTransport = @json($conceptsTransport);
-            conceptsTransport.sort((a, b) => {
-                const A = (a.concept.name || '').toUpperCase();
-                const B = (b.concept.name || '').toUpperCase();
-                if (A === 'TRANSPORTE') return -1;
-                if (B === 'TRANSPORTE') return 1;
-                return A.localeCompare(B);
-            });
-            conceptsTransport.forEach(concept => {
-                conceptsArray.push({
-                    id: concept.concepts_id,
-                    name: concept.concept.name,
-                    value: formatValue(concept.pivot.net_amount_response || 0),
+
+                // Poblamos la tabla por primera vez
+                updateTable(conceptsArray);
+
+                // Manejador de submit
+                $('#formTransport').on('submit', function(e) {
+                    e.preventDefault();
+                    const form = $(this);
+                    const jsonConcepts = JSON.stringify(conceptsArray);
+
+                    form.append(`<input type="hidden" name="concepts" value='${jsonConcepts}' />`);
+
+                    const totalPricesUsd = parseFloat($('#totalRespuesta').val().replace(/,/g, '')) || 0;
+                    const totalTransportValue = parseFloat($('#total').val().replace(/,/g, '')) || 0;
+                    const profitValue = parseFloat($('#gananciaCalculada').val().replace(/,/g, '')) || 0;
+
+
+                    form.append(
+                        `<input type="hidden" name="total_transport_value" value='${totalTransportValue.toFixed(2)}' />`
+                        );
+                    form.append(
+                        `<input type="hidden" name="profit"                value='${profitValue.toFixed(2)}' />`
+                        );
+
+                    form.off('submit').submit();
                 });
             });
-        @endif
-
-        // Poblamos la tabla por primera vez
-        updateTable(conceptsArray);
-
-        // Manejador de submit
-        $('#formTransport').on('submit', function(e) {
-            e.preventDefault();
-            const form = $(this);
-            const jsonConcepts = JSON.stringify(conceptsArray);
-
-            form.append(`<input type="hidden" name="concepts" value='${jsonConcepts}' />`);
-
-            const totalPricesUsd      = parseFloat($('#totalRespuesta').val().replace(/,/g, ''))      || 0;
-            const totalTransportValue = parseFloat($('#total').val().replace(/,/g, ''))               || 0;
-            const profitValue         = parseFloat($('#gananciaCalculada').val().replace(/,/g, ''))   || 0;
-
-
-            form.append(`<input type="hidden" name="total_transport_value" value='${totalTransportValue.toFixed(2)}' />`);
-            form.append(`<input type="hidden" name="profit"                value='${profitValue.toFixed(2)}' />`);
-
-            form.off('submit').submit();
-        });
-    });
-</script>
-@endpush
+        </script>
+    @endpush
