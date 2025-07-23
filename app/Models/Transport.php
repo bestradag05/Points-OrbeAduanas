@@ -23,6 +23,7 @@ class Transport extends Model
         'accepted_answer_value',
         'value_sale',
         'profit',
+        'total_answer_utility',
         'payment_state',
         'payment_date',
         'weight',
@@ -109,5 +110,6 @@ class Transport extends Model
             'transport_id',       // clave foránea en la tabla pivot hacia este modelo
             'concepts_id'         // clave foránea en la tabla pivot hacia el modelo Concept
         )->withPivot('value_concept'); // si tienes más campos en la tabla intermedia
+
     }
 }

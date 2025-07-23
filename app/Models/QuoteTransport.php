@@ -119,7 +119,7 @@ class QuoteTransport extends Model
     }
 
     //TODO: (Task) Cambiar el nombre a response, ya se sobre entiende que son respuesta de transporte por que estas en el modelo QuoteTransport
-    public function responseTransportQuotes()
+    public function responses()
     {
         return $this->hasMany(
             ResponseTransportQuote::class,

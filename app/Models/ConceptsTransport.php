@@ -13,7 +13,7 @@ class ConceptsTransport extends Model
         'transport_id',
         'concepts_id',
         'value_concept',
-/*         'net_amount_response',
+        /*         'net_amount_response',
         'subtotal',
         'igv',
         'total',
@@ -31,8 +31,5 @@ class ConceptsTransport extends Model
     {
         return $this->belongsTo(Concept::class, 'concepts_id');
     }
-    public function additional_point()
-    {
-        return $this->morphOne(AdditionalPoints::class, 'additional', 'model_additional_concept_service', 'id_additional_concept_service');
-    }
+
 }
