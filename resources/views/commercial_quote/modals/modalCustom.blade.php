@@ -5,6 +5,8 @@
 
                 <input type="hidden" name="nro_quote_commercial" value="{{ $comercialQuote->nro_quote_commercial }}">
                 <input type="hidden" name="typeService" id="typeService">
+                <input type="hidden" name="value_utility" id="value_utility">
+                <input type="hidden" name="TotalCustomNetAmount" id="TotalCustomNetAmount">
 
 
                 <div class="col-12 px-0">
@@ -245,7 +247,6 @@
                                 <th>Concepto</th>
                                 <th>Valor del concepto</th>
                                 <th>Valor agregado</th>
-                                <th>Puntos</th>
                                 <th>x</th>
                             </tr>
                         </thead>
@@ -258,9 +259,9 @@
                     <div class="row w-100 justify-content-end">
 
                         <div class="col-4 row">
-                            <label for="total" class="col-sm-4 col-form-label">Total:</label>
+                            <label for="value_sale" class="col-sm-4 col-form-label">Total:</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control" id="total" name="totalCustom"
+                                <input type="text" class="form-control" id="value_sale" name="value_sale"
                                     value="0.00" @readonly(true)>
                             </div>
                         </div>
@@ -290,7 +291,9 @@
                 let type_services = @json($type_services);
                 let filteredConcepts = @json($filteredConcepts);
                 let customService = type_services.filter(type_service => type_service.name === 'Aduanas')[0];
-                let conceptCustomAgency = null;
+                let totalUtilityCustom = null;
+                let TotalCustomsConcepts = 0;
+                let TotalCustomNetAmount = 0;
 
 
                 filteredConcepts.forEach(concept => {
@@ -301,7 +304,12 @@
                         'added': 0,
                     });
 
+                    totalUtilityCustom += concept.value;
                 });
+
+               //Agregamos la utilidad dejada para orbe, para enviarlo al formulario:
+
+               $('#value_utility').val(totalUtilityCustom);
 
                 updateTableCustom(conceptsCustomArray);
 
@@ -309,7 +317,7 @@
                 $('.modalAduanas').on('hide.bs.modal', function(e) {
                     conceptsCustomArray = {};
                     TotalCustomsConcepts = 0;
-                    total = 0;
+                    TotalCustomNetAmount = 0;
                     value_insurance_custom = 0;
                     valuea_added_insurance_custom = 0;
                     countConcepts = 0;
@@ -432,6 +440,7 @@
                         tbodyRouting.innerHTML = '';
                     }
                     TotalCustomsConcepts = 0;
+                    TotalCustomNetAmount = 0;
 
                     let contador = 0;
 
@@ -508,11 +517,13 @@
                             }
 
 
+                            TotalCustomNetAmount += parseFloat(item.value);
                             TotalCustomsConcepts += parseFloat(item.value) + parseFloat(item.added);
                         }
                     }
 
                     calcCustomTotal(TotalCustomsConcepts, value_insurance_custom, valuea_added_insurance_custom);
+                    $('#TotalCustomNetAmount').val(TotalCustomNetAmount);
 
                 }
 
@@ -523,7 +534,7 @@
 
                     //Buscamos dentro del contenedor el campo total
 
-                    let inputTotal = $(`#modalAduanas`).find('#total');
+                    let inputTotal = $(`#modalAduanas`).find('#value_sale');
 
                     inputTotal.val(total.toFixed(2));
 
@@ -658,28 +669,5 @@
                     }
                 }
 
-
-
-                //Modal de seguro
-
-                var modalInsurance = new bootstrap.Modal(document.getElementById("modalSeguro"), {});
-
-                function openModalInsurance(service, index) {
-
-                    modalInsurance.show();
-
-                    $('#modalSeguro #typeService').val("Seguro");
-                    $('#modalSeguro #service_insurance').val(index);
-                    $('#modalSeguro #id_insurable_service').val(JSON.parse(service).id);
-
-
-                }
-
-
-                $('#modalSeguro').on('hidden.bs.modal', function() {
-
-                    const formInsurance = $('#modalSeguro form')[0];
-                    formInsurance.reset();
-                })
             </script>
         @endpush

@@ -137,17 +137,19 @@ class SellerCommissionController extends Controller
 
     public function generatePointSeller(SellersCommission $sellerCommission)
     {
-        if ($sellerCommission->additional_points > 0) {
-            return redirect()->back()->with('error', 'Los puntos ya han sido generados para este servicio.');
-        }
+
+        $oldAdditionalPoints = $sellerCommission->additional_points;
+
         // Calcular los puntos adicionales
-        $points = floor($sellerCommission->gross_profit / 45);
-        $remainingBalance = $sellerCommission->gross_profit - ($points * 45);
-        $generatedCommission = $points * 10;
+        $points = floor($sellerCommission->remaining_balance / 45);
+        $remainingBalance = $sellerCommission->remaining_balance - ($points * 45);
+        $currentAdditionalPoints = $oldAdditionalPoints + $points;
+        $generatedCommission = $currentAdditionalPoints * 10;
+
 
 
         $sellerCommission->update([
-            'additional_points' => $points,  // Asignar los puntos calculados
+            'additional_points' => $currentAdditionalPoints,  // Asignar los puntos calculados
             'remaining_balance' => $remainingBalance,
             'generated_commission' => $generatedCommission
         ]);

@@ -276,6 +276,8 @@ class CommercialQuoteController extends Controller
             'tons' => $commercialQuote->tons,
             'measures' => $commercialQuote->measures,
             'cif_value' => $commercialQuote->cif_value,
+            'customs_taxes' => $commercialQuote->custom ? $commercialQuote->custom->customs_taxes : null,
+            'customs_perception' => $commercialQuote->custom ? $commercialQuote->custom->customs_perception : null,
             'valid_date' => $commercialQuote->valid_date,
             'commercial_quote_id' => $commercialQuote->id,
         ]);
@@ -319,7 +321,7 @@ class CommercialQuoteController extends Controller
             ]);
 
             $concepts = $commercialQuote->transport->concepts;
-            
+
             foreach ($concepts as $concept) {
 
                 $quoteSentClient->concepts()->attach(
@@ -335,7 +337,7 @@ class CommercialQuoteController extends Controller
             $commercialQuote->custom->update(['state' => 'Aceptado']);
             /* Total de la aduana */
             $quoteSentClient->update([
-                'total_transport' => $commercialQuote->custom->total_custom
+                'total_custom' => $commercialQuote->custom->value_sale
             ]);
 
             $concepts = $commercialQuote->custom->concepts;
@@ -343,11 +345,11 @@ class CommercialQuoteController extends Controller
 
                 $quoteSentClient->concepts()->attach(
                     $concept->id,  // El ID del concepto
-                    ['concept_value' => $concept->pivot->value_concept, 'service_type' => 'Aduana']
+                    ['concept_value' => $concept->pivot->total, 'service_type' => 'Aduanas']
                 );
             }
 
-            $totalQuoteSentClient += $commercialQuote->custom->total_custom;
+            $totalQuoteSentClient += $commercialQuote->custom->value_sale;
         }
 
 

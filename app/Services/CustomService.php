@@ -16,7 +16,6 @@ class CustomService
 {
 
     public function storeCustom($request){
-
         $concepts = json_decode($request->concepts);
 
         $custom = $this->createOrUpdateCustoms($request);
@@ -103,11 +102,16 @@ class CustomService
     {
         $custom = $id ? Custom::findOrFail($id) : new Custom();
 
+        $profit = $this->parseDouble($request->value_sale) - $this->parseDouble($request->TotalCustomNetAmount);
+
         $custom->fill([
             'id_modality' => $request->modality,
             'customs_taxes' => $this->parseDouble($request->customs_taxes),
             'customs_perception' => $this->parseDouble($request->customs_perception),
-            'total_custom' => $this->parseDouble($request->totalCustom),
+            'value_utility' => $this->parseDouble($request->value_utility),
+            'net_amount' => $this->parseDouble($request->TotalCustomNetAmount),
+            'value_sale' => $this->parseDouble($request->value_sale),
+            'profit' => $profit,
             'state' => $request->state ?? 'Pendiente',
             'nro_quote_commercial' => $request->nro_quote_commercial,
         ]);
@@ -221,7 +225,6 @@ class CustomService
 
         if ($conceptsCustom) {
             foreach ($conceptsCustom as $concept) {
-                $concept->additional_point()->delete();
                 $concept->forceDelete(); // Esto elimina el ConceptFreight definitivamente
             }
         }
@@ -230,44 +233,22 @@ class CustomService
         foreach ($concepts as $concept) {
 
             $total = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
-            $net_amount = $total / 1.18;
-            $igv = $total - $net_amount;
+            /* $net_amount = $total / 1.18;
+            $igv = $total - $net_amount; */
 
-            $conceptCustom = ConceptCustoms::create([
+            ConceptCustoms::create([
                 'concepts_id' => $concept->id, // ID del concepto relacionado
                 'id_customs' => $custom->id, // Clave foránea al modelo Freight
                 'value_concept' => $this->parseDouble($concept->value),
                 'added_value' => $this->parseDouble($concept->added),
-                'net_amount' => $net_amount,
-                'igv' => $igv,
+                /* 'net_amount' => $net_amount,
+                'igv' => $igv, */
                 'total' => $total,
-                'additional_points' => isset($concept->pa) ? $concept->pa : 0,
             ]);
-            // Si hay puntos adicionales, ejecutamos la función
-            if (isset($concept->pa)) {
-                $ne_amount = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
-                $this->add_aditionals_point($conceptCustom, $ne_amount);
-            }
+           
         }
     }
 
-
-    public function add_aditionals_point($conceptCustom,  $ne_amount = null, $igv = null, $total = null)
-    {
-
-        $additional_point = AdditionalPoints::create([
-            'type_of_service' => $conceptCustom->concept->name,
-            'amount' => $ne_amount,
-            'points' => $conceptCustom->additional_points,
-            'id_additional_concept_service' => $conceptCustom->id,
-            'model_additional_concept_service' => $conceptCustom::class,
-            'additional_type' => 'AD-ADUANA',
-            'state' => 'Pendiente'
-        ]);
-
-
-        $conceptCustom->additional_point()->save($additional_point);
-    }
 
     public function parseDouble($num)
     {

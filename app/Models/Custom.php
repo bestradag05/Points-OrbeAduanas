@@ -13,14 +13,17 @@ class Custom extends Model
     protected $table = 'custom';
 
     protected $fillable = [
-        'nro_orde',
+        'nro_operation_custom',
         'nro_dua',
         'nro_dam',
         'date_register',
         'cif_value',
         'channel',
         'nro_bl',
-        'total_custom',
+        'value_utility',
+        'net_amount',
+        'value_sale',
+        'profit',
         'customs_taxes',
         'regularization_date',
         'customs_perception',
@@ -32,15 +35,46 @@ class Custom extends Model
 
 
     protected $casts = [
-        'total_custom' => 'float',
+        'value_sale' => 'float',
     ];
 
 
+    // Evento que se ejecuta antes de guardar el modelo
+    protected static function booted()
+    {
+        static::creating(function ($custom) {
+            // Si no tiene un número de operación, generarlo
+            if (empty($custom->nro_operation_custom)) {
+                $custom->nro_operation_custom = $custom->generateNroOperation();
+            }
+        });
+    }
 
-    public function concept()
+    // Método para generar el número de operación
+    public function generateNroOperation()
+    {
+        // Obtener el último registro
+        $lastCode = self::latest('id')->first();
+        $year = date('y');
+        $prefix = 'ADUA-';
+
+        // Si no hay registros, empieza desde 1
+        if (!$lastCode) {
+            return $prefix . $year . '1';
+        } else {
+            // Extraer el número y aumentarlo
+            $number = (int) substr($lastCode->nro_operation_custom, 7);
+            $number++;
+            return $prefix . $year . $number;
+        }
+    }
+
+
+
+    public function concepts()
     {
         return $this->belongsToMany(Concept::class, 'concepts_customs', 'id_customs', 'concepts_id')
-            ->withPivot(['value_concept', 'added_value', 'net_amount', 'igv', 'total', 'additional_points']);
+            ->withPivot(['value_concept',  'total']);
     }
 
     public function routing()

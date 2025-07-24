@@ -168,28 +168,38 @@ class QuotesSentClientController extends Controller
 
             foreach ($services as $service) {
 
+                $netCost = null;
+
+                if ($service instanceof \App\Models\Custom) {
+                    $netCost = $service->net_amount;
+                } else {
+                    $netCost = $service->total_answer_utility;
+                }
+
                 // Crear el registro de comisión
                 $sellerCommission = SellersCommission::create([
                     'commissionable_id' => $service->id,
                     'commissionable_type' => get_class($service),  // Tipo de servicio (QuotesSentClient)
                     'personal_id' => $commercialQuote->id_personal,  // Relacionado al vendedor
                     'cost_of_sale' => $service->value_sale,  // Costo de venta total
-                    'net_cost' => $service->accepted_answer_value + $service->value_utility,  // Costo neto
+                    'net_cost' =>  $netCost,  // Costo neto
                     'utility' => $service->value_utility,  // Utilidad
                     'gross_profit' => $service->profit,  // Ganancia bruta total
                     'pure_points' => 1,  // Puntos puros generados
                     'additional_points' => 0,  // Puntos adicionales generados
                     'distributed_profit' => 0,  // Ganancia distribuida
-                    'remaining_balance' => 0,  // Saldo restante para el vendedor
+                    'remaining_balance' =>  $service->profit,  // Saldo restante para el vendedor
                     'generated_commission' => 0,  // Comisión generada
                 ]);
 
-                if (!$this->profitValidationService->checkMinPoints($sellerCommission)) {
-                    $points = floor($sellerCommission->gross_profit / 45);
+                $pointsNeeded = $this->profitValidationService->checkMinPoints($sellerCommission);
+
+                if ($pointsNeeded > 0) {
+                    $points = min(floor($sellerCommission->remaining_balance / 45), $pointsNeeded);
                     $remainingBalance = $sellerCommission->gross_profit - ($points * 45);
                     $generatedCommission = $points * 10;
 
-
+                    // Actualizar la comisión con los puntos faltantes y generados
                     $sellerCommission->update([
                         'additional_points' => $points,  // Asignar los puntos calculados
                         'remaining_balance' => $remainingBalance,

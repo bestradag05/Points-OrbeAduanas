@@ -18,10 +18,9 @@ class ConceptCustoms extends Model
         'id_customs',
         'value_concept',
         'added_value',
-        'net_amount',
-        'igv',
+        /* 'net_amount',
+        'igv', */
         'total',
-        'additional_points'
     ];
 
 
@@ -34,11 +33,6 @@ class ConceptCustoms extends Model
     public function customs()
     {
         return $this->belongsTo(Custom::class, 'id_customs');
-    }
-
-    public function additional_point()
-    {
-        return $this->morphOne(AdditionalPoints::class, 'additional', 'model_additional_concept_service', 'id_additional_concept_service');
     }
 
 }

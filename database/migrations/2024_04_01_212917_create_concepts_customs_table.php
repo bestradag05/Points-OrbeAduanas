@@ -17,10 +17,9 @@ return new class extends Migration
             $table->unsignedBigInteger('id_customs');
             $table->decimal('value_concept', 8 , 2);
             $table->decimal('added_value', 8, 2);
-            $table->decimal('net_amount', 8, 2)->nullable();
-            $table->decimal('igv', 8, 2)->nullable();
+            /* $table->decimal('net_amount', 8, 2)->nullable();
+            $table->decimal('igv', 8, 2)->nullable(); */
             $table->decimal('total', 8, 2)->nullable();
-            $table->integer('additional_points')->nullable();
             $table->timestamps();
 
             $table->foreign('concepts_id')->references('id')->on('concepts');

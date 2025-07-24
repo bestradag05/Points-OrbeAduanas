@@ -431,11 +431,11 @@ class DatabaseSeeder extends Seeder
 
         Concept::create(['name' => 'AGENCIAMIENTO DE ADUANAS', 'id_type_shipment' => 8, 'id_type_service' => 1]);
         Concept::create(['name' => 'AGENCIAMIENTO DE ADUANAS', 'id_type_shipment' => 21, 'id_type_service' => 1]);
-        Concept::create(['name' => 'COMISION DE ADUANA', 'id_type_shipment' => 8, 'id_type_service' => 1]);
+        Concept::create(['name' => 'GATE-IN', 'id_type_shipment' => 8, 'id_type_service' => 1]);
         Concept::create(['name' => 'GASTOS OPERATIVOS', 'id_type_shipment' => 8, 'id_type_service' => 1]);
         Concept::create(['name' => 'GASTOS ADMINISTRATIVOS', 'id_type_shipment' => 21, 'id_type_service' => 1]);
-        Concept::create(['name' => 'HAWB', 'id_type_shipment' => 8, 'id_type_service' => 1]);
-        Concept::create(['name' => 'INLAND GROUND', 'id_type_shipment' => 8, 'id_type_service' => 1]);
+        Concept::create(['name' => 'GASTOS PORTUARIOS', 'id_type_shipment' => 8, 'id_type_service' => 1]);
+        Concept::create(['name' => 'GASTOS TERMINAL ADUANERO', 'id_type_shipment' => 8, 'id_type_service' => 1]);
         Concept::create(['name' => 'DELIVERY AIRPO', 'id_type_shipment' => 21, 'id_type_service' => 2]);
         Concept::create(['name' => 'AIR FREIGHT', 'id_type_shipment' => 21, 'id_type_service' => 2]);
         Concept::create(['name' => 'F.S.C', 'id_type_shipment' => 8, 'id_type_service' => 2]);

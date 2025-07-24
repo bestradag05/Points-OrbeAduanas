@@ -38,6 +38,8 @@ class QuotesSentClient extends Model
         'tons',
         'measures',
         'cif_value',
+        'customs_taxes',
+        'customs_perception',
         'valid_date',
         'total_freight',
         'total_transport',

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('custom', function (Blueprint $table) {
             $table->id();
-            $table->string('nro_orde')->nullable();
+            $table->string('nro_operation_custom')->unique();
             $table->string('nro_dua')->nullable();
             $table->string('nro_dam')->nullable();
             $table->date('date_register')->nullable();
@@ -22,7 +22,10 @@ return new class extends Migration
             $table->string('nro_bl')->nullable();
             $table->decimal('customs_taxes', 8, 2)->nullable();
             $table->decimal('customs_perception', 8, 2)->nullable();
-            $table->decimal('total_custom', 8, 2)->nullable();
+            $table->decimal('value_utility', 8, 2)->nullable();
+            $table->decimal('net_amount', 8, 2)->nullable();
+            $table->decimal('value_sale', 8, 2)->nullable();
+            $table->decimal('profit', 8, 2)->nullable();
             $table->string('regularization_date')->nullable();
             $table->enum('state', ['Pendiente', 'Aceptado', 'Anulado', 'Rechazado'])->default('Pendiente');
             $table->unsignedBigInteger('id_modality')->nullable();

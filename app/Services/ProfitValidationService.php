@@ -26,7 +26,7 @@ class ProfitValidationService
 
             // Si no hay personal relacionado, devolver false
             if (!$personal) {
-                return false;
+                return 0;  // Si no hay personal, no se pueden generar puntos
             }
 
             // Obtener los puntos generados por este personal en el mes y año actuales
@@ -42,12 +42,14 @@ class ProfitValidationService
                 ->whereMonth('created_at', $currentMonth)
                 ->sum('additional_points');
 
-            // Verificar si el personal ha generado al menos 10 puntos
-            return $totalPointsThisMonth >= 10;
+            // Verificar los puntos faltantes para llegar a 10
+            $pointsNeeded = 10 - $totalPointsThisMonth;
+
+            return $pointsNeeded > 0 ? $pointsNeeded : 0;  // Si faltan puntos, devolver la cantidad, sino 0
         }
 
         // Si el servicio no tiene relación con commercialQuote, no podemos verificar los puntos
-        return false;
+        return 0;
     }
 
     /**
@@ -105,9 +107,17 @@ class ProfitValidationService
      */
     public function validateAllConditions($service)
     {
+         $pointsNeeded = $this->checkMinPoints($service);
+         $minPoints = true;
+
+         if($pointsNeeded > 0)
+         {
+            $minPoints = false;
+         }
+
         $conditions = [
             $this->checkMinUtility($service),
-            $this->checkMinPoints($service),
+            $minPoints,
             $this->checkMinRemainingProfit($service)
         ];
 

@@ -416,7 +416,7 @@
 
     @if ($customConcepts)
 
-{{--         <div id="detail-taxes-custom" class="container-service">
+        <div id="detail-taxes-custom" class="container-service">
             <table id="table-taxes-custom" class="table">
                 <thead>
                     <th style="width: 45%; background-color: #234195">Impuesto de aduanas</th>
@@ -427,21 +427,21 @@
                     <tr>
                         <td>IMPUESTOS DE ADUANAS </td>
                         <td>(ADV. 0% + IGV 16% + IPM 2%) X VALOR CIF</td>
-                        <td>$ {{ $custom->customs_taxes }}</td>
+                        <td>$ {{ $quoteSentClient->customs_taxes }}</td>
                     </tr>
                     <tr>
                         <td>PERCEPCIÓN ADUANAS </td>
                         <td>3.5% X ( CIF+ IMPUESTOS DE ADUANAS)</td>
-                        <td>$ {{ $custom->customs_perception }}</td>
+                        <td>$ {{ $quoteSentClient->customs_perception }}</td>
                     </tr>
 
                     <tr class="total-service">
-                        <td colspan="2" style="text-align: right">Total Aprox:</td>
-                        <td> $ {{ number_format($custom->customs_taxes + $custom->customs_perception, 2) }}</td>
+                        <td colspan="2" style="text-align: right">* Total impuestos:</td>
+                        <td> $ {{ number_format($quoteSentClient->customs_taxes + $quoteSentClient->customs_perception, 2) }}</td>
                     </tr>
                 </tbody>
             </table>
-        </div> --}}
+        </div>
         <div id="detail-custom" class="container-service">
             <table id="table-custom" class="table">
                 <thead>
@@ -458,7 +458,7 @@
                             @else
                                 <td id="observation"> - </td>
                             @endif
-                            <td> $ {{ $concept->pivot->total }}</td>
+                            <td> $ {{ $concept->pivot->concept_value }}</td>
                         </tr>
                     @endforeach
 

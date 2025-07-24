@@ -40,6 +40,8 @@ return new class extends Migration
             $table->decimal('tons', 8, 2)->nullable();
             $table->text('measures')->nullable();
             $table->decimal('cif_value', 8 , 2)->nullable();
+            $table->decimal('customs_taxes', 8 , 2)->nullable();
+            $table->decimal('customs_perception', 8 , 2)->nullable();
             $table->date('valid_date')->nullable();
 
             /* Guardar totales de los servicios */

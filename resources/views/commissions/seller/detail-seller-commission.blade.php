@@ -65,13 +65,11 @@
                                 </td>
                                 <td>
                                     <button class="btn btn-primary btn-sm"
-                                        onclick="confirmPointsGeneration({{ $commission->gross_profit }}, {{ $commission->id }})"
-                                        @if ($commission->distributed_profit > 0 || $commission->generated_commission > 0) disabled @endif>Calcular
+                                        onclick="confirmPointsGeneration({{ $commission->remaining_balance }}, {{ $commission->id }})">Calcular
                                         puntos</button>
                                     <button class="btn btn-secondary btn-sm"
                                         @if (!$canGenerateProfit['freight']) disabled @endif
-                                        onclick="confirmProfitGeneration({{ $commission->gross_profit }}, {{ $commission->id }})"
-                                        @if ($commission->distributed_profit > 0 || $commission->generated_commission > 0) disabled @endif>Calcular
+                                        onclick="confirmProfitGeneration({{ $commission->remaining_balance }}, {{ $commission->id }})">Calcular
                                         profit</button>
                                 </td>
                             </tr>
@@ -127,13 +125,11 @@
                                 </td>
                                 <td>
                                     <button class="btn btn-primary btn-sm"
-                                        onclick="confirmPointsGeneration({{ $commission->gross_profit }}, {{ $commission->id }})"
-                                        @if ($commission->distributed_profit > 0 || $commission->generated_commission > 0) disabled @endif>Calcular
+                                        onclick="confirmPointsGeneration({{ $commission->remaining_balance }}, {{ $commission->id }})">Calcular
                                         puntos</button>
                                     <button class="btn btn-secondary btn-sm"
                                         @if (!$canGenerateProfit['transport']) disabled @endif
-                                        onclick="confirmProfitGeneration({{ $commission->gross_profit }}, {{ $commission->id }})"
-                                        @if ($commission->distributed_profit > 0 || $commission->generated_commission > 0) disabled @endif>Calcular
+                                        onclick="confirmProfitGeneration({{ $commission->remaining_balance }}, {{ $commission->id }})">Calcular
                                         profit</button>
                                 </td>
                             </tr>
@@ -150,12 +146,14 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <th scope="col">N° de cotización</th>
                             <th scope="col">Aduana</th>
                             <th scope="col">Costo Venta</th>
                             <th scope="col">Costo Neto</th>
                             <th scope="col">Utilidad</th>
                             <th scope="col">Ganancia</th>
-                            <th scope="col">Puntos</th>
+                            <th scope="col">Puntos Puros</th>
+                            <th scope="col">Puntos Adicionales</th>
                             <th scope="col">Profit</th>
                             <th scope="col">Saldo</th>
                             <th scope="col">Comisión Generada</th>
@@ -187,13 +185,11 @@
                                 </td>
                                 <td>
                                     <button class="btn btn-primary btn-sm"
-                                        onclick="confirmPointsGeneration({{ $commission->gross_profit }}, {{ $commission->id }})"
-                                        @if ($commission->distributed_profit > 0 || $commission->generated_commission > 0) disabled @endif>Calcular
+                                        onclick="confirmPointsGeneration({{ $commission->remaining_balance }}, {{ $commission->id }})">Calcular
                                         puntos</button>
                                     <button class="btn btn-secondary btn-sm"
                                         @if (!$canGenerateProfit['custom']) disabled @endif
-                                        onclick="confirmProfitGeneration({{ $commission->gross_profit }}, {{ $commission->id }})"
-                                        @if ($commission->distributed_profit > 0 || $commission->generated_commission > 0) disabled @endif>Calcular
+                                        onclick="confirmProfitGeneration({{ $commission->remaining_balance }}, {{ $commission->id }})">Calcular
                                         profit</button>
                                 </td>
                             </tr>
@@ -209,25 +205,38 @@
 @push('scripts')
     <script>
         // Función para mostrar la alerta de confirmación antes de generar los puntos
-        function confirmPointsGeneration(profit, commissionId) {
+        function confirmPointsGeneration(remainingBalance, commissionId) {
             // Calcular los puntos a generar
-            const points = Math.floor(profit / 45);
+            const points = Math.floor(remainingBalance / 45);
 
-            // Mostrar la alerta de SweetAlert
-            Swal.fire({
-                title: '¿Estás seguro?',
-                html: `Vas a generar <strong class="text-indigo">${points}</strong> puntos adicionales para este servicio. ¿Deseas continuar?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí, generar puntos',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = `/commissions/seller/generate/points/${commissionId}`;
-                }
-            });
+
+            if (points > 0) {
+                // Mostrar la alerta de SweetAlert
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    html: `Vas a generar <strong class="text-indigo">${points}</strong> puntos adicionales para este servicio. ¿Deseas continuar?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, generar puntos',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = `/commissions/seller/generate/points/${commissionId}`;
+                    }
+                });
+
+            } else {
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Sin saldo restante",
+                    html: `Estimado vendedor, ya no puede generar puntos adicionales por que tiene un saldo restante de <strong>$ ${remainingBalance}</strong>, recuerde que el minimo para poder generar puntos es de <strong>$ 45.00</strong>`,
+                });
+
+            }
+
         }
 
 
