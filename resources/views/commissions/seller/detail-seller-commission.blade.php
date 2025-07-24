@@ -66,12 +66,12 @@
                                 <td>
                                     <button class="btn btn-primary btn-sm"
                                         onclick="confirmPointsGeneration({{ $commission->gross_profit }}, {{ $commission->id }})"
-                                        @if ($commission->distributed_profit || $commission->generated_commission > 0) disabled @endif>Calcular
+                                        @if ($commission->distributed_profit > 0 || $commission->generated_commission > 0) disabled @endif>Calcular
                                         puntos</button>
                                     <button class="btn btn-secondary btn-sm"
                                         @if (!$canGenerateProfit['freight']) disabled @endif
                                         onclick="confirmProfitGeneration({{ $commission->gross_profit }}, {{ $commission->id }})"
-                                        @if ($commission->distributed_profit || $commission->generated_commission > 0) disabled @endif>Calcular
+                                        @if ($commission->distributed_profit > 0 || $commission->generated_commission > 0) disabled @endif>Calcular
                                         profit</button>
                                 </td>
                             </tr>
@@ -128,12 +128,12 @@
                                 <td>
                                     <button class="btn btn-primary btn-sm"
                                         onclick="confirmPointsGeneration({{ $commission->gross_profit }}, {{ $commission->id }})"
-                                        @if ($commission->distributed_profit || $commission->generated_commission > 0) disabled @endif>Calcular
+                                        @if ($commission->distributed_profit > 0 || $commission->generated_commission > 0) disabled @endif>Calcular
                                         puntos</button>
                                     <button class="btn btn-secondary btn-sm"
                                         @if (!$canGenerateProfit['transport']) disabled @endif
                                         onclick="confirmProfitGeneration({{ $commission->gross_profit }}, {{ $commission->id }})"
-                                        @if ($commission->distributed_profit || $commission->generated_commission > 0) disabled @endif>Calcular
+                                        @if ($commission->distributed_profit > 0 || $commission->generated_commission > 0) disabled @endif>Calcular
                                         profit</button>
                                 </td>
                             </tr>
@@ -188,12 +188,12 @@
                                 <td>
                                     <button class="btn btn-primary btn-sm"
                                         onclick="confirmPointsGeneration({{ $commission->gross_profit }}, {{ $commission->id }})"
-                                        @if ($commission->distributed_profit || $commission->generated_commission > 0) disabled @endif>Calcular
+                                        @if ($commission->distributed_profit > 0 || $commission->generated_commission > 0) disabled @endif>Calcular
                                         puntos</button>
                                     <button class="btn btn-secondary btn-sm"
                                         @if (!$canGenerateProfit['custom']) disabled @endif
                                         onclick="confirmProfitGeneration({{ $commission->gross_profit }}, {{ $commission->id }})"
-                                        @if ($commission->distributed_profit || $commission->generated_commission > 0) disabled @endif>Calcular
+                                        @if ($commission->distributed_profit > 0 || $commission->generated_commission > 0) disabled @endif>Calcular
                                         profit</button>
                                 </td>
                             </tr>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Points;
 use App\Models\QuotesSentClient;
 use App\Models\SellersCommission;
+use App\Services\ProfitValidationService;
 use App\Services\QuotesSentClientService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -14,11 +15,13 @@ class QuotesSentClientController extends Controller
 {
 
     protected $quotesSentClientService;
+    protected $profitValidationService;
 
 
-    public function __construct(QuotesSentClientService $quotesSentClientService)
+    public function __construct(QuotesSentClientService $quotesSentClientService, ProfitValidationService $profitValidationService)
     {
         $this->quotesSentClientService = $quotesSentClientService;
+        $this->profitValidationService = $profitValidationService;
     }
 
     /**
@@ -166,7 +169,7 @@ class QuotesSentClientController extends Controller
             foreach ($services as $service) {
 
                 // Crear el registro de comisión
-                SellersCommission::create([
+                $sellerCommission = SellersCommission::create([
                     'commissionable_id' => $service->id,
                     'commissionable_type' => get_class($service),  // Tipo de servicio (QuotesSentClient)
                     'personal_id' => $commercialQuote->id_personal,  // Relacionado al vendedor
@@ -180,6 +183,19 @@ class QuotesSentClientController extends Controller
                     'remaining_balance' => 0,  // Saldo restante para el vendedor
                     'generated_commission' => 0,  // Comisión generada
                 ]);
+
+                if (!$this->profitValidationService->checkMinPoints($sellerCommission)) {
+                    $points = floor($sellerCommission->gross_profit / 45);
+                    $remainingBalance = $sellerCommission->gross_profit - ($points * 45);
+                    $generatedCommission = $points * 10;
+
+
+                    $sellerCommission->update([
+                        'additional_points' => $points,  // Asignar los puntos calculados
+                        'remaining_balance' => $remainingBalance,
+                        'generated_commission' => $generatedCommission
+                    ]);
+                }
             }
         }
     }

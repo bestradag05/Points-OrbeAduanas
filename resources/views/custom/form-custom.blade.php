@@ -20,11 +20,11 @@
         <div class="col-6">
 
             <div class="form-group">
-                <label for="cif_value">Valor FOB</label>
+                <label for="load_value">Valor FOB</label>
 
                 <div class="input-group">
 
-                    <input type="text" class="form-control  @error('cif_value') is-invalid @enderror "
+                    <input type="text" class="form-control  @error('load_value') is-invalid @enderror "
                         {{ isset($commercial_quote->load_value) ? 'readonly' : '' }} name="load_value"
                         placeholder="Ingrese valor de la carga"
                         value="{{ isset($commercial_quote->load_value) ? number_format($commercial_quote->load_value, 2) : old('load_value') }}">

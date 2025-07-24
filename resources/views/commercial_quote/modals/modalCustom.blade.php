@@ -6,6 +6,105 @@
                 <input type="hidden" name="nro_quote_commercial" value="{{ $comercialQuote->nro_quote_commercial }}">
                 <input type="hidden" name="typeService" id="typeService">
 
+
+                <div class="col-12 px-0">
+                    <div class="accordion bg-indigo" id="accordionImpuestos">
+                        <div class="card  bg-indigo">
+                            <div class="card-header m-0 p-1" id="headingImpuestos">
+                                <h6 class=" pb-0 mb-0  pl-2 d-flex justify-content-between align-items-center">
+                                    <span class="text-uppercase">
+                                        Detalle de impuestos
+                                    </span>
+                                    <button class="text-white btn btn-link" type="button" data-toggle="collapse"
+                                        data-target="#collapseImpuestos" aria-expanded="true"
+                                        aria-controls="collapseImpuestos">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                </h6>
+                            </div>
+
+                            <div id="collapseImpuestos" class="collapse" aria-labelledby="headingImpuestos"
+                                data-parent="#accordionImpuestos">
+                                <div class="card-body">
+                                    <!-- Primer campo: Valor FOB -->
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label for="load_value">Valor FOB</label>
+                                                <div class="input-group">
+                                                    <input type="text"
+                                                        class="form-control  @error('load_value') is-invalid @enderror "
+                                                        {{ isset($comercialQuote->load_value) ? 'readonly' : '' }}
+                                                        name="load_value" placeholder="Ingrese valor de la carga"
+                                                        value="{{ isset($comercialQuote->load_value) ? number_format($comercialQuote->load_value, 2) : old('load_value') }}">
+                                                </div>
+                                                @error('load_value')
+                                                    <span class="invalid-feedback d-block" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <!-- Segundo campo: Valor CIF -->
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label for="cif_value">Valor CIF</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control "
+                                                        {{ isset($comercialQuote->cif_value) ? 'readonly' : '' }}
+                                                        name="cif_value" placeholder="Ingrese valor de la carga"
+                                                        value="{{ isset($comercialQuote->cif_value) ? number_format($comercialQuote->cif_value, 2) : old('cif_value') }}">
+                                                </div>
+                                                @error('cif_value')
+                                                    <span class="invalid-feedback d-block" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <!-- Tercer campo: Impuestos de Aduanas -->
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label for="customs_taxes">Impuestos de Aduanas</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control"
+                                                        {{ isset($customs_taxes->customs_taxes) ? 'readonly' : '' }}
+                                                        name="customs_taxes" placeholder="Ingrese valor de la carga"
+                                                        value="{{ isset($customs_taxes->customs_taxes) ? $customs_taxes->customs_taxes : '' }}">
+                                                </div>
+                                                @error('customs_taxes')
+                                                    <span class="invalid-feedback d-block" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <!-- Cuarto campo: Percepción Aduanas -->
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <label for="customs_perception">Percepción Aduanas</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control"
+                                                        {{ isset($customs_taxes->customs_perception) ? 'readonly' : '' }}
+                                                        name="customs_perception"
+                                                        placeholder="Ingrese valor de la carga"
+                                                        value="{{ isset($customs_taxes->customs_perception) ? $customs_taxes->customs_perception : old('customs_perception') }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
                 <div class="row">
                     <div class="col-12">
 
@@ -19,88 +118,6 @@
 
                     </div>
 
-                    <div class="col-6">
-
-                        <div class="form-group">
-                            <label for="cif_value">Valor FOB</label>
-
-                            <div class="input-group">
-
-                                <input type="text" class="form-control  @error('cif_value') is-invalid @enderror "
-                                    {{ isset($comercialQuote->load_value) ? 'readonly' : '' }} name="load_value"
-                                    placeholder="Ingrese valor de la carga"
-                                    value="{{ isset($comercialQuote->load_value) ?  number_format($comercialQuote->load_value, 2) : old('load_value') }}">
-                            </div>
-                            @error('load_value')
-                                <span class="invalid-feedback d-block" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-
-                        </div>
-
-                    </div>
-
-                    <div class="col-6">
-
-                        <div class="form-group">
-                            <label for="cif_value">Valor CIF</label>
-
-                            <div class="input-group">
-
-                                <input type="text" class="form-control "
-                                    {{ isset($comercialQuote->cif_value) ? 'readonly' : '' }} name="cif_value"
-                                    placeholder="Ingrese valor de la carga"
-                                    value="{{ isset($comercialQuote->cif_value) ? number_format($comercialQuote->cif_value, 2) : old('cif_value') }}">
-                            </div>
-                            @error('cif_value')
-                                <span class="invalid-feedback d-block" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-
-                        </div>
-
-                    </div>
-
-                    <div class="col-6">
-
-                        <div class="form-group">
-                            <label for="customs_taxes">Impuestos de Aduanas</label>
-
-                            <div class="input-group">
-
-                                <input type="text" class="form-control"
-                                    {{ isset($customs_taxes->customs_taxes) ? 'readonly' : '' }} name="customs_taxes"
-                                    placeholder="Ingrese valor de la carga"
-                                    value="{{ isset($customs_taxes->customs_taxes) ? $customs_taxes->customs_taxes : '' }}">
-                            </div>
-                            @error('customs_taxes')
-                                <span class="invalid-feedback d-block" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
-
-                        </div>
-
-                    </div>
-
-                    <div class="col-6">
-
-                        <div class="form-group">
-                            <label for="customs_perception">Percepción Aduanas</label>
-
-                            <div class="input-group">
-
-                                <input type="text" class="form-control"
-                                    {{ isset($customs_taxes->customs_perception) ? 'readonly' : '' }}
-                                    name="customs_perception" placeholder="Ingrese valor de la carga"
-                                    value="{{ isset($customs_taxes->customs_perception) ? $customs_taxes->customs_perception : old('customs_perception') }}">
-                            </div>
-
-                        </div>
-
-                    </div>
 
 
 
@@ -116,7 +133,7 @@
                 </div>
                 <hr>
                 <div class="row d-none justify-content-center" id="content_seguroCustom">
-                    <div class="col-3">
+                    <div class="col-4">
                         <label for="type_insurance">Tipo de seguro</label>
                         <select name="type_insurance" class="d-none form-control" label="Tipo de seguro"
                             igroup-size="md" data-placeholder="Seleccione una opcion...">
@@ -126,7 +143,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-3">
+                    <div class="col-4">
                         <div class="form-group">
                             <label for="load_value">Valor del seguro</label>
 
@@ -136,15 +153,16 @@
                                         $
                                     </span>
                                 </div>
-                                <input type="text" class="form-control CurrencyInput d-none " name="value_insurance"
-                                    data-type="currency" placeholder="Ingrese valor de la carga"
+                                <input type="text" class="form-control CurrencyInput d-none "
+                                    name="value_insurance" data-type="currency"
+                                    placeholder="Ingrese valor de la carga"
                                     onchange="updateCustomsInsuranceTotal(this)">
                             </div>
 
                         </div>
                     </div>
 
-                    <div class="col-3">
+                    <div class="col-4">
                         <div class="form-group">
                             <label for="load_value">Valor ha agregar</label>
 
@@ -162,18 +180,6 @@
 
                         </div>
                     </div>
-                    <div class="col-3">
-                        <div class="form-group">
-                            <label for="load_value">Puntos</label>
-
-                            <div class="input-group">
-                                <input type="number" class="form-control d-none" id="insurance_points"
-                                    name="insurance_points" min="0" onkeydown="preventeDefaultAction(event)"
-                                    oninput="addCustomsPointsInsurance(this)">
-                            </div>
-
-                        </div>
-                    </div>
                 </div>
 
                 <hr>
@@ -185,7 +191,7 @@
                             <option />
                             @foreach ($concepts as $concept)
                                 @if ($concept->typeService->name == 'Aduanas' && $comercialQuote->type_shipment->id == $concept->id_type_shipment)
-                                    @if ($concept->name != 'AGENCIAMIENTO DE ADUANAS')
+                                    @if ($concept->name != 'AGENCIAMIENTO DE ADUANAS' && $concept->name != 'GASTOS OPERATIVOS')
                                         <option value="{{ $concept->id }}">{{ $concept->name }}</option>
                                     @endif
                                 @endif
@@ -282,30 +288,20 @@
                 let concepts = @json($concepts);
                 let comercialQuote = @json($comercialQuote);
                 let type_services = @json($type_services);
-                let customAgencyValue = @json($customs_agency);
+                let filteredConcepts = @json($filteredConcepts);
                 let customService = type_services.filter(type_service => type_service.name === 'Aduanas')[0];
                 let conceptCustomAgency = null;
 
 
-             
-                concepts.forEach(concept => {
-
-                    if (concept.name === 'AGENCIAMIENTO DE ADUANAS' && comercialQuote.type_shipment.id === concept
-                        .id_type_shipment && concept.id_type_service === customService.id) {
-                        //Obtenemos el agenciamiento de aduanas
-                        conceptCustomAgency = concept;
-                    }
+                filteredConcepts.forEach(concept => {
+                    conceptsCustomArray.push({
+                        'id': concept.id,
+                        'name': concept.name,
+                        'value': formatValue(concept.value),
+                        'added': 0,
+                    });
 
                 });
-
-                /* console.log(formatValue(customAgencyValue)); */
-                conceptsCustomArray.push({
-                    'id': conceptCustomAgency.id,
-                    'name': conceptCustomAgency.name,
-                    'value': formatValue(customAgencyValue),
-                    'added': 0,
-                });
-
 
                 updateTableCustom(conceptsCustomArray);
 
@@ -462,9 +458,8 @@
 
 
                             // Insertar el valor en la cuarta celda de la fila
-
                             let celdaAdded = fila.insertCell(3);
-                            if (item.name === conceptCustomAgency.name) {
+                            if (filteredConcepts.some(concept => concept.name === item.name)) {
                                 // Si customAgency existe, muestra un input editable
                                 let inputAdded = document.createElement('input');
                                 inputAdded.type = 'number';
@@ -479,17 +474,6 @@
                                     // Actualiza el valor en `conceptsCustomArray`
                                     conceptsCustomArray[clave].added = newValue;
 
-                                    // Actualiza el máximo para `inputPA`
-                                    let maxPoints = Math.floor(newValue / 45);
-                                    inputPA.max = maxPoints;
-
-                                    // Ajusta el valor actual de `pa` si excede el nuevo máximo
-                                    if (conceptsCustomArray[clave].pa > maxPoints) {
-                                        conceptsCustomArray[clave].pa = maxPoints;
-                                        inputPA.value = maxPoints;
-                                    }
-
-
                                     // Recalcula el total
                                     TotalCustomsConcepts = calculateCustomsTotal(conceptsCustomArray);
                                     calcCustomTotal(TotalCustomsConcepts, value_insurance_custom,
@@ -503,46 +487,10 @@
 
 
 
-                            let celdaPA = fila.insertCell(4);
-                            celdaPA.style.width = '15%';
-                            let inputPA = document.createElement('input');
-                            inputPA.type = 'number';
-                            inputPA.value = (conceptsCustomArray[clave].pa) ? conceptsCustomArray[clave].pa : '';
-                            inputPA.name = 'pa';
-                            inputPA.classList.add('form-control', 'points');
-                            inputPA.classList.remove('is-invalid');
-                            inputPA.min = 0;
-                            celdaPA.appendChild(inputPA);
-
-
-                            inputPA.addEventListener('input', (e) => {
-
-                                if (conceptCustomAgency) {
-
-                                    conceptsCustomArray[clave].pa = e.target.value
-
-                                } else {
-
-                                    preventeDefaultAction(e);
-                                }
-                            });
-
-                            if (Math.floor(item.added / 45) === 0) {
-
-                                inputPA.max = 0;
-                            } else {
-                                inputPA.addEventListener('input', (e) => {
-                                    // Indicamos cual es el maximo de puntos que puede asignarle
-                                    inputPA.max = Math.floor(item.added / 45);
-                                    // Agregamos este valor del punto al objeto, para que cuando dibujemos la tabla nuevamente, no se eliminen
-                                    conceptsCustomArray[clave].pa = e.target.value
-                                })
-                            }
-
-                            if (item.name != conceptCustomAgency.name) {
+                            if (!filteredConcepts.some(concept => concept.name === item.name)) {
 
                                 // Insertar un botón para eliminar la fila en la cuarta celda de la fila
-                                let celdaEliminar = fila.insertCell(5);
+                                let celdaEliminar = fila.insertCell(4);
                                 let botonEliminar = document.createElement('a');
                                 botonEliminar.href = '#';
                                 botonEliminar.innerHTML = '<p class="text-danger">X</p>';
@@ -598,39 +546,6 @@
 
                 const preventeDefaultAction = (e) => {
                     e.preventDefault();
-                }
-
-
-                const addCustomsPointsInsurance = (input) => {
-
-                    let value_added = 0;
-
-                    if (container != '') {
-                        value_added = $(`#${container.id} #insurance_added`).val();
-                    } else {
-                        value_added = $(`#content_seguro #insurance_added`).val();
-                    }
-
-
-                    if (!value_added.trim()) {
-                        input.value = 0;
-                        input.max = 0;
-                    } else {
-
-                        //Indicamos el modal donde estemos trabajando y luego seleccionamos el campo.
-
-                        let value_added_number = parseFloat(value_added.replace(/,/g, ''));
-
-                        if (Math.floor(value_added_number / 45) === 0) {
-                            input.value = 0;
-                            input.max = 0;
-
-                        } else {
-                            input.max = Math.floor(value_added_number / 45);
-                        }
-
-                    }
-
                 }
 
                 const addPointsTransport = (input) => {

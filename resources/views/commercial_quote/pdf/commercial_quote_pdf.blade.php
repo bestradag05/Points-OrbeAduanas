@@ -275,11 +275,12 @@
                     </tr>
                     <tr>
                         <td class="title-item-table">Puerto de salida</td>
-                        <td class="text-item-table">{{ $quoteSentClient->origin }}</td>
+                        <td class="text-item-table"> {{ $quoteSentClient->originState->country->name }} - {{ $quoteSentClient->originState->name }}</td>
                     </tr>
                     <tr>
                         <td class="title-item-table">Puerto de llegada</td>
-                        <td class="text-item-table">{{ $quoteSentClient->destination }}</td>
+                        <td class="text-item-table">{{ $quoteSentClient->destinationState->country->name }} -
+                            {{ $quoteSentClient->destinationState->name }}</td>
                     </tr>
                     <tr>
                         <td class="title-item-table">Incoterm</td>
