@@ -115,7 +115,7 @@ class TransportService
                 return [
                     'concepts_id'         => $pivot->concepts_id,
                     'concept'             => ['name' => $pivot->concept->name],
-                    'pivot'               => ['net_amount_response' => $pivot->net_amount_response],
+                    'pivot'               => ['net_amount_response' => $pivot->net_amount],
                 ];
             });
 

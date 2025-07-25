@@ -16,15 +16,16 @@ return new class extends Migration
             $table->foreignId('quote_transport_id')->constrained('quote_transport');
             $table->string('nro_response')->unique()->default('');
             $table->foreignId('provider_id')->constrained('suppliers');
-            $table->decimal('provider_cost', 12, 2);
-            $table->decimal('exchange_rate', 8, 4)->nullable();
-            $table->decimal('igv', 12, 2);
-            $table->decimal('value_utility', 10, 2)->nullable();
-            $table->decimal('total', 12, 2)->nullable();
-            // Total convertido a US$ (total en S/. ÷ exchange_rate)
-            $table->decimal('total_usd', 12, 2);
-            // Suma de utilidad + total_usd
-            $table->decimal('total_prices_usd', 12, 2);
+            // Costo que el proveedor factura en S/.
+            $table->decimal('provider_cost', 12, 2)->comment('Costo total en soles facturado por el proveedor');
+            // Tipo de cambio utilizado para convertir soles a USD
+            $table->decimal('exchange_rate', 8, 4)->nullable()->comment('Tipo de cambio S/. → US$');
+            // Suma de todas las utilidades (USD) ingresadas por concepto
+            $table->decimal('value_utility', 12, 2)->nullable()->comment('Suma de utilidades en US$ de todos los conceptos');
+            // Total final en USD (provider_cost + value_utility)
+            $table->decimal('total_usd', 12, 2)->comment('Total en US$ (total + igv ÷ tipo de cambio)');
+            // Total suma de los “sale_price” de cada concepto (USD)
+            $table->decimal('total_prices_usd', 12, 2)->comment('Total en US$ + utilidades');
             $table->enum('status', ['Aceptado', 'Rechazada', 'Enviada'])->default('Enviada');
             $table->timestamps();
         });

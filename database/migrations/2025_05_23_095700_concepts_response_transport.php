@@ -16,6 +16,14 @@ return new class extends Migration
             $table->unsignedBigInteger('response_transport_quote_id');
             $table->unsignedBigInteger('concepts_id');
             $table->decimal('net_amount', 8, 2)->comment('Monto neto (sin IGV)');
+            // Igv por concepto
+            $table->decimal('igv', 12, 2)->comment('Igv por concepto');
+            // Suma de net_amount + igv
+            $table->decimal('total_usd', 12, 2)->comment('Total en USD (con IGV)');
+            // Utilidad que el usuario agregó en USD
+            $table->decimal('value_utility', 12, 2)->comment('Utilidad en USD');
+            // Costo de venta en USD (total_usd + utility_usd)
+            $table->decimal('sale_price', 12, 2)->comment('Costo de venta en USD');
             $table->timestamps();
             // FK a response_transport_quote
             $table->foreign('response_transport_quote_id')->references('id')->on('response_transport_quotes');

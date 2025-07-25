@@ -788,7 +788,7 @@
                     <div class="modal-body py-2">
 
                         {{-- Proveedor --}}
-                        <div class="form-group row mb-3 align-items-center">
+                        <div id="row-provider" class="form-group row mb-3 align-items-center">
                             <label for="provider_id" class="col-sm-3 col-form-label small font-weight-bold">
                                 Proveedor <span class="text-danger">*</span>
                             </label>
@@ -807,82 +807,80 @@
 
                         <hr class="my-2">
 
-                        {{-- Precios de conceptos --}}
-                        @foreach ($quote->transportConcepts->unique('id') as $tc)
-                            @if (!empty($tc->name))
-                                <div class="form-group row mb-1">
-                                    <label class="col-sm-6 col-form-label small">
-                                        {{ $tc->name }} (S/.)
-                                    </label>
-                                    <div class="col-sm-6">
-                                        <input type="number" step="0.01" name="price_concept[{{ $tc->id }}]"
-                                            class="form-control form-control-sm concept-input">
-                                    </div>
-                                </div>
-                            @endif
-                        @endforeach
-
-                        <hr class="my-2">
-
-                        {{-- Exchange + Utilidad --}}
-                        <div class="form-row mb-3">
+                        {{-- Exchange + Utilidad global --}}
+                        <div id="row-exchange-utility" class="form-row mb-3">
                             <div class="col pr-1">
                                 <label for="exchange_rate" class="small">Tipo de cambio (S/.)</label>
                                 <input type="number" step="0.0001" name="exchange_rate" id="exchange_rate"
                                     class="form-control form-control-sm" value="3.70">
                             </div>
                             <div class="col pl-1">
-                                <label for="value_utility" class="small">Utilidad (US$)</label>
-                                <input type="number" step="0.01" name="value_utility" id="value_utility"
-                                    class="form-control form-control-sm"
-                                    value="{{ $quote->type_cargo === 'FCL' ? 80 : 55 }}">
+                                <label for="value_utility" class="small">Tipo de Vehiculo</label>
+                                <input type="text" class="form-control form-control-sm">
                             </div>
                         </div>
 
                         <hr class="my-2">
 
-                        {{-- RESUMEN ABAJO --}}
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group row mb-1">
-                                    <label class="col-sm-6 col-form-label small">Subtotal (S/.)</label>
-                                    <div class="col-sm-6">
-                                        <input type="text" class="form-control form-control-sm" id="subtotalSoles"
-                                            readonly>
+                        {{-- Encabezados de la “tabla” --}}
+                        <div id="row-headers" class="form-row font-weight-bold small mb-2">
+                            <div class="col-sm-2">Concepto (S/.)</div>
+                            <div class="col-sm-2">Valor concepto (S/.)</div>
+                            <div class="col-sm-2">Utilidad (US$)</div>
+                            <div class="col-sm-3">Total (US$)</div>
+                            <div class="col-sm-3">Costo Venta (US$)</div>
+                        </div>
+
+                        {{-- Filas de conceptos --}}
+                        @foreach ($quote->transportConcepts->unique('id') as $tc)
+                            @if (!empty($tc->name))
+                                <div class="form-row mb-2 align-items-center">
+                                    {{-- Concepto --}}
+                                    <div class="col-sm-2">
+                                        <span class="small">{{ $tc->name }}</span>
+                                    </div>
+
+                                    {{-- Valor concepto (S/.) ← ESTA COLUMNA TIENE CLASS="concept-input" --}}
+                                    <div class="col-sm-2">
+                                        <input type="number" step="0.01" id="price_{{ $tc->id }}"
+                                            data-id="{{ $tc->id }}"
+                                            class="form-control form-control-sm text-end concept-input">
+                                    </div>
+
+                                    {{-- Utilidad (US$) ← ESTA COLUMNA TIENE CLASS="concept-utility" --}}
+                                    <div class="col-sm-2">
+                                        <input type="number" step="0.01" id="utility_{{ $tc->id }}"
+                                            data-id="{{ $tc->id }}"
+                                            class="form-control form-control-sm text-end concept-utility">
+                                    </div>
+
+                                    {{-- Total (US$) --}}
+                                    <div class="col-sm-3">
+                                        <input type="text" id="totalIgvUsd_{{ $tc->id }}"
+                                            class="form-control form-control-sm text-end" readonly>
+                                    </div>
+
+                                    {{-- Costo Venta (US$) --}}
+                                    <div class="col-sm-3">
+                                        <input type="text" id="totalIgvUtilUsd_{{ $tc->id }}"
+                                            class="form-control form-control-sm text-end" readonly>
                                     </div>
                                 </div>
-                                <div class="form-group row mb-1">
-                                    <label class="col-sm-6 col-form-label small">IGV (18%)</label>
-                                    <div class="col-sm-6">
-                                        <input type="text" class="form-control form-control-sm" id="igvSoles"
-                                            readonly>
-                                    </div>
-                                </div>
-                                <div class="form-group row mb-1">
-                                    <label class="col-sm-6 col-form-label small">Total (S/.)</label>
-                                    <div class="col-sm-6">
-                                        <input type="text" class="form-control form-control-sm" id="totalConceptos"
-                                            readonly>
-                                    </div>
-                                </div>
+                            @endif
+                        @endforeach
+                        <hr class="my-2">
+
+                        {{-- Total costo venta --}}
+                        <div id="row-total-costo" class="form-row justify-content-end mb-2">
+                            <div class="col-sm-3 offset-sm-6">
+                                <label for="totalCostoVenta" class="small fw-bold">Total costo venta (US$):</label>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group row mb-1">
-                                    <label class="col-sm-6 col-form-label small">Total (US$)</label>
-                                    <div class="col-sm-6">
-                                        <input type="text" class="form-control form-control-sm" id="totalDolares"
-                                            readonly>
-                                    </div>
-                                </div>
-                                <div class="form-group row mb-0">
-                                    <label class="col-sm-6 col-form-label small">Total + Utilidad (US$)</label>
-                                    <div class="col-sm-6">
-                                        <input type="text" class="form-control form-control-sm" + id="totalPricesUsd"
-                                            readonly>
-                                    </div>
-                                </div>
+                            <div class="col-sm-3">
+                                <input type="text" id="totalCostoVenta" class="form-control form-control-sm text-end"
+                                    readonly value="0.00">
                             </div>
                         </div>
+
 
                     </div>
 
@@ -895,13 +893,13 @@
                             <i class="fas fa-times mr-1"></i> Cerrar
                         </button>
                     </div>
-
                 </form>
             </div>
         </div>
-
-
     </div>
+
+
+
 
 
     <div class="modal fade" id="modalAcceptResponse" tabindex="-1" role="dialog" data-backdrop="static"
@@ -1120,44 +1118,55 @@
             });
         }
 
-        function recalcTotal() {
-            const typeCargo = @json($quote->type_cargo);
-            const exchangeRate = parseFloat(document.getElementById('exchange_rate')?.value || 1);
-            const utility = parseFloat(document.getElementById('value_utility')?.value || 0);
+        // —– 1) Recalcula una sola fila —–
+        function recalcRow(id) {
+            const exchangeRate = parseFloat(document.getElementById('exchange_rate').value) || 1;
+            const price = parseFloat(document.getElementById(`price_${id}`).value) || 0;
+            const util = parseFloat(document.getElementById(`utility_${id}`).value) || 0;
 
-            const minUtility = typeCargo === 'FCL' ? 60 : 45;
-            const idealUtility = typeCargo === 'FCL' ? 80 : 55;
+            // precio + IGV en S/
+            const withIgv = +(price * 1.18).toFixed(2);
+            // pasa a USD
+            const totalUsd = +(withIgv / exchangeRate).toFixed(2);
+            // suma utilidad
+            const totalUsdUtil = +(totalUsd + util).toFixed(2);
 
-            // 1) Subtotal = suma de precios netos de conceptos
-            const subtotal = [...document.querySelectorAll('.concept-input')]
-                .reduce((sum, input) => sum + parseFloat(input.value || 0), 0);
+            // vuelca en los campos de la fila
+            document.getElementById(`totalIgvUsd_${id}`).value = totalUsd.toFixed(2);
+            document.getElementById(`totalIgvUtilUsd_${id}`).value = totalUsdUtil.toFixed(2);
 
-            // 2) IGV = 18% del subtotal
-            const igv = +(subtotal * 0.18).toFixed(2);
-
-            // 3) Total en soles (subtotal + igv)
-            const totalSol = +(subtotal + igv).toFixed(2);
-
-            // 4) Total en US$ (totalSol / tipo de cambio)
-            const totalUSD = +(totalSol / exchangeRate).toFixed(2);
-
-            // 5) Total + Utilidad
-            const totalPricesUsd = +(totalUSD + utility).toFixed(2);
-
-            // Validación visual
-            if (utility < minUtility) {
-                console.warn(
-                    `Utilidad menor al mínimo permitido para ${typeCargo}: $${minUtility}. Ideal: $${idealUtility}.`
-                );
-            }
-
-            // Asignar a los campos
-            document.getElementById('subtotalSoles').value = subtotal.toFixed(2);
-            document.getElementById('igvSoles').value = igv.toFixed(2);
-            document.getElementById('totalConceptos').value = totalSol.toFixed(2);
-            document.getElementById('totalDolares').value = totalUSD.toFixed(2);
-            document.getElementById('totalPricesUsd').value = totalPricesUsd.toFixed(2);
+            // y recalc general
+            recalcTotalCostoVenta();
         }
+
+        // —– 2) Suma todas las filas para Total Costo Venta —–
+        function recalcTotalCostoVenta() {
+            let sum = 0;
+            document.querySelectorAll('[id^="totalIgvUtilUsd_"]').forEach(input => {
+                sum += parseFloat(input.value) || 0;
+            });
+            document.getElementById('totalCostoVenta').value = sum.toFixed(2);
+        }
+
+        // —– 3) Engancha los eventos al cargar la página —–
+        document.addEventListener('DOMContentLoaded', () => {
+            // cuando cambias precio
+            document.querySelectorAll('.concept-input').forEach(input => {
+                const id = input.dataset.id;
+                input.addEventListener('input', () => recalcRow(id));
+            });
+            // cuando cambias utilidad
+            document.querySelectorAll('.concept-utility').forEach(input => {
+                const id = input.dataset.id;
+                input.addEventListener('input', () => recalcRow(id));
+            });
+            // y recalcula todo al principio (por si hay valores precargados)
+            document.querySelectorAll('.concept-input, .concept-utility').forEach(input => {
+                const id = input.dataset.id;
+                recalcRow(id);
+            });
+        });
+
 
 
 

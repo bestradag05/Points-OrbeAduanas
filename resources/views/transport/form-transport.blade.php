@@ -58,6 +58,14 @@
         </div>
     </div>
 
+    <div class="col-6">
+        <div class="form-group">
+            <label>Utilidad de la respuesta</label>
+            <input type="text" class="form-control text-end" @readonly(true)
+                value="{{ number_format($acceptedResponse->value_utility, 2) }}" placeholder="Utilidad">
+        </div>
+    </div>
+
     <div class="col-12">
         <div class="row align-items-end">
             <div class="col-md-4">
@@ -96,7 +104,8 @@
                 <tr>
                     <th style="width: 5%;">#</th>
                     <th style="width: 35%;">Concepto</th>
-                    <th style="width: 20%;">Valor del concepto</th>
+                    <th style="width: 30%;">Costo Neto ($)</th>
+                    <th style="width: 30%;">Valor del concepto</th>
                 </tr>
             </thead>
             <tbody id="tbodyConcepts">
@@ -108,6 +117,15 @@
             <div class="row justify-content-end">
                 <div class="col-md-6">
 
+                    <div class="form-group">
+                        <label>Total de respuesta sin IGV ($)</label>
+                        <input type="text" class="form-control text-end" readonly
+                            value="{{ number_format(
+                                $acceptedResponse->provider_cost / $acceptedResponse->exchange_rate + $acceptedResponse->value_utility,
+                                2,
+                            ) }}">
+                    </div>
+
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <label for="totalRespuesta" class="form-label fw-bold mb-0">Total de la respuesta:</label>
                         <input type="text" id="totalRespuesta" class="form-control text-end ms-2"
@@ -117,8 +135,8 @@
 
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <label for="total" class="form-label fw-bold mb-0">Total:</label>
-                        <input type="text" id="total" class="form-control text-end ms-2" style="width: 150px;"
-                            readonly value="0.00">
+                        <input type="text" id="total" class="form-control text-end ms-2"
+                            style="width: 150px;" readonly value="0.00">
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center">
@@ -157,64 +175,71 @@
             const totalUsd = parseFloat(@json($acceptedResponse->total_usd)) || 0;
             const isEditMode = "{{ $formMode ?? '' }}" === "edit";
 
+            const exchangeRate = parseFloat(@json($acceptedResponse->exchange_rate)) || 1;
+            const providercost = parseFloat(@json($acceptedResponse->provider_cost)) || 0;
+
             // —– FUNCIONES AUXILIARES —–
 
             function formatValue(value) {
-                if (value === null || value === undefined) {
-                    return 0; // O el valor predeterminado que desees
-                }
-
-                if (typeof value === 'number') {
-                    return value;
-                }
-
+                if (value === null || value === undefined) return 0;
+                if (typeof value === 'number') return value;
                 return parseFloat(value.toString().replace(/,/g, '')) || 0;
             }
 
             function calculateTotal(conceptsArray) {
-                return Object.values(conceptsArray).reduce((acc, concept) => {
-                    return acc + parseFloat(concept.value || 0);
-                }, 0);
+                return conceptsArray.reduce((acc, c) => acc + parseFloat(c.value || 0), 0);
             }
 
             function calcTotal(TotalConcepts, totalRespuestaParam = totalRespuesta) {
                 total = TotalConcepts;
-                const btnGuardar = document.querySelector('#btnGuardar');
-                $('#total').val((total || 0).toFixed(2));
+                $('#total').val(total.toFixed(2));
 
                 let ganancia = total - totalRespuestaParam;
                 if (ganancia < 0) ganancia = 0;
+                $('#gananciaCalculada').val(ganancia.toFixed(2));
 
+                const btn = document.querySelector('#btnGuardar');
                 if (total >= totalRespuesta) {
-                    btnGuardar.removeAttribute('disabled');
+                    btn.removeAttribute('disabled');
                 } else {
-                    btnGuardar.setAttribute('disabled', 'true');
+                    btn.setAttribute('disabled', 'true');
                 }
-
-                $('#gananciaCalculada').val((ganancia).toFixed(2));
             }
 
+            /**
+             * Vuelca conceptsArray en la tabla, recalcula totales y agrega columna USD.
+             */
             function updateTable(conceptsArray) {
-                const tbody = $('#formConceptsTransport').find('tbody')[0];
-                if (tbody) tbody.innerHTML = '';
+                const tbody = $('#formConceptsTransport tbody')[0];
+                if (!tbody) return;
+                tbody.innerHTML = '';
 
-                let TotalConcepts = 0;
                 let contador = 0;
+                let sumaLocal = 0;
 
                 conceptsArray.forEach(item => {
                     contador++;
                     const fila = tbody.insertRow();
 
-                    // Nº
-                    const celdaNum = fila.insertCell(0);
-                    celdaNum.textContent = contador;
+                    // 1) Nº
+                    fila.insertCell(0).textContent = contador;
 
-                    // Nombre
-                    const celdaName = fila.insertCell(1);
-                    celdaName.textContent = item.name;
+                    // 2) Concepto
+                    fila.insertCell(1).textContent = item.name;
 
-                    // Valor
-                    const celdaVal = fila.insertCell(2);
+                    // 3) Costo Neto ($) ⇒ readonly
+                    const celdaUsd = fila.insertCell(2);
+                    const usdVal = item.pivotValue / exchangeRate; // ya tiene valor
+                    const inpUsd = document.createElement('input');
+                    inpUsd.type = 'text';
+                    inpUsd.value = usdVal.toFixed(2);
+                    inpUsd.classList.add('form-control', 'text-end');
+                    inpUsd.readOnly = true;
+                    celdaUsd.appendChild(inpUsd);
+
+                    // 4) Valor del concepto ⇒ editable solo en edit
+
+                    const celdaVal = fila.insertCell(3);
                     if (isEditMode || (conceptsTransport && conceptsTransport.some(c => c.concept.name === item
                             .name))) {
                         const input = document.createElement('input');
@@ -234,12 +259,13 @@
                         celdaVal.textContent = item.value;
                     }
 
-                    TotalConcepts += parseFloat(item.value || 0);
+                    sumaLocal += parseFloat(item.value || 0);
                 });
 
-                calcTotal(TotalConcepts);
+                calcTotal(sumaLocal);
             }
 
+            // —– Agrega desde dropdown —–
             function addConceptFromDropdown() {
                 const sel = document.getElementById('conceptSelect');
                 const inp = document.getElementById('conceptValue');
@@ -255,7 +281,7 @@
                 sel.classList.remove('is-invalid');
                 inp.classList.remove('is-invalid');
 
-                const idx = conceptsArray.findIndex(item => item.id === conceptId);
+                const idx = conceptsArray.findIndex(c => c.id === conceptId);
                 if (idx !== -1) {
                     conceptsArray[idx].value = value;
                 } else {
@@ -270,94 +296,47 @@
                 updateTable(conceptsArray);
             }
 
-            function addConcept(buton) {
-                let divConcepts = $('.formConcepts');
-                const inputs = divConcepts.find('input, select');
-
-                inputs.each(function() {
-                    if ($(this).val() === '') {
-                        $(this).addClass('is-invalid');
-                    } else {
-                        $(this).removeClass('is-invalid');
-                    }
-                });
-                var camposInvalidos = divConcepts.find('.is-invalid').length;
-
-                if (camposInvalidos === 0) {
-                    const index = conceptsArray.findIndex(item => item.id === parseInt(inputs[0].value));
-
-                    if (index !== -1) {
-                        conceptsArray[index] = {
-                            id: parseInt(inputs[0].value),
-                            name: inputs[0].options[inputs[0].selectedIndex].text,
-                            value: formatValue(inputs[1].value),
-                        };
-                    } else {
-                        conceptsArray.push({
-                            id: parseInt(inputs[0].value),
-                            name: inputs[0].options[inputs[0].selectedIndex].text,
-                            value: formatValue(inputs[1].value),
-                        });
-                    }
-
-                    updateTable(conceptsArray);
-
-                    inputs[0].value = '';
-                    inputs[1].value = '';
-                    inputs[2].value = '';
-                }
-            }
-
             // —– INICIALIZACIÓN & HOOKS —–
             $(document).ready(function() {
-                // reiniciamos el array y demás
                 conceptsArray = [];
-                conceptsTransport = null;
+                conceptsTransport = @json($conceptsTransport);
                 total = 0;
 
-                // Carga inicial de conceptos desde PHP
-                conceptsTransport = @json($conceptsTransport);
-
-                // opcional: ordenar transporte primero
+                // Orden opcional: TRANSPORTE primero
                 conceptsTransport.sort((a, b) => {
-                    const A = (a.concept.name || '').toUpperCase();
-                    const B = (b.concept.name || '').toUpperCase();
+                    const A = ((a.concept?.name || a.name) || '').toUpperCase();
+                    const B = ((b.concept?.name || b.name) || '').toUpperCase();
                     if (A === 'TRANSPORTE') return -1;
                     if (B === 'TRANSPORTE') return 1;
                     return A.localeCompare(B);
                 });
 
-                conceptsTransport.forEach(concept => {
+                // Carga inicial unificada
+                conceptsTransport.forEach(c => {
+                    // en CREATE siempre arrancamos value = 0 y guardamos pivotValue solo para USD
+                    const savedVal = formatValue(c.pivot.total);
+                    const usdBase = formatValue(c.pivot.net_amount_response);
                     conceptsArray.push({
-                        id: concept.concepts_id,
-                        name: concept.concept.name,
-                        value: formatValue(concept.pivot.net_amount_response)
+                        id: c.concepts_id || c.id,
+                        name: c.concept?.name || c.name,
+                        value: isEditMode ? savedVal : 0,
+                        pivotValue: isEditMode ? savedVal : usdBase
                     });
                 });
 
-                // Poblamos la tabla por primera vez
                 updateTable(conceptsArray);
 
-                // Manejador de submit
                 $('#formTransport').on('submit', function(e) {
                     e.preventDefault();
                     const form = $(this);
-                    const jsonConcepts = JSON.stringify(conceptsArray);
-
-                    form.append(`<input type="hidden" name="concepts" value='${jsonConcepts}' />`);
-
-                    const totalPricesUsd = parseFloat($('#totalRespuesta').val().replace(/,/g, '')) || 0;
-                    const totalTransportValue = parseFloat($('#total').val().replace(/,/g, '')) || 0;
-                    const profitValue = parseFloat($('#gananciaCalculada').val().replace(/,/g, '')) || 0;
-
-
                     form.append(
-                        `<input type="hidden" name="total_transport_value" value='${totalTransportValue.toFixed(2)}' />`
+                        `<input type="hidden" name="concepts" value='${JSON.stringify(conceptsArray)}' />`);
+                    form.append(
+                        `<input type="hidden" name="total_transport_value" value='${parseFloat($('#total').val()).toFixed(2)}' />`
                     );
                     form.append(
-                        `<input type="hidden" name="profit"                value='${profitValue.toFixed(2)}' />`
-                        );
-
+                        `<input type="hidden" name="profit" value='${parseFloat($('#gananciaCalculada').val()).toFixed(2)}' />`
+                    );
                     form.off('submit').submit();
                 });
             });

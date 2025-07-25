@@ -13,10 +13,13 @@ class ConceptsResponseTransport extends Model
 
     // 1) Permitir asignación masiva de estos campos
     protected $fillable = [
-        'concepts_id',
         'response_transport_quote_id',
         'concepts_id',
         'net_amount',
+        'igv',
+        'total_usd',       // Total convertido a USD (con IGV)
+        'value_utility',   // Utilidad en USD
+        'sale_price',      // Costo de venta en USD
     ];
 
     // 2) Relación N:1 → ResponseTransportQuote
