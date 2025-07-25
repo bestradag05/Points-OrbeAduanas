@@ -57,7 +57,7 @@ class ProfitValidationService
      */
     public function checkMinRemainingProfit($service)
     {
-        return $service->gross_profit >= 200;  // Aquí adaptamos para cada tipo de servicio
+        return $service->remaining_balance >= 200;  // Aquí adaptamos para cada tipo de servicio
     }
 
 
@@ -107,19 +107,27 @@ class ProfitValidationService
      */
     public function validateAllConditions($service)
     {
-         $pointsNeeded = $this->checkMinPoints($service);
-         $minPoints = true;
+        $conditions = [];
+        $pointsNeeded = $this->checkMinPoints($service);
+        $minPoints = true;
 
-         if($pointsNeeded > 0)
-         {
+        if ($pointsNeeded > 0) {
             $minPoints = false;
-         }
+        }
 
-        $conditions = [
-            $this->checkMinUtility($service),
-            $minPoints,
-            $this->checkMinRemainingProfit($service)
-        ];
+        if ($service->commissionable_type === "App\Models\Freight") {
+            $conditions = [
+                $this->checkMinUtility($service),
+                $minPoints,
+                $this->checkMinRemainingProfit($service)
+            ];
+        }else{
+            $conditions = [
+                $minPoints,
+                $this->checkMinRemainingProfit($service)
+            ];
+        }
+
 
         // Si alguna condición no se cumple, retorna false
         return !in_array(false, $conditions);

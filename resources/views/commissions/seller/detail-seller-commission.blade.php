@@ -79,6 +79,66 @@
             </div>
         @endif
 
+        <!-- Comisiones de Aduana -->
+        @if ($customCommissions->isNotEmpty())
+            <div class="col-12 my-3">
+                <h4 class="text-center text-indigo">Aduana</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">N° de cotización</th>
+                            <th scope="col">Aduana</th>
+                            <th scope="col">Costo Venta</th>
+                            <th scope="col">Costo Neto</th>
+                            <th scope="col">Utilidad</th>
+                            <th scope="col">Ganancia</th>
+                            <th scope="col">Puntos Puros</th>
+                            <th scope="col">Puntos Adicionales</th>
+                            <th scope="col">Profit</th>
+                            <th scope="col">Saldo</th>
+                            <th scope="col">Comisión Generada</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($customCommissions as $commission)
+                            <tr>
+                                <td class="text-indigo text-bold">
+                                    {{ $commission->commissionable->commercial_quote->nro_quote_commercial }}</td>
+                                <td>{{ $commission->commissionable->nro_operation_custom }}</td>
+                                <td>${{ $commission->cost_of_sale }}</td>
+                                <td>${{ $commission->net_cost }}</td>
+                                <td>${{ $commission->utility }}</td>
+                                <td>${{ $commission->gross_profit }}</td>
+                                <td>{{ $commission->pure_points }}</td>
+                                <td>{{ $commission->additional_points }}</td>
+                                <td>
+                                    <div class="custom-badge status-info">
+                                        ${{ $commission->distributed_profit }}
+                                    </div>
+                                </td>
+                                <td>${{ $commission->remaining_balance }}</td>
+                                <td>
+                                    <div class="custom-badge status-success">
+                                        $ {{ number_format($commission->generated_commission, 2) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary btn-sm"
+                                        onclick="confirmPointsGeneration({{ $commission->remaining_balance }}, {{ $commission->id }})">Calcular
+                                        puntos</button>
+                                    <button class="btn btn-secondary btn-sm"
+                                        @if (!$canGenerateProfit['custom']) disabled @endif
+                                        onclick="confirmProfitGeneration({{ $commission->remaining_balance }}, {{ $commission->id }})">Calcular
+                                        profit</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+
         <!-- Comisiones de Transporte -->
         @if ($transportCommissions->isNotEmpty())
             <div class="col-12 my-3">
@@ -139,65 +199,7 @@
             </div>
         @endif
 
-        <!-- Comisiones de Aduana -->
-        @if ($customCommissions->isNotEmpty())
-            <div class="col-12 my-3">
-                <h4 class="text-center text-indigo">Aduana</h4>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">N° de cotización</th>
-                            <th scope="col">Aduana</th>
-                            <th scope="col">Costo Venta</th>
-                            <th scope="col">Costo Neto</th>
-                            <th scope="col">Utilidad</th>
-                            <th scope="col">Ganancia</th>
-                            <th scope="col">Puntos Puros</th>
-                            <th scope="col">Puntos Adicionales</th>
-                            <th scope="col">Profit</th>
-                            <th scope="col">Saldo</th>
-                            <th scope="col">Comisión Generada</th>
-                            <th scope="col">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($customCommissions as $commission)
-                            <tr>
-                                <td class="text-indigo text-bold">
-                                    {{ $commission->commissionable->commercial_quote->nro_quote_commercial }}</td>
-                                <td>{{ $commission->commissionable->nro_operation_custom }}</td>
-                                <td>${{ $commission->cost_of_sale }}</td>
-                                <td>${{ $commission->net_cost }}</td>
-                                <td>${{ $commission->utility }}</td>
-                                <td>${{ $commission->gross_profit }}</td>
-                                <td>{{ $commission->pure_points }}</td>
-                                <td>{{ $commission->additional_points }}</td>
-                                <td>
-                                    <div class="custom-badge status-info">
-                                        ${{ $commission->distributed_profit }}
-                                    </div>
-                                </td>
-                                <td>${{ $commission->remaining_balance }}</td>
-                                <td>
-                                    <div class="custom-badge status-success">
-                                        $ {{ number_format($commission->generated_commission, 2) }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <button class="btn btn-primary btn-sm"
-                                        onclick="confirmPointsGeneration({{ $commission->remaining_balance }}, {{ $commission->id }})">Calcular
-                                        puntos</button>
-                                    <button class="btn btn-secondary btn-sm"
-                                        @if (!$canGenerateProfit['custom']) disabled @endif
-                                        onclick="confirmProfitGeneration({{ $commission->remaining_balance }}, {{ $commission->id }})">Calcular
-                                        profit</button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        @endif
+        
     </div>
 
 @stop
@@ -247,7 +249,7 @@
             // Mostrar la alerta de SweetAlert
             Swal.fire({
                 title: '¿Estás seguro?',
-                html: `Estimado vendedor usted es candidado para obtener un profit del 50% de la ganancia, el monto que obtendra sera <strong class="text-indigo">${sellerProfit}</strong> y el otro 50% sera para la empresa, ¿Esta de acuerdo?`,
+                html: `Estimado vendedor usted es candidado para obtener un profit del 50% de la ganancia, el monto que obtendra sera <strong class="text-indigo">$${sellerProfit}</strong> y el otro 50% sera para la empresa, ¿Esta de acuerdo?`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',

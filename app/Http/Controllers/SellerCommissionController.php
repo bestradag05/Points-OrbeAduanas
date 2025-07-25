@@ -144,7 +144,7 @@ class SellerCommissionController extends Controller
         $points = floor($sellerCommission->remaining_balance / 45);
         $remainingBalance = $sellerCommission->remaining_balance - ($points * 45);
         $currentAdditionalPoints = $oldAdditionalPoints + $points;
-        $generatedCommission = $currentAdditionalPoints * 10;
+        $generatedCommission = ($currentAdditionalPoints + $sellerCommission->pure_points) * 10;
 
 
 

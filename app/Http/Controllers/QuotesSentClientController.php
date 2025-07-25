@@ -189,15 +189,15 @@ class QuotesSentClientController extends Controller
                     'additional_points' => 0,  // Puntos adicionales generados
                     'distributed_profit' => 0,  // Ganancia distribuida
                     'remaining_balance' =>  $service->profit,  // Saldo restante para el vendedor
-                    'generated_commission' => 0,  // Comisión generada
+                    'generated_commission' => 10,  // Comisión generada
                 ]);
 
                 $pointsNeeded = $this->profitValidationService->checkMinPoints($sellerCommission);
 
                 if ($pointsNeeded > 0) {
                     $points = min(floor($sellerCommission->remaining_balance / 45), $pointsNeeded);
-                    $remainingBalance = $sellerCommission->gross_profit - ($points * 45);
-                    $generatedCommission = $points * 10;
+                    $remainingBalance = $sellerCommission->remaining_balance - ($points * 45);
+                    $generatedCommission = ($points + $sellerCommission->pure_points) * 10;
 
                     // Actualizar la comisión con los puntos faltantes y generados
                     $sellerCommission->update([
