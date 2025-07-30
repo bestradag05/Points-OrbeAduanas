@@ -117,15 +117,6 @@
             <div class="row justify-content-end">
                 <div class="col-md-6">
 
-                    <div class="form-group">
-                        <label>Total de respuesta sin IGV ($)</label>
-                        <input type="text" class="form-control text-end" readonly
-                            value="{{ number_format(
-                                $acceptedResponse->provider_cost / $acceptedResponse->exchange_rate + $acceptedResponse->value_utility,
-                                2,
-                            ) }}">
-                    </div>
-
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <label for="totalRespuesta" class="form-label fw-bold mb-0">Total de la respuesta:</label>
                         <input type="text" id="totalRespuesta" class="form-control text-end ms-2"
@@ -135,8 +126,8 @@
 
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <label for="total" class="form-label fw-bold mb-0">Total:</label>
-                        <input type="text" id="total" class="form-control text-end ms-2"
-                            style="width: 150px;" readonly value="0.00">
+                        <input type="text" id="total" class="form-control text-end ms-2" style="width: 150px;"
+                            readonly value="0.00">
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center">
@@ -173,10 +164,58 @@
             let total;
             const totalRespuesta = parseFloat(@json($acceptedResponse->total_prices_usd)) || 0;
             const totalUsd = parseFloat(@json($acceptedResponse->total_usd)) || 0;
-            const isEditMode = "{{ $formMode ?? '' }}" === "edit";
+             const isEditMode = "{{ $formMode ?? '' }}" === "edit";
 
             const exchangeRate = parseFloat(@json($acceptedResponse->exchange_rate)) || 1;
             const providercost = parseFloat(@json($acceptedResponse->provider_cost)) || 0;
+
+
+
+            // —– INICIALIZACIÓN & HOOKS —–
+            $(document).ready(function() {
+                conceptsArray = [];
+
+                @if ($formMode === 'edit')
+
+                    conceptsTransport = @json($transport->concepts);
+                    total = 0;
+
+                    // Carga inicial unificada
+                    conceptsTransport.forEach(c => {
+                        conceptsArray.push({
+                            id: c.id,
+                            name: c.name,
+                            // Este es el valor que el usuario puso (value_concept), editable en edit
+                            value: formatValue(c.pivot.value_concept),
+                            // Este es el sale_price de la respuesta, readonly
+                            pivotValue: c.pivot.response_value
+                        });
+                    });
+
+                    updateTable(conceptsArray);
+                @else
+
+                    conceptsTransport = @json($conceptsTransport);
+                    total = 0;
+
+                    // Carga inicial unificada
+                    conceptsTransport.forEach(c => {
+                        console.log(c);
+                        conceptsArray.push({
+                            id: c.concepts_id,
+                            name: c.concept.name,
+                            // Este es el valor que el usuario puso (value_concept), editable en edit
+                            value: 0,
+                            // Este es el sale_price de la respuesta, readonly
+                            pivotValue: c.pivot.sale_price
+                        });
+                    });
+
+                    updateTable(conceptsArray);
+                @endif
+
+            });
+
 
             // —– FUNCIONES AUXILIARES —–
 
@@ -229,7 +268,7 @@
 
                     // 3) Costo Neto ($) ⇒ readonly
                     const celdaUsd = fila.insertCell(2);
-                    const usdVal = item.pivotValue / exchangeRate; // ya tiene valor
+                    const usdVal = parseFloat(item.pivotValue);
                     const inpUsd = document.createElement('input');
                     inpUsd.type = 'text';
                     inpUsd.value = usdVal.toFixed(2);
@@ -284,11 +323,13 @@
                 const idx = conceptsArray.findIndex(c => c.id === conceptId);
                 if (idx !== -1) {
                     conceptsArray[idx].value = value;
+                    conceptsArray[idx].isNew = true; // vuelve a marcarlo editable
                 } else {
                     conceptsArray.push({
                         id: conceptId,
                         name: conceptName,
-                        value
+                        value: value,
+                        isNew: true // aquí la novedad
                     });
                 }
                 sel.value = '';
@@ -296,49 +337,21 @@
                 updateTable(conceptsArray);
             }
 
-            // —– INICIALIZACIÓN & HOOKS —–
-            $(document).ready(function() {
-                conceptsArray = [];
-                conceptsTransport = @json($conceptsTransport);
-                total = 0;
+   
 
-                // Orden opcional: TRANSPORTE primero
-                conceptsTransport.sort((a, b) => {
-                    const A = ((a.concept?.name || a.name) || '').toUpperCase();
-                    const B = ((b.concept?.name || b.name) || '').toUpperCase();
-                    if (A === 'TRANSPORTE') return -1;
-                    if (B === 'TRANSPORTE') return 1;
-                    return A.localeCompare(B);
-                });
 
-                // Carga inicial unificada
-                conceptsTransport.forEach(c => {
-                    // en CREATE siempre arrancamos value = 0 y guardamos pivotValue solo para USD
-                    const savedVal = formatValue(c.pivot.total);
-                    const usdBase = formatValue(c.pivot.net_amount_response);
-                    conceptsArray.push({
-                        id: c.concepts_id || c.id,
-                        name: c.concept?.name || c.name,
-                        value: isEditMode ? savedVal : 0,
-                        pivotValue: isEditMode ? savedVal : usdBase
-                    });
-                });
-
-                updateTable(conceptsArray);
-
-                $('#formTransport').on('submit', function(e) {
-                    e.preventDefault();
-                    const form = $(this);
-                    form.append(
-                        `<input type="hidden" name="concepts" value='${JSON.stringify(conceptsArray)}' />`);
-                    form.append(
-                        `<input type="hidden" name="total_transport_value" value='${parseFloat($('#total').val()).toFixed(2)}' />`
-                    );
-                    form.append(
-                        `<input type="hidden" name="profit" value='${parseFloat($('#gananciaCalculada').val()).toFixed(2)}' />`
-                    );
-                    form.off('submit').submit();
-                });
+            $('#formTransport').on('submit', function(e) {
+                e.preventDefault();
+                const form = $(this);
+                form.append(
+                    `<input type="hidden" name="concepts" value='${JSON.stringify(conceptsArray)}' />`);
+                form.append(
+                    `<input type="hidden" name="total_transport_value" value='${parseFloat($('#total').val()).toFixed(2)}' />`
+                );
+                form.append(
+                    `<input type="hidden" name="profit" value='${parseFloat($('#gananciaCalculada').val()).toFixed(2)}' />`
+                );
+                form.off('submit').submit();
             });
         </script>
     @endpush

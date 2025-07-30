@@ -770,10 +770,11 @@
         aria-labelledby="modalCotizarTransporte-title" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
-                <form method="POST" action="{{ route('transport.quote.responses.store', $quote->id) }}"
+                <form method="POST" action="{{ route('transport.quote.responses.store') }}"
                     id="formCotizarTransporte">
                     @csrf
 
+                    <input type="hidden" name="quote_id" value="{{ $quote->id }}">
                     {{-- HEADER --}}
                     <div class="modal-header py-2">
                         <h4 class="modal-title mb-0">
@@ -812,7 +813,7 @@
                             <div class="col pr-1">
                                 <label for="exchange_rate" class="small">Tipo de cambio (S/.)</label>
                                 <input type="number" step="0.0001" name="exchange_rate" id="exchange_rate"
-                                    class="form-control form-control-sm" value="3.70">
+                                    class="form-control form-control-sm is-required" value="3.70">
                             </div>
                             <div class="col pl-1">
                                 <label for="value_utility" class="small">Tipo de Vehiculo</label>
@@ -838,31 +839,38 @@
                                     {{-- Concepto --}}
                                     <div class="col-sm-2">
                                         <span class="small">{{ $tc->name }}</span>
+                                        <input type="hidden" id="name_{{ $tc->name }}"
+                                            value="{{ $tc->name }}"
+                                            name="conceptTransport[{{ $tc->id }}][name]">
                                     </div>
 
                                     {{-- Valor concepto (S/.) ← ESTA COLUMNA TIENE CLASS="concept-input" --}}
                                     <div class="col-sm-2">
                                         <input type="number" step="0.01" id="price_{{ $tc->id }}"
                                             data-id="{{ $tc->id }}"
-                                            class="form-control form-control-sm text-end concept-input">
+                                            name="conceptTransport[{{ $tc->id }}][price]"
+                                            class="form-control form-control-sm text-end concept-input is-required">
                                     </div>
 
                                     {{-- Utilidad (US$) ← ESTA COLUMNA TIENE CLASS="concept-utility" --}}
                                     <div class="col-sm-2">
                                         <input type="number" step="0.01" id="utility_{{ $tc->id }}"
                                             data-id="{{ $tc->id }}"
-                                            class="form-control form-control-sm text-end concept-utility">
+                                            name="conceptTransport[{{ $tc->id }}][utility]"
+                                            class="form-control form-control-sm text-end concept-utility is-required">
                                     </div>
 
                                     {{-- Total (US$) --}}
                                     <div class="col-sm-3">
                                         <input type="text" id="totalIgvUsd_{{ $tc->id }}"
+                                            name="conceptTransport[{{ $tc->id }}][totalusd]"
                                             class="form-control form-control-sm text-end" readonly>
                                     </div>
 
                                     {{-- Costo Venta (US$) --}}
                                     <div class="col-sm-3">
                                         <input type="text" id="totalIgvUtilUsd_{{ $tc->id }}"
+                                            name="conceptTransport[{{ $tc->id }}][saleprice]"
                                             class="form-control form-control-sm text-end" readonly>
                                     </div>
                                 </div>
@@ -1177,68 +1185,29 @@
         });
 
 
+        $('#formCotizarTransporte').on('submit', function(e) {
+            // Obtener todos los inputs con la clase is-required
+            let campos = $(this).find('input.is-required');
+            let valido = true;
 
-        (function() {
-            const form = document.getElementById('formCotizarTransporte');
-
-            // Campos que validamos:
-            const providerSelect = document.getElementById('provider_id');
-            const conceptInputs = Array.from(document.querySelectorAll('.concept-input'));
-            const commissionInput = document.getElementById('commission');
-
-            form.addEventListener('submit', function(e) {
-                // 1) Limpia errores anteriores
-                form.querySelectorAll('.is-invalid').forEach(el => {
-                    el.classList.remove('is-invalid');
-                });
-                form.querySelectorAll('.invalid-feedback').forEach(feedback => {
-                    feedback.remove();
-                });
-
-                let hasError = false;
-
-                // 2) Valida proveedor
-                if (!providerSelect.value) {
-                    markInvalid(providerSelect, 'Seleccione un proveedor.');
-                    hasError = true;
+            // Recorrer los campos y verificar si están vacíos
+            campos.each(function() {
+                if ($.trim($(this).val()) === '') {
+                    valido = false;
+                    // Puedes marcar el campo con borde rojo si está vacío
+                    $(this).addClass('is-invalid');
+                } else {
+                    // Remover la clase si ya está lleno
+                    $(this).removeClass('is-invalid');
                 }
-
-                // 3) Valida cada concepto
-                conceptInputs.forEach(input => {
-                    const val = input.value.trim();
-                    if (val === '' || isNaN(parseFloat(val))) {
-                        const label = input.closest('.form-group')
-                            .querySelector('label')
-                            .innerText.replace(/ *\(.+\)$/, '');
-                        markInvalid(input, `Complete el precio de "${label}".`);
-                        hasError = true;
-                    }
-                });
-
-                // 4) Valida comisión
-                const comm = commissionInput.value.trim();
-                if (comm === '' || isNaN(parseFloat(comm))) {
-                    markInvalid(commissionInput, 'Ingrese la comisión.');
-                    hasError = true;
-                }
-
-                if (hasError) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-                // Si no hay errores, el formulario se envía normalmente.
             });
 
-            // Función helper para marcar invalidez
-            function markInvalid(inputEl, message) {
-                inputEl.classList.add('is-invalid');
-                const feedback = document.createElement('div');
-                feedback.className = 'invalid-feedback';
-                feedback.innerText = message;
-                // asegúrate de insertarlo justo después del input
-                inputEl.parentNode.appendChild(feedback);
+            if (!valido) {
+                e.preventDefault(); // Evitar que el formulario se envíe
+                alert('Debes completar todos los campos requeridos.');
             }
-        })();
+        });
+
 
         $('#quote-transport').on('show.bs.modal', function(e) {
             var modal = $(this);

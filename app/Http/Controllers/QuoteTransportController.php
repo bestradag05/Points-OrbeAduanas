@@ -150,8 +150,6 @@ class QuoteTransportController extends Controller
      */
     public function store(Request $request)
     {
-        dd("quote");
-
         /* dd($request->all()); */
 
         $validator = $this->validateForm($request, null);
