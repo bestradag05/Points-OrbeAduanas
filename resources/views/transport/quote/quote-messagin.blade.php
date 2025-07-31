@@ -768,7 +768,7 @@
     {{-- Modal para que Transporte cotice sobre la respuesta del proveedor --}}
     <div id="modalCotizarTransporte" class="modal fade" tabindex="-1" role="dialog"
         aria-labelledby="modalCotizarTransporte-title" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <form method="POST" action="{{ route('transport.quote.responses.store') }}"
                     id="formCotizarTransporte">
@@ -827,6 +827,7 @@
                         <div id="row-headers" class="form-row font-weight-bold small mb-2">
                             <div class="col-sm-2">Concepto (S/.)</div>
                             <div class="col-sm-2">Valor concepto (S/.)</div>
+                            <div class="col-sm-2">Valor venta (S/.)</div>
                             <div class="col-sm-2">Utilidad (US$)</div>
                             <div class="col-sm-3">Total (US$)</div>
                             <div class="col-sm-3">Costo Venta (US$)</div>
@@ -852,7 +853,20 @@
                                             class="form-control form-control-sm text-end concept-input is-required">
                                     </div>
 
-                                    {{-- Utilidad (US$) ← ESTA COLUMNA TIENE CLASS="concept-utility" --}}
+                                     <div class="col-sm-2">
+                                        <input type="text" id="priceIgv_{{ $tc->id }}"
+                                            name="conceptTransport[{{ $tc->id }}][priveIgv]"
+                                            class="form-control form-control-sm text-end" readonly>
+                                    </div>
+
+                                    {{-- Total (US$) --}}
+                                    <div class="col-sm-2">
+                                        <input type="text" id="totalIgvUsd_{{ $tc->id }}"
+                                            name="conceptTransport[{{ $tc->id }}][totalusd]"
+                                            class="form-control form-control-sm text-end" readonly>
+                                    </div>
+
+                                     {{-- Utilidad (US$) ← ESTA COLUMNA TIENE CLASS="concept-utility" --}}
                                     <div class="col-sm-2">
                                         <input type="number" step="0.01" id="utility_{{ $tc->id }}"
                                             data-id="{{ $tc->id }}"
@@ -860,15 +874,8 @@
                                             class="form-control form-control-sm text-end concept-utility is-required">
                                     </div>
 
-                                    {{-- Total (US$) --}}
-                                    <div class="col-sm-3">
-                                        <input type="text" id="totalIgvUsd_{{ $tc->id }}"
-                                            name="conceptTransport[{{ $tc->id }}][totalusd]"
-                                            class="form-control form-control-sm text-end" readonly>
-                                    </div>
-
                                     {{-- Costo Venta (US$) --}}
-                                    <div class="col-sm-3">
+                                    <div class="col-sm-2">
                                         <input type="text" id="totalIgvUtilUsd_{{ $tc->id }}"
                                             name="conceptTransport[{{ $tc->id }}][saleprice]"
                                             class="form-control form-control-sm text-end" readonly>
@@ -1140,6 +1147,7 @@
             const totalUsdUtil = +(totalUsd + util).toFixed(2);
 
             // vuelca en los campos de la fila
+            document.getElementById(`priceIgv_${id}`).value = withIgv.toFixed(2);
             document.getElementById(`totalIgvUsd_${id}`).value = totalUsd.toFixed(2);
             document.getElementById(`totalIgvUtilUsd_${id}`).value = totalUsdUtil.toFixed(2);
 

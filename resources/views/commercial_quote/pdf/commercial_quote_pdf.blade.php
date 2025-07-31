@@ -216,6 +216,14 @@
 
         }
 
+        .total-info{
+            font-size: 8px;
+            display: block;
+            margin-top: 10px;
+            color: #234195;
+            font-weight: bold;
+        }
+
 
         .footer-quote {
             text-align: center;
@@ -609,7 +617,9 @@
                 <div class="total-quote">
                     TOTAL COTIZACION: $
                     {{ $quoteSentClient->total_quote_sent_client + $igv}}
+                    <span class="total-info">*Este precio no incluye el pago de impuestos*</span>
                 </div>
+                
             </div>
 
         </div>
