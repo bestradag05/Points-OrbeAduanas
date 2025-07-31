@@ -34,51 +34,48 @@ class ResponseTransportQuoteController extends Controller
         return view('response-transport-quotes.register', compact('suppliers'));
     }
 
-    public function store(Request $request, $quoteId)
+    public function store(Request $request)
     {
-        $data = $request->validate([
-            'provider_id'         => 'required|exists:suppliers,id',
-            'price_concept.*'     => 'required|numeric|min:0',
-            'utility_concept.*'   => 'required|numeric|min:0',
-            'exchange_rate'       => 'required|numeric|min:0.1',
-        ]);
+        // 1) Validación
+        $data = $this->validateForm($request, null);
+
+        $quoteId = $request->input('quote_id');
 
         $quote = QuoteTransport::findOrFail($quoteId);
 
-        // Preparamos acumuladores
-        $sumNet       = 0;  // provider_cost
-        $sumUtil      = 0;  // value_utility
-        $sumTotalUsd  = 0;  // total_usd
-        $sumSalePrice = 0;  // total_prices_usd
-
-        // Creamos la respuesta sin totales aún
+        // 2) Creamos la respuesta con totales a 0
         $resp = ResponseTransportQuote::create([
-            'quote_transport_id' => $quote->id,
-            'provider_id'        => $data['provider_id'],
-            'provider_cost'      => 0, // actualizamos luego
-            'exchange_rate'      => $data['exchange_rate'],
-            'value_utility'      => 0,
-            'total_usd'          => 0,
-            'total_prices_usd'   => 0,
-            'status'             => 'Enviada',
+            'quote_transport_id'  => $quote->id,
+            'provider_id'         => $data['provider_id'],
+            'provider_cost'       => 0,
+            'exchange_rate'       => $data['exchange_rate'],
+            'value_utility'       => 0,
+            'total_usd'           => 0,
+            'total_prices_usd'    => 0,
+            'status'              => 'Enviada',
         ]);
 
-        // Recorremos cada concepto
-        foreach ($data['price_concept'] as $conceptId => $net) {
-            $net       = round($net, 2);
-            $util      = round($data['utility_concept'][$conceptId] ?? 0, 2);
-            $igv       = round($net * 0.18, 2);
-            $totalSol  = $net + $igv;
-            $totalUsd  = round($totalSol / $data['exchange_rate'], 2);
-            $salePrice = round($totalUsd + $util, 2);
+        // 3) Acumuladores
+        $sumNet       = 0;
+        $sumUtil      = 0;
+        $sumTotalUsd  = 0;
+        $sumSalePrice = 0;
 
-            // Acumulamos
+        // 4) Recorremos cada concepto recibido
+        foreach ($data['conceptTransport'] as $conceptId => $vals) {
+            $net       = round($vals['price'], 2);
+            $util      = round($vals['utility'], 2);
+            $totalUsd  = round($vals['totalusd'], 2);
+            $salePrice = round($vals['saleprice'], 2);
+            $igv       = round($net * 0.18, 2); // si quieres guardarlo
+
+            // Acumula en los totales globales
             $sumNet       += $net;
             $sumUtil      += $util;
             $sumTotalUsd  += $totalUsd;
             $sumSalePrice += $salePrice;
 
-            // Guardamos el detalle
+            // 5) Guarda detalle por concepto
             $resp->conceptResponseTransports()->create([
                 'concepts_id'    => $conceptId,
                 'net_amount'     => $net,
@@ -89,7 +86,7 @@ class ResponseTransportQuoteController extends Controller
             ]);
         }
 
-        // Actualizamos totales en la cabecera
+        // 6) Actualiza los totales de la cabecera
         $resp->update([
             'provider_cost'    => $sumNet,
             'value_utility'    => $sumUtil,
@@ -97,14 +94,11 @@ class ResponseTransportQuoteController extends Controller
             'total_prices_usd' => $sumSalePrice,
         ]);
 
+        // 7) Redirección de vuelta
         return redirect()
             ->route('transport.show', $quoteId)
             ->with('success', 'Cotización de transporte registrada.');
     }
-
-
-
-
 
     public function update(Request $request, string $id)
     {
@@ -129,29 +123,37 @@ class ResponseTransportQuoteController extends Controller
         return redirect()->route('response-transport-quotes.index')->with('eliminar', 'ok');
     }
 
-    private function validateForm($request, $id)
+    private function validateForm(Request $request, $id)
     {
-        $request->validate([
-            'provider_id'             => 'required|exists:suppliers,id',
-            'provider_cost'           => 'required|numeric|min:0',
-            'commission'              => 'required|numeric|min:0',
-            'exchange_rate'           => 'required|numeric|min:0',
-            'igv'                      => 'required|numeric|min:0',
-            'total'                   => 'required|numeric|min:0',
-            'value_utility'           => 'required|numeric|min:0',
-            'total_usd'               => 'required|numeric|min:0',
-            'total_prices_usd'         => 'required|numeric|min:0',
-            'status'                  => 'required|in:Enviada,Aceptada,Rechazada'
+        return $request->validate([
+            'provider_id'           => 'required|exists:suppliers,id',
+            'exchange_rate'         => 'required|numeric|min:0',
+            'conceptTransport'               => 'required|array|min:1',
+            'conceptTransport.*.price'       => 'required|numeric|min:0',
+            'conceptTransport.*.utility'     => 'required|numeric|min:0',
+            'conceptTransport.*.totalusd'    => 'required|numeric|min:0',
+            'conceptTransport.*.saleprice'   => 'required|numeric|min:0',
         ], [
-            'provider_id.required'           => 'Seleccione un proveedor transportista',
-            'provider_cost.min'              => 'El costo no puede ser negativo',
-            'commission.min'                 => 'La comisión no puede ser negativa',
-            'exchange_rate.min'              => 'El tipo de cambio no puede ser negativo',
-            'igv.min'                        => 'El IGV no puede ser negativo',
-            'total.min'                      => 'El total no puede ser negativo',
-            'value_utility.min'              => 'La utilidad no puede ser negativa',
-            'total_usd.min'                  => 'El total en dólares no puede ser negativo',
-            'total_prices_usd.min'      => 'La suma total no puede ser negativa',
+            // Mensajes cabecera
+            'provider_id.required'       => 'Seleccione un proveedor transportista.',
+            'provider_id.exists'         => 'El proveedor seleccionado no es válido.',
+            'exchange_rate.required'     => 'Ingrese el tipo de cambio.',
+            'exchange_rate.numeric'      => 'El tipo de cambio debe ser un número.',
+            'exchange_rate.min'          => 'El tipo de cambio no puede ser negativo.',
+            // Mensajes conceptos
+            'conceptTransport.required'           => 'Debe cotizar al menos un concepto.',
+            'conceptTransport.*.price.required'   => 'Complete el valor del concepto en soles.',
+            'conceptTransport.*.price.numeric'    => 'El valor del concepto debe ser numérico.',
+            'conceptTransport.*.price.min'        => 'El valor del concepto no puede ser negativo.',
+            'conceptTransport.*.utility.required' => 'Complete la utilidad en dólares para el concepto.',
+            'conceptTransport.*.utility.numeric'  => 'La utilidad debe ser numérica.',
+            'conceptTransport.*.utility.min'      => 'La utilidad no puede ser negativa.',
+            'conceptTransport.*.totalusd.required' => 'El total en USD (sin utilidad) es obligatorio.',
+            'conceptTransport.*.totalusd.numeric' => 'El total en USD debe ser numérico.',
+            'conceptTransport.*.totalusd.min'     => 'El total en USD no puede ser negativo.',
+            'conceptTransport.*.saleprice.required' => 'El costo de venta (USD) es obligatorio.',
+            'conceptTransport.*.saleprice.numeric' => 'El costo de venta debe ser numérico.',
+            'conceptTransport.*.saleprice.min'     => 'El costo de venta no puede ser negativo.',
         ]);
     }
 }

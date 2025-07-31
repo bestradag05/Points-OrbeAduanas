@@ -13,12 +13,11 @@ class ResponseTransportQuote extends Model
 
     protected $fillable = [
         'quote_transport_id',
+        'nro_response',
         'provider_id',
         'provider_cost',
         'exchange_rate',
-        'igv',
         'value_utility',
-        'total',
         'total_usd',
         'total_prices_usd',
         'status',

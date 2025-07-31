@@ -262,7 +262,7 @@ Route::middleware('auth')->group(function () {
         'store' => 'quote.transport.store',
     ]);
 
-    Route::post('transport/quote/{id}/responses', [ResponseTransportQuoteController::class, 'store'])
+    Route::post('transport/quote/responses', [ResponseTransportQuoteController::class, 'store'])
         ->name('transport.quote.responses.store');
 
     // Aceptar respuesta como aprobada por el cliente
