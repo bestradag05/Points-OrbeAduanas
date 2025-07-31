@@ -58,13 +58,17 @@
                         <p>Restabilidad</p>
                     </div>
                     <div class="icon">
-                       <i class="fas fa-dollar-sign"></i>
+                        <i class="fas fa-dollar-sign"></i>
                     </div>
                     <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
             <!-- ./col -->
         </div>
+
+        <canvas id="myChart"></canvas>
+
+
         <!-- /.row -->
         <!-- Main row -->
         <div class="row">
@@ -101,14 +105,11 @@
                                         <div class=""></div>
                                     </div>
                                 </div>
-                                <canvas id="revenue-chart-canvas" height="300"
-                                    style="height: 300px; display: block; width: 593px;" width="593"
+                                <canvas id="revenue-chart-canvas" style="height: 100%; width: 100%;"
                                     class="chartjs-render-monitor"></canvas>
                             </div>
                             <div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;">
-                                <canvas id="sales-chart-canvas" height="0"
-                                    style="height: 0px; display: block; width: 0px;" class="chartjs-render-monitor"
-                                    width="0"></canvas>
+                                <canvas id="sales-chart-canvas" class="chartjs-render-monitor"></canvas>
                             </div>
                         </div>
                     </div><!-- /.card-body -->
@@ -1158,3 +1159,63 @@
     </div>
 
 @stop
+
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            var ctxRevenue = document.getElementById('revenue-chart-canvas').getContext('2d');
+            var myRevenueChart = new Chart(ctxRevenue, {
+                type: 'line', // Puedes cambiar el tipo de gráfico
+                data: {
+                    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                    datasets: [{
+                        label: 'Ventas por mes',
+                        data: [150, 200, 170, 220, 180, 210],
+                        fill: false,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            var ctxSales = document.getElementById('sales-chart-canvas').getContext('2d');
+            var mySalesChart = new Chart(ctxSales, {
+                type: 'doughnut', // Puedes cambiar el tipo de gráfico
+                data: {
+                    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                    datasets: [{
+                        label: 'Ventas de colores',
+                        data: [12, 19, 3, 5, 2, 3],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+
+
+
+
+
+        });
+    </script>
+@endpush
