@@ -361,7 +361,7 @@ class QuoteTransportController extends Controller
 
     public function updateQuoteTransport(Request $request, string $id)
     {
-        $quote = QuoteTransport::findOrFail($id);
+         $quote = QuoteTransport::with(['responses.commissions', 'commercial_quote.commercialQuoteContainers.packingType'])->findOrFail($id);
 
         //Buscar concepto de transporte manualmente:
 

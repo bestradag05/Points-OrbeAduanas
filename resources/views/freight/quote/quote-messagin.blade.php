@@ -268,13 +268,14 @@
                                 <b class="d-block">{{ $quote->cubage_kgv }} CBM</b>
                             </p>
                         </div>
-
+                        
                         @if ($quote->commercial_quote->lcl_fcl === 'FCL')
                             <div class="col-12">
                                 <p class="text-sm">Contenedor(s) :
                                 <div class="d-flex flex-wrap">
                                     @foreach ($quote->commercial_quote->commercialQuoteContainers as $commercialContainer)
-                                        <ul class="list-group list-group-flush text-bold d-inline-block mr-3">
+                                        {{dd($commercialContainer)}}    
+                                    <ul class="list-group list-group-flush text-bold d-inline-block mr-3">
                                             <li class="list-group-item pl-0 pt-2">
                                                 {{ $commercialContainer->container_quantity }} x
                                                 {{ $commercialContainer->container->name }}
@@ -1615,7 +1616,7 @@
             // Extraer el objeto contenedor de los atributos data-*
             var commercialcontainer = button.data(
                 'commercialcontainer'); // Convertimos el JSON de vuelta a un objeto
-
+console.log(commercialcontainer);
             // Acceder a las propiedades del objeto contenedor y colocarlas en el modal
             var modalBody = $(this).find('.modal-body #containerDetails');
 

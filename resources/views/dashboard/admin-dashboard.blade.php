@@ -65,10 +65,6 @@
             </div>
             <!-- ./col -->
         </div>
-
-        <canvas id="myChart"></canvas>
-
-
         <!-- /.row -->
         <!-- Main row -->
         <div class="row">

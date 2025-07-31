@@ -49,9 +49,9 @@
     <div class="col-12 row {{ isset($insurance) ? '' : 'd-none' }} justify-content-center " id="content_seguroFreight">
         <div class="col-4">
             <label for="type_insurance">Tipo de seguro</label>
-            <select name="type_insurance" class="{{ isset($insurance) ? '' : 'd-none' }} form-control"
-                label="Tipo de seguro" igroup-size="md" data-placeholder="Seleccione una opcion..."
-                data-required="true">
+            <select name="type_insurance" onchange="selectInsurance(this)"
+                class="{{ isset($insurance) ? '' : 'd-none' }} form-control" label="Tipo de seguro" igroup-size="md"
+                data-placeholder="Seleccione una opcion..." data-required="true">
                 <option />
                 @foreach ($type_insurace as $type)
                     <option value="{{ $type->id }}"
@@ -72,7 +72,8 @@
                         </span>
                     </div>
                     <input type="text" class="form-control CurrencyInput {{ isset($insurance) ? '' : 'd-none' }} "
-                        name="value_insurance" data-type="currency" placeholder="Ingrese valor de la carga"
+                        id="value_insurance" name="value_insurance" data-type="currency" @readonly(true)
+                        placeholder="Ingrese valor de la carga"
                         value="{{ isset($insurance) ? $insurance->insurance_value : '' }}"
                         onchange="updateInsuranceTotal(this)" data-required="true">
                 </div>
@@ -159,8 +160,8 @@
         <div class="col-4 row">
             <label for="total" class="col-sm-6 col-form-label">Total conceptos:</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" name="value_sale" id="value_sale"
-                    value="0.00" @readonly(true)>
+                <input type="text" class="form-control" name="value_sale" id="value_sale" value="0.00"
+                    @readonly(true)>
             </div>
         </div>
 
@@ -169,8 +170,7 @@
         <div class="col-4 row">
             <label class="col-sm-6 col-form-label">Ganancia:</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" id="profit" name="profit"
-                    value="0.00" readonly>
+                <input type="text" class="form-control" id="profit" name="profit" value="0.00" readonly>
             </div>
         </div>
     </div>
@@ -273,6 +273,57 @@
                 calcTotal(TotalConcepts, value_insurance);
 
             }
+        }
+
+        function selectInsurance(select) {
+
+            let typesInsurance = @json($type_insurace);
+            let fobValue = @json($commercial_quote->load_value);
+            let typeShipment = @json($commercial_quote->type_shipment);
+            let selectValue = parseInt(select.value);
+
+            let percentageValue = 0;
+            let igv = 0.18;
+            let total = 0;
+            let insurance = typesInsurance.find(type => type.id === selectValue);
+
+
+
+            if (insurance.name === 'Seguro A') {
+
+                if (typeShipment.description === "Marítima") {
+                    percentageValue = parseFloat(fobValue) * 0.0065;
+                    total = percentageValue * (igv + 1);
+
+                    if (total < 65) {
+                        total = 65;
+                    }
+                } else {
+
+                    percentageValue = parseFloat(fobValue) * 0.0055;
+                    total = percentageValue * (igv + 1);
+
+                    if (total < 55) {
+                        total = 55;
+                    }
+
+                }
+
+            } else {
+
+                if (fobValue < 30000) {
+                    total = 45;
+                } else {
+                    percentageValue = fobValue * 0.0025;
+                    total = percentageValue * (igv + 1);
+                }
+
+            }
+
+
+            $('#value_insurance').val(total);
+
+
         }
 
         function updateInsuranceTotal(element) {

@@ -205,16 +205,10 @@
                             <b class="d-block">{{ $quote->commodity }}</b>
                         </p>
                     </div>
-                    <div class="col-6">
-                        <p class="text-sm">Tipo de embalaje :
-                            <b class="d-block">{{ $quote->packaging_type }}</b>
-                        </p>
-                    </div>
-                </div>
 
-                @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+                    @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
 
-                    <div class="row text-muted">
+
                         <div class="col-6">
                             <p class="text-sm">Volumen :
                                 <b class="d-block">{{ $quote->ton_kilogram }} CBM</b>
@@ -222,15 +216,23 @@
                         </div>
 
                         @if ($quote->commercial_quote->lcl_fcl === 'FCL')
-                            <div class="col-6">
-                                <p class="text-sm">Toneladas :
-                                    <b class="d-block">{{ $quote->ton_kilogram }} TON</b>
-                                </p>
-                            </div>
-                            <div class="col-6">
-                                <p class="text-sm">Tipo de contenedor :
-                                    <b
-                                        class="d-block">{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }}</b>
+                            <div class="col-12">
+                                <p class="text-sm">Contenedor(s) :
+                                <div class="d-flex flex-wrap">
+                                    @foreach ($quote->commercial_quote->commercialQuoteContainers as $commercialContainer)
+                                        <ul class="list-group list-group-flush text-bold d-inline-block mr-3">
+                                            <li class="list-group-item pl-0 pt-2">
+                                                {{ $commercialContainer->container_quantity }} x
+                                                {{ $commercialContainer->container->name }}
+                                                <button class="btn text-primary" data-toggle="modal"
+                                                    data-target="#detailContainer"
+                                                    data-commercialcontainer="{{ json_encode($commercialContainer) }}">
+                                                    <i class="fas fa-info-circle"></i>
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    @endforeach
+                                </div>
                                 </p>
                             </div>
                         @else
@@ -247,56 +249,56 @@
                             </div>
                         @endif
 
-                    </div>
-                @else
-                    <div class="row text-muted">
-                        <div class="col-6">
-                            <p class="text-sm">Kilogramo volumen / KGV :
-                                <b class="d-block">{{ $quote->cubage_kgv }} KGV</b>
-                            </p>
-                        </div>
-                        <div class="col-6">
-                            <p class="text-sm">Peso total :
-                                <b class="d-block">{{ $quote->ton_kilogram }} KG</b>
-                            </p>
-                        </div>
-                        <div class="col-6">
-                            <p class="text-sm">Apilable :
-                                <b class="d-block">{{ $quote->stackable }}</b>
-                            </p>
-                        </div>
-
-                    </div>
-                @endif
-
-
-
-                @if ($quote->commercial_quote->measures)
-
+                </div>
+            @else
+                <div class="row text-muted">
                     <div class="col-6">
-                        <p class="text-sm">Medidas : </p>
+                        <p class="text-sm">Kilogramo volumen / KGV :
+                            <b class="d-block">{{ $quote->cubage_kgv }} KGV</b>
+                        </p>
                     </div>
-                    <table class="table table-striped">
-                        <thead>
-                            <th>Cantidad</th>
-                            <th>Ancho</th>
-                            <th>Largo</th>
-                            <th>Alto</th>
-                            <th>Unidad</th>
-                        </thead>
-                        <tbody>
-                            @foreach (json_decode($quote->commercial_quote->measures) as $measure)
-                                <tr>
-                                    <td>{{ $measure->amount }}</td>
-                                    <td>{{ $measure->width }}</td>
-                                    <td>{{ $measure->length }}</td>
-                                    <td>{{ $measure->height }}</td>
-                                    <td>{{ $measure->unit_measurement }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @endif
+                    <div class="col-6">
+                        <p class="text-sm">Peso total :
+                            <b class="d-block">{{ $quote->ton_kilogram }} KG</b>
+                        </p>
+                    </div>
+                    <div class="col-6">
+                        <p class="text-sm">Apilable :
+                            <b class="d-block">{{ $quote->stackable }}</b>
+                        </p>
+                    </div>
+
+                </div>
+            @endif
+
+
+
+            @if ($quote->commercial_quote->measures)
+
+                <div class="col-6">
+                    <p class="text-sm">Medidas : </p>
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <th>Cantidad</th>
+                        <th>Ancho</th>
+                        <th>Largo</th>
+                        <th>Alto</th>
+                        <th>Unidad</th>
+                    </thead>
+                    <tbody>
+                        @foreach (json_decode($quote->commercial_quote->measures) as $measure)
+                            <tr>
+                                <td>{{ $measure->amount }}</td>
+                                <td>{{ $measure->width }}</td>
+                                <td>{{ $measure->length }}</td>
+                                <td>{{ $measure->height }}</td>
+                                <td>{{ $measure->unit_measurement }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
 
             @endif
 
@@ -552,6 +554,29 @@
     </div>
 
 
+    <div class="modal fade" id="detailContainer" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Detalles del Contenedor</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="containerDetails">
+                        <!-- Aquí se llenará la información del contenedor -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     {{-- Template para copiar y enviar por Outlook --}}
 
 
@@ -614,11 +639,25 @@
                         </tr>
                         @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
                             @if ($quote->commercial_quote->lcl_fcl === 'FCL')
-                                <tr>
-                                    <td><strong>Tipo de contenedor</strong></td>
-                                    <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }}
-                                    </td>
-                                </tr>
+                                <div class="col-12">
+                                    <p class="text-sm">Contenedor(s) :
+                                    <div class="d-flex flex-wrap">
+                                        @foreach ($quote->commercial_quote->commercialQuoteContainers as $commercialContainer)
+                                            <ul class="list-group list-group-flush text-bold d-inline-block mr-3">
+                                                <li class="list-group-item pl-0 pt-2">
+                                                    {{ $commercialContainer->container_quantity }} x
+                                                    {{ $commercialContainer->container->name }}
+                                                    <button class="btn text-primary" data-toggle="modal"
+                                                        data-target="#detailContainer"
+                                                        data-commercialcontainer="{{ json_encode($commercialContainer) }}">
+                                                        <i class="fas fa-info-circle"></i>
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        @endforeach
+                                    </div>
+                                    </p>
+                                </div>
                             @endif
                             <tr>
                                 <td><strong>Volumen</strong></td>
@@ -705,15 +744,25 @@
                         </tr>
 
                         @if ($quote->commercial_quote->lcl_fcl === 'FCL')
-                            <tr>
-                                <td><strong>Tipo de contenedor</strong></td>
-                                <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>TONELADAS</strong></td>
-                                <td>{{ $quote->ton_kilogram }} TON</td>
-                            </tr>
+                            <div class="col-12">
+                                <p class="text-sm">Contenedor(s) :
+                                <div class="d-flex flex-wrap">
+                                    @foreach ($quote->commercial_quote->commercialQuoteContainers as $commercialContainer)
+                                    <ul class="list-group list-group-flush text-bold d-inline-block mr-3">
+                                            <li class="list-group-item pl-0 pt-2">
+                                                {{ $commercialContainer->container_quantity }} x
+                                                {{ $commercialContainer->container->name }}
+                                                <button class="btn text-primary" data-toggle="modal"
+                                                    data-target="#detailContainer"
+                                                    data-commercialcontainer="{{ json_encode($commercialContainer) }}">
+                                                    <i class="fas fa-info-circle"></i>
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    @endforeach
+                                </div>
+                                </p>
+                            </div>
                         @else
                             <tr>
                                 <td><strong>Peso</strong></td>
@@ -853,7 +902,7 @@
                                             class="form-control form-control-sm text-end concept-input is-required">
                                     </div>
 
-                                     <div class="col-sm-2">
+                                    <div class="col-sm-2">
                                         <input type="text" id="priceIgv_{{ $tc->id }}"
                                             name="conceptTransport[{{ $tc->id }}][priveIgv]"
                                             class="form-control form-control-sm text-end" readonly>
@@ -866,7 +915,7 @@
                                             class="form-control form-control-sm text-end" readonly>
                                     </div>
 
-                                     {{-- Utilidad (US$) ← ESTA COLUMNA TIENE CLASS="concept-utility" --}}
+                                    {{-- Utilidad (US$) ← ESTA COLUMNA TIENE CLASS="concept-utility" --}}
                                     <div class="col-sm-2">
                                         <input type="number" step="0.01" id="utility_{{ $tc->id }}"
                                             data-id="{{ $tc->id }}"
@@ -1184,15 +1233,6 @@
         });
 
 
-
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.concept-input, #exchange_rate, #value_utility')
-                .forEach(el => el.addEventListener('input', recalcTotal));
-            recalcTotal();
-        });
-
-
         $('#formCotizarTransporte').on('submit', function(e) {
             // Obtener todos los inputs con la clase is-required
             let campos = $(this).find('input.is-required');
@@ -1230,6 +1270,76 @@
                 modal.find('#response_display').val(responseNro);
             }
         });
+
+
+        $('#detailContainer').on('show.bs.modal', function(event) {
+            // Obtener el botón que activó el modal
+            var button = $(event.relatedTarget);
+
+            // Extraer el objeto contenedor de los atributos data-*
+            var commercialcontainer = button.data(
+                'commercialcontainer'); // Convertimos el JSON de vuelta a un objeto
+
+console.log(commercialcontainer);
+            // Acceder a las propiedades del objeto contenedor y colocarlas en el modal
+            var modalBody = $(this).find('.modal-body #containerDetails');
+
+            // Construir la tabla para las medidas
+            var measuresTable = '';
+            if (commercialcontainer.measures) {
+                var measures = JSON.parse(commercialcontainer
+                    .measures); // Asegúrate de que las medidas estén en formato JSON
+                measuresTable =
+                    '<table class="table table-bordered"><thead><tr><th>Cantidad</th><th>Anchura (cm)</th><th>Longitud (cm)</th><th>Altura (cm)</th><th>Unidad de Medida</th></tr></thead><tbody>';
+
+                // Iterar sobre las medidas y agregar filas a la tabla
+                $.each(measures, function(key, measure) {
+                    measuresTable += `
+            <tr>
+                <td>${measure.amount}</td>
+                <td>${measure.width}</td>
+                <td>${measure.length}</td>
+                <td>${measure.height}</td>
+                <td>${measure.unit_measurement}</td>
+            </tr>
+        `;
+                });
+
+                measuresTable += '</tbody></table>';
+            }
+
+            modalBody.html(`
+                <div class="row px-3">
+                    <div class="col-md-6">
+                        <p><strong>Nombre del Contenedor:</strong> ${commercialcontainer.container.name}</p>
+                        <p><strong>Mercancía:</strong> ${commercialcontainer.commodity}</p>
+                        <p><strong>Bultos:</strong> ${commercialcontainer.nro_package}</p>
+                        
+                       
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Cantidad:</strong> ${commercialcontainer.container_quantity}</p>
+                        <p><strong>Valor de la carga:</strong> ${commercialcontainer.load_value}</p>
+                        <p><strong>Tipo de Embalaje:</strong> ${commercialcontainer.packing_type.name}</p>
+                    </div>
+                </div>
+                <div class="row px-3">
+                    <div class="col-md-6">
+                        <p><strong>Kilogramos:</strong> ${commercialcontainer.kilograms}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Volumen:</strong> ${commercialcontainer.volumen}</p>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        ${measuresTable}
+                    </div>
+                </div>
+            `);
+        });
+
+
 
 
         // Mostrar mensaje de error

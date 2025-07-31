@@ -56,8 +56,6 @@ class QuoteFreightController extends Controller
         // Obtener el ID del personal del usuario autenticado
         $personalId = Auth::user()->personal->id;
 
-
-
         $showModal = session('showModal', true);
         return view('freight.quote.register-quote')->with('showModal', $showModal);
     }
