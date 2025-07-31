@@ -115,7 +115,7 @@ class TransportService
                 return [
                     'concepts_id'         => $pivot->concepts_id,
                     'concept'             => ['name' => $pivot->concept->name],
-                    'pivot'               => ['net_amount_response' => $pivot->net_amount_response],
+                    'pivot'               => ['net_amount_response' => $pivot->net_amount],
                 ];
             });
 
@@ -164,12 +164,22 @@ class TransportService
 
     public function editTransport(string $id)
     {
-
+        // 1. Traigo el transporte con sus conceptos y pivots
+        $transport = Transport::with([
+            'concepts' => fn($q) => $q->withPivot(
+                'net_amount_response',
+                'subtotal',
+                'igv',
+                'total'
+            )
+        ])->findOrFail($id);
 
         $transport = Transport::findOrFail($id);
         $commercial_quote = $transport->commercial_quote;
-        $quote = $transport->quoteTransport()->where('state', 'Pendiente')->first();
-        $concepts = Concept::all();
+        $quote            = $transport->quoteTransport()
+            ->where('state', 'Pendiente')
+            ->first();
+        $concepts         = Concept::all();
 
         // Cargamos la respuesta aceptada con sus pivots y el concepto
         $acceptedResponse = ResponseTransportQuote::where('quote_transport_id', $quote->id)
@@ -182,6 +192,7 @@ class TransportService
 
 
         return compact('transport', 'commercial_quote', 'quote', 'concepts',  'acceptedResponse', 'conceptsTransport');
+
     }
 
     /*    $conceptsTransport = $concepts->map(function ($concept) use ($quote, $commercial_quote) {

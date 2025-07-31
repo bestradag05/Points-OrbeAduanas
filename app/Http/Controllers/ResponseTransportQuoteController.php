@@ -37,59 +37,71 @@ class ResponseTransportQuoteController extends Controller
     public function store(Request $request, $quoteId)
     {
         $data = $request->validate([
-            'provider_id'     => 'required|exists:suppliers,id',
-            'price_concept.*' => 'required|numeric|min:0',
-            'exchange_rate'   => 'required|numeric|min:0.1',
-            'value_utility'   => 'required|numeric|min:0',
+            'provider_id'         => 'required|exists:suppliers,id',
+            'price_concept.*'     => 'required|numeric|min:0',
+            'utility_concept.*'   => 'required|numeric|min:0',
+            'exchange_rate'       => 'required|numeric|min:0.1',
         ]);
 
         $quote = QuoteTransport::findOrFail($quoteId);
 
-        // 1) Subtotal neto en S/.
-        $subtotal      = array_sum($data['price_concept']);
-        // 2) IGV al 18%
-        $igv           = round($subtotal * 0.18, 2);
-        // 3) Total en S/. (subtotal + igv)
-        $totalSol      = round($subtotal + $igv, 2);
-        // 4) Total en US$
-        $totalUsd      = round($totalSol / $data['exchange_rate'], 2);
-        // 5) Total + Utilidad en US$
-        $totalAnswer   = round($totalUsd + $data['value_utility'], 2);
+        // Preparamos acumuladores
+        $sumNet       = 0;  // provider_cost
+        $sumUtil      = 0;  // value_utility
+        $sumTotalUsd  = 0;  // total_usd
+        $sumSalePrice = 0;  // total_prices_usd
 
-        // Validación de utilidad mínima
-        $minUtility = $quote->type_cargo === 'FCL' ? 60 : 45;
-        if ($data['value_utility'] < $minUtility) {
-            return back()->withErrors([
-                'value_utility' => 'La utilidad mínima para ' . $quote->type_cargo . ' es de $' . $minUtility,
-            ])->withInput();
-        }
-
-        // Crear respuesta
+        // Creamos la respuesta sin totales aún
         $resp = ResponseTransportQuote::create([
-            'quote_transport_id'    => $quote->id,
-            'provider_id'           => $data['provider_id'],
-            'provider_cost'         => $subtotal,
-            'exchange_rate'         => $data['exchange_rate'],
-            'igv'                   => $igv,
-            'total'                 => $totalSol,
-            'value_utility'         => $data['value_utility'],
-            'total_usd'             => $totalUsd,
-            'total_prices_usd'      => $totalAnswer,
-            'status'                => 'Enviada',
+            'quote_transport_id' => $quote->id,
+            'provider_id'        => $data['provider_id'],
+            'provider_cost'      => 0, // actualizamos luego
+            'exchange_rate'      => $data['exchange_rate'],
+            'value_utility'      => 0,
+            'total_usd'          => 0,
+            'total_prices_usd'   => 0,
+            'status'             => 'Enviada',
         ]);
 
-        // Guardar cada concepto neto
-        foreach ($data['price_concept'] as $conceptId => $price) {
+        // Recorremos cada concepto
+        foreach ($data['price_concept'] as $conceptId => $net) {
+            $net       = round($net, 2);
+            $util      = round($data['utility_concept'][$conceptId] ?? 0, 2);
+            $igv       = round($net * 0.18, 2);
+            $totalSol  = $net + $igv;
+            $totalUsd  = round($totalSol / $data['exchange_rate'], 2);
+            $salePrice = round($totalUsd + $util, 2);
+
+            // Acumulamos
+            $sumNet       += $net;
+            $sumUtil      += $util;
+            $sumTotalUsd  += $totalUsd;
+            $sumSalePrice += $salePrice;
+
+            // Guardamos el detalle
             $resp->conceptResponseTransports()->create([
-                'concepts_id' => $conceptId,
-                'net_amount'  => $price,
+                'concepts_id'    => $conceptId,
+                'net_amount'     => $net,
+                'igv'            => $igv,
+                'total_usd'      => $totalUsd,
+                'value_utility'  => $util,
+                'sale_price'     => $salePrice,
             ]);
         }
+
+        // Actualizamos totales en la cabecera
+        $resp->update([
+            'provider_cost'    => $sumNet,
+            'value_utility'    => $sumUtil,
+            'total_usd'        => $sumTotalUsd,
+            'total_prices_usd' => $sumSalePrice,
+        ]);
 
         return redirect()
             ->route('transport.show', $quoteId)
             ->with('success', 'Cotización de transporte registrada.');
     }
+
 
 
 
