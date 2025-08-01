@@ -17,6 +17,7 @@ class ConceptsResponseTransport extends Model
         'concepts_id',
         'net_amount',
         'igv',
+        'total_sol',
         'total_usd',       // Total convertido a USD (con IGV)
         'value_utility',   // Utilidad en USD
         'sale_price',      // Costo de venta en USD

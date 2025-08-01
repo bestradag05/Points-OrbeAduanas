@@ -877,9 +877,9 @@
                             <div class="col-sm-2">Concepto (S/.)</div>
                             <div class="col-sm-2">Valor concepto (S/.)</div>
                             <div class="col-sm-2">Valor venta (S/.)</div>
+                            <div class="col-sm-2">Total (US$)</div>
                             <div class="col-sm-2">Utilidad (US$)</div>
-                            <div class="col-sm-3">Total (US$)</div>
-                            <div class="col-sm-3">Costo Venta (US$)</div>
+                            <div class="col-sm-2">Costo Venta (US$)</div>
                         </div>
 
                         {{-- Filas de conceptos --}}
@@ -1280,7 +1280,6 @@
             var commercialcontainer = button.data(
                 'commercialcontainer'); // Convertimos el JSON de vuelta a un objeto
 
-console.log(commercialcontainer);
             // Acceder a las propiedades del objeto contenedor y colocarlas en el modal
             var modalBody = $(this).find('.modal-body #containerDetails');
 

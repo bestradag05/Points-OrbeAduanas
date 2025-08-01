@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('provider_id')->constrained('suppliers');
             // Costo que el proveedor factura en S/.
             $table->decimal('provider_cost', 12, 2)->comment('Costo total en soles facturado por el proveedor');
+            $table->decimal('total_sol', 12, 2)->comment('Total en soles (provider_cost + igv)');
             // Tipo de cambio utilizado para convertir soles a USD
             $table->decimal('exchange_rate', 8, 4)->nullable()->comment('Tipo de cambio S/. → US$');
             // Suma de todas las utilidades (USD) ingresadas por concepto

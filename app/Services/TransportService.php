@@ -290,7 +290,7 @@ class TransportService
             if ($net === null) {
                 $net = $this->parseDouble($concept->value); // ← usa el valor del formulario
             }
- */
+            */
 
             /*  $concept_total = $net + $added;
 
@@ -305,7 +305,7 @@ class TransportService
             $conceptsTransport = ConceptsTransport::create([
                 'concepts_id' => $concept->id,
                 'transport_id' => $transport->id,
-                'response_value' => $concept->pivotValue,
+                'response_value' => $concept->pivotValue ?? 0,
                 'value_concept' => $concept->value,
                 /* 'net_amount_response' => $net,
                 'net_amount_response' => $net,
