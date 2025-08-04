@@ -748,7 +748,7 @@
                                 <p class="text-sm">Contenedor(s) :
                                 <div class="d-flex flex-wrap">
                                     @foreach ($quote->commercial_quote->commercialQuoteContainers as $commercialContainer)
-                                    <ul class="list-group list-group-flush text-bold d-inline-block mr-3">
+                                        <ul class="list-group list-group-flush text-bold d-inline-block mr-3">
                                             <li class="list-group-item pl-0 pt-2">
                                                 {{ $commercialContainer->container_quantity }} x
                                                 {{ $commercialContainer->container->name }}
@@ -858,17 +858,27 @@
                         <hr class="my-2">
 
                         {{-- Exchange + Utilidad global --}}
-                        <div id="row-exchange-utility" class="form-row mb-3">
+                        <div id="row-exchange-utility" class="form-row mb-3 align-items-center">
                             <div class="col pr-1">
                                 <label for="exchange_rate" class="small">Tipo de cambio (S/.)</label>
                                 <input type="number" step="0.0001" name="exchange_rate" id="exchange_rate"
                                     class="form-control form-control-sm is-required" value="3.70">
                             </div>
-                            <div class="col pl-1">
-                                <label for="value_utility" class="small">Tipo de Vehiculo</label>
-                                <input type="text" class="form-control form-control-sm">
+                            <div class="col px-1">
+                                <label for="value_utility" class="small">Tipo de vehiculo</label>
+                                <input type="number" step="0.01" 
+                                    class="form-control form-control-sm">
+                            </div>
+                            <div class="col-auto pl-1">
+                                <div class="form-check form-switch mt-4">
+                                    <input class="form-check-input" type="checkbox" id="includeIgv" checked>
+                                    <label class="form-check-label small" for="includeIgv">
+                                        Incluir IGV
+                                    </label>
+                                </div>
                             </div>
                         </div>
+
 
                         <hr class="my-2">
 
@@ -1187,9 +1197,12 @@
             const exchangeRate = parseFloat(document.getElementById('exchange_rate').value) || 1;
             const price = parseFloat(document.getElementById(`price_${id}`).value) || 0;
             const util = parseFloat(document.getElementById(`utility_${id}`).value) || 0;
+            const includeIGV = document.getElementById('includeIgv').checked;
 
             // precio + IGV en S/
-            const withIgv = +(price * 1.18).toFixed(2);
+            const withIgv = includeIGV ?
+                +(price * 1.18).toFixed(2) :
+                price;
             // pasa a USD
             const totalUsd = +(withIgv / exchangeRate).toFixed(2);
             // suma utilidad
@@ -1231,6 +1244,12 @@
                 recalcRow(id);
             });
         });
+
+        document.getElementById('includeIgv')
+            .addEventListener('change', () => {
+                document.querySelectorAll('.concept-input, .concept-utility')
+                    .forEach(input => recalcRow(input.dataset.id));
+            });
 
 
         $('#formCotizarTransporte').on('submit', function(e) {
