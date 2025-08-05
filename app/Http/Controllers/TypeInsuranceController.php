@@ -19,7 +19,7 @@ class TypeInsuranceController extends Controller
          ];
          
  
-         return view("type_insurance/list-type_insurance", compact("type_insurances", "heads"));
+         return view("insurances/type_insurance/list-type_insurance", compact("type_insurances", "heads"));
     }
 
     /**
@@ -27,7 +27,7 @@ class TypeInsuranceController extends Controller
      */
     public function create()
     {
-        return view('type_insurance.register-type_insurance');
+        return view('insurances/type_insurance.register-type_insurance');
     }
 
     /**
@@ -62,7 +62,7 @@ class TypeInsuranceController extends Controller
     {
         $type_insurance = TypeInsurance::findOrFail($id);
 
-        return view('type_insurance.edit-type_insurance', compact('type_insurance'));
+        return view('insurances/type_insurance.edit-type_insurance', compact('type_insurance'));
     }
 
     /**

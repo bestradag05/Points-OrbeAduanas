@@ -42,6 +42,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ContainerController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InsuranceRatesController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PackingTypeController;
 use App\Http\Controllers\QuotesSentClientController;
@@ -151,6 +152,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('type_shipment', TypeShipmentController::class);
     Route::resource('type_load', TypeLoadController::class);
     Route::resource('type_insurance', TypeInsuranceController::class);
+    Route::resource('insurance_rates', InsuranceRatesController::class);
     Route::resource('incoterms', IncotermsController::class);
     Route::resource('modality', ModalityController::class);
 

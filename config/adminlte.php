@@ -432,7 +432,7 @@ return [
 
             ]
         ],
-                [
+        [
             'text' => 'Operaciones',
             'icon' => 'fas fa-fw fa-user-tie',
             'can' => 'operaciones.list',
@@ -461,14 +461,23 @@ return [
                     'icon' => 'fa fa-check-double',
                     'active' => ['insurance'],
                 ],
-                [
-                    'text' => 'Tipo de Seguro',
+                 
+            ],
+        ],
+        [
+            'text' => 'Seguro',
+            'icon' => 'fas fa-list-ul',
+            'submenu' => [
+                 [
+                    'text' => 'Tipo de seguro',
                     'url'  => 'type_insurance',
-                    'icon' => 'fas fa-list-ul',
-                    'active' => ['type_insurance', 'type_insurance*', 'regex:@^content/[0-9]+$@'],
-                    'can' => 'operaciones.type_insurance',
+                    'icon'  => 'fas fa-shield-virus',
                 ],
-               
+                [
+                    'text' => 'Tarifa de seguro',
+                    'url' => 'insurance_rates',
+                    'icon'  => 'fas fa-file-invoice-dollar',
+                ],
             ]
 
         ],

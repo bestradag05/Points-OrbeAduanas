@@ -4,7 +4,7 @@
     <div class="d-flex justify-content-between">
         <h2>Actualizar un tipo de seguro</h2>
         <div>
-            <button class="btn btn-primary"> Atras </button>
+            <a href="{{url('/type_insurance') }}" class="btn btn-primary"> Atras </a>
         </div>
     </div>
 
@@ -13,7 +13,7 @@
     <form action={{ url('/type_insurance/'. $type_insurance->id) }} method="POST" enctype="multipart/form-data">
         {{ method_field('PATCH') }}
         {{ csrf_field() }}
-        @include ('type_insurance.form-type_insurance', ['formMode' => 'edit'])
+        @include ('insurances.type_insurance.form-type_insurance', ['formMode' => 'edit'])
     </form>
 
    

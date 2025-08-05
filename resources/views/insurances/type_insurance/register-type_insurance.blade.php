@@ -12,7 +12,7 @@
 @section('dinamic-content')
     <form action="/type_insurance" method="post" enctype="multipart/form-data">
         @csrf
-        @include ('type_insurance.form-type_insurance', ['formMode' => 'create'])
+        @include ('insurances.type_insurance.form-type_insurance', ['formMode' => 'create'])
     </form>
 
 
