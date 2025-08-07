@@ -12,6 +12,7 @@ use App\Models\Currency;
 use App\Models\Customer;
 use App\Models\CustomerSupplierDocument;
 use App\Models\Incoterms;
+use App\Models\InsuranceRates;
 use App\Models\Modality;
 use App\Models\PackingType;
 use App\Models\Personal;
@@ -387,8 +388,14 @@ class DatabaseSeeder extends Seeder
         TypeService::create(['name' => 'Transporte']);
 
         /* TypeInsurance */
-        TypeInsurance::create(['name' => 'Seguro A', 'state' => 'Activo']);
-        TypeInsurance::create(['name' => 'Seguro B', 'state' => 'Activo']);
+        $insuranceA = TypeInsurance::create(['name' => 'Seguro A', 'state' => 'Activo']);
+        $insuranceB = TypeInsurance::create(['name' => 'Seguro B', 'state' => 'Activo']);
+
+        /* Rate Insurance */
+        InsuranceRates::create(['insurance_type_id' => $insuranceA->id, 'shipment_type_description' => 'Marítima', 'min_value' => 30000, 'fixed_cost' => 65, 'percentage' => 0.65 ]);
+        InsuranceRates::create(['insurance_type_id' => $insuranceA->id, 'shipment_type_description' => 'Aérea', 'min_value' => 30000, 'fixed_cost' => 55, 'percentage' => 0.55 ]);
+        InsuranceRates::create(['insurance_type_id' => $insuranceB->id, 'shipment_type_description' => 'Marítima', 'min_value' => 30000, 'fixed_cost' => 45, 'percentage' => 0.25 ]);
+        InsuranceRates::create(['insurance_type_id' => $insuranceB->id, 'shipment_type_description' => 'Aérea', 'min_value' => 30000, 'fixed_cost' => 45, 'percentage' => 0.25 ]);
 
         $this->call(CountrySeeder::class);
         $this->call(StatesCountrySeeder::class);

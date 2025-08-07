@@ -17,11 +17,7 @@ return new class extends Migration
             $table->string('insured_references')->nullable();
             $table->date('date')->nullable();
             $table->decimal('insurance_value', 8,2);
-           /*  $table->decimal('insurance_value_added', 8,2);
-            $table->decimal('insurance_sale', 8,2); */
-            $table->decimal('sales_value', 8,2);
-            $table->decimal('sales_price', 8, 2);
-           /*  $table->integer('additional_points')->nullable(); */
+            $table->decimal('insurance_sales_value', 8,2);
             $table->unsignedBigInteger('id_type_insurance')->nullable();
             $table->unsignedBigInteger('id_insurable_service');
             $table->string('model_insurable_service');

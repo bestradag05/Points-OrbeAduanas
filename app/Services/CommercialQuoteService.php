@@ -392,33 +392,12 @@ class CommercialQuoteService
             }
         }
 
-        // Filtrar los conceptos de "GASTOS OPERATIVOS" y "AGENCIAMIENTO DE ADUANAS"
-        $filteredConcepts = [];
-        foreach ($concepts as $concept) {
-            if (($concept->name === 'GASTOS OPERATIVOS' || $concept->name === 'AGENCIAMIENTO DE ADUANAS') && $comercialQuote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Aduanas') {
-                $conceptData = [
-                    'id' => $concept->id,
-                    'name' => $concept->name,  // Nombre del concepto
-                    'value' => 0  // Valor inicial
-                ];
-
-                if ($concept->name === 'AGENCIAMIENTO DE ADUANAS') {
-                    $conceptData['value'] = $customs_agency;  // Asignamos el precio calculado
-                } elseif ($concept->name === 'GASTOS OPERATIVOS') {
-                    $conceptData['value'] = $pleasantOperatives;  // Valor fijo para "GASTOS OPERATIVOS"
-                }
-
-                $filteredConcepts[] = $conceptData;  // Agregamos al arreglo final
-            }
-        }
-
 
         $tab = 'detail';
 
         $data = [
             'comercialQuote' => $comercialQuote,
             'type_services' => $type_services,
-            'filteredConcepts' => $filteredConcepts,
             'services' => $services,
             'concepts' => $concepts,
             'modalitys' => $modalitys,

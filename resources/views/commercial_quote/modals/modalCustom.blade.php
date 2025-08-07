@@ -193,9 +193,7 @@
                             <option />
                             @foreach ($concepts as $concept)
                                 @if ($concept->typeService->name == 'Aduanas' && $comercialQuote->type_shipment->id == $concept->id_type_shipment)
-                                    @if ($concept->name != 'AGENCIAMIENTO DE ADUANAS' && $concept->name != 'GASTOS OPERATIVOS')
-                                        <option value="{{ $concept->id }}">{{ $concept->name }}</option>
-                                    @endif
+                                    <option value="{{ $concept->id }}">{{ $concept->name }}</option>
                                 @endif
                             @endforeach
                         </x-adminlte-select2>
@@ -217,7 +215,7 @@
 
                     </div>
 
-                    <div class="col-4">
+                    {{--   <div class="col-4">
                         <div class="form-group">
                             <label for="value_concept">Valor ha agregar</label>
                             <div class="input-group">
@@ -231,7 +229,7 @@
                             </div>
                         </div>
 
-                    </div>
+                    </div> --}}
                     <div class="col-12 d-flex justify-content-center align-items-center pt-3 mb-2">
                         <button class="btn btn-indigo" type="button" id="btnAddConcept"
                             onclick="addConceptCustom(this)">
@@ -246,7 +244,7 @@
                                 <th style="width: 10px">#</th>
                                 <th>Concepto</th>
                                 <th>Valor del concepto</th>
-                                <th>Valor agregado</th>
+                                {{-- <th>Valor agregado</th> --}}
                                 <th>x</th>
                             </tr>
                         </thead>
@@ -258,11 +256,35 @@
 
                     <div class="row w-100 justify-content-end">
 
-                        <div class="col-4 row">
-                            <label for="value_sale" class="col-sm-4 col-form-label">Total:</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" id="value_sale" name="value_sale"
-                                    value="0.00" @readonly(true)>
+                        <div class="col-6 row">
+                            <label for="cost_receivable" class="col-sm-6 col-form-label">Costo ha cobrar:</label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control form-control-sm" id="cost_receivable"
+                                    name="cost_receivable" value="0.00" @readonly(true)>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row w-100 justify-content-end">
+
+                        <div class="col-6 row">
+                            <label for="value_sale" class="col-sm-6 col-form-label text-primary">Total venta:</label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control form-control-sm" id="value_sale"
+                                    name="value_sale" value="0.00" @readonly(true)>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row w-100 justify-content-end">
+
+                        <div class="col-6 row">
+                            <label for="profit" class="col-sm-6 col-form-label text-success">Ganancia:</label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control form-control-sm" id="profit"
+                                    name="profit" value="0.00" @readonly(true)>
                             </div>
                         </div>
 
@@ -272,7 +294,7 @@
                 </div>
 
                 <x-slot name="footerSlot">
-                    <x-adminlte-button class="btn btn-indigo" id="btnSubmit" type="submit"
+                    <x-adminlte-button class="btn btn-indigo" id="btnGuardarCustom" type="submit"
                         onclick="submitCustomsForm(this)" label="Guardar" />
                     <x-adminlte-button theme="secondary" label="Cerrar" data-dismiss="modal" />
                 </x-slot>
@@ -289,29 +311,32 @@
                 let concepts = @json($concepts);
                 let comercialQuote = @json($comercialQuote);
                 let type_services = @json($type_services);
-                let filteredConcepts = @json($filteredConcepts);
                 let customService = type_services.filter(type_service => type_service.name === 'Aduanas')[0];
                 let totalUtilityCustom = null;
                 let TotalCustomsConcepts = 0;
                 let TotalCustomNetAmount = 0;
+                let totalCostReceivable = 0;
 
 
-                filteredConcepts.forEach(concept => {
-                    conceptsCustomArray.push({
-                        'id': concept.id,
-                        'name': concept.name,
-                        'value': formatValue(concept.value),
-                        'added': 0,
-                    });
+                $(document).ready(function() {
 
-                    totalUtilityCustom += concept.value;
+                    //Calculamos el monto que debe cobrar minimo por aduana:
+
+                    let fobValue = parseFloat(comercialQuote.load_value);
+                    let operatingExpenses = 35;
+
+                    if (fobValue > 23000) {
+                        totalCostReceivable = (fobValue * (0.45 / 100)) + operatingExpenses;
+                    } else {
+                        totalCostReceivable = 100 + operatingExpenses;
+                    }
+
+                    calcCustomTotal(TotalCustomsConcepts, value_insurance_custom, valuea_added_insurance_custom);
+
+
                 });
 
-               //Agregamos la utilidad dejada para orbe, para enviarlo al formulario:
 
-               $('#value_utility').val(totalUtilityCustom);
-
-                updateTableCustom(conceptsCustomArray);
 
 
                 $('.modalAduanas').on('hide.bs.modal', function(e) {
@@ -429,6 +454,9 @@
                         inputs[1].value = '';
                         inputs[2].value = '';
                     }
+
+                    calcCustomTotal(TotalCustomsConcepts, value_insurance_custom, valuea_added_insurance_custom);
+
                 };
 
                 function updateTableCustom(conceptsCustomArray) {
@@ -466,59 +494,25 @@
                             celdaValor.textContent = item.value;
 
 
-                            // Insertar el valor en la cuarta celda de la fila
-                            let celdaAdded = fila.insertCell(3);
-                            if (filteredConcepts.some(concept => concept.name === item.name)) {
-                                // Si customAgency existe, muestra un input editable
-                                let inputAdded = document.createElement('input');
-                                inputAdded.type = 'number';
-                                inputAdded.value = item.added;
-                                inputAdded.min = 0;
-                                inputAdded.classList.add('form-control');
-                                celdaAdded.appendChild(inputAdded);
+                            // Insertar un botón para eliminar la fila en la cuarta celda de la fila
+                            let celdaEliminar = fila.insertCell(3);
+                            let botonEliminar = document.createElement('a');
+                            botonEliminar.href = '#';
+                            botonEliminar.innerHTML = '<p class="text-danger">X</p>';
+                            botonEliminar.addEventListener('click', function() {
 
-                                inputAdded.addEventListener('input', (e) => {
-                                    let newValue = parseFloat(e.target.value) || 0;
-
-                                    // Actualiza el valor en `conceptsCustomArray`
-                                    conceptsCustomArray[clave].added = newValue;
-
-                                    // Recalcula el total
-                                    TotalCustomsConcepts = calculateCustomsTotal(conceptsCustomArray);
-                                    calcCustomTotal(TotalCustomsConcepts, value_insurance_custom,
-                                        valuea_added_insurance_custom);
-
-                                });
-                            } else {
-                                // Si customAgency no existe, muestra el valor como texto plano
-                                celdaAdded.textContent = item.added;
-                            }
-
-
-
-                            if (!filteredConcepts.some(concept => concept.name === item.name)) {
-
-                                // Insertar un botón para eliminar la fila en la cuarta celda de la fila
-                                let celdaEliminar = fila.insertCell(4);
-                                let botonEliminar = document.createElement('a');
-                                botonEliminar.href = '#';
-                                botonEliminar.innerHTML = '<p class="text-danger">X</p>';
-                                botonEliminar.addEventListener('click', function() {
-
-                                    // Eliminar la fila correspondiente al hacer clic en el botón
-                                    let fila = this.parentNode.parentNode;
-                                    let indice = fila.rowIndex -
-                                        1; // Restar 1 porque el índice de las filas en tbody comienza en 0
-                                    delete conceptsCustomArray[Object.keys(conceptsCustomArray)[indice]];
-                                    updateTableCustom(conceptsCustomArray);
-                                });
-                                celdaEliminar.appendChild(botonEliminar);
-
-                            }
+                                // Eliminar la fila correspondiente al hacer clic en el botón
+                                let fila = this.parentNode.parentNode;
+                                let indice = fila.rowIndex -
+                                    1; // Restar 1 porque el índice de las filas en tbody comienza en 0
+                                delete conceptsCustomArray[Object.keys(conceptsCustomArray)[indice]];
+                                updateTableCustom(conceptsCustomArray);
+                            });
+                            celdaEliminar.appendChild(botonEliminar);
 
 
                             TotalCustomNetAmount += parseFloat(item.value);
-                            TotalCustomsConcepts += parseFloat(item.value) + parseFloat(item.added);
+                            TotalCustomsConcepts += parseFloat(item.value);
                         }
                     }
 
@@ -530,13 +524,37 @@
 
                 function calcCustomTotal(TotalCustomsConcepts, value_insurance_custom, valuea_added_insurance_custom) {
 
-                    total = TotalCustomsConcepts + value_insurance_custom + valuea_added_insurance_custom;
+                    total = TotalCustomsConcepts + value_insurance_custom;
 
-                    //Buscamos dentro del contenedor el campo total
-
-                    let inputTotal = $(`#modalAduanas`).find('#value_sale');
-
+                    let inputTotal = $('#value_sale');
                     inputTotal.val(total.toFixed(2));
+                    let btnGuardar = $('#btnGuardarCustom');
+
+
+                    let insurance = value_insurance_custom;
+                    let customInsurance = insurance + totalCostReceivable;
+
+
+
+                    if (total >= customInsurance && totalCostReceivable > 0) {
+                        btnGuardar.prop('disabled', false);
+                    } else {
+                        btnGuardar.prop('disabled', true);
+                        btnGuardar.removeClass('btn-default');
+                    }
+
+                    let ganancia = total - customInsurance;
+                    if (ganancia < 0) ganancia = 0;
+
+
+                    $('#profit').val(ganancia.toFixed(2));
+
+                    console.log(totalCostReceivable);
+
+                    $('#cost_receivable').val(totalCostReceivable.toFixed(2));
+
+                    $('#insurance_value').val((insurance).toFixed(2));
+                    $('#freight_insurance').val((customInsurance).toFixed(2));
 
                 }
 
@@ -668,6 +686,5 @@
                         form[0].submit();
                     }
                 }
-
             </script>
         @endpush

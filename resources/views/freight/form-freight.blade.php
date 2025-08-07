@@ -93,10 +93,10 @@
                         </span>
                     </div>
                     <input type="text" class="form-control CurrencyInput {{ isset($insurance) ? '' : 'd-none' }} "
-                        id="value_insurance_added" name="value_insurance_added" data-type="currency"
+                        id="insurance_sales_value" name="insurance_sales_value" data-type="currency"
                         placeholder="Ingrese valor del seguro adicional"
                         value="{{ isset($insurance) ? $insurance->insurance_value_added : '' }}"
-                        onchange="updateInsuranceAddedTotal(this)" data-required="true">
+                        onchange="updateInsuranceSalesValue(this)" data-required="true">
                 </div>
 
             </div>
@@ -167,55 +167,58 @@
     <div class="row w-100 justify-content-end mt-2">
 
         <div class="col-4 row">
-            <label for="total_answer_utility" class="col-sm-6 col-form-label">Flete Pricing: </label>
+            <label for="total_answer_utility" class="col-sm-6 col-form-label text-secondary">Costo Pricing: </label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" name="total_answer_utility" id="total_answer_utility"
-                    value="{{ isset($freight) ? $freight->total_answer_utility : '0.00' }}" @readonly(true)>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="row w-100 justify-content-end mt-2">
-
-        <div class="col-4 row">
-            <label for="insurance_value" id="insurance-detail-label" class="col-sm-6 col-form-label">Seguro:</label>
-            <div class="col-sm-6">
-                <input type="text" class="form-control" name="insurance_value" id="insurance_value"
-                    value="0.00" @readonly(true)>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="row w-100 justify-content-end mt-2">
-
-        <div class="col-4 row">
-            <label for="freight_insurance" class="col-sm-6 col-form-label">Total a cobrar:</label>
-            <div class="col-sm-6">
-                <input type="text" class="form-control" name="freight_insurance" id="freight_insurance"
-                    value="0.00" @readonly(true)>
-            </div>
-        </div>
-
-    </div>
-
-    <div class="row w-100 justify-content-end mt-2">
-
-        <div class="col-4 row">
-            <label for="total" class="col-sm-6 col-form-label">Total venta:</label>
-            <div class="col-sm-6">
-                <input type="text" class="form-control" name="value_sale" id="value_sale" value="0.00"
+                <input type="text" class="form-control form-control-sm" name="total_answer_utility"
+                    id="total_answer_utility" value="{{ isset($freight) ? $freight->total_answer_utility : '0.00' }}"
                     @readonly(true)>
             </div>
         </div>
 
     </div>
+
+    <div class="row w-100 justify-content-end mt-2">
+
+        <div class="col-4 row">
+            <label for="insurance_value" id="insurance-detail-label"
+                class="col-sm-6 col-form-label text-secondary">Seguro:</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control form-control-sm" name="insurance_value"
+                    id="insurance_value" value="0.00" @readonly(true)>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row w-100 justify-content-end mt-2">
+
+        <div class="col-4 row">
+            <label for="freight_insurance" class="col-sm-6 col-form-label ">Total a cobrar:</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control form-control-sm" name="freight_insurance"
+                    id="freight_insurance" value="0.00" @readonly(true)>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row w-100 justify-content-end mt-2">
+
+        <div class="col-4 row">
+            <label for="total" class="col-sm-6 col-form-label text-primary">Total venta:</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control form-control-sm" name="value_sale" id="value_sale"
+                    value="0.00" @readonly(true)>
+            </div>
+        </div>
+
+    </div>
     <div class="row w-100 justify-content-end mt-2">
         <div class="col-4 row">
-            <label class="col-sm-6 col-form-label">Ganancia:</label>
+            <label class="col-sm-6 col-form-label text-success">Ganancia:</label>
             <div class="col-sm-6">
-                <input type="text" class="form-control" id="profit" name="profit" value="0.00" readonly>
+                <input type="text" class="form-control form-control-sm" id="profit" name="profit"
+                    value="0.00" readonly>
             </div>
         </div>
     </div>
@@ -253,6 +256,7 @@
         let total = 0;
         let flete = 0;
         let value_insurance = 0;
+        let insurance_sales_value = 0;
         let countConcepts = 0;
         let value_ocean_freight = 0;
         let puntosPosiblesPrevios = 0;
@@ -289,11 +293,11 @@
                 });
             @endif
 
-            calcTotal(TotalConcepts, value_insurance);
+            calcTotal(TotalConcepts, value_insurance, insurance_sales_value);
         @endif
 
 
-        updateTable(conceptsArray);
+        updateTable(conceptsArray, value_insurance, insurance_sales_value);
 
 
 
@@ -313,7 +317,7 @@
                 contenedorInsurance.find('.invalid-feedback').remove();
 
                 value_insurance = 0;
-                valuea_added_insurance = 0;
+                insurance_sales_value = 0;
 
                 calcTotal(TotalConcepts, value_insurance);
 
@@ -327,48 +331,31 @@
             let typeShipment = @json($commercial_quote->type_shipment);
             let selectValue = parseInt(select.value);
 
-            let percentageValue = 0;
-            let igv = 0.18;
-            let total = 0;
             let insurance = typesInsurance.find(type => type.id === selectValue);
+            let rate = insurance.insurance_rate.find(rate => rate.shipment_type_description === typeShipment.description);
 
-            $('#insurance-detail-label').text(insurance.name);
-            
-            if (insurance.name === 'Seguro A') {
-
-                if (typeShipment.description === "Marítima") {
-                    percentageValue = parseFloat(fobValue) * 0.0065;
-                    total = percentageValue * (igv + 1);
-
-                    if (total < 65) {
-                        total = 65;
-                    }
-                } else {
-
-                    percentageValue = parseFloat(fobValue) * 0.0055;
-                    total = percentageValue * (igv + 1);
-
-                    if (total < 55) {
-                        total = 55;
-                    }
-
-                }
-
-            } else {
-
-                if (fobValue < 30000) {
-                    total = 45;
-                } else {
-                    percentageValue = fobValue * 0.0025;
-                    total = percentageValue * (igv + 1);
-                }
-
+            if (!rate) {
+                Swal.fire({
+                    title: "No existe tarifa registrada para calcular el seguro",
+                    text: "Por favor comunicate con el administrador, para que pueda registrar las tarifas de los seguros.",
+                    icon: "info"
+                });
+                return;
             }
 
+            let total = 0;
 
-            $('#value_insurance').val(total);
+            if (fobValue <= rate.min_value) {
+                total = parseFloat(rate.fixed_cost);
+            } else {
+                total = (fobValue * (rate.percentage / 100));
+            }
+
+            $('#insurance-detail-label').text(insurance.name);
+            $('#value_insurance').val(total.toFixed(2));
 
             value_insurance = total;
+
 
             calcTotal(TotalConcepts, value_insurance);
 
@@ -387,20 +374,20 @@
         }
 
 
-        function updateInsuranceAddedTotal(element) {
+        function updateInsuranceSalesValue(element) {
 
             if (element.value === '') {
-                valuea_added_insurance = 0;
+                insurance_sales_value = 0;
             } else {
-                valuea_added_insurance = parseFloat(element.value.replace(/,/g, ''));
+                insurance_sales_value = parseFloat(element.value.replace(/,/g, ''));
             }
 
-            calcTotal(TotalConcepts, value_insurance, valuea_added_insurance);
+            calcTotal(TotalConcepts, value_insurance, insurance_sales_value);
         }
 
 
-        function calcTotal(TotalConcepts, value_insurance, valuea_added_insurance = 0) {
-            total = TotalConcepts + valuea_added_insurance;
+        function calcTotal(TotalConcepts, value_insurance, insurance_sales_value = 0) {
+            total = TotalConcepts + insurance_sales_value;
 
             let inputTotal = $('#value_sale');
             inputTotal.val(total.toFixed(2));
@@ -414,7 +401,7 @@
             let insurance = value_insurance;
             let freightInsurance = insurance + freightPricing;
 
-            
+
 
             if (total >= freightInsurance && totalAcceptedAnswer > 0) {
                 btnGuardar.prop('disabled', false);
@@ -439,7 +426,7 @@
 
 
         $('#value_utility').on('change', function() {
-            calcTotal(TotalConcepts, value_insurance);
+            calcTotal(TotalConcepts, value_insurance, insurance_sales_value);
         });
 
 
@@ -583,7 +570,7 @@
                 }
             }
 
-            calcTotal(TotalConcepts, value_insurance, valuea_added_insurance);
+            calcTotal(TotalConcepts, value_insurance, insurance_sales_value);
 
 
 

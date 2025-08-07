@@ -19,4 +19,9 @@ class TypeInsurance extends Model
         return $this->hasMany(Insurance::class, 'id_type_insurance');
     }
 
+    public function insuranceRate()
+    {
+        return $this->hasMany(InsuranceRates::class, 'insurance_type_id');
+    }
+
 }
