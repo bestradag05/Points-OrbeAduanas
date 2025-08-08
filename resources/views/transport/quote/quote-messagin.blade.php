@@ -866,15 +866,14 @@
                             </div>
                             <div class="col px-1">
                                 <label for="value_utility" class="small">Tipo de vehiculo</label>
-                                <input type="number" step="0.01" 
-                                    class="form-control form-control-sm">
+                                <input type="number" step="0.01" class="form-control form-control-sm">
                             </div>
                             <div class="col-auto pl-1">
-                                <div class="form-check form-switch mt-4">
-                                    <input class="form-check-input" type="checkbox" id="includeIgv" checked>
-                                    <label class="form-check-label small" for="includeIgv">
-                                        Incluir IGV
-                                    </label>
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" name="state_insurance" class="custom-control-input"
+                                        id="includeIgv" onchange="enableInsurance(this)"
+                                        {{ isset($insurance) ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="includeIgv">Incluir IGV</label>
                                 </div>
                             </div>
                         </div>
