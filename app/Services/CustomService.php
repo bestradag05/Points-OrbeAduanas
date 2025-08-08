@@ -16,6 +16,7 @@ class CustomService
 {
 
     public function storeCustom($request){
+        dd($request->all());
         $concepts = json_decode($request->concepts);
 
         $custom = $this->createOrUpdateCustoms($request);
@@ -109,7 +110,7 @@ class CustomService
             'customs_taxes' => $this->parseDouble($request->customs_taxes),
             'customs_perception' => $this->parseDouble($request->customs_perception),
             'value_utility' => $this->parseDouble($request->value_utility),
-            'net_amount' => $this->parseDouble($request->TotalCustomNetAmount),
+            'net_amount' => $this->parseDouble($request->custom_insurance),
             'value_sale' => $this->parseDouble($request->value_sale),
             'profit' => $profit,
             'state' => $request->state ?? 'Pendiente',
