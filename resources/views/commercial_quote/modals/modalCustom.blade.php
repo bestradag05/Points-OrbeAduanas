@@ -257,7 +257,7 @@
                         </tbody>
                     </table>
 
-                    <div class="row w-100 justify-content-end">
+                    {{-- <div class="row w-100 justify-content-end">
 
                         <div class="col-6 row">
                             <label for="cost_receivable" class="col-sm-6 col-form-label text-secondary">Costo ha
@@ -281,45 +281,57 @@
                             </div>
                         </div>
 
-                    </div>
+                    </div> --}}
 
-                    <div class="row w-100 justify-content-end mt-2">
+                    <div class="row w-100 mt-2">
 
-                        <div class="col-6 row">
-                            <label for="custom_insurance" class="col-sm-6 col-form-label ">Total a cobrar:</label>
-                            <div class="col-sm-6">
-                                <input type="text" class="form-control form-control-sm" name="custom_insurance"
-                                    id="custom_insurance" value="0.00" @readonly(true)>
+                        <div class="col-6 row justify-content-center align-items-center">
+
+                            <div class="row">
+                                <label for="profit" class="col-sm-6 col-form-label text-success">Ganancia $$</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control form-control-sm" id="profit"
+                                        name="profit" value="0.00" @readonly(true)>
+                                </div>
                             </div>
+
+                        </div>
+
+                        <div class="col-6 row flex-column">
+                            <div class="row">
+                                <label for="custom_insurance" class="col-sm-6 col-form-label ">Total a cobrar:</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control form-control-sm"
+                                        name="custom_insurance" id="custom_insurance" value="0.00"
+                                        @readonly(true)>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <label for="value_sale" class="col-sm-6 col-form-label">Total
+                                    venta / Sub Total:</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control form-control-sm" id="value_sale"
+                                        name="value_sale" value="0.00" @readonly(true)>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <label for="igv" class="col-sm-6 col-form-label">IGV:</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control form-control-sm" id="igv"
+                                        name="igv" value="0.00" @readonly(true)>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <label for="total_value_sale" class="col-sm-6 col-form-label">Total:</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control form-control-sm" id="total_value_sale"
+                                        name="total_value_sale" value="0.00" @readonly(true)>
+                                </div>
+                            </div>
+
                         </div>
 
                     </div>
-
-
-                    <div class="row w-100 justify-content-end">
-
-                        <div class="col-6 row">
-                            <label for="value_sale" class="col-sm-6 col-form-label text-primary">Total venta:</label>
-                            <div class="col-sm-6">
-                                <input type="text" class="form-control form-control-sm" id="value_sale"
-                                    name="value_sale" value="0.00" @readonly(true)>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="row w-100 justify-content-end">
-
-                        <div class="col-6 row">
-                            <label for="profit" class="col-sm-6 col-form-label text-success">Ganancia:</label>
-                            <div class="col-sm-6">
-                                <input type="text" class="form-control form-control-sm" id="profit"
-                                    name="profit" value="0.00" @readonly(true)>
-                            </div>
-                        </div>
-
-                    </div>
-
 
                 </div>
 
@@ -353,7 +365,7 @@
                         conceptsCustomArray.push({
                             'id': concept.id,
                             'name': concept.name,
-                            'value': formatValue(concept.value),
+                            'value': concept.value.toFixed(2),
                             'value_sale': 0,
                         });
 
@@ -434,7 +446,6 @@
                         total = (fobValue * (rate.percentage / 100));
                     }
 
-                    console.log(total);
 
                     $('#insurance-detail-label').text(insurance.name);
                     $('#value_insurance').val(total.toFixed(2));
@@ -638,7 +649,6 @@
                     let totalSale = TotalCustomsConcepts + valuea_added_insurance_custom;
 
                     let inputTotal = $('#value_sale');
-                    inputTotal.val(totalSale.toFixed(2));
                     let btnGuardar = $('#btnGuardarCustom');
 
 
@@ -653,16 +663,23 @@
                         btnGuardar.removeClass('btn-default');
                     }
 
+                    //Sacamos el IGV
+
+                    let igv = totalSale * 0.18;
+                    let totalValueSale = totalSale + igv;
+
 
                     let ganancia = totalSale - customInsuranceReceivable;
                     if (ganancia < 0) ganancia = 0;
 
-
+                    inputTotal.val(totalSale.toFixed(2));
+                    $('#igv').val(igv.toFixed(2));
+                    $('#total_value_sale').val(totalValueSale.toFixed(2));
                     $('#profit').val(ganancia.toFixed(2));
 
-                    $('#cost_receivable').val(totalReceivable.toFixed(2));
+                    /*  $('#cost_receivable').val(totalReceivable.toFixed(2)); */
 
-                    $('#insurance_value').val((insurance).toFixed(2));
+                    /*  $('#insurance_value').val((insurance).toFixed(2)); */
                     $('#custom_insurance').val((customInsuranceReceivable).toFixed(2));
 
                 }
