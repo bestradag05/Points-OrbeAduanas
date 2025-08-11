@@ -175,8 +175,8 @@
                                         $
                                     </span>
                                 </div>
-                                <input type="text" class="form-control CurrencyInput d-none" id="insurance_added"
-                                    name="insurance_added" data-type="currency" value="0"
+                                <input type="text" class="form-control CurrencyInput d-none" id="insurance_sales_value"
+                                    name="insurance_sales_value" data-type="currency" value="0"
                                     placeholder="Ingrese valor de la carga"
                                     onchange="updateInsuranceSalesValue(this)">
                             </div>
@@ -307,11 +307,11 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <label for="value_sale" class="col-sm-6 col-form-label">Total
+                                <label for="sub_total_value_sale" class="col-sm-6 col-form-label">Total
                                     venta / Sub Total:</label>
                                 <div class="col-sm-6">
-                                    <input type="text" class="form-control form-control-sm" id="value_sale"
-                                        name="value_sale" value="0.00" @readonly(true)>
+                                    <input type="text" class="form-control form-control-sm" id="sub_total_value_sale"
+                                        name="sub_total_value_sale" value="0.00" @readonly(true)>
                                 </div>
                             </div>
                             <div class="row">
@@ -322,10 +322,10 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <label for="total_value_sale" class="col-sm-6 col-form-label">Total:</label>
+                                <label for="value_sale" class="col-sm-6 col-form-label">Total:</label>
                                 <div class="col-sm-6">
-                                    <input type="text" class="form-control form-control-sm" id="total_value_sale"
-                                        name="total_value_sale" value="0.00" @readonly(true)>
+                                    <input type="text" class="form-control form-control-sm" id="value_sale"
+                                        name="value_sale" value="0.00" @readonly(true)>
                                 </div>
                             </div>
 
@@ -648,7 +648,7 @@
                     let totalReceivable = TotalCustomNetAmount;
                     let totalSale = TotalCustomsConcepts + valuea_added_insurance_custom;
 
-                    let inputTotal = $('#value_sale');
+                    let inputTotal = $('#sub_total_value_sale');
                     let btnGuardar = $('#btnGuardarCustom');
 
 
@@ -674,7 +674,7 @@
 
                     inputTotal.val(totalSale.toFixed(2));
                     $('#igv').val(igv.toFixed(2));
-                    $('#total_value_sale').val(totalValueSale.toFixed(2));
+                    $('#value_sale').val(totalValueSale.toFixed(2));
                     $('#profit').val(ganancia.toFixed(2));
 
                     /*  $('#cost_receivable').val(totalReceivable.toFixed(2)); */
@@ -697,15 +697,6 @@
                 const preventeDefaultAction = (e) => {
                     e.preventDefault();
                 }
-
-
-                // Asegúrate de que la función se ejecute cada vez que el valor de #insurance_added cambie
-                $('#insurance_added').on('input', function() {
-
-                    let insurancePointsInput = $('#insurance_points')[
-                        0]; // Obtén el elemento de entrada de puntos de value_insurance
-                    addCustomsPointsInsurance(insurancePointsInput); // Llama a la función con el elemento de entrada
-                });
 
 
                 function submitCustomsForm() {

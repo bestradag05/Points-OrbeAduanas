@@ -394,7 +394,7 @@
 
 
 
-    @if ($freightConcepts)
+    @if ($freightConcepts->isNotEmpty())
 
         <div id="detail-freight" class="container-service">
             <table id="table-freight" class="table">
@@ -422,7 +422,7 @@
     @endif
 
 
-    @if ($customConcepts)
+    @if ($customConcepts->isNotEmpty())
 
         <div id="detail-taxes-custom" class="container-service">
             <table id="table-taxes-custom" class="table">
@@ -470,7 +470,7 @@
                         </tr>
                     @endforeach
 
-                    @if ($transportConcepts)
+                    @if ($transportConcepts->isNotEmpty())
 
                         @foreach ($transportConcepts as $concept)
 
@@ -532,7 +532,7 @@
             </table>
         </div>
     @else
-        @if ($transportConcepts)
+        @if ($transportConcepts->isNotEmpty())
 
             <div id="detail-transport" class="container-service">
                 <table id="table-transport" class="table">
@@ -616,7 +616,7 @@
                 {{-- TODO: Modificar para calcular el total de forma automatica --}}
                 <div class="total-quote">
                     TOTAL COTIZACION: $
-                    {{ $quoteSentClient->total_quote_sent_client + $igv}}
+                    {{ number_format($quoteSentClient->total_quote_sent_client), 2}}
                     <span class="total-info">*Este precio no incluye el pago de impuestos*</span>
                 </div>
                 

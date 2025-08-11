@@ -450,6 +450,7 @@ class DatabaseSeeder extends Seeder
         Concept::create(['name' => 'CUADRILLA', 'id_type_shipment' => 8, 'id_type_service' => 3]);
         Concept::create(['name' => 'CUADRILLA', 'id_type_shipment' => 21, 'id_type_service' => 3]);
         Concept::create(['name' => 'RESGUARDO', 'id_type_shipment' => 8, 'id_type_service' => 3]);
+        Concept::create(['name' => 'SEGURO', 'id_type_shipment' => 8, 'id_type_service' => 1]);
         Concept::create(['name' => 'SEGURO', 'id_type_shipment' => 8, 'id_type_service' => 2]);
         Concept::create(['name' => 'SEGURO', 'id_type_shipment' => 21, 'id_type_service' => 1]);
         Concept::create(['name' => 'SEGURO', 'id_type_shipment' => 21, 'id_type_service' => 2]);

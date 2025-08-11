@@ -22,6 +22,8 @@ class Custom extends Model
         'nro_bl',
         'value_utility',
         'net_amount',
+        'sub_total_value_sale',
+        'igv',
         'value_sale',
         'profit',
         'customs_taxes',
@@ -74,7 +76,7 @@ class Custom extends Model
     public function concepts()
     {
         return $this->belongsToMany(Concept::class, 'concepts_customs', 'id_customs', 'concepts_id')
-            ->withPivot(['value_concept',  'total']);
+            ->withPivot(['value_concept',  'value_sale']);
     }
 
     public function routing()

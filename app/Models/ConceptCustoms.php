@@ -17,10 +17,8 @@ class ConceptCustoms extends Model
         'concepts_id',
         'id_customs',
         'value_concept',
-        'added_value',
-        /* 'net_amount',
-        'igv', */
-        'total',
+        'value_sale',
+
     ];
 
 

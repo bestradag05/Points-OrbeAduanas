@@ -24,6 +24,8 @@ return new class extends Migration
             $table->decimal('customs_perception', 8, 2)->nullable();
             $table->decimal('value_utility', 8, 2)->nullable();
             $table->decimal('net_amount', 8, 2)->nullable();
+            $table->decimal('sub_total_value_sale', 8, 2)->nullable();
+            $table->decimal('igv', 8, 2)->nullable();
             $table->decimal('value_sale', 8, 2)->nullable();
             $table->decimal('profit', 8, 2)->nullable();
             $table->string('regularization_date')->nullable();

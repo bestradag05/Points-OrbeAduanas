@@ -337,7 +337,7 @@ class CommercialQuoteController extends Controller
             $commercialQuote->custom->update(['state' => 'Aceptado']);
             /* Total de la aduana */
             $quoteSentClient->update([
-                'total_custom' => $commercialQuote->custom->value_sale
+                'total_custom' => $commercialQuote->custom->sub_total_value_sale
             ]);
 
             $concepts = $commercialQuote->custom->concepts;
@@ -345,7 +345,7 @@ class CommercialQuoteController extends Controller
 
                 $quoteSentClient->concepts()->attach(
                     $concept->id,  // El ID del concepto
-                    ['concept_value' => $concept->pivot->total, 'service_type' => 'Aduanas']
+                    ['concept_value' => $concept->pivot->value_sale, 'service_type' => 'Aduanas']
                 );
             }
 
@@ -365,8 +365,6 @@ class CommercialQuoteController extends Controller
 
     public function generateRoPdf($commercialQuote)
     {
-
-
         $this->commercialQuoteService->generateRoPdf($commercialQuote);
     }
 }

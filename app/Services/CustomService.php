@@ -16,9 +16,9 @@ class CustomService
 {
 
     public function storeCustom($request){
-        dd($request->all());
-        $concepts = json_decode($request->concepts);
 
+        $concepts = json_decode($request->concepts);
+        
         $custom = $this->createOrUpdateCustoms($request);
 
         $insurance = $this->createOrUpdateInsurance($request, $custom);
@@ -103,16 +103,16 @@ class CustomService
     {
         $custom = $id ? Custom::findOrFail($id) : new Custom();
 
-        $profit = $this->parseDouble($request->value_sale) - $this->parseDouble($request->TotalCustomNetAmount);
-
         $custom->fill([
             'id_modality' => $request->modality,
             'customs_taxes' => $this->parseDouble($request->customs_taxes),
             'customs_perception' => $this->parseDouble($request->customs_perception),
             'value_utility' => $this->parseDouble($request->value_utility),
             'net_amount' => $this->parseDouble($request->custom_insurance),
+            'sub_total_value_sale' => $this->parseDouble($request->sub_total_value_sale),
+            'igv' => $this->parseDouble($request->igv),
             'value_sale' => $this->parseDouble($request->value_sale),
-            'profit' => $profit,
+            'profit' => $request->profit,
             'state' => $request->state ?? 'Pendiente',
             'nro_quote_commercial' => $request->nro_quote_commercial,
         ]);
@@ -136,8 +136,6 @@ class CustomService
             return null; // Si no se envía el seguro, no se hace nada
         }
 
-        $sales_price = $request->value_insurance + $request->insurance_added;
-
         $insurance = Insurance::where('id_insurable_service', $custom->id)
             ->where('model_insurable_service', Custom::class)
             ->first();
@@ -146,11 +144,7 @@ class CustomService
             // Si el seguro existe, actualizarlo
             $insurance->update([
                 'insurance_value' => $request->value_insurance,
-                'insurance_value_added' => $request->insurance_added,
-                'insurance_sale' => $sales_price,
-                'sales_value' => $sales_price * 0.18,
-                'sales_price' => $sales_price * 1.18,
-                'additional_points' => $request->insurance_points,
+                'insurance_sales_value' => $request->insurance_sales_value,
                 'id_type_insurance' =>  $request->type_insurance,
                 'state' => 'Pendiente',
             ]);
@@ -158,11 +152,7 @@ class CustomService
             // Si no existe, crearlo
             $insurance = Insurance::create([
                 'insurance_value' => $request->value_insurance,
-                'insurance_value_added' => $request->insurance_added,
-                'insurance_sale' => $sales_price,
-                'sales_value' => $sales_price * 0.18,
-                'sales_price' => $sales_price * 1.18,
-                'additional_points' => $request->insurance_points,
+                'insurance_sales_value' => $request->insurance_sales_value,
                 'id_type_insurance' =>  $request->type_insurance,
                 'name_service' => 'Aduana',
                 'id_insurable_service' => $custom->id,
@@ -179,41 +169,29 @@ class CustomService
 
 
 
-    private function updateConceptInsurance($concepts, $freight, $request)
+    private function updateConceptInsurance($concepts, $custom, $request)
     {
 
         $arrayConcepts = (array) $concepts; //convertimos array los conceptos
         $lastKey = array_key_last($arrayConcepts); // obtenemos el ultimo indice
         $key = $lastKey + 1; // agregamos al ultimo indice par acrear el concepto de seguro
-
-
-        // Buscar el concepto en la base de datos
-        /*   $concept = Concept::where('name', 'SEGURO')
-            ->where('id_type_shipment', $freight->routing->type_shipment->id)
-            ->whereHas('typeService', function ($query) {
-                $query->where('name', 'Flete');  // Segunda condición: Filtrar por name del tipo de servicio
-            })
-            ->first(); */
-
-
         $concept = Concept::where('name', 'SEGURO')
-            ->where('id_type_shipment', $freight->commercial_quote->type_shipment->id)
+            ->where('id_type_shipment', $custom->commercial_quote->type_shipment->id)
             ->whereHas('typeService', function ($query) {
-                $query->where('name', 'Flete');  // Segunda condición: Filtrar por name del tipo de servicio
+                $query->where('name', 'Aduanas');  // Segunda condición: Filtrar por name del tipo de servicio
             })
             ->first();
+
 
         // Crear o actualizar el objeto del seguro
         $insuranceObject = new stdClass();
         $insuranceObject->id = $concept->id;
-        $insuranceObject->name = 'SEGURO';
+        $insuranceObject->name = $concept->name;
         $insuranceObject->value = $request->value_insurance;
-        $insuranceObject->added = $request->insurance_added;
-        $insuranceObject->pa = $request->insurance_points;
+        $insuranceObject->value_sale = $request->insurance_sales_value;
 
         // Guardar el concepto actualizado en el array
         $concepts[$key] = $insuranceObject;
-
 
         return $concepts;
     }
@@ -232,8 +210,7 @@ class CustomService
 
         // Relacionamos los nuevos conceptos con el flete
         foreach ($concepts as $concept) {
-
-            $total = $this->parseDouble($concept->value) + $this->parseDouble($concept->added);
+            /* $total = $this->parseDouble($concept->value) + $this->parseDouble($concept->added); */
             /* $net_amount = $total / 1.18;
             $igv = $total - $net_amount; */
 
@@ -241,10 +218,7 @@ class CustomService
                 'concepts_id' => $concept->id, // ID del concepto relacionado
                 'id_customs' => $custom->id, // Clave foránea al modelo Freight
                 'value_concept' => $this->parseDouble($concept->value),
-                'added_value' => $this->parseDouble($concept->added),
-                /* 'net_amount' => $net_amount,
-                'igv' => $igv, */
-                'total' => $total,
+                'value_sale' => $this->parseDouble($concept->value_sale),
             ]);
            
         }
