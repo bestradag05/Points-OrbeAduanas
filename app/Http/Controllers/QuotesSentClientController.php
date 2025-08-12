@@ -169,11 +169,21 @@ class QuotesSentClientController extends Controller
             foreach ($services as $service) {
 
                 $netCost = null;
+                $insurance = false;
+                $purePoints = 1;
 
                 if ($service instanceof \App\Models\Custom) {
                     $netCost = $service->net_amount;
                 } else {
                     $netCost = $service->total_answer_utility;
+                }
+
+                //Verificamos si el servicio tiene un seguro relacionado
+                if($service->insurance && $service->insurance->exists())
+                {
+                    $netCost = $netCost + $service->insurance->insurance_value;
+                    $insurance = true;
+                    $purePoints = $purePoints + 1;
                 }
 
                 // Crear el registro de comisión
@@ -184,8 +194,9 @@ class QuotesSentClientController extends Controller
                     'cost_of_sale' => $service->value_sale,  // Costo de venta total
                     'net_cost' =>  $netCost,  // Costo neto
                     'utility' => $service->value_utility,  // Utilidad
+                    'insurance' => $insurance,  // Utilidad
                     'gross_profit' => $service->profit,  // Ganancia bruta total
-                    'pure_points' => 1,  // Puntos puros generados
+                    'pure_points' => $purePoints,  // Puntos puros generados
                     'additional_points' => 0,  // Puntos adicionales generados
                     'distributed_profit' => 0,  // Ganancia distribuida
                     'remaining_balance' =>  $service->profit,  // Saldo restante para el vendedor

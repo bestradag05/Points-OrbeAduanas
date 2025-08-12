@@ -408,15 +408,6 @@ class FreightService
         $key = $lastKey + 1; // agregamos al ultimo indice par acrear el concepto de seguro
 
 
-        // Buscar el concepto en la base de datos
-        /*   $concept = Concept::where('name', 'SEGURO')
-            ->where('id_type_shipment', $freight->routing->type_shipment->id)
-            ->whereHas('typeService', function ($query) {
-                $query->where('name', 'Flete');  // Segunda condición: Filtrar por name del tipo de servicio
-            })
-            ->first(); */
-
-
         $concept = Concept::where('name', 'SEGURO')
             ->where('id_type_shipment', $freight->commercial_quote->type_shipment->id)
             ->whereHas('typeService', function ($query) {
@@ -428,12 +419,10 @@ class FreightService
         $insuranceObject = new stdClass();
         $insuranceObject->id = $concept->id;
         $insuranceObject->name = 'SEGURO';
-        $insuranceObject->value = $request->value_insurance;
-        $insuranceObject->added = $request->insurance_sales_value;
+        $insuranceObject->value = $request->insurance_sales_value;
 
         // Guardar el concepto actualizado en el array
         $concepts[$key] = $insuranceObject;
-
 
         return $concepts;
     }

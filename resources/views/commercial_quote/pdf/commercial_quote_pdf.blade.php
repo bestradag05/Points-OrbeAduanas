@@ -616,7 +616,7 @@
                 {{-- TODO: Modificar para calcular el total de forma automatica --}}
                 <div class="total-quote">
                     TOTAL COTIZACION: $
-                    {{ number_format($quoteSentClient->total_quote_sent_client), 2}}
+                    {{ number_format($quoteSentClient->total_quote_sent_client, 2)}}
                     <span class="total-info">*Este precio no incluye el pago de impuestos*</span>
                 </div>
                 

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('cost_of_sale', 10, 2); 
             $table->decimal('net_cost', 10, 2); 
             $table->decimal('utility', 10, 2); 
+            $table->boolean('insurance')->default(false); 
             $table->decimal('gross_profit', 10, 2); 
             $table->integer('pure_points'); 
             $table->integer('additional_points')->nullable(); 

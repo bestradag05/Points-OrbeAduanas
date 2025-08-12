@@ -141,6 +141,10 @@
     color: var(--sisorbe-800) !important;
 }
 
+.text-blue {
+    color: #2f80ed !important;
+}
+
 .select2-selection {
     height: 41px !important;
 }

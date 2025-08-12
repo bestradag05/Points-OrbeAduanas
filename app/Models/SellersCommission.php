@@ -18,6 +18,7 @@ class SellersCommission extends Model
         'cost_of_sale',
         'net_cost',
         'utility',
+        'insurance',
         'gross_profit',
         'pure_points',
         'additional_points',

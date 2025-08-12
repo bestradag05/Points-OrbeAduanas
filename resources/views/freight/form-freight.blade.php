@@ -95,7 +95,7 @@
                     <input type="text" class="form-control CurrencyInput {{ isset($insurance) ? '' : 'd-none' }} "
                         id="insurance_sales_value" name="insurance_sales_value" data-type="currency"
                         placeholder="Ingrese valor del seguro adicional"
-                        value="{{ isset($insurance) ? $insurance->insurance_value_added : '' }}"
+                        value="{{ isset($insurance) ? $insurance->insurance_sales_value : '' }}"
                         onchange="updateInsuranceSalesValue(this)" data-required="true">
                 </div>
 
@@ -271,6 +271,7 @@
 
             @if ($freight->insurance)
                 value_insurance = parseFloat(@json($freight->insurance->insurance_value));
+                insurance_sales_value = parseFloat(@json($freight->insurance->insurance_sales_value));
             @endif
 
             @if (isset($freight->concepts))

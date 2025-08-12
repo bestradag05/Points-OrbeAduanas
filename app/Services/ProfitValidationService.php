@@ -12,6 +12,25 @@ class ProfitValidationService
      */
     public function checkMinUtility($service)
     {
+        //TODO: Para cuando tengas ganancia mayor a 200 y la utilidad menor, te dara la opcion de utilizar su ganancia
+         /* $requiredUtility = 250;
+
+        if ($service->utility < $requiredUtility) {
+
+            $remainingBalance = $service->remaining_balance;
+
+            if ($remainingBalance >= ($requiredUtility - $service->utility)) {
+                $service->utility = $requiredUtility;  
+                $service->remaining_balance -= ($requiredUtility - $service->utility);  
+                return true;  
+            } else {
+                
+                return false;
+            }
+        }
+
+        return true; */
+
         return $service->utility >= 250;  // Aquí adaptamos para cada tipo de servicio
     }
 

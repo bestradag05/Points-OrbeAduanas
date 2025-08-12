@@ -27,6 +27,7 @@
                         <tr>
                             <th scope="col">N° de cotización</th>
                             <th scope="col">Flete</th>
+                            <th scope="col">Seguro</th>
                             <th scope="col">Costo Venta</th>
                             <th scope="col">Costo Neto</th>
                             <th scope="col">Utilidad</th>
@@ -45,6 +46,7 @@
                                 <td class="text-indigo text-bold">
                                     {{ $commission->commissionable->commercial_quote->nro_quote_commercial }}</td>
                                 <td>{{ $commission->commissionable->nro_operation_freight }}</td>
+                                <td class="text-blue">{{ $commission->insurance ? 'SI' : 'NO' }}</td>
                                 <td>${{ $commission->cost_of_sale }}</td>
                                 <td>${{ $commission->net_cost }}</td>
                                 <td>${{ $commission->utility }}</td>
@@ -88,6 +90,7 @@
                         <tr>
                             <th scope="col">N° de cotización</th>
                             <th scope="col">Aduana</th>
+                            <th scope="col">Seguro</th>
                             <th scope="col">Costo Venta</th>
                             <th scope="col">Costo Neto</th>
                             <th scope="col">Utilidad</th>
@@ -106,6 +109,7 @@
                                 <td class="text-indigo text-bold">
                                     {{ $commission->commissionable->commercial_quote->nro_quote_commercial }}</td>
                                 <td>{{ $commission->commissionable->nro_operation_custom }}</td>
+                                <td class="text-blue">{{ $commission->insurance ? 'SI' : 'NO' }}</td>
                                 <td>${{ $commission->cost_of_sale }}</td>
                                 <td>${{ $commission->net_cost }}</td>
                                 <td>${{ $commission->utility }}</td>
