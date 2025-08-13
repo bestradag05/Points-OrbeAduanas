@@ -16,7 +16,7 @@
                 <td>{{ $loop->iteration }}</td>
                 <td>
                     @if ($quoteSentClient->status != 'Anulado')
-                        <a href="{{ url('sent-client/generatePdf/' . $quoteSentClient->id) }}">
+                        <a href="{{ url('sent-client/generatePdf/' . $quoteSentClient->id) }}" target="_blank">
                             {{ $quoteSentClient->nro_quote_commercial }}
                         </a>
                     @else
