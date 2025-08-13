@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('transport_id');
             $table->unsignedBigInteger('concepts_id');
-            $table->decimal('response_value', 8, 2);
+            $table->decimal('response_value', 8, 2)->nullable();
             $table->decimal('value_concept', 8, 2);
             $table->timestamps();
             // FK a transport

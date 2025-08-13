@@ -43,6 +43,8 @@ class ResponseTransportQuoteController extends Controller
 
         $quote = QuoteTransport::findOrFail($quoteId);
 
+        $includeIgv = ! empty($data['includeIgv']);
+        
         // 2) Creamos la respuesta con totales a 0
         $resp = ResponseTransportQuote::create([
             'quote_transport_id'  => $quote->id,
@@ -50,6 +52,8 @@ class ResponseTransportQuoteController extends Controller
             'provider_cost'       => 0,
             'exchange_rate'       => $data['exchange_rate'],
             'value_utility'       => 0,
+            'igv'           => 0,
+            'total_sol'     => 0,
             'total_usd'           => 0,
             'total_prices_usd'    => 0,
             'status'              => 'Enviada',
@@ -58,6 +62,8 @@ class ResponseTransportQuoteController extends Controller
         // 3) Acumuladores
         $sumNet       = 0;
         $sumUtil      = 0;
+        $sumIgv   = 0;
+        $sumSol   = 0;
         $sumTotalUsd  = 0;
         $sumSalePrice = 0;
 
@@ -67,11 +73,22 @@ class ResponseTransportQuoteController extends Controller
             $util      = round($vals['utility'], 2);
             $totalUsd  = round($vals['totalusd'], 2);
             $salePrice = round($vals['saleprice'], 2);
-            $igv       = round($net * 0.18, 2); // si quieres guardarlo
+
+            // sólo calculamos IGV si el usuario lo indicó
+            $igv = $includeIgv
+                ? round($net * 0.18, 2)
+                : null;
+
+            // total en soles: net + igv (o solo net si no hay IGV)
+            $sol = $includeIgv
+                ? round($net + $igv, 2)
+                : $net;
 
             // Acumula en los totales globales
             $sumNet       += $net;
             $sumUtil      += $util;
+            $sumIgv  += $igv;
+            $sumSol  += $sol;
             $sumTotalUsd  += $totalUsd;
             $sumSalePrice += $salePrice;
 
@@ -80,6 +97,7 @@ class ResponseTransportQuoteController extends Controller
                 'concepts_id'    => $conceptId,
                 'net_amount'     => $net,
                 'igv'            => $igv,
+                'total_sol'   => $sol,
                 'total_usd'      => $totalUsd,
                 'value_utility'  => $util,
                 'sale_price'     => $salePrice,
@@ -89,6 +107,8 @@ class ResponseTransportQuoteController extends Controller
         // 6) Actualiza los totales de la cabecera
         $resp->update([
             'provider_cost'    => $sumNet,
+            'igv'             => $sumIgv,
+            'total_sol'       => $sumSol,
             'value_utility'    => $sumUtil,
             'total_usd'        => $sumTotalUsd,
             'total_prices_usd' => $sumSalePrice,
@@ -133,6 +153,7 @@ class ResponseTransportQuoteController extends Controller
             'conceptTransport.*.utility'     => 'required|numeric|min:0',
             'conceptTransport.*.totalusd'    => 'required|numeric|min:0',
             'conceptTransport.*.saleprice'   => 'required|numeric|min:0',
+            'includeIgv' => 'sometimes|boolean',
         ], [
             // Mensajes cabecera
             'provider_id.required'       => 'Seleccione un proveedor transportista.',

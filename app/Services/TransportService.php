@@ -168,7 +168,7 @@ class TransportService
         $transport = Transport::with(['concepts'])->findOrFail($id);
 
         /* dd($transport->concepts); */
-        $quote= $transport->quoteTransport;
+        $quote = $transport->quoteTransport;
 
 
         $commercial_quote = $transport->commercial_quote;
@@ -254,6 +254,8 @@ class TransportService
             'value_utility' => $request->value_utility,
             'value_sale' => $request->total_transport_value,
             'profit' => $request->profit,
+            'sub_total_value_sale' => $request->sub_total_value_sale,
+            'igv' => $request->igv,
             'state' => 'Pendiente'
         ]);
 
@@ -290,7 +292,7 @@ class TransportService
             if ($net === null) {
                 $net = $this->parseDouble($concept->value); // ← usa el valor del formulario
             }
- */
+            */
 
             /*  $concept_total = $net + $added;
 
@@ -305,7 +307,7 @@ class TransportService
             $conceptsTransport = ConceptsTransport::create([
                 'concepts_id' => $concept->id,
                 'transport_id' => $transport->id,
-                'response_value' => $concept->pivotValue,
+                'response_value' => $concept->pivotValue ?? 0,
                 'value_concept' => $concept->value,
                 /* 'net_amount_response' => $net,
                 'net_amount_response' => $net,

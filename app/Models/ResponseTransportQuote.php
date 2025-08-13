@@ -16,6 +16,7 @@ class ResponseTransportQuote extends Model
         'nro_response',
         'provider_id',
         'provider_cost',
+        'total_sol',
         'exchange_rate',
         'value_utility',
         'total_usd',
