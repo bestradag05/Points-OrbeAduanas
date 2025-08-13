@@ -125,9 +125,21 @@
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <label for="total" class="form-label fw-bold mb-0">Total:</label>
-                        <input type="text" id="total" class="form-control text-end ms-2" style="width: 150px;"
+                        <label for="subtotal" class="form-label fw-bold mb-0">Subtotal:</label>
+                        <input type="text" id="subtotal" class="form-control text-end ms-2" style="width: 150px;"
                             readonly value="0.00">
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label for="igv" class="form-label fw-bold mb-0">IGV (18%):</label>
+                        <input type="text" id="igv" class="form-control text-end ms-2"
+                            style="width: 150px;" readonly value="0.00">
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label for="total" class="form-label fw-bold mb-0">Total:</label>
+                        <input type="text" id="total" class="form-control text-end ms-2"
+                            style="width: 150px;" readonly value="0.00">
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center">
@@ -164,7 +176,7 @@
             let total;
             const totalRespuesta = parseFloat(@json($acceptedResponse->total_prices_usd)) || 0;
             const totalUsd = parseFloat(@json($acceptedResponse->total_usd)) || 0;
-             const isEditMode = "{{ $formMode ?? '' }}" === "edit";
+            const isEditMode = "{{ $formMode ?? '' }}" === "edit";
 
             const exchangeRate = parseFloat(@json($acceptedResponse->exchange_rate)) || 1;
             const providercost = parseFloat(@json($acceptedResponse->provider_cost)) || 0;
@@ -232,6 +244,16 @@
             function calcTotal(TotalConcepts, totalRespuestaParam = totalRespuesta) {
                 total = TotalConcepts;
                 $('#total').val(total.toFixed(2));
+
+                // --- NUEVO: calcular IGV y SUBTOTAL ---
+                // Según lo pediste: IGV = 18% del total (valor mostrado en #total)
+                const igvValue = +(total * 0.18).toFixed(2);
+                const subtotalValue = +(total - igvValue).toFixed(2);
+
+                // vuelca en los campos nuevos
+                $('#igv').val(igvValue.toFixed(2));
+                $('#subtotal').val(subtotalValue.toFixed(2));
+                // --- FIN NUEVO ---
 
                 let ganancia = total - totalRespuestaParam;
                 if (ganancia < 0) ganancia = 0;
@@ -337,7 +359,7 @@
                 updateTable(conceptsArray);
             }
 
-   
+
 
 
             $('#formTransport').on('submit', function(e) {
@@ -351,6 +373,11 @@
                 form.append(
                     `<input type="hidden" name="profit" value='${parseFloat($('#gananciaCalculada').val()).toFixed(2)}' />`
                 );
+                form.append(
+                    `<input type="hidden" name="sub_total_value_sale" value='${parseFloat($('#subtotal').val() || 0).toFixed(2)}' />`
+                    );
+                form.append(
+                `<input type="hidden" name="igv" value='${parseFloat($('#igv').val() || 0).toFixed(2)}' />`);
                 form.off('submit').submit();
             });
         </script>

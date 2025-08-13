@@ -21,6 +21,8 @@ class Transport extends Model
         'destination',
         'value_utility',
         'accepted_answer_value',
+        'igv',
+        'sub_total_value_sale',
         'value_sale',
         'profit',
         'total_answer_utility',

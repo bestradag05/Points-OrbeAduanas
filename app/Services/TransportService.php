@@ -168,7 +168,7 @@ class TransportService
         $transport = Transport::with(['concepts'])->findOrFail($id);
 
         /* dd($transport->concepts); */
-        $quote= $transport->quoteTransport;
+        $quote = $transport->quoteTransport;
 
 
         $commercial_quote = $transport->commercial_quote;
@@ -254,6 +254,8 @@ class TransportService
             'value_utility' => $request->value_utility,
             'value_sale' => $request->total_transport_value,
             'profit' => $request->profit,
+            'sub_total_value_sale' => $request->sub_total_value_sale,
+            'igv' => $request->igv,
             'state' => 'Pendiente'
         ]);
 
