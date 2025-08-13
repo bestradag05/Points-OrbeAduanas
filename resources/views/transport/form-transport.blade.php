@@ -247,8 +247,9 @@
 
                 // --- NUEVO: calcular IGV y SUBTOTAL ---
                 // Según lo pediste: IGV = 18% del total (valor mostrado en #total)
-                const igvValue = +(total * 0.18).toFixed(2);
-                const subtotalValue = +(total - igvValue).toFixed(2);
+                const subtotalValue = +(total/1.18).toFixed(2);
+                const igvValue = +(total - subtotalValue).toFixed(2);
+                
 
                 // vuelca en los campos nuevos
                 $('#igv').val(igvValue.toFixed(2));

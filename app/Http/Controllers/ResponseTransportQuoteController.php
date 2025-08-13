@@ -43,8 +43,9 @@ class ResponseTransportQuoteController extends Controller
 
         $quote = QuoteTransport::findOrFail($quoteId);
 
-        $includeIgv = ! empty($data['includeIgv']);
+        $includeIgv = $request->has('includeIgv');
         
+
         // 2) Creamos la respuesta con totales a 0
         $resp = ResponseTransportQuote::create([
             'quote_transport_id'  => $quote->id,
@@ -87,8 +88,12 @@ class ResponseTransportQuoteController extends Controller
             // Acumula en los totales globales
             $sumNet       += $net;
             $sumUtil      += $util;
-            $sumIgv  += $igv;
-            $sumSol  += $sol;
+            if ($includeIgv) {
+                $sumIgv  += $igv;
+                $sumSol  += $sol;
+            } else {
+                $sumSol  += $sol; // sumSol suma netos si no incluye igv
+            }
             $sumTotalUsd  += $totalUsd;
             $sumSalePrice += $salePrice;
 
@@ -107,7 +112,7 @@ class ResponseTransportQuoteController extends Controller
         // 6) Actualiza los totales de la cabecera
         $resp->update([
             'provider_cost'    => $sumNet,
-            'igv'             => $sumIgv,
+            'igv'              => $includeIgv ? $sumIgv : null,
             'total_sol'       => $sumSol,
             'value_utility'    => $sumUtil,
             'total_usd'        => $sumTotalUsd,
@@ -153,7 +158,7 @@ class ResponseTransportQuoteController extends Controller
             'conceptTransport.*.utility'     => 'required|numeric|min:0',
             'conceptTransport.*.totalusd'    => 'required|numeric|min:0',
             'conceptTransport.*.saleprice'   => 'required|numeric|min:0',
-            'includeIgv' => 'sometimes|boolean',
+            'includeIgv' => 'string|nullable',
         ], [
             // Mensajes cabecera
             'provider_id.required'       => 'Seleccione un proveedor transportista.',

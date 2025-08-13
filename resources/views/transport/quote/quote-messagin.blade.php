@@ -870,9 +870,8 @@
                             </div>
                             <div class="col-auto pl-1">
                                 <div class="custom-control custom-switch">
-                                    <input type="checkbox" name="state_insurance" class="custom-control-input"
-                                        id="includeIgv" onchange="enableInsurance(this)"
-                                        {{ isset($insurance) ? 'checked' : '' }}>
+                                    <input type="checkbox" name="includeIgv" class="custom-control-input"
+                                        id="includeIgv" {{ isset($insurance) ? 'checked' : '' }}>
                                     <label class="custom-control-label" for="includeIgv">Incluir IGV</label>
                                 </div>
                             </div>
@@ -913,7 +912,7 @@
 
                                     <div class="col-sm-2">
                                         <input type="text" id="priceIgv_{{ $tc->id }}"
-                                            name="conceptTransport[{{ $tc->id }}][priveIgv]"
+                                            name="conceptTransport[{{ $tc->id }}][priceIgv]"
                                             class="form-control form-control-sm text-end" readonly>
                                     </div>
 
