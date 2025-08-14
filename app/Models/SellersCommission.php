@@ -13,7 +13,8 @@ class SellersCommission extends Model
 
     protected $fillable = [
         'commissionable_id', 
-        'commissionable_type', 
+        'commissionable_type',
+        'commission_group_id', 
         'personal_id',
         'cost_of_sale',
         'net_cost',

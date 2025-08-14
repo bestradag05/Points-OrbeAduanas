@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CommissionGroups;
 use App\Models\Points;
 use App\Models\QuotesSentClient;
 use App\Models\SellersCommission;
@@ -151,6 +152,17 @@ class QuotesSentClientController extends Controller
         $commercialQuote = $quotesSentClient->commercialQuote;
 
         if ($commercialQuote) {
+
+
+            //Creamos el registro para agrupar las comisiones de el vendedor
+
+            $groupCommission = CommissionGroups::create([
+                'commercial_quote_id' => $commercialQuote->id,
+                'total_commission' => 0,
+                'total_profit' => 0,
+                'total_points' => 0
+            ]);
+
             // Array de servicios
             $services = [];
 
@@ -179,8 +191,7 @@ class QuotesSentClientController extends Controller
                 }
 
                 //Verificamos si el servicio tiene un seguro relacionado
-                if($service->insurance && $service->insurance->exists())
-                {
+                if ($service->insurance && $service->insurance->exists()) {
                     $netCost = $netCost + $service->insurance->insurance_value;
                     $insurance = true;
                     $purePoints = $purePoints + 1;
@@ -190,6 +201,7 @@ class QuotesSentClientController extends Controller
                 $sellerCommission = SellersCommission::create([
                     'commissionable_id' => $service->id,
                     'commissionable_type' => get_class($service),  // Tipo de servicio (QuotesSentClient)
+                    'commission_group_id' => $groupCommission->id,
                     'personal_id' => $commercialQuote->id_personal,  // Relacionado al vendedor
                     'cost_of_sale' => $service->value_sale,  // Costo de venta total
                     'net_cost' =>  $netCost,  // Costo neto

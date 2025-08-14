@@ -477,13 +477,13 @@
                             <tr>
                                 <td>{{ $concept->name }}</td>
                                 <td id="observation"> - </td>
-                                <td> $ {{ $concept->pivot->concept_value }}</td>
+                                <td> $ {{ number_format(($concept->pivot->concept_value / 1.18), 2) }}</td>
                             </tr>
                         @endforeach
 
 
                         @php
-                            $subtotal = $quoteSentClient->total_custom + ($quoteSentClient->total_transport ?? 0);
+                            $subtotal = $quoteSentClient->total_custom + (($quoteSentClient->total_transport / 1.18) ?? 0);
                             $igv = $subtotal * 0.18;
                             $cats_destinations = $subtotal * 1.18;
 
@@ -546,13 +546,13 @@
                             <tr>
                                 <td>{{ $concept->name }}</td>
                                 <td id="observation"> - </td>
-                                <td> $ {{ $concept->pivot->total }}</td>
+                                <td> $ {{ number_format(($concept->pivot->concept_value / 1.18), 2) }}</td>
                             </tr>
                         @endforeach
 
 
                         @php
-                            $subtotal = $quoteSentClient->total_transport ?? 0;
+                            $subtotal = $quoteSentClient->total_transport / 1.18;
                             $igv = $subtotal * 0.18;
                             $cats_destinations = $subtotal * 1.18;
 

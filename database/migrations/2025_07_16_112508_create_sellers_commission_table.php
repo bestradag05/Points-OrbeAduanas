@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('sellers_commission', function (Blueprint $table) {
             $table->id();
-            $table->morphs('commissionable'); 
+            $table->morphs('commissionable');
+            $table->unsignedBigInteger('commission_group_id');  
             $table->unsignedBigInteger('personal_id'); 
             $table->decimal('cost_of_sale', 10, 2); 
             $table->decimal('net_cost', 10, 2); 
@@ -27,6 +28,7 @@ return new class extends Migration
             $table->decimal('generated_commission', 10, 2)->nullable(); 
             $table->timestamps();
 
+            $table->foreign('commission_group_id')->references('id')->on('commission_groups')->onDelete('cascade');
             $table->foreign('personal_id')->references('id')->on('personal');
         });
     }
