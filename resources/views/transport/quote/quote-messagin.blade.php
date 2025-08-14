@@ -431,8 +431,12 @@
                     <th>#</th>
                     <th>N° respuesta</th>
                     <th>Proveedor</th>
-                    <th>Costo Neto</th>
-                    <th>Total</th>
+                    <th class="text-end">Costo Neto (S/.)</th>
+                    <th class="text-end">IGV (S/.)</th>
+                    <th class="text-end">Total (S/.)</th>
+                    <th class="text-end">Total (US$)</th>
+                    <th class="text-end">Utilidad (US$)</th>
+                    <th class="text-end">Total + Util (US$)</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </thead>
@@ -441,12 +445,21 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $response->nro_response }}</td>
-                            <td>{{ optional($response->supplier)->name_businessname }}</td>
-                            <td>{{ $response->provider_cost }}</td>
-                            <td>{{ $response->total }}</td>
-                            <td class="status-{{ strtolower($response->state) }}">
-                                {{ $response->status }}
+                            <td>{{ optional($response->supplier)->name_businessname ?? '—' }}</td>
+
+                            {{-- Mostrar valores con number_format y proteger nulls --}}
+                            <td class="text-end">{{ number_format($response->provider_cost ?? 0, 2) }}</td>
+                            <td class="text-end">{{ number_format($response->igv ?? 0, 2) }}</td>
+                            <td class="text-end">{{ number_format($response->total_sol ?? 0, 2) }}</td>
+
+                            <td class="text-end">{{ number_format($response->total_usd ?? 0, 2) }}</td>
+                            <td class="text-end">{{ number_format($response->value_utility ?? 0, 2) }}</td>
+                            <td class="text-end">{{ number_format($response->total_prices_usd ?? 0, 2) }}</td>
+
+                            <td class="status-{{ strtolower($response->status ?? 'enviada') }}">
+                                {{ $response->status ?? 'Enviada' }}
                             </td>
+
                             <td>
                                 @if ($locked)
                                     <span class="text-muted">Cotización cerrada</span>
@@ -454,16 +467,13 @@
                                     @if ($response->status === 'Rechazada')
                                         <span class="text-muted">Rechazada</span>
                                     @elseif ($response->status === 'Aceptado')
-                                        {{-- Solo se puede rechazar la aceptada --}}
                                         <button class="btn btn-danger btn-sm" data-toggle="modal"
                                             data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
                                             Rechazar
                                         </button>
                                     @elseif ($quote->responses->contains('status', 'Aceptado'))
-                                        {{-- Ya hay una aceptada y esta no lo es, no se muestran acciones --}}
                                         <span class="text-muted">Sin acciones</span>
                                     @else
-                                        {{-- Aún no hay ninguna aceptada, esta se puede aceptar o rechazar --}}
                                         <button class="btn btn-success btn-sm" data-toggle="modal"
                                             data-target="#quote-transport" data-response-id="{{ $response->id }}"
                                             data-response-nro="{{ $response->nro_response }}">
@@ -480,6 +490,7 @@
                     @endforeach
                 </tbody>
             </table>
+
         </div>
     </div>
 
