@@ -153,7 +153,6 @@ class QuotesSentClientController extends Controller
 
         if ($commercialQuote) {
 
-
             //Creamos el registro para agrupar las comisiones de el vendedor
 
             $groupCommission = CommissionGroups::create([

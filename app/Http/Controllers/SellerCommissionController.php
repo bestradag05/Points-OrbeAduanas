@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CommercialQuote;
+use App\Models\CommissionGroups;
 use App\Models\Custom;
 use App\Models\Freight;
 use App\Models\Profit;
@@ -37,7 +38,7 @@ class SellerCommissionController extends Controller
         $personal = auth()->user()->personal;
 
         // Filtrar los commercialQuotes que tienen al menos un servicio con una comisión registrada
-        $commercialQuotes = CommercialQuote::whereHas('freight.sellerCommissions', function ($query) use ($personal) {
+        /*   $commercialQuotes = CommercialQuote::whereHas('freight.sellerCommissions', function ($query) use ($personal) {
             $query->where('personal_id', $personal->id);  // Verificamos si el vendedor tiene comisiones en flete
         })
             ->orWhereHas('transport.sellerCommissions', function ($query) use ($personal) {
@@ -46,7 +47,11 @@ class SellerCommissionController extends Controller
             ->orWhereHas('custom.sellerCommissions', function ($query) use ($personal) {
                 $query->where('personal_id', $personal->id);  // Verificamos si el vendedor tiene comisiones en aduana
             })
-            ->get();
+            ->get(); */
+
+        $commissionsGroup = CommissionGroups::whereHas('commercialQuote', function ($query) use ($personal) {
+            $query->where('id_personal', $personal->id);
+        })->get();
 
         $heads = [
             '#',
@@ -54,23 +59,27 @@ class SellerCommissionController extends Controller
             'Origen',
             'Destino',
             'Cliente',
-            'Tipo de embarque',
-            'Asesor Comercial',
-            'Consolidado',
             'Fecha',
+            'Puntos',
+            'Profit',
+            'Comision Generada',
             'Estado',
             'Acciones'
         ];
 
-        return view('commissions/seller/list-seller-commission', compact('commercialQuotes', 'heads'));
+        return view('commissions/seller/list-seller-commission', compact('commissionsGroup', 'heads'));
     }
 
 
-    public function getDetalCommissionsSeeller($id)
+    public function getDetalCommissionsSeeller(String $id)
     {
 
         // Obtener la cotización comercial (commercialQuote) por su ID
-        $commercialQuote = CommercialQuote::findOrFail($id);
+        $commissionsGroup = CommissionGroups::with('sellerCommissions') // Cargar sellerCommissions con el grupo de comisiones
+            ->where('id', $id) // Suponiendo que tienes el ID del commissionsGroup
+            ->first();
+
+        dd($commissionsGroup);
 
         // Obtener el personal autenticado
         $personal = auth()->user()->personal;
@@ -164,9 +173,9 @@ class SellerCommissionController extends Controller
 
         $sellerProfit = $sellerCommission->gross_profit / 2;
         $companyProfit = $sellerCommission->gross_profit / 2;
-        
 
-         $sellerCommission->update([
+
+        $sellerCommission->update([
             'distributed_profit' => $sellerProfit,  // Asignar los puntos calculados
         ]);
 

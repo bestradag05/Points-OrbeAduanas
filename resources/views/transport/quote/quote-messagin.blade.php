@@ -456,8 +456,10 @@
                             <td class="text-end">{{ number_format($response->value_utility ?? 0, 2) }}</td>
                             <td class="text-end">{{ number_format($response->total_prices_usd ?? 0, 2) }}</td>
 
-                            <td class="status-{{ strtolower($response->status ?? 'enviada') }}">
-                                {{ $response->status ?? 'Enviada' }}
+                            <td >
+                                <div class="custom-badge status-{{ strtolower($response->status) }}">
+                                    {{ $response->status ?? 'Enviada' }}
+                                </div>
                             </td>
 
                             <td>

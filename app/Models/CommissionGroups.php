@@ -12,9 +12,19 @@ class CommissionGroups extends Model
     protected $table = 'commission_groups';
 
     protected $fillable = [
-            'commercial_quote_id',
-            'total_commission',
-            'total_profit',
-            'total_points'
+        'commercial_quote_id',
+        'total_commission',
+        'total_profit',
+        'total_points'
     ];
+
+    public function commercialQuote()
+    {
+        return $this->belongsTo(CommercialQuote::class, 'commercial_quote_id');
+    }
+
+    public function sellerCommissions()
+    {
+        return $this->hasMany(SellersCommission::class, 'commission_group_id');
+    }
 }

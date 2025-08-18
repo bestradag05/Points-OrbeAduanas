@@ -99,14 +99,14 @@ class CommercialQuote extends Model
 
     public function containersFcl()
     {
-         return $this->belongsToMany(Container::class, 'commercial_quote_containers', 'commercial_quote_id', 'containers_id')
+        return $this->belongsToMany(Container::class, 'commercial_quote_containers', 'commercial_quote_id', 'containers_id')
             ->withPivot('container_quantity', 'commodity', 'nro_package', 'id_packaging_type', 'kilograms', 'volumen', 'measures')
             ->withTimestamps();
     }
 
     public function commercialQuoteContainers()
     {
-       return $this->hasMany(CommercialQuoteContainer::class, 'commercial_quote_id');
+        return $this->hasMany(CommercialQuoteContainer::class, 'commercial_quote_id');
     }
 
     public function typeService()
@@ -162,5 +162,10 @@ class CommercialQuote extends Model
     public function quotesSentClients()
     {
         return $this->hasMany(QuotesSentClient::class, 'commercial_quote_id');
+    }
+
+    public function commissionsGroup()
+    {
+        return $this->hasOne(CommissionGroups::class, 'commercial_quote_id');
     }
 }

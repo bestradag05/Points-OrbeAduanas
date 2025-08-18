@@ -11,33 +11,33 @@
 @stop
 @section('dinamic-content')
     <x-adminlte-datatable id="table1" :heads="$heads">
-        @foreach ($commercialQuotes as $commercialQuote)
+        @foreach ($commissionsGroup as $commissions)
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>
-                    <a href="{{ url('/commercial/quote/' . $commercialQuote->id . '/detail') }}">
-                        {{ $commercialQuote->nro_quote_commercial }}
+                    <a href="{{ url('/commercial/quote/' . $commissions->commercialQuote->id . '/detail') }}">
+                        {{ $commissions->commercialQuote->nro_quote_commercial }}
                     </a>
                 </td>
-                <td class="text-uppercase">{{ $commercialQuote->originState->country->name }} -
-                    {{ $commercialQuote->originState->name }}</td>
-                <td class="text-uppercase">{{ $commercialQuote->destinationState->country->name }} -
-                    {{ $commercialQuote->destinationState->name }}</td>
-                <td class="text-uppercase">{{ $commercialQuote->customer->name_businessname }}</td>
-                <td>{{ $commercialQuote->type_shipment->description . ' ' . ($commercialQuote->type_shipment->description === 'Marítima' ? $commercialQuote->lcl_fcl : '') }}
+                <td class="text-uppercase">{{ $commissions->commercialQuote->originState->country->name }} -
+                    {{ $commissions->commercialQuote->originState->name }}</td>
+                <td class="text-uppercase">{{ $commissions->commercialQuote->destinationState->country->name }} -
+                    {{ $commissions->commercialQuote->destinationState->name }}</td>
+                <td class="text-uppercase">{{ $commissions->commercialQuote->customer->name_businessname }}</td>
                 </td>
-                <td>{{ $commercialQuote->personal->names }}</td>
-                <td>{{ $commercialQuote->is_consolidated ? 'SI' : 'NO' }}</td>
-                <td>{{ \Carbon\Carbon::parse($commercialQuote->created_at)->format('d/m/Y') }}</td>
+                <td>{{ \Carbon\Carbon::parse($commissions->commercialQuote->created_at)->format('d/m/Y') }}</td>
+                <td>{{ $commissions->total_points }}</td>
+                <td>{{ $commissions->total_profit }}</td>
+                <td>{{ $commissions->total_commission }}</td>
                 <td>
-                    <div class="custom-badge status-{{ strtolower($commercialQuote->state) }}">
-                        {{ $commercialQuote->state }}
+                    <div class="custom-badge status-{{ strtolower($commissions->status) }}">
+                        {{ $commissions->status }}
                     </div>
                 </td>
 
                 <td>
-                    @if (!$commercialQuote->typeService()->exists() || auth()->user()->hasRole('Super-Admin'))
-                        <a href="{{ url('/commissions/seller/' . $commercialQuote->id . '/detail') }}"><i class="fas fa-coins"></i> Gestionar comisiones</a>
+                    @if (!$commissions->commercialQuote->typeService()->exists() || auth()->user()->hasRole('Super-Admin'))
+                        <a href="{{ url('/commissions/seller/' . $commissions->id . '/detail') }}"><i class="fas fa-coins"></i> Gestionar comisiones</a>
                     @endif
                 </td>
             </tr>

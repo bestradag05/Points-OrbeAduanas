@@ -12,9 +12,9 @@ class SellersCommission extends Model
     protected $table = 'sellers_commission';
 
     protected $fillable = [
-        'commissionable_id', 
+        'commissionable_id',
         'commissionable_type',
-        'commission_group_id', 
+        'commission_group_id',
         'personal_id',
         'cost_of_sale',
         'net_cost',
@@ -38,5 +38,10 @@ class SellersCommission extends Model
     public function commissionable()
     {
         return $this->morphTo();
+    }
+
+    public function commissionsGroup()
+    {
+        return $this->belongsTo(CommissionGroups::class, 'commission_group_id');
     }
 }
