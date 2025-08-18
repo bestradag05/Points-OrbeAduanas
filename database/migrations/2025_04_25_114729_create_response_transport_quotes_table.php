@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('quote_transport_id')->constrained('quote_transport');
             $table->string('nro_response')->unique()->default('');
             $table->foreignId('provider_id')->constrained('suppliers');
+            $table->string('type_vehicle', 100)->nullable();
             // Costo que el proveedor factura en S/.
             $table->decimal('provider_cost', 12, 2)->comment('Costo total en soles facturado por el proveedor');
             $table->decimal('total_sol', 12, 2)->comment('Total en soles (provider_cost + igv)');
