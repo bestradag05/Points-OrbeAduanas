@@ -74,97 +74,112 @@ class SellerCommissionController extends Controller
     public function getDetalCommissionsSeeller(String $id)
     {
 
-        // Obtener la cotización comercial (commercialQuote) por su ID
+        // Obtener el grupo y sus comisiones respectivas
         $commissionsGroup = CommissionGroups::with('sellerCommissions') // Cargar sellerCommissions con el grupo de comisiones
             ->where('id', $id) // Suponiendo que tienes el ID del commissionsGroup
             ->first();
 
-        dd($commissionsGroup);
 
         // Obtener el personal autenticado
-        $personal = auth()->user()->personal;
-
-        // Comisiones de Flete
         $freightCommissions = collect();
-        if ($commercialQuote->freight) {
-            $freightCommissions = SellersCommission::where('commissionable_id', $commercialQuote->freight->id)
-                ->where('commissionable_type', 'App\Models\Freight')  // Aseguramos que sean comisiones de "flete"
-                ->where('personal_id', $personal->id)
-                ->get();
-        }
+        $localCommissions = collect();
 
-        // Comisiones de Transporte
-        $transportCommissions = collect();
-        if ($commercialQuote->transport) {
-            $transportCommissions = SellersCommission::where('commissionable_id', $commercialQuote->transport->id)
-                ->where('commissionable_type', 'App\Models\Transport')  // Aseguramos que sean comisiones de "transporte"
-                ->where('personal_id', $personal->id)
-                ->get();
+        foreach ($commissionsGroup->sellerCommissions as $commission) {
+            if ($commission->commissionable_type === 'App\Models\Freight') {
+                $freightCommissions->push($commission);
+            } elseif ($commission->commissionable_type === 'App\Models\Transport' || $commission->commissionable_type === 'App\Models\Custom') {
+                // Agrupar Aduana y Transporte bajo "localCommissions"
+                $localCommissions->push($commission);
+            }
         }
-
-        // Comisiones de Aduana
-        $customCommissions = collect();
-        if ($commercialQuote->custom) {
-            $customCommissions = SellersCommission::where('commissionable_id', $commercialQuote->custom->id)
-                ->where('commissionable_type', 'App\Models\Custom')  // Aseguramos que sean comisiones de "aduana"
-                ->where('personal_id', $personal->id)
-                ->get();
-        }
-
 
         // Validar si el vendedor puede generar profit por cada servicio
         $canGenerateProfit = [
             'freight' => false,
-            'transport' => false,
-            'custom' => false
+            'local' => false,
         ];
 
         // Validamos las condiciones para cada servicio
-        if ($commercialQuote->freight && $freightCommissions->isNotEmpty()) {
+        if ($freightCommissions->isNotEmpty()) {
             $canGenerateProfit['freight'] = $this->profitValidationService->validateAllConditions($freightCommissions->first());
         }
-
-        if ($commercialQuote->transport && $transportCommissions->isNotEmpty()) {
-            $canGenerateProfit['transport'] = $this->profitValidationService->validateAllConditions($transportCommissions->first());
-        }
-
-        if ($commercialQuote->custom && $customCommissions->isNotEmpty()) {
-            $canGenerateProfit['custom'] = $this->profitValidationService->validateAllConditions($customCommissions->first());
+        if ($localCommissions->isNotEmpty()) {
+            // Validamos las condiciones para Aduana + Transporte (gastos locales)
+            $canGenerateProfit['local'] = $this->profitValidationService->validateAllConditions($localCommissions->first());
         }
 
 
         // Pasar los datos a la vista
         return view('commissions/seller/detail-seller-commission', compact(
-            'commercialQuote',
+            'commissionsGroup',
             'canGenerateProfit',
             'freightCommissions',
-            'transportCommissions',
-            'customCommissions'
+            'localCommissions'
         ));
     }
 
 
-    public function generatePointSeller(SellersCommission $sellerCommission)
+    public function generatePointSeller(String $commissionType, String $commissionsGroup)
     {
 
-        $oldAdditionalPoints = $sellerCommission->additional_points;
-
-        // Calcular los puntos adicionales
-        $points = floor($sellerCommission->remaining_balance / 45);
-        $remainingBalance = $sellerCommission->remaining_balance - ($points * 45);
-        $currentAdditionalPoints = $oldAdditionalPoints + $points;
-        $generatedCommission = ($currentAdditionalPoints + $sellerCommission->pure_points) * 10;
+        if ($commissionType === 'local') {
+            $localCommissions = SellersCommission::whereIn('commissionable_type', ['App\Models\Custom', 'App\Models\Transport'])
+                ->where('commission_group_id', $commissionsGroup)  // Aseguramos que sea el grupo correcto
+                ->get();
 
 
+            $totalRemainingBalance = $localCommissions->sum('remaining_balance');
+            $points = floor($totalRemainingBalance / 45); // Cada 45 dólares es un punto
+            $remainingBalance = $totalRemainingBalance - ($points * 45); // Calcular el nuevo saldo restante
 
-        $sellerCommission->update([
-            'additional_points' => $currentAdditionalPoints,  // Asignar los puntos calculados
-            'remaining_balance' => $remainingBalance,
-            'generated_commission' => $generatedCommission
-        ]);
+            foreach ($localCommissions as $commission) {
+                // Proporción de puntos basada en el saldo restante de cada comisión
+                $proportionalPoints = floor(($commission->remaining_balance / $totalRemainingBalance) * $points);
+                $proportionalRemainingBalance = ($commission->remaining_balance / $totalRemainingBalance) * $remainingBalance;
 
-        // Retornar un mensaje o redirigir a una vista
-        return redirect()->back()->with('success', "Se generaron $points puntos adicionales.");
+                // Calcular los puntos adicionales para cada comisión (Aduana o Transporte)
+                $oldAdditionalPoints = $commission->additional_points; // Obtener los puntos previos
+                $currentAdditionalPoints = $oldAdditionalPoints + $proportionalPoints; // Sumar los puntos proporcionalmente
+
+                // Calcular la comisión generada
+                $generatedCommission = ($currentAdditionalPoints + $commission->pure_points) * 10;
+
+                // Actualizar la comisión
+                $commission->update([
+                    'additional_points' => $currentAdditionalPoints,
+                    'remaining_balance' => $proportionalRemainingBalance, // Actualizar el saldo restante
+                    'generated_commission' => $generatedCommission // Calcular la comisión generada
+                ]);
+            }
+
+            return redirect()->back()->with('success', "Se generaron $points puntos adicionales para los gastos locales.");
+        }
+
+
+        if ($commissionType == 'freight') {
+            // Obtener la comisión de Flete
+            $freightCommission = SellersCommission::where('commissionable_type', 'App\Models\Freight')
+                ->where('commission_group_id', $commissionsGroup) // Aseguramos que sea el grupo correcto
+                ->first();
+
+            // Calcular los puntos adicionales para Flete
+            $oldAdditionalPoints = $freightCommission->additional_points; // Obtener los puntos previos
+            $points = floor($freightCommission->remaining_balance / 45); // Cada 45 dólares es un punto
+            $remainingBalance = $freightCommission->remaining_balance - ($points * 45); // Actualizar el saldo restante
+            $generatedCommission = ($freightCommission->pure_points + $points) * 10; // Calcular la comisión generada
+
+            // Actualizar la comisión de Flete
+            $freightCommission->update([
+                'additional_points' => $oldAdditionalPoints + $points,  // Sumar los puntos a Flete
+                'remaining_balance' => $remainingBalance,  // Actualizar el saldo restante
+                'generated_commission' => $generatedCommission  // Calcular la comisión generada
+            ]);
+
+            return redirect()->back()->with('success', "Se generaron $points puntos adicionales para el Flete.");
+        }
+
+        // Si no es 'freight' ni 'local', podemos devolver un error o manejar el caso según sea necesario
+        return redirect()->back()->with('error', 'Tipo de comisión no válido.');
     }
 
 

@@ -183,7 +183,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('commissions/seller')->group(function () {
         Route::get('/', [SellerCommissionController::class, 'getCommissionsSeeller']);
         Route::get('/{commercialQuote}/detail', [SellerCommissionController::class, 'getDetalCommissionsSeeller']);
-        Route::get('/generate/points/{sellerCommission}', [SellerCommissionController::class, 'generatePointSeller']);
+        Route::get('/generate/points/{commissionType}/{commissionsGroup}', [SellerCommissionController::class, 'generatePointSeller']);
         Route::get('/generate/profit/{sellerCommission}', [SellerCommissionController::class, 'generateProfit']);
     });
 
