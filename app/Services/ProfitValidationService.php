@@ -13,7 +13,7 @@ class ProfitValidationService
     public function checkMinUtility($service)
     {
         //TODO: Para cuando tengas ganancia mayor a 200 y la utilidad menor, te dara la opcion de utilizar su ganancia
-         /* $requiredUtility = 250;
+        /* $requiredUtility = 250;
 
         if ($service->utility < $requiredUtility) {
 
@@ -74,9 +74,9 @@ class ProfitValidationService
     /**
      * Verificar si la ganancia mínima restante es de $200
      */
-    public function checkMinRemainingProfit($service)
+    public function checkMinRemainingProfit($remaining_balance)
     {
-        return $service->remaining_balance >= 200;  // Aquí adaptamos para cada tipo de servicio
+        return $remaining_balance >= 200;  // Aquí adaptamos para cada tipo de servicio
     }
 
 
@@ -134,16 +134,17 @@ class ProfitValidationService
             $minPoints = false;
         }
 
-        if ($service->commissionable_type === "App\Models\Freight") {
+        if ($service->first()->commissionable_type === "App\Models\Freight") {
             $conditions = [
                 $this->checkMinUtility($service),
                 $minPoints,
-                $this->checkMinRemainingProfit($service)
+                $this->checkMinRemainingProfit($service->remaining_balance)
             ];
-        }else{
+        } else {
+            $totalRemainingBalance = $service->first()->total_remaining_balance;
             $conditions = [
                 $minPoints,
-                $this->checkMinRemainingProfit($service)
+                $this->checkMinRemainingProfit($totalRemainingBalance)
             ];
         }
 

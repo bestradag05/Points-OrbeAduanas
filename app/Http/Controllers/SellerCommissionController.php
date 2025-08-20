@@ -100,12 +100,18 @@ class SellerCommissionController extends Controller
         ];
 
         // Validamos las condiciones para cada servicio
-        if ($freightCommissions->isNotEmpty()) {
+        /* if ($freightCommissions->isNotEmpty()) {
             $canGenerateProfit['freight'] = $this->profitValidationService->validateAllConditions($freightCommissions->first());
-        }
+        } */
         if ($localCommissions->isNotEmpty()) {
+
+            $localCommissions->each(function ($commission) use ($localCommissions) {
+                // Añadir la propiedad 'total_remaining_balance' a cada comisión de forma temporal
+                $commission->total_remaining_balance = $localCommissions->sum('remaining_balance');
+            });
+
             // Validamos las condiciones para Aduana + Transporte (gastos locales)
-            $canGenerateProfit['local'] = $this->profitValidationService->validateAllConditions($localCommissions->first());
+            $canGenerateProfit['local'] = $this->profitValidationService->validateAllConditions($localCommissions);
         }
 
 
@@ -132,10 +138,16 @@ class SellerCommissionController extends Controller
             $points = floor($totalRemainingBalance / 45); // Cada 45 dólares es un punto
             $remainingBalance = $totalRemainingBalance - ($points * 45); // Calcular el nuevo saldo restante
 
+            $pointsDistributed = 0;
+
             foreach ($localCommissions as $commission) {
                 // Proporción de puntos basada en el saldo restante de cada comisión
                 $proportionalPoints = floor(($commission->remaining_balance / $totalRemainingBalance) * $points);
                 $proportionalRemainingBalance = ($commission->remaining_balance / $totalRemainingBalance) * $remainingBalance;
+
+                //sumamos la cantidad de puntos distribuidos
+
+                $pointsDistributed += $proportionalPoints;
 
                 // Calcular los puntos adicionales para cada comisión (Aduana o Transporte)
                 $oldAdditionalPoints = $commission->additional_points; // Obtener los puntos previos
@@ -151,6 +163,23 @@ class SellerCommissionController extends Controller
                     'generated_commission' => $generatedCommission // Calcular la comisión generada
                 ]);
             }
+
+
+            $remainingPoints = $points - $pointsDistributed;
+            if ($remainingPoints > 0) {
+                $lastCommission = $localCommissions->last();
+                $lastCommission->increment('additional_points', $remainingPoints);
+
+                // Calcular la comisión generada para los puntos adicionales
+                $newAdditionalPoints = $lastCommission->additional_points; // Ahora tiene los puntos adicionales
+                $generatedCommission = ($newAdditionalPoints + $lastCommission->pure_points) * 10; // La comisión generada
+
+                // Actualizar la comisión generada con los puntos adicionales
+                $lastCommission->update([
+                    'generated_commission' => $generatedCommission
+                ]);
+            }
+
 
             return redirect()->back()->with('success', "Se generaron $points puntos adicionales para los gastos locales.");
         }
@@ -183,18 +212,52 @@ class SellerCommissionController extends Controller
     }
 
 
-    public function generateProfit(SellersCommission $sellerCommission)
+    public function generateProfit(String $commissionType, String $commissionsGroup)
     {
+        if ($commissionType === 'local') {
+            $localCommissions = SellersCommission::whereIn('commissionable_type', ['App\Models\Custom', 'App\Models\Transport'])
+                ->where('commission_group_id', $commissionsGroup)  // Aseguramos que sea el grupo correcto
+                ->get();
 
-        $sellerProfit = $sellerCommission->gross_profit / 2;
-        $companyProfit = $sellerCommission->gross_profit / 2;
+
+            $totalRemainingBalance = $localCommissions->sum('remaining_balance');
+
+            $sellerProfit = $totalRemainingBalance / 2;
+            $companyProfit = $totalRemainingBalance / 2;
+
+            $localCommissions->each(function ($commission) use ($sellerProfit, $totalRemainingBalance) {
+                // Calcular la proporción del profit para cada comisión
+                $commissionProfit = ($commission->remaining_balance / $totalRemainingBalance) * $sellerProfit;
+
+                // Asignar el profit distribuido a la comisión
+                $commission->update([
+                    'distributed_profit' => $commissionProfit,  // Asignar el profit proporcional
+                    'remaining_balance' => 0,
+                ]);
+            });
 
 
-        $sellerCommission->update([
-            'distributed_profit' => $sellerProfit,  // Asignar los puntos calculados
-        ]);
+            return redirect()->back()->with('success', "Profit generado correctamente para este servicio.");
+        }
 
-        return redirect()->back()->with('success', 'Profit generado correctamente para este servicio.');
+
+        if ($commissionType == 'freight') {
+
+            $freightCommission = SellersCommission::where('commissionable_type', 'App\Models\Freight')
+                ->where('commission_group_id', $commissionsGroup) // Aseguramos que sea el grupo correcto
+                ->first();
+
+            $sellerProfit = $freightCommission->remaining_balance / 2;
+            $companyProfit = $freightCommission->remaining_balance / 2;
+
+
+            $freightCommission->update([
+                'distributed_profit' => $sellerProfit,  // Asignar los puntos calculados
+                'remaining_balance' => 0,
+            ]);
+
+            return redirect()->back()->with('success', 'Profit generado correctamente para este servicio.');
+        }
     }
 
 

@@ -6,7 +6,7 @@
 
 
         <div class="col-12 my-3">
-            <h3 class="text-center text-indigo">Gestion de comisiones</h3>
+            <h3 class="text-center text-bold text-indigo">Gestion de comisiones</h3>
         </div>
 
         <div class="col-12">
@@ -136,7 +136,7 @@
                 @endforeach
 
                 <!-- Fila de Totales (Aduana + Transporte) -->
-                <tr class="table-info">
+                <tr class="table-success">
                     <td colspan="3" class="text-center"><strong>Total Gastos Locales (Aduana + Transporte)</strong></td>
                     <td>${{ number_format($localCommissions->sum('cost_of_sale'), 2) }}</td>
                     <td>${{ number_format($localCommissions->sum('net_cost'), 2) }}</td>
@@ -332,9 +332,10 @@
         }
 
 
-        function confirmProfitGeneration(profit, commissionId) {
+        function confirmProfitGeneration(profit, commissionType) {
             // Calcular los puntos a generar
             const sellerProfit = profit / 2;
+            let commissionsGroup = @json($commissionsGroup->id);
 
             // Mostrar la alerta de SweetAlert
             Swal.fire({
@@ -348,7 +349,7 @@
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = `/commissions/seller/generate/profit/${commissionId}`;
+                    window.location.href = `/commissions/seller/generate/profit/${commissionType}/${commissionsGroup}`;
                 }
             });
         }
