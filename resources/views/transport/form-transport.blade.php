@@ -124,7 +124,7 @@
                             value="{{ number_format($acceptedResponse->total_prices_usd, 2) }}">
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mb-2">
+                    {{-- <div class="d-flex justify-content-between align-items-center mb-2">
                         <label for="subtotal" class="form-label fw-bold mb-0">Subtotal:</label>
                         <input type="text" id="subtotal" class="form-control text-end ms-2" style="width: 150px;"
                             readonly value="0.00">
@@ -134,7 +134,7 @@
                         <label for="igv" class="form-label fw-bold mb-0">IGV (18%):</label>
                         <input type="text" id="igv" class="form-control text-end ms-2"
                             style="width: 150px;" readonly value="0.00">
-                    </div>
+                    </div> --}}
 
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <label for="total" class="form-label fw-bold mb-0">Total:</label>
@@ -143,7 +143,7 @@
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <label for="gananciaCalculada" class="form-label fw-bold mb-0">Ganancia:</label>
+                        <label for="gananciaCalculada" class="form-label fw-bold mb-0">Ganancia sin Igv:</label>
                         <input type="text" id="gananciaCalculada" class="form-control text-end ms-2"
                             style="width: 150px;" readonly value="0.00">
                     </div>
@@ -256,7 +256,7 @@
                 $('#subtotal').val(subtotalValue.toFixed(2));
                 // --- FIN NUEVO ---
 
-                let ganancia = total - totalRespuestaParam;
+                let ganancia = (total - totalRespuestaParam)/1.18;
                 if (ganancia < 0) ganancia = 0;
                 $('#gananciaCalculada').val(ganancia.toFixed(2));
 
@@ -366,19 +366,13 @@
             $('#formTransport').on('submit', function(e) {
                 e.preventDefault();
                 const form = $(this);
+                console.log(JSON.stringify(conceptsArray));
                 form.append(
-                    `<input type="hidden" name="concepts" value='${JSON.stringify(conceptsArray)}' />`);
-                form.append(
-                    `<input type="hidden" name="total_transport_value" value='${parseFloat($('#total').val()).toFixed(2)}' />`
-                );
-                form.append(
-                    `<input type="hidden" name="profit" value='${parseFloat($('#gananciaCalculada').val()).toFixed(2)}' />`
-                );
-                form.append(
-                    `<input type="hidden" name="sub_total_value_sale" value='${parseFloat($('#subtotal').val() || 0).toFixed(2)}' />`
-                    );
-                form.append(
-                `<input type="hidden" name="igv" value='${parseFloat($('#igv').val() || 0).toFixed(2)}' />`);
+                    `<input type="hidden" name="concepts" value='${JSON.stringify(conceptsArray)}' />`,
+                    `<input type="hidden" name="total_transport_value" value='${parseFloat($('#total').val()).toFixed(2)}' />`,
+                    `<input type="hidden" name="profit" value='${parseFloat($('#gananciaCalculada').val()).toFixed(2)}' />`,
+                    `<input type="hidden" name="sub_total_value_sale" value='${parseFloat($('#subtotal').val() || 0).toFixed(2)}' />`,
+                    `<input type="hidden" name="igv" value='${parseFloat($('#igv').val() || 0).toFixed(2)}' />`);
                 form.off('submit').submit();
             });
         </script>
