@@ -1264,7 +1264,6 @@
                 } else {
                     // Remover la clase si ya está lleno
                     $(this).removeClass('is-invalid');
-                    isValid = true;
                 }
             });
 

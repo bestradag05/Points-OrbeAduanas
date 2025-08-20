@@ -252,9 +252,9 @@ class TransportService
             'accepted_answer_value' => $request->total_usd,
             'total_answer_utility' => $request->total_prices_usd,
             'value_utility' => $request->value_utility,
-            'value_sale' => $request->total_transport_value,
+            'value_sale' => $request->value_sale,
             'profit' => $request->profit,
-            'sub_total_value_sale' => $request->sub_total_value_sale,
+            'sub_total_value_sale' => $request->subtotal,
             'igv' => $request->igv,
             'state' => 'Pendiente'
         ]);
