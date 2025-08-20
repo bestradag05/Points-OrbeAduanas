@@ -113,7 +113,7 @@ class ResponseTransportQuoteController extends Controller
         // 6) Actualiza los totales de la cabecera
         $resp->update([
             'provider_cost'    => $sumNet,
-            'igv'              => $includeIgv ? $sumIgv : null,
+            'igv' => $includeIgv ? $sumIgv : null,
             'total_sol'       => $sumSol,
             'value_utility'    => $sumUtil,
             'total_usd'        => $sumTotalUsd,

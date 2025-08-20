@@ -126,8 +126,8 @@
 
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <label for="value_sale" class="form-label fw-bold mb-0">Total:</label>
-                        <input type="text" id="value_sale" name="value_sale" class="form-control text-end ms-2" style="width: 150px;"
-                            readonly value="0.00">
+                        <input type="text" id="value_sale" name="value_sale" class="form-control text-end ms-2"
+                            style="width: 150px;" readonly value="0.00">
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center">
@@ -175,6 +175,7 @@
         const totalUsd = parseFloat(@json($acceptedResponse->total_usd)) || 0;
         const isEditMode = "{{ $formMode ?? '' }}" === "edit";
 
+        const includesIgv = (parseFloat(@json($acceptedResponse->igv)) || 0) > 0;
         const exchangeRate = parseFloat(@json($acceptedResponse->exchange_rate)) || 1;
         const providercost = parseFloat(@json($acceptedResponse->provider_cost)) || 0;
 
@@ -225,9 +226,6 @@
 
         });
 
-
-        // —– FUNCIONES AUXILIARES —–
-
         function formatValue(value) {
             if (value === null || value === undefined) return 0;
             if (typeof value === 'number') return value;
@@ -242,19 +240,24 @@
             total = TotalConcepts;
             $('#value_sale').val(total.toFixed(2));
 
-            // --- NUEVO: calcular IGV y SUBTOTAL ---
-            // Según lo pediste: IGV = 18% del total (valor mostrado en #total)
-            const subtotalValue = +(total / 1.18).toFixed(2);
-            const igvValue = +(total - subtotalValue).toFixed(2);
+            let subtotalValue, igvValue, ganancia;
 
+            if (includesIgv) {
+                // Respuesta aceptada incluyó IGV → mantenemos la lógica actual
+                subtotalValue = +(total / 1.18).toFixed(2);
+                igvValue = +(total - subtotalValue).toFixed(2);
+                ganancia = (total - totalRespuestaParam) / 1.18;
+            } else {
+                // Respuesta aceptada NO incluyó IGV → no sacamos IGV en Transporte
+                subtotalValue = +total.toFixed(2);
+                igvValue = 0.00;
+                ganancia = (total - totalRespuestaParam);
+            }
 
-            // vuelca en los campos nuevos
+            if (ganancia < 0) ganancia = 0;
+
             $('#igv').val(igvValue.toFixed(2));
             $('#subtotal').val(subtotalValue.toFixed(2));
-            // --- FIN NUEVO ---
-
-            let ganancia = (total - totalRespuestaParam) / 1.18;
-            if (ganancia < 0) ganancia = 0;
             $('#profit').val(ganancia.toFixed(2));
 
             const btn = document.querySelector('#btnGuardar');
@@ -265,9 +268,7 @@
             }
         }
 
-        /**
-         * Vuelca conceptsArray en la tabla, recalcula totales y agrega columna USD.
-         */
+
         function updateTable(conceptsArray) {
             const tbody = $('#formConceptsTransport tbody')[0];
             if (!tbody) return;
@@ -365,7 +366,7 @@
             const form = $(this);
             form.append(
                 `<input type="hidden" name="concepts" value='${JSON.stringify(conceptsArray)}' />`,
-                );
+            );
             form.off('submit').submit();
         });
     </script>
