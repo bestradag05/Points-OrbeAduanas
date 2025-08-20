@@ -21,6 +21,7 @@ class ResponseTransportQuote extends Model
         'value_utility',
         'total_usd',
         'total_prices_usd',
+        'type_vehicle',
         'status',
     ];
 

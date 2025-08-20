@@ -852,19 +852,22 @@
 
                         {{-- Proveedor --}}
                         <div id="row-provider" class="form-group row mb-3 align-items-center">
-                            <label for="provider_id" class="col-sm-3 col-form-label small font-weight-bold">
+                            <label for="provider_id" class="col-sm-3 col-form-label small font-weight-bold is-required">
                                 Proveedor <span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-9">
-                                <x-adminlte-select2 name="provider_id" igroup-size="sm" data-placeholder="Seleccione...">
+
+                                <x-adminlte-select2 name="provider_id" igroup-size="sm"
+                                    data-placeholder="Buscar proveedor..." style="width:100%" class="is-required">
                                     <option />
                                     @foreach ($transportSuppliers as $sup)
-                                        <option value="{{ $sup->id }}"
-                                            {{ optional($quote)->provider_id == $sup->id ? 'selected' : '' }}>
+                                        <option value="{{ $sup->id }}">
                                             {{ $sup->name_businessname }}
                                         </option>
                                     @endforeach
                                 </x-adminlte-select2>
+
+
                             </div>
                         </div>
 
@@ -878,8 +881,10 @@
                                     class="form-control form-control-sm is-required" value="3.70">
                             </div>
                             <div class="col px-1">
-                                <label for="value_utility" class="small">Tipo de vehiculo</label>
-                                <input type="number" step="0.01" class="form-control form-control-sm">
+                                <label for="type_vehicle" class="small">Tipo de vehículo</label>
+                                <input type="text" name="type_vehicle" id="type_vehicle"
+                                    class="form-control form-control-sm is-required"
+                                    placeholder="Ej: Camión 10T, Furgón, Plataforma" value="{{ old('type_vehicle') }}">
                             </div>
                             <div class="col-auto pl-1">
                                 <div class="custom-control custom-switch">
@@ -1043,12 +1048,8 @@
 
 
 @push('scripts')
-    <!-- include summernote css/js -->
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#quote-text').summernote();
 
             @if (session('open_modal_accept_justification'))
                 $('#accept_response_id').val(@json(session('response_id')));
@@ -1061,21 +1062,6 @@
                 }, 300);
             @endif
         });
-
-
-        //TODO: (Task) Poner funcion de forma global para todos los modales que tengan un select2
-        $('#modalCotizarTransporte').on('shown.bs.modal', function() {
-            $(this).find('#provider_id').select2({
-                dropdownParent: $(this),
-                width: '100%', // o 'resolve' según prefieras
-                placeholder: 'Seleccione una opción...',
-                allowClear: true
-            });
-        });
-
-
-
-
 
         let commercial_quote = @json($quote->nro_quote_commercial);
         let transport_quote = @json($quote->nro_quote);
@@ -1264,26 +1250,34 @@
 
 
         $('#formCotizarTransporte').on('submit', function(e) {
-            // Obtener todos los inputs con la clase is-required
-            let campos = $(this).find('input.is-required');
-            let valido = true;
 
-            // Recorrer los campos y verificar si están vacíos
-            campos.each(function() {
+            e.preventDefault();
+
+            // Obtener todos los inputs con la clase is-required
+            let inputs = $(this).find('input.is-required, select.is-required');
+            let isValid = true;
+
+            // Recorrer los inputs y verificar si están vacíos
+            inputs.each(function() {
                 if ($.trim($(this).val()) === '') {
-                    valido = false;
+                    isValid = false;
                     // Puedes marcar el campo con borde rojo si está vacío
                     $(this).addClass('is-invalid');
                 } else {
                     // Remover la clase si ya está lleno
                     $(this).removeClass('is-invalid');
+                    isValid = true;
                 }
             });
 
-            if (!valido) {
-                e.preventDefault(); // Evitar que el formulario se envíe
-                alert('Debes completar todos los campos requeridos.');
+            if(!isValid){
+                toastr.error('Debe completar los campos requeridos');
+            }else{
+
+                e.target.submit();
             }
+
+
         });
 
 

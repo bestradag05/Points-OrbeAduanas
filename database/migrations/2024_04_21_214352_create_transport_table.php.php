@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('destination')->nullable();
             $table->decimal('value_utility', 8, 2)->nullable();
             $table->decimal('accepted_answer_value', 8, 2);
-            /* $table->decimal('sub_total_value_sale', 8, 2);
-            $table->decimal('igv', 8, 2)->nullable(); */
+            $table->decimal('sub_total_value_sale', 8, 2);
+            $table->decimal('igv', 8, 2)->nullable();
             $table->decimal('value_sale', 8, 2);
             $table->decimal('total_answer_utility', 8, 2);
             $table->decimal('profit', 8, 2);

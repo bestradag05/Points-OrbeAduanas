@@ -254,8 +254,8 @@ class TransportService
             'value_utility' => $request->value_utility,
             'value_sale' => $request->total_transport_value,
             'profit' => $request->profit,
-           /*  'sub_total_value_sale' => $request->sub_total_value_sale,
-            'igv' => $request->igv, */
+            'sub_total_value_sale' => $request->sub_total_value_sale,
+            'igv' => $request->igv,
             'state' => 'Pendiente'
         ]);
 

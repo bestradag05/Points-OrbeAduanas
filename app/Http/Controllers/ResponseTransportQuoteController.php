@@ -52,6 +52,7 @@ class ResponseTransportQuoteController extends Controller
             'provider_id'         => $data['provider_id'],
             'provider_cost'       => 0,
             'exchange_rate'       => $data['exchange_rate'],
+            'type_vehicle'       => $data['type_vehicle'],
             'value_utility'       => 0,
             'igv'           => 0,
             'total_sol'     => 0,
@@ -159,6 +160,7 @@ class ResponseTransportQuoteController extends Controller
             'conceptTransport.*.totalusd'    => 'required|numeric|min:0',
             'conceptTransport.*.saleprice'   => 'required|numeric|min:0',
             'includeIgv' => 'string|nullable',
+            'type_vehicle' => 'required|string|max:100',
         ], [
             // Mensajes cabecera
             'provider_id.required'       => 'Seleccione un proveedor transportista.',
