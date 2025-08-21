@@ -16,6 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('commercial_quote_id');  // Relación con Cotización Comercial
             $table->decimal('total_commission', 10, 2)->default(0);
             $table->decimal('total_profit', 10, 2)->default(0);   
+            $table->integer('total_points_pure')->default(0);       
+            $table->integer('total_points_additional')->default(0);       
             $table->integer('total_points')->default(0);       
              $table->enum('status', ['Pendiente', 'Generado', 'Cobrado'])->default('Pendiente');    
             // Relaciones con Cotización Comercial o Operación

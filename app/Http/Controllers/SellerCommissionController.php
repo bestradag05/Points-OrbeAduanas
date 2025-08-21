@@ -37,18 +37,6 @@ class SellerCommissionController extends Controller
         // Obtener el personal autenticado
         $personal = auth()->user()->personal;
 
-        // Filtrar los commercialQuotes que tienen al menos un servicio con una comisión registrada
-        /*   $commercialQuotes = CommercialQuote::whereHas('freight.sellerCommissions', function ($query) use ($personal) {
-            $query->where('personal_id', $personal->id);  // Verificamos si el vendedor tiene comisiones en flete
-        })
-            ->orWhereHas('transport.sellerCommissions', function ($query) use ($personal) {
-                $query->where('personal_id', $personal->id);  // Verificamos si el vendedor tiene comisiones en transporte
-            })
-            ->orWhereHas('custom.sellerCommissions', function ($query) use ($personal) {
-                $query->where('personal_id', $personal->id);  // Verificamos si el vendedor tiene comisiones en aduana
-            })
-            ->get(); */
-
         $commissionsGroup = CommissionGroups::whereHas('commercialQuote', function ($query) use ($personal) {
             $query->where('id_personal', $personal->id);
         })->get();
@@ -60,7 +48,7 @@ class SellerCommissionController extends Controller
             'Destino',
             'Cliente',
             'Fecha',
-            'Puntos',
+            'Total Puntos',
             'Profit',
             'Comision Generada',
             'Estado',
@@ -180,6 +168,7 @@ class SellerCommissionController extends Controller
                 ]);
             }
 
+            $this->recalcCommisionGroup($commissionsGroup);
 
             return redirect()->back()->with('success', "Se generaron $points puntos adicionales para los gastos locales.");
         }
@@ -197,6 +186,8 @@ class SellerCommissionController extends Controller
             $remainingBalance = $freightCommission->remaining_balance - ($points * 45); // Actualizar el saldo restante
             $generatedCommission = ($freightCommission->pure_points + $points) * 10; // Calcular la comisión generada
 
+            dd($generatedCommission);
+
             // Actualizar la comisión de Flete
             $freightCommission->update([
                 'additional_points' => $oldAdditionalPoints + $points,  // Sumar los puntos a Flete
@@ -204,13 +195,52 @@ class SellerCommissionController extends Controller
                 'generated_commission' => $generatedCommission  // Calcular la comisión generada
             ]);
 
+
+            $this->recalcCommisionGroup($commissionsGroup);
+
             return redirect()->back()->with('success', "Se generaron $points puntos adicionales para el Flete.");
         }
+
+
 
         // Si no es 'freight' ni 'local', podemos devolver un error o manejar el caso según sea necesario
         return redirect()->back()->with('error', 'Tipo de comisión no válido.');
     }
 
+
+    public function recalcCommisionGroup($commissionsGroup)
+    {
+        $group = CommissionGroups::findOrFail($commissionsGroup);
+
+        // Inicializamos los totales
+        $totalPurePoints = 0;
+        $totalAdditionalPoints = 0;
+        $totalProfit = 0;
+        $totalCommission = 0;
+
+        // Recuperamos todas las comisiones del grupo
+        $commissions = SellersCommission::where('commission_group_id', $commissionsGroup)->get();
+
+        // Iteramos sobre las comisiones y sumamos los puntos, profits y comisiones generadas
+        foreach ($commissions as $commission) {
+            // Acumulamos los puntos puros y los adicionales
+            $totalPurePoints += $commission->pure_points;
+            $totalAdditionalPoints += $commission->additional_points;
+
+            // Acumulamos los profits y las comisiones generadas
+            $totalProfit += $commission->gross_profit; // Ganancia bruta
+            $totalCommission += $commission->generated_commission; // Comisión generada
+        }
+
+        // Actualizamos los totales en el grupo de comisiones
+        $group->update([
+            'total_points_pure' => $totalPurePoints,
+            'total_points_additional' => $totalAdditionalPoints,
+            'total_points' => $totalPurePoints + $totalAdditionalPoints, // Total de puntos (puros + adicionales)
+            'total_profit' => $totalProfit,
+            'total_commission' => $totalCommission,
+        ]);
+    }
 
     public function generateProfit(String $commissionType, String $commissionsGroup)
     {

@@ -177,6 +177,11 @@ class QuotesSentClientController extends Controller
             }
 
 
+            $totalPurePoints = 0;
+            $totalAdditionalPoints = 0;
+            $totalGrossProfit = 0;
+            $totalGeneratedCommission = 0;
+
             foreach ($services as $service) {
 
                 $netCost = null;
@@ -228,7 +233,20 @@ class QuotesSentClientController extends Controller
                         'generated_commission' => $generatedCommission
                     ]);
                 }
+
+                $totalPurePoints += $sellerCommission->pure_points;
+                $totalAdditionalPoints += $sellerCommission->additional_points;
+                $totalGrossProfit += $sellerCommission->distributed_profit;
+                $totalGeneratedCommission += $sellerCommission->generated_commission;
             }
+
+            $groupCommission->update([
+                'total_points_pure' => $totalPurePoints,
+                'total_points_additional' => $totalAdditionalPoints,
+                'total_points' => $totalPurePoints + $totalAdditionalPoints,
+                'total_profit' => $totalGrossProfit,  
+                'total_commission' => $totalGeneratedCommission
+            ]);
         }
     }
 

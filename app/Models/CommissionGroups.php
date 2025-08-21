@@ -15,6 +15,8 @@ class CommissionGroups extends Model
         'commercial_quote_id',
         'total_commission',
         'total_profit',
+        'total_points_pure',
+        'total_points_additional',
         'total_points'
     ];
 

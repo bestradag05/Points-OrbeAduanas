@@ -27,8 +27,16 @@
                 </td>
                 <td>{{ \Carbon\Carbon::parse($commissions->commercialQuote->created_at)->format('d/m/Y') }}</td>
                 <td>{{ $commissions->total_points }}</td>
-                <td>{{ $commissions->total_profit }}</td>
-                <td>{{ $commissions->total_commission }}</td>
+                <td class="text-info">
+                    <div class="custom-badge badge-info }}">
+                        $ {{ $commissions->total_profit }}
+                    </div>
+                </td>
+                <td class="text-success">
+                    <div class="custom-badge badge-success }}">
+                        $ {{ $commissions->total_commission }}
+                    </div>
+                </td>
                 <td>
                     <div class="custom-badge status-{{ strtolower($commissions->status) }}">
                         {{ $commissions->status }}
@@ -37,7 +45,8 @@
 
                 <td>
                     @if (!$commissions->commercialQuote->typeService()->exists() || auth()->user()->hasRole('Super-Admin'))
-                        <a href="{{ url('/commissions/seller/' . $commissions->id . '/detail') }}"><i class="fas fa-coins"></i> Gestionar comisiones</a>
+                        <a href="{{ url('/commissions/seller/' . $commissions->id . '/detail') }}"><i
+                                class="fas fa-coins"></i> Gestionar comisiones</a>
                     @endif
                 </td>
             </tr>

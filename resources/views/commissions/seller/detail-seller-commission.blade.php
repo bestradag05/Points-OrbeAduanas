@@ -9,6 +9,77 @@
             <h3 class="text-center text-bold text-indigo">Gestion de comisiones</h3>
         </div>
 
+        <div class="col-12 row">
+            <div class="col-3">
+                <div class="card card-custom">
+                    <div class="card-body row align-items-center">
+                        <div class="col-4">
+                            <div class="text-left">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <h5 class="card-title w-100 text-center text-indigo text-bold">Putos Generados</h5>
+                            <p class="card-text text-center">{{ $commissionsGroup->total_points }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <div class="card card-custom">
+                    <div class="card-body row align-items-center">
+                        <div class="col-4">
+                            <div class="text-left">
+                                <i class="fas fa-comments-dollar"></i>
+
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <h5 class="card-title w-100 text-center text-indigo text-bold">Profit Generado</h5>
+                            <p class="card-text text-center">$ {{ $commissionsGroup->total_profit }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <div class="card card-custom">
+                    <div class="card-body row align-items-center">
+                        <div class="col-4">
+                            <div class="text-left">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <h5 class="card-title w-100 text-center text-indigo text-bold">Comisión Generado</h5>
+                            <p class="card-text text-center">$ {{ $commissionsGroup->total_commission }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <div class="card card-custom">
+                    <div class="card-body row align-items-center">
+                        <div class="col-4">
+                            <div class="text-left">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <h5 class="card-title w-100 text-center text-indigo text-bold">Total por cobrar</h5>
+                            <p class="card-text text-center">$
+                                {{ number_format($commissionsGroup->total_commission + $commissionsGroup->total_profit, 2) }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
         <div class="col-12">
             <div class="alert alert-sm text-center text-muted" role="alert" style="font-size: 14px;">
                 <strong>Estimado vendedor:</strong> Para poder generar profit, primero debe pasar el mínimo de 10
@@ -82,86 +153,89 @@
         @endif
 
         <!-- Gastos Locales (Aduana + Transporte) -->
-       @if ($localCommissions->isNotEmpty())
-    <div class="col-12 my-3">
-        <h4 class="text-center text-indigo">Gastos Locales (Aduana + Transporte)</h4>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">N° de cotización</th>
-                    <th scope="col">Servicio</th>
-                    <th scope="col">Seguro</th>
-                    <th scope="col">Costo Venta</th>
-                    <th scope="col">Costo Neto</th>
-                    <th scope="col">Utilidad</th>
-                    <th scope="col">Ganancia</th>
-                    <th scope="col">Puntos Puros</th>
-                    <th scope="col">Puntos Adicionales</th>
-                    <th scope="col">Profit</th>
-                    <th scope="col">Saldo</th>
-                    <th scope="col">Comisión Generada</th>
-                    <th scope="col">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($localCommissions as $commission)
-                    <tr>
-                        <td class="text-indigo text-bold">
-                            {{ $commission->commissionable->commercial_quote->nro_quote_commercial }}</td>
-                        <td>{{ $commission->commissionable_type === 'App\Models\Custom' ? $commission->commissionable->nro_operation_custom : $commission->commissionable->nro_operation_transport }}</td>
-                        <td class="text-blue">
-                            {{ $commission->commissionable_type === 'App\Models\Transport' ? 'NO' : ($commission->insurance ? 'SI' : 'NO') }}
-                        </td>
-                        <td>${{ $commission->cost_of_sale }}</td>
-                        <td>${{ $commission->net_cost }}</td>
-                        <td>${{ $commission->utility }}</td>
-                        <td>${{ $commission->gross_profit }}</td>
-                        <td>{{ $commission->pure_points }}</td>
-                        <td>{{ $commission->additional_points }}</td>
-                        <td>
-                            <div class="custom-badge status-info">
-                                ${{ $commission->distributed_profit }}
-                            </div>
-                        </td>
-                        <td>${{ $commission->remaining_balance }}</td>
-                        <td>
-                            <div class="custom-badge status-success">
-                                $ {{ number_format($commission->generated_commission, 2) }}
-                            </div>
-                        </td>
-                        <td>
-                           -
-                        </td>
-                    </tr>
-                @endforeach
+        @if ($localCommissions->isNotEmpty())
+            <div class="col-12 my-3">
+                <h4 class="text-center text-indigo">Gastos Locales (Aduana + Transporte)</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">N° de cotización</th>
+                            <th scope="col">Servicio</th>
+                            <th scope="col">Seguro</th>
+                            <th scope="col">Costo Venta</th>
+                            <th scope="col">Costo Neto</th>
+                            <th scope="col">Utilidad</th>
+                            <th scope="col">Ganancia</th>
+                            <th scope="col">Puntos Puros</th>
+                            <th scope="col">Puntos Adicionales</th>
+                            <th scope="col">Profit</th>
+                            <th scope="col">Saldo</th>
+                            <th scope="col">Comisión Generada</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($localCommissions as $commission)
+                            <tr>
+                                <td class="text-indigo text-bold">
+                                    {{ $commission->commissionable->commercial_quote->nro_quote_commercial }}</td>
+                                <td>{{ $commission->commissionable_type === 'App\Models\Custom' ? $commission->commissionable->nro_operation_custom : $commission->commissionable->nro_operation_transport }}
+                                </td>
+                                <td class="text-blue">
+                                    {{ $commission->commissionable_type === 'App\Models\Transport' ? 'NO' : ($commission->insurance ? 'SI' : 'NO') }}
+                                </td>
+                                <td>${{ $commission->cost_of_sale }}</td>
+                                <td>${{ $commission->net_cost }}</td>
+                                <td>${{ $commission->utility }}</td>
+                                <td>${{ $commission->gross_profit }}</td>
+                                <td>{{ $commission->pure_points }}</td>
+                                <td>{{ $commission->additional_points }}</td>
+                                <td>
+                                    <div class="custom-badge status-info">
+                                        ${{ $commission->distributed_profit }}
+                                    </div>
+                                </td>
+                                <td>${{ $commission->remaining_balance }}</td>
+                                <td>
+                                    <div class="custom-badge status-success">
+                                        $ {{ number_format($commission->generated_commission, 2) }}
+                                    </div>
+                                </td>
+                                <td>
+                                    -
+                                </td>
+                            </tr>
+                        @endforeach
 
-                <!-- Fila de Totales (Aduana + Transporte) -->
-                <tr class="table-success">
-                    <td colspan="3" class="text-center"><strong>Total Gastos Locales (Aduana + Transporte)</strong></td>
-                    <td>${{ number_format($localCommissions->sum('cost_of_sale'), 2) }}</td>
-                    <td>${{ number_format($localCommissions->sum('net_cost'), 2) }}</td>
-                    <td>${{ number_format($localCommissions->sum('utility'), 2) }}</td>
-                    <td>${{ number_format($localCommissions->sum('gross_profit'), 2) }}</td>
-                    <td>{{ $localCommissions->sum('pure_points') }}</td>
-                    <td>{{$localCommissions->sum('additional_points') }}</td>
-                    <td class="text-center">${{ number_format($localCommissions->sum('distributed_profit'), 2) }}</td>
-                    <td>${{ number_format($localCommissions->sum('remaining_balance'), 2) }}</td>
-                    <td class="text-center text-success">${{ number_format($localCommissions->sum('generated_commission'), 2) }}</td>
-                    <td>
-                        <!-- Botones para calcular puntos y profit para los gastos locales -->
-                        <button class="btn btn-primary btn-sm"
-                                onclick="confirmPointsGeneration({{ $localCommissions->sum('remaining_balance') }}, 'local')">Calcular
-                            puntos</button>
-                        <button class="btn btn-secondary btn-sm"
-                                @if (!$canGenerateProfit['local']) disabled @endif
-                                onclick="confirmProfitGeneration({{ $localCommissions->sum('remaining_balance') }}, 'local')">Calcular
-                            profit</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-@endif
+                        <!-- Fila de Totales (Aduana + Transporte) -->
+                        <tr class="table-success">
+                            <td colspan="3" class="text-center"><strong>Total Gastos Locales (Aduana +
+                                    Transporte)</strong></td>
+                            <td>${{ number_format($localCommissions->sum('cost_of_sale'), 2) }}</td>
+                            <td>${{ number_format($localCommissions->sum('net_cost'), 2) }}</td>
+                            <td>${{ number_format($localCommissions->sum('utility'), 2) }}</td>
+                            <td>${{ number_format($localCommissions->sum('gross_profit'), 2) }}</td>
+                            <td>{{ $localCommissions->sum('pure_points') }}</td>
+                            <td>{{ $localCommissions->sum('additional_points') }}</td>
+                            <td class="text-center">${{ number_format($localCommissions->sum('distributed_profit'), 2) }}
+                            </td>
+                            <td>${{ number_format($localCommissions->sum('remaining_balance'), 2) }}</td>
+                            <td class="text-center text-success">
+                                ${{ number_format($localCommissions->sum('generated_commission'), 2) }}</td>
+                            <td>
+                                <!-- Botones para calcular puntos y profit para los gastos locales -->
+                                <button class="btn btn-primary btn-sm"
+                                    onclick="confirmPointsGeneration({{ $localCommissions->sum('remaining_balance') }}, 'local')">Calcular
+                                    puntos</button>
+                                <button class="btn btn-secondary btn-sm" @if (!$canGenerateProfit['local']) disabled @endif
+                                    onclick="confirmProfitGeneration({{ $localCommissions->sum('remaining_balance') }}, 'local')">Calcular
+                                    profit</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        @endif
 
 
 
@@ -315,7 +389,8 @@
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = `/commissions/seller/generate/points/${commissionType}/${commissionsGroup}`;
+                        window.location.href =
+                            `/commissions/seller/generate/points/${commissionType}/${commissionsGroup}`;
                     }
                 });
 
@@ -349,7 +424,8 @@
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = `/commissions/seller/generate/profit/${commissionType}/${commissionsGroup}`;
+                    window.location.href =
+                        `/commissions/seller/generate/profit/${commissionType}/${commissionsGroup}`;
                 }
             });
         }

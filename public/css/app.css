@@ -208,7 +208,8 @@
     border: 0;
 }
 
-.status-pendiente, .status-enviada{
+.status-pendiente,
+.status-enviada {
     background: rgba(255, 165, 0, 0.1);
     color: rgb(255, 165, 0);
 }
@@ -216,12 +217,18 @@
 /* .status-respondido {
     color: blue;
 } */
-.status-aceptado, .status-activo, .status-success {
+.badge-success,
+.status-aceptado,
+.status-activo,
+.status-success {
     background: rgba(0, 128, 0, 0.1);
     color: rgb(0, 128, 0);
 }
 
-.status-en-proceso, .status-enviado, .status-info {
+.badge-info,
+.status-en-proceso,
+.status-enviado,
+.status-info {
     background: rgba(0, 211, 199, 0.1);
     color: #00D3C7;
 }
@@ -234,7 +241,10 @@
 /* .status-observado {
     color: purple;
 } */
-.status-rechazada,.status-rechazado, .status-inactivo, .status-notificado {
+.status-rechazada,
+.status-rechazado,
+.status-inactivo,
+.status-notificado {
     background: rgba(211, 0, 0, 0.1);
     color: #d30700;
 }
@@ -280,3 +290,44 @@
     left: -9999px;
     display: block !important;
 }
+
+
+.card-custom {
+    border: none;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.card-custom .card-body {
+    padding: 24px;
+}
+
+.card-custom .card-title {
+    font-size: 18px;
+    color: #343a40;
+}
+
+.card-custom .card-text {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.card-custom .progress-bar {
+    height: 5px;
+}
+
+.card-custom .status {
+    font-size: 1rem;
+    color: green;
+}
+
+.card-custom .text-left {
+    font-size: 2.5rem;
+    color: green;
+}
+
+.card-custom  .detail-points{
+    font-size: 14px;
+}
+
