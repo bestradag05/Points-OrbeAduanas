@@ -19,9 +19,11 @@
                             <option value="Flete">Flete</option>
                         @endif
 
-                        @if ($comercialQuote->quote_transport()->exists())
+                        @if ($comercialQuote->quote_transport()->whereNotIn('state', ['Rechazado', 'Anulado'])->exists())
+                            {{-- Hay al menos una cotización de transporte activa -> bloquear --}}
                             <option value="Transporte" disabled>Transporte</option>
                         @else
+                            {{-- No hay transporte activo (o no hay ninguno) -> permitir crear otro --}}
                             <option value="Transporte">Transporte</option>
                         @endif
 
@@ -160,19 +162,24 @@
                             <td style="width: 150px">
                                 <select name="acction_transport" class="form-control form-control-sm"
                                     onchange="changeAcction(this, {{ $quote }}, 'Transporte')">
-                                    <option value="" disabled selected>Seleccione una acción...</option>
-                                    <option>Detalle</option>
-                                    <option class="{{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">Anular
-                                    </option>
-                                    @if ($comercialQuote->state === 'Pendiente')
-                                        <option class="{{ $quote->state != 'Aceptado' ? 'd-none' : '' }}">Rechazar
-                                        </option>
+                                    <option value="">Acciones</option>
+
+                                    {{-- Mostrar "Detalle" solo si NO está anulada/rechazada --}}
+                                    @if (!in_array($quote->state, ['Anulado', 'Rechazado']))
+                                        <option value="Detalle">Detalle</option>
                                     @endif
 
+                                    {{-- Anular solo cuando esté Pendiente (ajusta a tu regla) --}}
+                                    @if ($quote->state === 'Pendiente')
+                                        <option value="Anular">Anular</option>
+                                    @endif
+
+                                    {{-- Rechazar solo cuando aplique en tu flujo (ajusta si difiere) --}}
+                                    @if (in_array($quote->state, ['Respondido', 'Aceptado']))
+                                        <option value="Rechazar">Rechazar</option>
+                                    @endif
                                 </select>
-
                             </td>
-
                         </tr>
                     @endforeach
 

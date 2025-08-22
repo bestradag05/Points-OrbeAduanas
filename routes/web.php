@@ -264,6 +264,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('transport/quote/responses', [ResponseTransportQuoteController::class, 'store'])
         ->name('transport.quote.responses.store');
+    Route::get('/transport/responses/{id}/pdf', [ResponseTransportQuoteController::class, 'show'])
+        ->name('transport.quote.responses.show');
 
     // Aceptar respuesta como aprobada por el cliente
     Route::post('transport/quote/accept', [QuoteTransportController::class, 'acceptResponse'])
@@ -312,17 +314,17 @@ Route::middleware('auth')->group(function () {
     Route::post('commercial/quote/completeData', [CommercialQuoteController::class, 'completeData']);
     Route::post('commercial/quote/sent-client', [CommercialQuoteController::class, 'QuoteSentClient']);
 
-    
+
     Route::get('commercial/createQuote/{nro_quote_commercial}', [CommercialQuoteController::class, 'createQuote']);
     Route::get('commercial/service/{service}/{id}', [CommercialQuoteController::class, 'editCommercialQuoteService']);
     Route::get('commercial/quote/state/{action}/{id}', [CommercialQuoteController::class, 'handleActionCommercialQuote']);
     Route::patch('commercial/quote/updatedate/{id}', [CommercialQuoteController::class, 'updateDate']);
     Route::get('commercial/customer/{name}', [CommercialQuoteController::class, 'showCustomerForName']);
     Route::resource('commercial/quote', CommercialQuoteController::class);
-    
+
     Route::post('commercial/quote/client-trace', [CommercialQuoteController::class, 'storeClientTrace'])
-    ->name('commercial.quote.clientTrace');
-    
+        ->name('commercial.quote.clientTrace');
+
 
     /* Cotizaciones enviadas al cliente */
     Route::resource('sent-client', QuotesSentClientController::class);

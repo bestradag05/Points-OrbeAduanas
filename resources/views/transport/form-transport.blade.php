@@ -289,7 +289,7 @@
 
                 // 3) Costo Neto ($) ⇒ readonly
                 const celdaUsd = fila.insertCell(2);
-                const usdVal = parseFloat(item.pivotValue);
+                const usdVal = formatValue(item?.pivotValue ?? 0);
                 const inpUsd = document.createElement('input');
                 inpUsd.type = 'text';
                 inpUsd.value = usdVal.toFixed(2);
@@ -350,6 +350,7 @@
                     id: conceptId,
                     name: conceptName,
                     value: value,
+                    pivotValue: 0,
                     isNew: true // aquí la novedad
                 });
             }
@@ -357,8 +358,6 @@
             inp.value = '';
             updateTable(conceptsArray);
         }
-
-
 
 
         $('#formTransport').on('submit', function(e) {

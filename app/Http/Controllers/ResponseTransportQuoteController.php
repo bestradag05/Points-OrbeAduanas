@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ResponseTransportQuote;
 use App\Models\Supplier;
 use App\Models\ConceptsQuoteTransport;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use App\Models\QuoteTransport;
 use App\Models\Concept;
 use Illuminate\Http\Request;
@@ -28,11 +29,28 @@ class ResponseTransportQuoteController extends Controller
         return view('response-transport-quotes.list', compact('quotes', 'heads'));
     }
 
+    public function show(string $id)
+    {
+        // Carga la respuesta con las relaciones necesarias para el PDF
+        $response = ResponseTransportQuote::with([
+            'supplier',                 // proveedor
+            'quoteTransport',                    // cabecera de la cotización de transporte
+            'conceptResponseTransports.concept', // detalle por concepto (si tienes relación con Concept)
+        ])->findOrFail($id);
+
+        // Renderiza la vista del PDF (crearemos este blade en el paso 6)
+        $pdf = FacadePdf::loadView('transport.pdf.responseTransport', compact('response'));
+
+        // Devuelve el PDF para embeber en iframe
+        return $pdf->stream('RespuestaTransporte.pdf');
+    }
+
     public function create()
     {
         $suppliers = Supplier::where('supplier_type', 'Transportista')->get();
         return view('response-transport-quotes.register', compact('suppliers'));
     }
+
 
     public function store(Request $request)
     {
@@ -44,7 +62,7 @@ class ResponseTransportQuoteController extends Controller
         $quote = QuoteTransport::findOrFail($quoteId);
 
         $includeIgv = $request->has('includeIgv');
-        
+
 
         // 2) Creamos la respuesta con totales a 0
         $resp = ResponseTransportQuote::create([

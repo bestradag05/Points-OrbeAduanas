@@ -240,6 +240,12 @@ class QuoteTransportController extends Controller
             'responses',
         ])->findOrFail($id);
 
+        if (in_array($quote->state, ['Anulado', 'Rechazado'])) {
+            return redirect()
+                ->route('quote.transport.personal') // o a la lista que corresponda
+                ->with('warning', "La cotización {$quote->nro_quote} está {$quote->state}. No es posible ver el detalle.");
+        }
+
         $displayConcepts = $quote->transportConcepts
             ->map(fn($tc) => $tc->setRelation('concepts', $tc->concepts));
 
@@ -361,7 +367,7 @@ class QuoteTransportController extends Controller
 
     public function updateQuoteTransport(Request $request, string $id)
     {
-         $quote = QuoteTransport::with(['responses.commissions', 'commercial_quote.commercialQuoteContainers.packingType'])->findOrFail($id);
+        $quote = QuoteTransport::with(['responses.commissions', 'commercial_quote.commercialQuoteContainers.packingType'])->findOrFail($id);
 
         //Buscar concepto de transporte manualmente:
 
@@ -644,7 +650,7 @@ class QuoteTransportController extends Controller
         ]);
 
         // NOTA: no se acepta la respuesta aquí
-         $response->update(['status' => 'Aceptado']);
+        $response->update(['status' => 'Aceptado']);
 
         $ids = $response->conceptResponseTransports->pluck('concepts_id')->toArray();
         $quote->transportConcepts()->sync($ids);
@@ -711,7 +717,7 @@ class QuoteTransportController extends Controller
     public function updateStateQuoteTransport(string $id, string $action)
     {
 
-        $quoteTransport = QuoteTransport::findOrFail($id)->first();
+        $quoteTransport = QuoteTransport::findOrFail($id);
 
         if ($action === 'anular') {
             $quoteTransport->update(['state' => 'Anulado']);

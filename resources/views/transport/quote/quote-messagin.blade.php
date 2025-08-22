@@ -485,6 +485,10 @@
                                         </button>
                                     @endif
                                 @endif
+                                <button type="button" class="btn btn-sm btn-primary btn-pdf-transport" title="Ver PDF"
+                                    data-response-id="{{ $response->id }}">
+                                    <i class="far fa-file-pdf"></i>
+                                </button>
                             </td>
                         </tr>
                     @endforeach
@@ -1042,6 +1046,26 @@
         </div>
     </div>
 
+    {{-- Modal PDF Detalle Respuesta Transporte --}}
+    <div class="modal fade" id="pdfDetailResponseTransport" tabindex="-1" role="dialog"
+        aria-labelledby="pdfDetailResponseTransportLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header py-2">
+                    <h5 class="modal-title">Detalle de Respuesta de Transporte</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-0">
+                    <iframe id="pdfFrameTransport" src="" frameborder="0"
+                        style="width:100%;height:80vh;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 @stop
 
 
@@ -1059,6 +1083,22 @@
                     }).modal('show');
                 }, 300);
             @endif
+        });
+
+        $(document).on('click', '.btn-pdf-transport', function() {
+            const responseId = $(this).data('response-id');
+            // Ruta al método show de transporte (ver sección 4: Ruta)
+            const url = "{{ route('transport.quote.responses.show', ['id' => '__ID__']) }}".replace('__ID__',
+                responseId);
+
+            // Limpia y setea src del iframe
+            const $iframe = $('#pdfFrameTransport');
+            $iframe.attr('src', 'about:blank'); // limpio para evitar caché visual
+            $('#pdfDetailResponseTransport').modal('show');
+
+            // Cargar el PDF en el iframe
+            // (pequeño delay para asegurar que el modal abrió antes de setear src)
+            setTimeout(() => $iframe.attr('src', url), 150);
         });
 
         let commercial_quote = @json($quote->nro_quote_commercial);
@@ -1267,9 +1307,9 @@
                 }
             });
 
-            if(!isValid){
+            if (!isValid) {
                 toastr.error('Debe completar los campos requeridos');
-            }else{
+            } else {
 
                 e.target.submit();
             }
