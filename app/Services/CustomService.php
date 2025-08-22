@@ -58,7 +58,7 @@ class CustomService
         }
 
         $modalitys = Modality::all();
-        $type_insurace = TypeInsurance::all();
+        $type_insurace = TypeInsurance::with('insuranceRate')->get();
         $concepts = Concept::all();
 
         $conceptCustom = null;

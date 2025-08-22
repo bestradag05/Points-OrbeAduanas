@@ -183,10 +183,9 @@ class SellerCommissionController extends Controller
             // Calcular los puntos adicionales para Flete
             $oldAdditionalPoints = $freightCommission->additional_points; // Obtener los puntos previos
             $points = floor($freightCommission->remaining_balance / 45); // Cada 45 dólares es un punto
+            $currentTotalAdditionlPoints = $oldAdditionalPoints + $points;
             $remainingBalance = $freightCommission->remaining_balance - ($points * 45); // Actualizar el saldo restante
-            $generatedCommission = ($freightCommission->pure_points + $points) * 10; // Calcular la comisión generada
-
-            dd($generatedCommission);
+            $generatedCommission = ($freightCommission->pure_points + $currentTotalAdditionlPoints) * 10; // Calcular la comisión generada
 
             // Actualizar la comisión de Flete
             $freightCommission->update([
@@ -228,7 +227,7 @@ class SellerCommissionController extends Controller
             $totalAdditionalPoints += $commission->additional_points;
 
             // Acumulamos los profits y las comisiones generadas
-            $totalProfit += $commission->gross_profit; // Ganancia bruta
+            $totalProfit += $commission->distributed_profit; // Ganancia bruta
             $totalCommission += $commission->generated_commission; // Comisión generada
         }
 
@@ -266,7 +265,7 @@ class SellerCommissionController extends Controller
                 ]);
             });
 
-
+            $this->recalcCommisionGroup($commissionsGroup);
             return redirect()->back()->with('success', "Profit generado correctamente para este servicio.");
         }
 
@@ -280,11 +279,13 @@ class SellerCommissionController extends Controller
             $sellerProfit = $freightCommission->remaining_balance / 2;
             $companyProfit = $freightCommission->remaining_balance / 2;
 
-
+            
             $freightCommission->update([
                 'distributed_profit' => $sellerProfit,  // Asignar los puntos calculados
                 'remaining_balance' => 0,
             ]);
+
+            $this->recalcCommisionGroup($commissionsGroup);
 
             return redirect()->back()->with('success', 'Profit generado correctamente para este servicio.');
         }

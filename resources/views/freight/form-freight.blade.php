@@ -37,7 +37,7 @@
     </div>
 
 
-    <div class=" col-12 form-group">
+    <div class="col-12 form-group">
         <div class="custom-control custom-switch">
             <input type="checkbox" name="state_insurance" class="custom-control-input" id="seguroFreight"
                 onchange="enableInsurance(this)" {{ isset($insurance) ? 'checked' : '' }}>

@@ -4,7 +4,8 @@
         value="{{ isset($commercial_quote->nro_quote_commercial) ? $commercial_quote->nro_quote_commercial : '' }}">
     <input type="hidden" name="typeService" id="typeService">
 
-    <div class="row">
+    <div class="col-12 row">
+
         <div class="col-12">
 
             <x-adminlte-select2 name="modality" id="modality" label="Modalidad"
@@ -100,81 +101,85 @@
 
         </div>
 
+        <div class="col-12">
 
-
-    </div>
-
-
-    <div class="form-group">
-        <div class="custom-control custom-switch">
-            <input type="checkbox" name="state_insurance" class="custom-control-input" id="seguroCustom"
-                onchange="enableInsurance(this)">
-            <label class="custom-control-label" for="seguroCustom">Agregar Seguro</label>
-        </div>
-    </div>
-    <hr>
-    <div class="row d-none justify-content-center" id="content_seguroCustom">
-        <div class="col-3">
-            <label for="type_insurance">Tipo de seguro</label>
-            <select name="type_insurance" class="d-none form-control" label="Tipo de seguro" igroup-size="md"
-                data-placeholder="Seleccione una opcion...">
-                <option />
-                @foreach ($type_insurace as $type)
-                    <option value="{{ $type->id }}">{{ $type->name }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="col-3">
             <div class="form-group">
-                <label for="load_value">Valor del seguro</label>
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" name="state_insurance" class="custom-control-input" id="seguroCustom"
+                        onchange="enableInsurance(this)">
+                    <label class="custom-control-label" for="seguroCustom">Agregar Seguro</label>
+                </div>
+            </div>
+            <hr>
+            <div class="row {{ isset($insurance) ? '' : 'd-none' }} d-none justify-content-center"
+                id="content_seguroCustom">
+                <div class="col-4">
+                    <label for="type_insurance">Tipo de seguro</label>
+                    <select name="type_insurance" onchange="selectInsurance(this)"
+                        class="{{ isset($insurance) ? '' : 'd-none' }} form-control" label="Tipo de seguro"
+                        igroup-size="md" data-placeholder="Seleccione una opcion..." data-required="true">
+                        <option />
+                        @foreach ($type_insurace as $type)
+                            <option value="{{ $type->id }}"
+                                {{ isset($insurance) && $insurance->id_type_insurance === $type->id ? 'selected' : '' }}>
+                                {{ $type->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text text-bold">
-                            $
-                        </span>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label for="load_value">Valor del seguro</label>
+
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text text-bold">
+                                    $
+                                </span>
+                            </div>
+                            <input type="text"
+                                class="form-control CurrencyInput {{ isset($insurance) ? '' : 'd-none' }} "
+                                id="value_insurance" name="value_insurance" data-type="currency" @readonly(true)
+                                placeholder="Ingrese valor del seguro"
+                                value="{{ isset($insurance) ? $insurance->insurance_value : '' }}"
+                                onchange="updateInsuranceTotal(this)" data-required="true">
+                        </div>
+
                     </div>
-                    <input type="text" class="form-control CurrencyInput d-none " name="value_insurance"
-                        data-type="currency" placeholder="Ingrese valor de la carga"
-                        onchange="updateInsuranceTotal(this)">
                 </div>
 
-            </div>
-        </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label for="load_value">Valor venta</label>
 
-        <div class="col-3">
-            <div class="form-group">
-                <label for="load_value">Valor ha agregar</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text text-bold">
+                                    $
+                                </span>
+                            </div>
+                            <input type="text"
+                                class="form-control CurrencyInput {{ isset($insurance) ? '' : 'd-none' }} "
+                                id="insurance_sales_value" name="insurance_sales_value" data-type="currency"
+                                placeholder="Ingrese valor del seguro adicional"
+                                value="{{ isset($insurance) ? $insurance->insurance_sales_value : '' }}"
+                                onchange="updateInsuranceSalesValue(this)" data-required="true">
+                        </div>
 
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text text-bold">
-                            $
-                        </span>
                     </div>
-                    <input type="text" class="form-control CurrencyInput d-none" id="insurance_added"
-                        name="insurance_added" data-type="currency" value="0"
-                        placeholder="Ingrese valor de la carga" onchange="updateInsuranceAddedTotal(this)">
                 </div>
 
             </div>
-        </div>
-        <div class="col-3">
-            <div class="form-group">
-                <label for="load_value">Puntos</label>
 
-                <div class="input-group">
-                    <input type="number" class="form-control d-none" id="insurance_points" name="insurance_points"
-                        min="0" onkeydown="preventeDefaultAction(event)"
-                        oninput="addCustomsPointsInsurance(this)">
-                </div>
-
-            </div>
         </div>
+
+
+
+
     </div>
 
-    <hr>
-    <div id="formConceptsAduanas" class="formConcepts row">
+    <div id="formConceptsAduanas" class="col-12 formConcepts row">
         <div class="col-4">
 
             <x-adminlte-select2 name="concept" id="concept_aduana" label="Conceptos"
@@ -260,7 +265,7 @@
 
     </div>
 
-    <div class="container text-center mt-5">
+    <div class="col-12 text-center mt-5">
         <input class="btn btn-primary" type="submit" value="{{ $formMode === 'edit' ? 'Actualizar' : 'Guardar' }}">
     </div>
 </div>
@@ -351,6 +356,46 @@
 
             }
         }
+
+        function selectInsurance(select) {
+
+            let typesInsurance = @json($type_insurace);
+            let fobValue = @json($commercial_quote->load_value);
+            let typeShipment = @json($commercial_quote->type_shipment);
+            let selectValue = parseInt(select.value);
+
+            let insurance = typesInsurance.find(type => type.id === selectValue);
+            let rate = insurance.insurance_rate.find(rate => rate.shipment_type_description === typeShipment.description);
+
+            if (!rate) {
+                Swal.fire({
+                    title: "No existe tarifa registrada para calcular el seguro",
+                    text: "Por favor comunicate con el administrador, para que pueda registrar las tarifas de los seguros.",
+                    icon: "info"
+                });
+                return;
+            }
+
+            let total = 0;
+
+            if (fobValue <= rate.min_value) {
+                total = parseFloat(rate.fixed_cost);
+            } else {
+                total = (fobValue * (rate.percentage / 100));
+            }
+
+            $('#insurance-detail-label').text(insurance.name);
+            $('#value_insurance').val(total.toFixed(2));
+
+            value_insurance = total;
+
+
+            calcTotal(TotalConcepts, value_insurance);
+
+
+
+        }
+
 
         function updateInsuranceTotal(element) {
             if (element.value === '') {

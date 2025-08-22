@@ -144,7 +144,7 @@
             <tr>
                 <td class="title">Company Name</td>
                 <td style="text-transform: uppercase; font-weight: bold">
-                    {{ $commercialQuote->supplier->name_businessname }}</td>
+                    {{ $commercialQuote->supplier->name_businessname ?? '' }}</td>
             </tr>
             <tr>
                 <td class="title">Address</td>

@@ -230,7 +230,7 @@ class FreightService
             $insurance = $freight->insurance;
         }
 
-        $type_insurace = TypeInsurance::all();
+        $type_insurace = TypeInsurance::with('insuranceRate')->get();
         $concepts = Concept::all();
 
         $conceptFreight = null;
