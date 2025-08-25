@@ -9,7 +9,7 @@
             <a href="{{ url('/quote/freight') }}" class="btn btn-primary"> Atras </a>
 </div> --}}
         <div class="col-12 col-md-12 col-lg-5">
-            <h5 class="text-indigo text-center"><i class="fas fa-file-alt"></i> Detalle de carga</h5>
+            <h5 class="mb-0 text-indigo"><i class="fas fa-file-alt mr-2"></i> Detalle de carga</h5>
 
             <br>
 
@@ -426,7 +426,7 @@
                     @endif
                 @endcan
             </div>
-            <table class="table table-sm text-sm my-5">
+            <table class="table table-bordered table-hover table-sm text-sm my-4">
                 <thead class="thead-dark">
                     <th>#</th>
                     <th>N° respuesta</th>
@@ -840,13 +840,10 @@
 
                     <input type="hidden" name="quote_id" value="{{ $quote->id }}">
                     {{-- HEADER --}}
-                    <div class="modal-header py-2">
-                        <h4 class="modal-title mb-0">
-                            Respuesta: <strong>{{ $nro_response }}</strong>
-                        </h4>
-                        <button type="button" class="close" data-dismiss="modal">
-                            <span>&times;</span>
-                        </button>
+                    <div class="modal-header py-2 bg-primary text-white">
+                        <h5 class="modal-title mb-0">Respuesta: <strong>{{ $nro_response }}</strong></h5>
+                        <button type="button" class="close text-white"
+                            data-dismiss="modal"><span>&times;</span></button>
                     </div>
 
                     {{-- BODY --}}
@@ -901,7 +898,7 @@
                         <hr class="my-2">
 
                         {{-- Encabezados de la “tabla” --}}
-                        <div id="row-headers" class="form-row font-weight-bold small mb-2">
+                        <div id="row-headers" class="form-row font-weight-bold small mb-2 bg-light py-1" style="border-bottom:2px solid #002060;">
                             <div class="col-sm-2">Concepto (S/.)</div>
                             <div class="col-sm-2">Valor concepto (S/.)</div>
                             <div class="col-sm-2">Valor venta (S/.)</div>
@@ -978,8 +975,8 @@
 
                     {{-- FOOTER --}}
                     <div class="modal-footer py-2">
-                        <button type="submit" class="btn btn-success btn-sm">
-                            <i class="fas fa-save mr-1"></i> Guardar
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save mr-1 "></i> Guardar
                         </button>
                         <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
                             <i class="fas fa-times mr-1"></i> Cerrar
@@ -1285,6 +1282,15 @@
                 document.querySelectorAll('.concept-input, .concept-utility')
                     .forEach(input => recalcRow(input.dataset.id));
             });
+
+        document.getElementById('exchange_rate').addEventListener('input', () => {
+            // recalcula todas las filas cuando cambia el tipo de cambio
+            document.querySelectorAll('.concept-input, .concept-utility').forEach(input => {
+                const id = input.dataset.id;
+                recalcRow(id);
+            });
+        });
+
 
 
         $('#formCotizarTransporte').on('submit', function(e) {

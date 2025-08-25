@@ -646,7 +646,7 @@ class QuoteTransportController extends Controller
 
         $quote->update([
             'withdrawal_date' => $dateFormat,
-            'state' => 'Pendiente',
+            'state' => 'Aceptado',
         ]);
 
         // NOTA: no se acepta la respuesta aquí
