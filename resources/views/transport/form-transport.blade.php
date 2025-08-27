@@ -58,14 +58,7 @@
         </div>
     </div>
 
-    <div class="col-6">
-        <div class="form-group">
-            <label>Utilidad de la respuesta</label>
-            <input type="text" class="form-control text-end" @readonly(true)
-                value="{{ number_format($acceptedResponse->value_utility, 2) }}" placeholder="Utilidad">
-        </div>
-    </div>
-
+    
     <div class="col-12">
         <div class="row align-items-end">
             <div class="col-md-4">

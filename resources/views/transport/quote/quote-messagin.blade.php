@@ -898,7 +898,8 @@
                         <hr class="my-2">
 
                         {{-- Encabezados de la “tabla” --}}
-                        <div id="row-headers" class="form-row font-weight-bold small mb-2 bg-light py-1" style="border-bottom:2px solid #002060;">
+                        <div id="row-headers" class="form-row font-weight-bold small mb-2 bg-light py-1"
+                            style="border-bottom:2px solid #002060;">
                             <div class="col-sm-2">Concepto (S/.)</div>
                             <div class="col-sm-2">Valor concepto (S/.)</div>
                             <div class="col-sm-2">Valor venta (S/.)</div>
@@ -942,8 +943,8 @@
 
                                     {{-- Utilidad (US$) ← ESTA COLUMNA TIENE CLASS="concept-utility" --}}
                                     <div class="col-sm-2">
-                                        <input type="number" step="0.01" id="utility_{{ $tc->id }}"
-                                            data-id="{{ $tc->id }}"
+                                        <input type="number" step="0.01"
+                                            id="utility_{{ $tc->id }}" data-id="{{ $tc->id }}"
                                             name="conceptTransport[{{ $tc->id }}][utility]"
                                             class="form-control form-control-sm text-end concept-utility is-required">
                                     </div>
@@ -1317,10 +1318,21 @@
                 toastr.error('Debe completar los campos requeridos');
             } else {
 
+                let utilOk = true;
+                $('.concept-utility').each(function() {
+
+                    const v = parseFloat($(this).val());
+                    if (!(v >= 40)) {
+                        utilOk = false;
+                        $(this).addClass('is-invalid');
+                    }
+                });
+                if (!utilOk) {
+                    toastr.error('La utilidad debe ser mayor a $40 en todos los conceptos');
+                    return;
+                }
                 e.target.submit();
             }
-
-
         });
 
 

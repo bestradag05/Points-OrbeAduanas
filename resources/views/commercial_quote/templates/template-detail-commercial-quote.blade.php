@@ -483,12 +483,21 @@
                                 {{ $service->state }}
                             </div>
                         </td>
-
-
-
+                
                         <td>
-                            <a href="{{ url('/commercial/service/' . strtolower($index) . '/' . $service->id) }}"
-                                class="text-indigo"><i class="fas fa-edit"></i></a>
+                            @php $state = $service->state; @endphp
+
+                            @if (!in_array($state, ['Rechazado', 'Anulado']))
+                                <a href="{{ url('/commercial/service/' . strtolower($index) . '/' . $service->id) }}"
+                                    class="text-indigo">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            @else
+                                {{-- Icono deshabilitado / sin enlace --}}
+                                <span class="text-muted" title="No editable: {{ $state }}">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                            @endif
                         </td>
 
                         {{--  @if (strtolower($index) === 'flete' && $comercialQuote->state === 'Aceptado')
@@ -535,19 +544,17 @@
     @endif --}}
 
     @if ($comercialQuote->typeService->count() > 0)
-       
-            <div class="col-12">
-                <div class="row justify-content-center">
-                    <form id="formSentClient" action="/commercial/quote/sent-client" method="POST">
-                        @csrf
-                        <input type="hidden" name="commercialQuoteId" id="commercialQuoteId"
-                            value="{{ $comercialQuote->id }}">
-                        <button class="btn btn-indigo mx-2 text-bold"> <i class="fas fa-paper-plane"></i> GENERAR
-                            COTIZACIÓN AL CLIENTE</button>
-                    </form>
-                </div>
+        <div class="col-12">
+            <div class="row justify-content-center">
+                <form id="formSentClient" action="/commercial/quote/sent-client" method="POST">
+                    @csrf
+                    <input type="hidden" name="commercialQuoteId" id="commercialQuoteId"
+                        value="{{ $comercialQuote->id }}">
+                    <button class="btn btn-indigo mx-2 text-bold"> <i class="fas fa-paper-plane"></i> GENERAR
+                        COTIZACIÓN AL CLIENTE</button>
+                </form>
             </div>
-
+        </div>
     @endif
 
 
@@ -1006,7 +1013,7 @@
                 if (result.isConfirmed) {
                     // Redirige a la página después de que el usuario haga clic en "Ir"
                     window.location.href =
-                    '{{ route('sent-client.index') }}'; // Ajusta esta URL a la ruta de tu lista de cotizaciones
+                        '{{ route('sent-client.index') }}'; // Ajusta esta URL a la ruta de tu lista de cotizaciones
                 }
             });
         </script>
