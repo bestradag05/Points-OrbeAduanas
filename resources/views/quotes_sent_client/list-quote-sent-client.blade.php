@@ -28,7 +28,7 @@
                     {{ $quoteSentClient->commercialQuote->originState->name }}</td>
                 <td class="text-uppercase">{{ $quoteSentClient->commercialQuote->destinationState->country->name }} -
                     {{ $quoteSentClient->commercialQuote->destinationState->name }}</td>
-                <td class="text-uppercase">{{ $quoteSentClient->commercialQuote->customer->name_businessname }}</td>
+                <td class="text-uppercase">{{ $quoteSentClient->commercialQuote->customer->name_businessname ?? '' }}</td>
                 <td>{{ $quoteSentClient->commercialQuote->type_shipment->description . ' ' . ($quoteSentClient->commercialQuote->type_shipment->description === 'Marítima' ? $quoteSentClient->commercialQuote->lcl_fcl : '') }}
                 </td>
                 <td>{{ $quoteSentClient->commercialQuote->personal->names }}</td>
@@ -69,6 +69,7 @@
 
     {{-- Incluimos componentes --}}
     @include('components.modalJustification')
+    @include('commercial_quote/modals/modalCommercialFillData')
 
 @stop
 
@@ -83,21 +84,33 @@
             switch (action) {
                 case 'accept':
 
-                    Swal.fire({
-                        title: '¿El cliente acepto la cotización?',
-                        text: 'Esta accion cambiara ha aceptada el estado de la cotización',
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonText: 'Aceptar',
-                        cancelButtonText: 'Cancelar',
-                        confirmButtonColor: '#2e37a4'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            let route = `/sent-client/${quoteSentClient}/${action}`
-                            openModalJustification(action, route);
+                    let allQuotes = @json($quotesSentClient);
+                    let quote = allQuotes.find(q => q.id === quoteSentClient);
 
-                        }
-                    });
+                    if (!quote.id_customer || !quote.id_supplier) {
+
+                        confirmCustomerAndSupplierData(quote);
+
+                    } else {
+
+                        Swal.fire({
+                            title: '¿El cliente acepto la cotización?',
+                            text: 'Esta accion cambiara ha aceptada el estado de la cotización',
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonText: 'Aceptar',
+                            cancelButtonText: 'Cancelar',
+                            confirmButtonColor: '#2e37a4'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                let route = `/sent-client/${quoteSentClient}/${action}`
+                                openModalJustification(action, route);
+
+                            }
+                        });
+                    }
+
+
 
                     break;
                 case 'decline':
@@ -159,6 +172,227 @@
                     break;
             }
 
+        }
+
+
+        function confirmCustomerAndSupplierData(quote) {
+
+            Swal.fire({
+                title: '¿Faltan datos importantes?',
+                text: 'Antes de aceptar, por favor complete los datos del cliente o proveedor.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Aceptar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#2e37a4'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Mostrar un modal con select2 para seleccionar o registrar cliente y/o proveedor
+                    let nameCustomer = quote.customer_company_name;
+                    let isConsolidated = quote.is_consolidated;
+                    let idCustomer = quote.id_customer;
+                    completeCustomerInformation(quote, nameCustomer, idCustomer, isConsolidated);
+                }
+            });
+
+        }
+
+
+
+        function completeCustomerInformation(quote, nameCustomer, idCustomer, isConsolidated) {
+
+            let modal = $('#commercialFillData');
+            modal.find('#quoteSentClient').val(quote.id);
+
+            if (isConsolidated) {
+                let shippersCosolidated = quote.commercial_quote.consolidated_cargos;
+                //TODO:Falta verificar si esto funciona.
+                if (shippersCosolidated.length > 0) {
+                    $('#supplier-data').addClass('d-none');
+                    $('#has_supplier_data').val(0);
+                }
+
+            }
+
+            if (idCustomer) {
+
+                $('#customer-data').addClass('d-none');
+                $('#has_customer_data').val(0);
+
+            } else {
+
+                if (nameCustomer) {
+                    //Agregamos el nombre que guardo si es que lo tenia
+                    modal.find('#name_businessname').val(nameCustomer);
+                }
+            }
+
+            modal.modal('show');
+        }
+
+
+        function submitFillData() {
+
+            let formFillData = $('#forCommercialFillData');
+            let hasCustomerData = $('#has_customer_data').val() === '1';
+            let hasSupplierData = $('#has_supplier_data').val() === '1';
+            let inputsAndSelects = formFillData.find('input, select');
+
+            let isValid = true;
+
+            inputsAndSelects.each(function() {
+                let $input = $(this); // Convertir a objeto jQuery
+                let value = $input.val();
+
+                if (!hasCustomerData && $input.closest('#customer-data').length > 0) {
+                    return; // skip this input
+                }
+
+                if (!hasSupplierData && $input.closest('#supplier-data').length > 0) {
+                    return; // skip this input
+                }
+
+                if (value.trim() === '') {
+                    $input.addClass('is-invalid');
+                    isValid = false;
+                    showError(this, 'Debe completar este campo');
+                } else {
+                    $input.removeClass('is-invalid');
+                    hideError(this);
+                }
+            });
+
+            if (isValid) {
+                // Enviar el formulario usando AJAX
+                $.ajax({
+                    url: formFillData.attr(
+                        'action'), // Usamos la URL definida en el atributo 'action' del formulario
+                    method: 'POST',
+                    data: formFillData.serialize(), // Serialize los datos del formulario
+                    success: function(response) {
+                        let modal = $('#commercialFillData');
+                        modal.modal('hide');
+
+                        toastr.success('Datos completados para la cotización');
+
+                        let quoteSentClient = $('#quoteSentClient').val();
+                        let route = `/sent-client/${quoteSentClient}/accept`
+                        openModalJustification('accept', route);
+
+                        formFillData.trigger('reset');
+                    },
+                    error: function(xhr, status, error) {
+                        // Aquí manejamos los errores en caso de que algo falle en el envío
+                        alert('Hubo un error al guardar los datos');
+                        console.log(error);
+                    }
+                });
+            }
+
+        }
+
+        function searchCustomer(e) {
+            let documentNumber = e.value;
+            let formFillData = $('#forCommercialFillData');
+            let typeDocument = parseInt(formFillData.find('#id_document').val());
+
+            // Hacer una llamada AJAX para obtener los datos del cliente desde el servidor
+            $.ajax({
+                url: `/customer/${documentNumber}`,
+                method: 'GET',
+                data: {
+                    document_number: documentNumber,
+                    id_document: typeDocument
+                },
+                success: function(response) {
+
+                    if (response.success && response.customer) {
+                        // Si el cliente existe, llenamos los campos
+                        formFillData.find('#name_businessname').val(response.customer.name_businessname).prop(
+                            'readonly', true);
+                        formFillData.find('#address').val(response.customer.address).prop('readonly', true);
+                        formFillData.find('#contact_name').val(response.customer.contact_name).prop('readonly',
+                            true);
+                        formFillData.find('#contact_number').val(response.customer.contact_number).prop(
+                            'readonly', true);
+                        formFillData.find('#contact_email').val(response.customer.contact_email).prop(
+                            'readonly', true);
+                    } else {
+                        // Si el cliente no existe, limpiar los campos
+                        formFillData.find('#name_businessname').val('').prop('readonly', false);
+                        formFillData.find('#address').val('').prop('readonly', false);
+                        formFillData.find('#contact_name').val('').prop('readonly', false);
+                        formFillData.find('#contact_number').val('').prop('readonly', false);
+                        formFillData.find('#contact_email').val('').prop('readonly', false);
+
+                        // También podrías mostrar un mensaje si no se encuentra el cliente
+                        toastr.info(response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al buscar cliente:', error);
+                }
+            });
+
+        }
+
+         function searchSupplier(e) {
+
+             let name_businessname_supplier = e.value;
+            let formFillData = $('#forCommercialFillData');
+
+
+            // Hacer una llamada AJAX para obtener los datos del cliente desde el servidor
+            $.ajax({
+                url: `/suppliers/${name_businessname_supplier}`,
+                method: 'GET',
+                success: function(response) {
+
+                    if (response.success && response.supplier) {
+                        // Si el cliente existe, llenamos los campos
+                        formFillData.find('#address_supplier').val(response.supplier.address).prop('readonly', true);
+                        formFillData.find('#contact_name_supplier').val(response.supplier.contact_name).prop('readonly',
+                            true);
+                        formFillData.find('#contact_number_supplier').val(response.supplier.contact_number).prop(
+                            'readonly', true);
+                        formFillData.find('#contact_email_supplier').val(response.supplier.contact_email).prop(
+                            'readonly', true);
+                    } else {
+                        // Si el cliente no existe, limpiar los campos
+                        formFillData.find('#address_supplier').val('').prop('readonly', false);
+                        formFillData.find('#contact_name_supplier').val('').prop('readonly', false);
+                        formFillData.find('#contact_number_supplier').val('').prop('readonly', false);
+                        formFillData.find('#contact_email_supplier').val('').prop('readonly', false);
+
+                        // También podrías mostrar un mensaje si no se encuentra el cliente
+                        toastr.info(response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al buscar cliente:', error);
+                }
+            });
+
+         }
+
+        function showError(input, message) {
+            let container = input;
+
+            // Si es un SELECT2
+            if (input.tagName === 'SELECT' && $(input).hasClass('select2-hidden-accessible')) {
+                container = $(input).next('.select2')[0];
+            }
+
+            let errorSpan = container.nextElementSibling;
+
+            if (!errorSpan || !errorSpan.classList.contains('invalid-feedback')) {
+                errorSpan = document.createElement('span');
+                errorSpan.classList.add('invalid-feedback', 'd-block'); // Asegura visibilidad
+                container.after(errorSpan);
+            }
+
+            errorSpan.textContent = message;
+            errorSpan.style.display = 'block';
         }
 
 

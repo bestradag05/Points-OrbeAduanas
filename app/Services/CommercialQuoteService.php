@@ -13,6 +13,8 @@ use App\Models\Incoterms;
 use App\Models\Modality;
 use App\Models\PackingType;
 use App\Models\QuoteFreight;
+use App\Models\QuoteSentClientConcept;
+use App\Models\QuotesSentClient;
 use App\Models\QuoteTransport;
 use App\Models\Regime;
 use App\Models\StateCountry;
@@ -241,7 +243,11 @@ class CommercialQuoteService
 
     public function completeDataCommercialQuote($request)
     {
-        $commercialQuote = CommercialQuote::where('nro_quote_commercial', $request->nro_quote_commercial)->first();
+   
+        $quoteSentClient = QuotesSentClient::findOrFail($request->quoteSentClient);
+
+        $commercialQuote = $quoteSentClient->commercialQuote;
+
         $customer = null;
         $supplier = null;
         $updateData = [
@@ -333,8 +339,9 @@ class CommercialQuoteService
         }
 
         $commercialQuote->update($updateData);
+        $quoteSentClient->update($updateData);
 
-        $this->generatePurePoint($commercialQuote);
+/*         $this->generatePurePoint($commercialQuote); */
 
         return $commercialQuote;
     }
@@ -605,7 +612,7 @@ class CommercialQuoteService
         return $commercialQuote;
     }
 
-    public function generatePurePoint($commercialQuote)
+/*     public function generatePurePoint($commercialQuote)
     {
         if ($commercialQuote->state === 'Aceptado') {
 
@@ -632,7 +639,7 @@ class CommercialQuoteService
                 }
             }
         }
-    }
+    } */
 
 
     public function updateDate($request, $id)

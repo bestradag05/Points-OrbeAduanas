@@ -32,7 +32,7 @@
                         <label class="col-sm-4 col-form-label">Origen : </label>
                         <div class="col-sm-8">
 
-                            <p class="form-control-plaintext">{{ $commercialQuote->origin }}</p>
+                            <p class="form-control-plaintext">{{ $commercialQuote->originState->country->name }} - {{ $commercialQuote->originState->name }}</p>
                         </div>
 
                     </div>
@@ -42,7 +42,8 @@
                         <label class="col-sm-4 col-form-label">Destino : </label>
                         <div class="col-sm-8">
 
-                            <p class="form-control-plaintext">{{ $commercialQuote->destination }}</p>
+                            <p class="form-control-plaintext">{{ $commercialQuote->destinationState->country->name }} -
+                            {{ $commercialQuote->destinationState->name }}</p>
                         </div>
 
                     </div>

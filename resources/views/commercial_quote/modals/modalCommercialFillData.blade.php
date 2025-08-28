@@ -4,8 +4,7 @@
             <form action="/commercial/quote/completeData" method="POST" id="forCommercialFillData">
                 @csrf
 
-                <input type="hidden" name="nro_quote_commercial" value="{{ $comercialQuote->nro_quote_commercial }}">
-
+                <input type="hidden" id="quoteSentClient" name="quoteSentClient">
                 <div class="row">
 
                     <div id="customer-data" class="row col-12 ">
@@ -19,7 +18,7 @@
                         <div class="col-6">
                             <div class="form-group">
                                 <label for="document_number">Tipo de documento</label>
-                                <select name="id_document" class="form-control form-control-sm">
+                                <select id="id_document" name="id_document" class="form-control form-control-sm">
                                     <option />
                                     @foreach ($documents as $document)
                                         <option value="{{ $document->id }}"
@@ -40,7 +39,7 @@
                                     </div>
                                     <input type="text" class="form-control form-control-sm" id="document_number"
                                         name="document_number" placeholder="Ingrese su numero de documento"
-                                        onchange="searchsupplier(this)"
+                                        onchange="searchCustomer(this)"
                                         value="{{ isset($customer->document_number) ? $customer->document_number : old('document_number') }}">
 
                                 </div>
@@ -144,7 +143,7 @@
                                 <input type="text"
                                     class="form-control @error('name_businessname_supplier') is-invalid @enderror"
                                     id="name_businessname_supplier" name="name_businessname_supplier"
-                                    placeholder="Ingrese su razon social o nombre"
+                                    placeholder="Ingrese su razon social o nombre"  onchange="searchSupplier(this)"
                                     @error('name_businessname_supplier') is-invalid @enderror
                                     value="{{ isset($supplier->name_businessname_supplier) ? $supplier->name_businessname_supplier : old('name_businessname_supplier') }}">
                                 @error('name_businessname_supplier')

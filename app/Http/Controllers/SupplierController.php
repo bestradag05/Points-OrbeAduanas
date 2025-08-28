@@ -97,9 +97,18 @@ class SupplierController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $nameBusinessname)
     {
-        //
+        // Buscar al cliente según el número de documento y tipo de documento
+        $supplier = Supplier::where('name_businessname', $nameBusinessname)
+            ->where('area_type', 'comercial')
+            ->first();
+
+        if ($supplier) {
+            return response()->json(['success' => true, 'supplier' => $supplier]);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Proveedor no encontrado, debe completar los campos.']);
+        }
     }
 
     /**

@@ -77,15 +77,9 @@ class CommercialQuoteController extends Controller
     public function completeData(Request $request)
     {
 
-        $commercialQuote = $this->commercialQuoteService->completeDataCommercialQuote($request);
+       $respuesta =  $this->commercialQuoteService->completeDataCommercialQuote($request);
 
-        return redirect()
-            ->route('commercial.quote.detail', $commercialQuote->id)
-            ->with([
-                'success' => 'La cotización fue aceptada.',
-                'show_client_trace_modal' => true,
-                'quote_id' => $commercialQuote->id
-            ]);
+       return $respuesta;
     }
 
 

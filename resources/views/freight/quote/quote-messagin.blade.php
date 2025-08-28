@@ -273,8 +273,7 @@
                             <div class="col-12">
                                 <p class="text-sm">Contenedor(s) :
                                 <div class="d-flex flex-wrap">
-                                    @foreach ($quote->commercial_quote->commercialQuoteContainers as $commercialContainer)
-                                        {{dd($commercialContainer)}}    
+                                    @foreach ($quote->commercial_quote->commercialQuoteContainers as $commercialContainer) 
                                     <ul class="list-group list-group-flush text-bold d-inline-block mr-3">
                                             <li class="list-group-item pl-0 pt-2">
                                                 {{ $commercialContainer->container_quantity }} x

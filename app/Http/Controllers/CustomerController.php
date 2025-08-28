@@ -104,27 +104,37 @@ class CustomerController extends Controller
     }
 
 
-    public function getDataForRuc($document_number){
+    public function getDataForRuc($document_number)
+    {
 
         $customer = Customer::where('document_number', $document_number)->first();
 
-        if(!$customer)
-        {
+        if (!$customer) {
             return null;
         }
 
         return response()->json($customer);
-
-
     }
 
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id, Request $request)
     {
-        //
+        $documentNumber = $request->input('document_number');
+        $idDocument = $request->input('id_document');
+
+        // Buscar al cliente según el número de documento y tipo de documento
+        $customer = Customer::where('document_number', $documentNumber)
+            ->where('id_document', $idDocument)
+            ->first();
+
+        if ($customer) {
+            return response()->json(['success' => true, 'customer' => $customer]);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Cliente no encontrado, debe completar los campos.']);
+        }
     }
 
     /**

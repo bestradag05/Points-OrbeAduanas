@@ -560,7 +560,7 @@
 @include('commercial_quote/modals/modalFreight')
 @include('commercial_quote/modals/modalCustom')
 @include('commercial_quote/modals/modalTransport')
-@include('commercial_quote/modals/modalCommercialFillData')
+
 @if ($comercialQuote->freight)
     @include('commercial_quote/modals/modalGenerateRoutingOrder')
 @endif
@@ -716,81 +716,6 @@
                 }
             });
         })
-
-
-        function completeCustomerInformation(nameCustomer, idCustomer, isConsolidated) {
-
-            let modal = $('#commercialFillData');
-
-            if (isConsolidated) {
-                let shippersCosolidated = @json($comercialQuote->consolidatedCargos);
-
-                if (shippersCosolidated.length > 0) {
-                    $('#supplier-data').addClass('d-none');
-                    $('#has_supplier_data').val(0);
-                }
-
-            }
-
-            if (idCustomer) {
-
-                $('#customer-data').addClass('d-none');
-                $('#has_customer_data').val(0);
-
-            } else {
-
-                if (nameCustomer) {
-                    //Agregamos el nombre que guardo si es que lo tenia
-                    modal.find('#name_businessname').val(nameCustomer);
-                }
-            }
-
-            modal.modal('show');
-
-
-        }
-
-
-        function submitFillData() {
-
-            let formFillData = $('#forCommercialFillData');
-            let hasCustomerData = $('#has_customer_data').val() === '1';
-            let hasSupplierData = $('#has_supplier_data').val() === '1';
-            let inputsAndSelects = formFillData.find('input, select');
-
-            let isValid = true;
-
-            inputsAndSelects.each(function() {
-                let $input = $(this); // Convertir a objeto jQuery
-                let value = $input.val();
-
-                if (!hasCustomerData && $input.closest('#customer-data').length > 0) {
-                    return; // skip this input
-                }
-
-                if (!hasSupplierData && $input.closest('#supplier-data').length > 0) {
-                    return; // skip this input
-                }
-
-                if (value.trim() === '') {
-                    $input.addClass('is-invalid');
-                    isValid = false;
-                    showError(this, 'Debe completar este campo');
-                } else {
-                    $input.removeClass('is-invalid');
-                    hideError(this);
-                }
-            });
-
-            if (isValid) {
-                formFillData.submit();
-            }
-
-
-
-        }
-
-
 
 
         function searchsupplier(event) {

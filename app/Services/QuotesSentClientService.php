@@ -2,7 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\Customer;
+use App\Models\CustomerSupplierDocument;
 use App\Models\QuotesSentClient;
+use App\Models\Supplier;
 use Illuminate\Support\Facades\Auth;
 
 class QuotesSentClientService
@@ -12,6 +15,8 @@ class QuotesSentClientService
     public function getQuotesSetClient(array $filters = [])
     {
         $query = QuotesSentClient::query();
+        $documents = CustomerSupplierDocument::all();
+
 
         $personalId = Auth::user()->personal->id;
 
@@ -26,8 +31,11 @@ class QuotesSentClientService
 
         // Puedes seguir agregando más filtros condicionales aquí...
 
+        $quotesSentClient = $query->with('commercialQuote.consolidatedCargos')->get();
+
         return [
-            'quotesSentClient' => $query->get()
+            'quotesSentClient' => $quotesSentClient,
+            'documents' => $documents
         ];
     }
 }
