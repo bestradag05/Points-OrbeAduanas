@@ -150,7 +150,7 @@
     </div>
 
     <div class="container text-center mt-5">
-        <input class="btn btn-primary" type="submit" id="btnGuardar"
+        <input class="btn btn-indigo" type="submit" id="btnGuardar"
             value="{{ $formMode === 'edit' ? 'Actualizar' : 'Guardar' }}">
     </div>
 
@@ -160,7 +160,6 @@
 
 @push('scripts')
     <script>
-        // —– VARIABLES GLOBALES (disponibles para funciones) —–
         let conceptsArray;
         let conceptsTransport;
         let total;
@@ -174,7 +173,6 @@
 
 
 
-        // —– INICIALIZACIÓN & HOOKS —–
         $(document).ready(function() {
             conceptsArray = [];
 
@@ -183,14 +181,11 @@
                 conceptsTransport = @json($transport->concepts);
                 total = 0;
 
-                // Carga inicial unificada
                 conceptsTransport.forEach(c => {
                     conceptsArray.push({
                         id: c.id,
                         name: c.name,
-                        // Este es el valor que el usuario puso (value_concept), editable en edit
                         value: formatValue(c.pivot.value_concept),
-                        // Este es el sale_price de la respuesta, readonly
                         pivotValue: c.pivot.response_value
                     });
                 });
@@ -201,15 +196,12 @@
                 conceptsTransport = @json($conceptsTransport);
                 total = 0;
 
-                // Carga inicial unificada
                 conceptsTransport.forEach(c => {
                     console.log(c);
                     conceptsArray.push({
                         id: c.concepts_id,
                         name: c.concept.name,
-                        // Este es el valor que el usuario puso (value_concept), editable en edit
                         value: 0,
-                        // Este es el sale_price de la respuesta, readonly
                         pivotValue: c.pivot.sale_price
                     });
                 });
@@ -236,12 +228,10 @@
             let subtotalValue, igvValue, ganancia;
 
             if (includesIgv) {
-                // Respuesta aceptada incluyó IGV → mantenemos la lógica actual
                 subtotalValue = +(total / 1.18).toFixed(2);
                 igvValue = +(total - subtotalValue).toFixed(2);
                 ganancia = (total - totalRespuestaParam) / 1.18;
             } else {
-                // Respuesta aceptada NO incluyó IGV → no sacamos IGV en Transporte
                 subtotalValue = +total.toFixed(2);
                 igvValue = 0.00;
                 ganancia = (total - totalRespuestaParam);
@@ -317,8 +307,7 @@
 
             calcTotal(sumaLocal);
         }
-
-        // —– Agrega desde dropdown —–
+                   
         function addConceptFromDropdown() {
             const sel = document.getElementById('conceptSelect');
             const inp = document.getElementById('conceptValue');
@@ -337,14 +326,14 @@
             const idx = conceptsArray.findIndex(c => c.id === conceptId);
             if (idx !== -1) {
                 conceptsArray[idx].value = value;
-                conceptsArray[idx].isNew = true; // vuelve a marcarlo editable
+                conceptsArray[idx].isNew = true; 
             } else {
                 conceptsArray.push({
                     id: conceptId,
                     name: conceptName,
                     value: value,
                     pivotValue: 0,
-                    isNew: true // aquí la novedad
+                    isNew: true
                 });
             }
             sel.value = '';

@@ -31,17 +31,14 @@ class ResponseTransportQuoteController extends Controller
 
     public function show(string $id)
     {
-        // Carga la respuesta con las relaciones necesarias para el PDF
         $response = ResponseTransportQuote::with([
-            'supplier',                 // proveedor
-            'quoteTransport',                    // cabecera de la cotización de transporte
-            'conceptResponseTransports.concept', // detalle por concepto (si tienes relación con Concept)
+            'supplier',                 
+            'quoteTransport',                    
+            'conceptResponseTransports.concept', 
         ])->findOrFail($id);
 
-        // Renderiza la vista del PDF (crearemos este blade en el paso 6)
         $pdf = FacadePdf::loadView('transport.pdf.responseTransport', compact('response'));
 
-        // Devuelve el PDF para embeber en iframe
         return $pdf->stream('RespuestaTransporte.pdf');
     }
 
@@ -94,24 +91,21 @@ class ResponseTransportQuoteController extends Controller
             $totalUsd  = round($vals['totalusd'], 2);
             $salePrice = round($vals['saleprice'], 2);
 
-            // sólo calculamos IGV si el usuario lo indicó
             $igv = $includeIgv
                 ? round($net * 0.18, 2)
                 : null;
 
-            // total en soles: net + igv (o solo net si no hay IGV)
             $sol = $includeIgv
                 ? round($net + $igv, 2)
                 : $net;
 
-            // Acumula en los totales globales
             $sumNet       += $net;
             $sumUtil      += $util;
             if ($includeIgv) {
                 $sumIgv  += $igv;
                 $sumSol  += $sol;
             } else {
-                $sumSol  += $sol; // sumSol suma netos si no incluye igv
+                $sumSol  += $sol;
             }
             $sumTotalUsd  += $totalUsd;
             $sumSalePrice += $salePrice;

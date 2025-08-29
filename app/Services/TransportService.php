@@ -23,7 +23,6 @@ class TransportService
 
     public function index()
     {
-        // Listar transportes
 
         $transports = Transport::all();
 
@@ -44,8 +43,6 @@ class TransportService
 
     public function getTransportPending()
     {
-
-        //Listar aduanas
 
         $transports = Transport::where('state', 'Pendiente')->get();
 
@@ -101,7 +98,7 @@ class TransportService
         $quote = QuoteTransport::findOrFail($quoteId);
         $commercial_quote = $quote->commercial_quote;
         $acceptedResponse = $quote
-            ->responses()
+            ->response()
             ->where('status', 'Aceptado')
             ->with(['conceptResponseTransports.concept'])
             ->first();
@@ -151,7 +148,7 @@ class TransportService
         $concepts  = json_decode($request->concepts);
         $quoteId = $request->input('quote_transport_id');
         $quote = QuoteTransport::findOrFail($quoteId);
-        $response = $quote->responses()->where('status', 'Aceptado')->with('conceptResponseTransports')->first();
+        $response = $quote->response()->where('status', 'Aceptado')->with('conceptResponseTransports')->first();
 
         // 1. Creamos el transporte sin total aún (lo pondremos luego)
         $transport = $this->createOrUpdateTransport($request);
@@ -175,7 +172,6 @@ class TransportService
 
         $concepts = Concept::all();
 
-        // Cargamos la respuesta aceptada con sus pivots y el concepto
         $acceptedResponse = ResponseTransportQuote::where('quote_transport_id', $quote->id)
             ->where('status', 'Aceptado')
             ->with('conceptResponseTransports.concept')
@@ -207,7 +203,7 @@ class TransportService
         $quoteId = $request->input('quote_transport_id');
         $quote = QuoteTransport::findOrFail($quoteId);
 
-        $response = $quote->responses()->where('status', 'Aceptado')->with('conceptResponseTransports')->first();
+        $response = $quote->response()->where('status', 'Aceptado')->with('conceptResponseTransports')->first();
 
         $this->syncTransportConcepts($transport, $concepts, $response);
 
@@ -219,10 +215,8 @@ class TransportService
     {
         /* $transport = $id ? Transport::findOrFail($id) : new Transport(); */
 
-        // Buscar transporte existente por nro_quote_commercial
         $transport = Transport::where('nro_quote_commercial', $request->nro_quote_commercial)->first();
 
-        // Si no existe, se crea uno nuevo
         if (! $transport) {
             $transport = new Transport();
         }
@@ -233,10 +227,8 @@ class TransportService
 
         if ($commercial && $typeService) {
             if ($id) {
-                // Si es una edición, aseguramos que la relación exista sin duplicarse
                 $commercial->typeService()->syncWithoutDetaching([$typeService->id]);
             } else {
-                // Si es una creación, simplemente la agregamos
                 $commercial->typeService()->attach($typeService->id);
             }
         }
@@ -267,19 +259,18 @@ class TransportService
 
     private function syncTransportConcepts($transport, $concepts, $response): void
 
-    {
-        // Eliminar los conceptos previos si estamos actualizando, pero antes 
-        $conceptsTransport = ConceptsTransport::where('transport_id', $transport->id)->get(); // cuando eliminamos el concepto se elimina el additional_point relacionado en cascada
+    { 
+        $conceptsTransport = ConceptsTransport::where('transport_id', $transport->id)->get(); 
 
         if ($conceptsTransport) {
             foreach ($conceptsTransport as $concept) {
-                $concept->forceDelete(); // Esto elimina el ConceptTransport definitivamente
+                $concept->forceDelete(); 
             }
         }
 
         $totalTransport = 0;
 
-        // Relacionamos los nuevos conceptos con el tranporte
+        
         foreach ($concepts as $concept) {
             /*  $added = $this->parseDouble($concept->added);
 

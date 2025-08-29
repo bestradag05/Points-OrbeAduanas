@@ -236,13 +236,13 @@ class QuoteTransportController extends Controller
             'messages.sender.personal',
             'commercial_quote',
             'transportConcepts',
-            'responses.supplier',
-            'responses',
+            'response.supplier',
+            'response',
         ])->findOrFail($id);
 
         if (in_array($quote->state, ['Anulado', 'Rechazado'])) {
             return redirect()
-                ->route('quote.transport.personal') // o a la lista que corresponda
+                ->route('quote.transport.personal')
                 ->with('warning', "La cotización {$quote->nro_quote} está {$quote->state}. No es posible ver el detalle.");
         }
 
@@ -250,7 +250,7 @@ class QuoteTransportController extends Controller
             ->map(fn($tc) => $tc->setRelation('concepts', $tc->concepts));
 
         $latestResp = $quote
-            ->responses()
+            ->response()
             ->orderBy('id', 'desc')
             ->first();
 
@@ -267,14 +267,11 @@ class QuoteTransportController extends Controller
         // 4) Inyecto “Transporte” al principio si aún no vino seleccionado
         $chosen = $quote->transportConcepts->keyBy('concepts_id');
         if ($transporteConcepts && ! $chosen->has($transporteConcepts->id)) {
-            // Creo un modelo pivot simulado (sin persistir)
             $fake = new \App\Models\ConceptsQuoteTransport([
                 'concepts_id'   => $transporteConcepts->id,
                 'value_concepts' => null,
             ]);
-            // le asigno la relación 'concept' para que en la vista funcione $fake->concept->name
             $fake->setRelation('concept', $transporteConcepts);
-            // lo agrego al inicio
             $quote->setRelation(
                 'transportConcepts',
                 $quote->transportConcepts->prepend($fake)
@@ -331,7 +328,7 @@ class QuoteTransportController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        
         $quote = QuoteTransport::findOrFail($id);
         $showModal = false;
 
@@ -367,7 +364,7 @@ class QuoteTransportController extends Controller
 
     public function updateQuoteTransport(Request $request, string $id)
     {
-        $quote = QuoteTransport::with(['responses.commissions', 'commercial_quote.commercialQuoteContainers.packingType'])->findOrFail($id);
+        $quote = QuoteTransport::with(['response.commissions', 'commercial_quote.commercialQuoteContainers.packingType'])->findOrFail($id);
 
         //Buscar concepto de transporte manualmente:
 
@@ -379,7 +376,7 @@ class QuoteTransportController extends Controller
         // 1) Decodificar conceptos enviados desde el modal
         $concepts = json_decode(
             $request->input('conceptsTransportModal', '[]'),
-            true      // <- convierte a array asociativo
+            true      
         );
 
         $concepts[] = [

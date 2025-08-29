@@ -418,8 +418,8 @@
                 <h5 class="text-indigo"><i class="fas fa-file-alt"></i> Lista de respuestas</h5>
                 <!-- Botón para abrir el modal -->
                 @can('transporte.quote.response')
-                    @if (!$quote->responses->contains('status', 'Aceptado'))
-                        <button type="button" class="btn btn-primary" data-toggle="modal"
+                    @if (!$quote->response->contains('status', 'Aceptado'))
+                        <button type="button" class="btn btn-indigo" data-toggle="modal"
                             data-target="#modalCotizarTransporte">
                             <i class="fas fa-truck mr-1"></i> Responder
                         </button>
@@ -441,7 +441,7 @@
                     <th>Acciones</th>
                 </thead>
                 <tbody>
-                    @foreach ($quote->responses as $response)
+                    @foreach ($quote->response as $response)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $response->nro_response }}</td>
@@ -471,7 +471,7 @@
                                             data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
                                             Rechazar
                                         </button>
-                                    @elseif ($quote->responses->contains('status', 'Aceptado'))
+                                    @elseif ($quote->response->contains('status', 'Aceptado'))
                                         <span class="text-muted">Sin acciones</span>
                                     @else
                                         <button class="btn btn-success btn-sm" data-toggle="modal"
@@ -834,13 +834,13 @@
         aria-labelledby="modalCotizarTransporte-title" aria-hidden="true">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
-                <form method="POST" action="{{ route('transport.quote.responses.store') }}"
+                <form method="POST" action="{{ route('transport.quote.response.store') }}"
                     id="formCotizarTransporte">
                     @csrf
 
                     <input type="hidden" name="quote_id" value="{{ $quote->id }}">
                     {{-- HEADER --}}
-                    <div class="modal-header py-2 bg-primary text-white">
+                    <div class="modal-header py-2 bg-indigo text-white">
                         <h5 class="modal-title mb-0">Respuesta: <strong>{{ $nro_response }}</strong></h5>
                         <button type="button" class="close text-white"
                             data-dismiss="modal"><span>&times;</span></button>
@@ -976,7 +976,7 @@
 
                     {{-- FOOTER --}}
                     <div class="modal-footer py-2">
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-indigo">
                             <i class="fas fa-save mr-1 "></i> Guardar
                         </button>
                         <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
@@ -1085,17 +1085,13 @@
 
         $(document).on('click', '.btn-pdf-transport', function() {
             const responseId = $(this).data('response-id');
-            // Ruta al método show de transporte (ver sección 4: Ruta)
-            const url = "{{ route('transport.quote.responses.show', ['id' => '__ID__']) }}".replace('__ID__',
+            const url = "{{ route('transport.quote.response.show', ['id' => '__ID__']) }}".replace('__ID__',
                 responseId);
 
-            // Limpia y setea src del iframe
             const $iframe = $('#pdfFrameTransport');
-            $iframe.attr('src', 'about:blank'); // limpio para evitar caché visual
+            $iframe.attr('src', 'about:blank'); 
             $('#pdfDetailResponseTransport').modal('show');
 
-            // Cargar el PDF en el iframe
-            // (pequeño delay para asegurar que el modal abrió antes de setear src)
             setTimeout(() => $iframe.attr('src', url), 150);
         });
 
@@ -1105,25 +1101,23 @@
 
         Dropzone.options.myDropzone = {
 
-            url: '/quote/transport/file-upload-documents', // Ruta para subir los archivos
-            maxFilesize: 2, // Tamaño máximo en MB
-            acceptedFiles: '.jpg,.jpeg,.png,.gif,.pdf', // Tipos permitidos
-            autoProcessQueue: true, // Subir automáticamente al añadir
+            url: '/quote/transport/file-upload-documents', 
+            maxFilesize: 2, 
+            acceptedFiles: '.jpg,.jpeg,.png,.gif,.pdf', 
+            autoProcessQueue: true, 
             params: {
                 commercial_quote,
-                transport_quote // Envía este dato adicional al servidor
+                transport_quote 
             },
 
             init: function() {
-                let uploadedFiles = []; // Almacena los nombres de archivos subidos
+                let uploadedFiles = []; 
                 let myDropzone = this;
 
                 let tableBody = document.querySelector("#table-file-transport tbody");
 
                 this.on('addedfile', function(file) {
-                    // Si el archivo es PDF, asigna una miniatura personalizada (imagen predeterminada)
                     if (/\.pdf$/i.test(file.name)) {
-                        // Usamos la URL de la imagen predeterminada para los PDFs
                         let pdfThumbnailUrl =
                             'https://static.vecteezy.com/system/resources/previews/023/234/824/non_2x/pdf-icon-red-and-white-color-for-free-png.png'; // Cambia esto por la ruta de tu imagen predeterminada
                         this.emit("thumbnail", file, pdfThumbnailUrl);
@@ -1155,9 +1149,6 @@
                     fileCell.appendChild(link);
 
 
-                    //Creamos el boton de eliminar
-
-                    // Columna del botón eliminar
                     let actionCell = document.createElement("td");
                     actionCell.className = "text-center";
                     let removeButton = document.createElement("a");
@@ -1177,7 +1168,6 @@
                         }).then(response => {
 
                             row.remove();
-                            // Eliminar de Dropzone
                             myDropzone.removeFile(file);
 
                         }).catch(error => {
@@ -1191,10 +1181,6 @@
                     row.appendChild(actionCell);
 
                     tableBody.appendChild(row);
-
-
-                    // Guardar en el mapa de archivos subidos
-                    /* uploadedFiles.set(response.filename, listItem); */
 
 
                     uploadedFiles.push({
@@ -1224,33 +1210,30 @@
                 console.error('Error al eliminar el archivo:', error);
             });
         }
-
-        // —– 1) Recalcula una sola fila —–
         function recalcRow(id) {
             const exchangeRate = parseFloat(document.getElementById('exchange_rate').value) || 1;
             const price = parseFloat(document.getElementById(`price_${id}`).value) || 0;
             const util = parseFloat(document.getElementById(`utility_${id}`).value) || 0;
             const includeIGV = document.getElementById('includeIgv').checked;
 
-            // precio + IGV en S/
+
             const withIgv = includeIGV ?
                 +(price * 1.18).toFixed(2) :
                 price;
-            // pasa a USD
+
             const totalUsd = +(withIgv / exchangeRate).toFixed(2);
-            // suma utilidad
+
             const totalUsdUtil = +(totalUsd + util).toFixed(2);
 
-            // vuelca en los campos de la fila
+
             document.getElementById(`priceIgv_${id}`).value = withIgv.toFixed(2);
             document.getElementById(`totalIgvUsd_${id}`).value = totalUsd.toFixed(2);
             document.getElementById(`totalIgvUtilUsd_${id}`).value = totalUsdUtil.toFixed(2);
 
-            // y recalc general
             recalcTotalCostoVenta();
         }
 
-        // —– 2) Suma todas las filas para Total Costo Venta —–
+
         function recalcTotalCostoVenta() {
             let sum = 0;
             document.querySelectorAll('[id^="totalIgvUtilUsd_"]').forEach(input => {
@@ -1259,19 +1242,19 @@
             document.getElementById('totalCostoVenta').value = sum.toFixed(2);
         }
 
-        // —– 3) Engancha los eventos al cargar la página —–
+
         document.addEventListener('DOMContentLoaded', () => {
-            // cuando cambias precio
+ 
             document.querySelectorAll('.concept-input').forEach(input => {
                 const id = input.dataset.id;
                 input.addEventListener('input', () => recalcRow(id));
             });
-            // cuando cambias utilidad
+
             document.querySelectorAll('.concept-utility').forEach(input => {
                 const id = input.dataset.id;
                 input.addEventListener('input', () => recalcRow(id));
             });
-            // y recalcula todo al principio (por si hay valores precargados)
+
             document.querySelectorAll('.concept-input, .concept-utility').forEach(input => {
                 const id = input.dataset.id;
                 recalcRow(id);
@@ -1285,7 +1268,6 @@
             });
 
         document.getElementById('exchange_rate').addEventListener('input', () => {
-            // recalcula todas las filas cuando cambia el tipo de cambio
             document.querySelectorAll('.concept-input, .concept-utility').forEach(input => {
                 const id = input.dataset.id;
                 recalcRow(id);
@@ -1298,18 +1280,14 @@
 
             e.preventDefault();
 
-            // Obtener todos los inputs con la clase is-required
             let inputs = $(this).find('input.is-required, select.is-required');
             let isValid = true;
 
-            // Recorrer los inputs y verificar si están vacíos
             inputs.each(function() {
                 if ($.trim($(this).val()) === '') {
                     isValid = false;
-                    // Puedes marcar el campo con borde rojo si está vacío
                     $(this).addClass('is-invalid');
                 } else {
-                    // Remover la clase si ya está lleno
                     $(this).removeClass('is-invalid');
                 }
             });
@@ -1339,7 +1317,6 @@
         $('#quote-transport').on('show.bs.modal', function(e) {
             var modal = $(this);
 
-            // Solo si hay un botón que activó el modal
             if (e.relatedTarget) {
                 var button = $(e.relatedTarget);
                 var responseId = button.data('response-id');
@@ -1352,25 +1329,22 @@
 
 
         $('#detailContainer').on('show.bs.modal', function(event) {
-            // Obtener el botón que activó el modal
+
             var button = $(event.relatedTarget);
 
-            // Extraer el objeto contenedor de los atributos data-*
-            var commercialcontainer = button.data(
-                'commercialcontainer'); // Convertimos el JSON de vuelta a un objeto
 
-            // Acceder a las propiedades del objeto contenedor y colocarlas en el modal
+            var commercialcontainer = button.data(
+                'commercialcontainer'); 
+
             var modalBody = $(this).find('.modal-body #containerDetails');
 
-            // Construir la tabla para las medidas
             var measuresTable = '';
             if (commercialcontainer.measures) {
                 var measures = JSON.parse(commercialcontainer
-                    .measures); // Asegúrate de que las medidas estén en formato JSON
+                    .measures); 
                 measuresTable =
                     '<table class="table table-bordered"><thead><tr><th>Cantidad</th><th>Anchura (cm)</th><th>Longitud (cm)</th><th>Altura (cm)</th><th>Unidad de Medida</th></tr></thead><tbody>';
 
-                // Iterar sobre las medidas y agregar filas a la tabla
                 $.each(measures, function(key, measure) {
                     measuresTable += `
             <tr>
@@ -1417,10 +1391,6 @@
             `);
         });
 
-
-
-
-        // Mostrar mensaje de error
         function showError(input, message) {
             let errorSpan = input.nextElementSibling;
             if (!errorSpan || !errorSpan.classList.contains('invalid-feedback')) {
@@ -1432,8 +1402,6 @@
             errorSpan.style.display = 'block';
         }
 
-
-        // Ocultar mensaje de error
         function hideError(input) {
             let errorSpan = input.nextElementSibling;
             if (errorSpan && errorSpan.classList.contains('invalid-feedback')) {

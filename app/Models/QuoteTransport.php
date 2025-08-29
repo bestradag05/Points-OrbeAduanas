@@ -114,16 +114,14 @@ class QuoteTransport extends Model
     public function setCostTransportAttribute($value)
     {
         $this->attributes['cost_transport'] = $value;
-        // Calcular total_transport si es necesario
         $this->attributes['total_transport'] = $value + ($this->transportConcepts->sum('pivot.added_value') ?? 0);
     }
 
-    //TODO: (Task) Cambiar el nombre a response, ya se sobre entiende que son respuesta de transporte por que estas en el modelo QuoteTransport
-    public function responses()
+    public function response()
     {
         return $this->hasMany(
             ResponseTransportQuote::class,
-            'quote_transport_id',     // FK hacia quote_transport
+            'quote_transport_id',     
         );
     }
 
@@ -133,8 +131,8 @@ class QuoteTransport extends Model
     {
         return $this->belongsToMany(
             Concept::class,
-            'concepts_quote_transport',      // tu tabla de pivot
-            'quote_transport_id',           // FK en pivot hacia esta tabla
+            'concepts_quote_transport',      
+            'quote_transport_id',          
             'concepts_id'
         );
     }
