@@ -328,12 +328,14 @@
         function selectInsurance(select) {
 
             let typesInsurance = @json($type_insurace);
-            let fobValue = @json($commercial_quote->load_value);
+            let fobValue = parseFloat(@json($commercial_quote->load_value));
             let typeShipment = @json($commercial_quote->type_shipment);
             let selectValue = parseInt(select.value);
 
             let insurance = typesInsurance.find(type => type.id === selectValue);
             let rate = insurance.insurance_rate.find(rate => rate.shipment_type_description === typeShipment.description);
+
+            let minValue = parseFloat(rate.min_value);
 
             if (!rate) {
                 Swal.fire({
@@ -346,7 +348,7 @@
 
             let total = 0;
 
-            if (fobValue <= rate.min_value) {
+            if (fobValue <= minValue) {
                 total = parseFloat(rate.fixed_cost);
             } else {
                 total = (fobValue * (rate.percentage / 100));

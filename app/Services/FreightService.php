@@ -177,12 +177,22 @@ class FreightService
         $this->syncFreightConcepts($freight, $concepts);
 
         //Actualizamos el valor CIF para la cotizacion:
+        $commercialQuote = $freight->commercial_quote;
 
-        $commercial_quote = CommercialQuote::where("nro_quote_commercial", $request->nro_quote_commercial)->first();
+        $oceanFreight = $freight->concepts->firstWhere('name', 'OCEAN FREIGHT');
 
-        $cif_value = $this->parseDouble($freight->value_sale) + $this->parseDouble($insurance ? $insurance->sales_value : 0) + $this->parseDouble($commercial_quote ? $commercial_quote->load_value : 0);
 
-        $commercial_quote->update(['cif_value' => $cif_value]);
+        $cif_value = $this->parseDouble($oceanFreight->pivot->value_concept) + $this->parseDouble($insurance ? $insurance->insurance_sales_value : 0) + $this->parseDouble($commercialQuote ? $commercialQuote->load_value : 0);
+
+        $commercialQuote->update(['cif_value' => $cif_value]);
+
+
+        //Actualizamos la cotizacion del area interna a cerrada, una vez que se genero el flete
+
+        $freight->quoteFreight->update([
+            'state' => 'Cerrado'
+        ]);
+
 
         return $freight;
     }
@@ -303,11 +313,14 @@ class FreightService
 
         $this->syncFreightConcepts($freight, $concepts);
 
-        $commercial_quote = CommercialQuote::where("nro_quote_commercial", $request->nro_quote_commercial)->first();
+        $commercialQuote = $freight->commercial_quote;
 
-        $cif_value = $this->parseDouble($freight->value_freight) + $this->parseDouble($insurance ? $insurance->insurance_sale : 0) + $this->parseDouble($commercial_quote ? $commercial_quote->load_value : 0);
+        $oceanFreight = $freight->concepts->firstWhere('name', 'OCEAN FREIGHT');
 
-        $commercial_quote->update(['cif_value' => $cif_value]);
+
+        $cif_value = $this->parseDouble($oceanFreight->pivot->value_concept) + $this->parseDouble($insurance ? $insurance->insurance_sales_value : 0) + $this->parseDouble($commercialQuote ? $commercialQuote->load_value : 0);
+
+        $commercialQuote->update(['cif_value' => $cif_value]);
 
 
         return $freight;
@@ -445,7 +458,7 @@ class FreightService
                 'concepts_id' => $concept->id, // ID del concepto relacionado
                 'id_freight' => $freight->id, // Clave foránea al modelo Freight
                 'value_concept' => $this->parseDouble($concept->value),
-              
+
             ]);
         }
     }

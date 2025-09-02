@@ -42,7 +42,7 @@ class QuotesSentClientController extends Controller
             'Tipo de embarque',
             'Asesor Comercial',
             'Consolidado',
-            'Fecha',
+            'Fecha valida',
             'Estado',
             'Acciones'
         ];
@@ -109,6 +109,22 @@ class QuotesSentClientController extends Controller
                 # code...
                 $status = 'Aceptado';
 
+                if ($quotesSentClient->commercialQuote->freight) {
+                    $quotesSentClient->commercialQuote->freight->update([
+                        'state' => 'En Proceso'
+                    ]);  // Agregar el servicio de flete
+                }
+                if ($quotesSentClient->commercialQuote->custom) {
+                    $quotesSentClient->commercialQuote->custom->update([
+                        'state' => 'En Proceso'
+                    ]);
+                }
+                if ($quotesSentClient->commercialQuote->transport) {
+                    $services[] = $quotesSentClient->commercialQuote->transport->update([
+                        'state' => 'En Proceso'
+                    ]); 
+                }
+
                 /* Si es aceptado se debe generar un registro para la gestion de comisiones, ademas se debe generar al punto automatico para los servicios puros */
 
                 //2. Generamos el registro para gestionar comisiones
@@ -136,7 +152,6 @@ class QuotesSentClientController extends Controller
 
 
         $quotesSentClient->update(['status' => $status]);
-
 
         if ($justification) {
             $quotesSentClient->registerJustification($quotesSentClient, $status, $justification);
@@ -244,7 +259,7 @@ class QuotesSentClientController extends Controller
                 'total_points_pure' => $totalPurePoints,
                 'total_points_additional' => $totalAdditionalPoints,
                 'total_points' => $totalPurePoints + $totalAdditionalPoints,
-                'total_profit' => $totalGrossProfit,  
+                'total_profit' => $totalGrossProfit,
                 'total_commission' => $totalGeneratedCommission
             ]);
         }

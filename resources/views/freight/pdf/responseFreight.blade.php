@@ -76,7 +76,7 @@
             <td class="highlight">Cotización</td>
             <td>{{ $response->nro_response }}</td>
             <td class="highlight">VALIDEZ</td>
-            <td>{{ $response->validity_date_formatted }}</td>
+            <td>{{ $response->valid_until_formatted }}</td>
         </tr>
         <tr>
             <td class="highlight">POL</td>

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('response_transport_quotes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('quote_transport_id')->constrained('quote_transport');
+            $table->date('valid_until');
             $table->string('nro_response')->unique()->default('');
             $table->foreignId('provider_id')->constrained('suppliers');
             $table->string('type_vehicle', 100)->nullable();
@@ -28,7 +29,7 @@ return new class extends Migration
             $table->decimal('total_usd', 12, 2)->comment('Total en US$ (total + igv ÷ tipo de cambio)');
             // Total suma de los “sale_price” de cada concepto (USD)
             $table->decimal('total_prices_usd', 12, 2)->comment('Total en US$ + utilidades');
-            $table->enum('status', ['Aceptado', 'Rechazada', 'Enviada'])->default('Enviada');
+            $table->enum('status', ['Aceptado', 'Rechazada', 'Caducado', 'Enviada'])->default('Enviada');
             $table->timestamps();
         });
     }

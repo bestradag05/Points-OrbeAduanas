@@ -410,19 +410,6 @@ return [
             'can' => 'liquidacion.list',
             'submenu' => [
                 [
-                    'text' => 'Puntos pendientes',
-                    'url' => 'custom/pending',
-                    'icon'  => 'fa fa-exclamation-circle',
-                    'active' => ['custom'],
-                ],
-
-                [
-                    'text' => 'Todos los puntos',
-                    'url'  => 'custom',
-                    'icon' => 'fa fa-check-double',
-                    'active' => ['custom'],
-                ],
-                [
                     'text' => 'Modalidad',
                     'url'  => 'modality',
                     'icon' => 'fas fa-boxes',
@@ -431,38 +418,6 @@ return [
                 ],
 
             ]
-        ],
-        [
-            'text' => 'Operaciones',
-            'icon' => 'fas fa-fw fa-user-tie',
-            'can' => 'operaciones.list',
-            'submenu' => [
-                [
-                    'text' => 'Puntos pendientes - Flete',
-                    'url' => 'freight/pending',
-                    'icon'  => 'fa fa-exclamation-circle',
-                    'active' => ['freight/pending'],
-                ],
-                [
-                    'text' => 'Todos los puntos - Flete',
-                    'url'  => 'freight',
-                    'icon' => 'fa fa-check-double',
-                    'active' => ['freight'],
-                ],
-                [
-                    'text' => 'Puntos pendientes - Seguro',
-                    'url'  => 'insurance/pending',
-                    'icon' => 'fa fa-exclamation-circle',
-                    'active' => ['insurance/pending'],
-                ],
-                [
-                    'text' => 'Todos los puntos - Seguro',
-                    'url'  => 'insurance',
-                    'icon' => 'fa fa-check-double',
-                    'active' => ['insurance'],
-                ],
-                 
-            ],
         ],
         [
             'text' => 'Seguro',
@@ -531,20 +486,6 @@ return [
             /* 'can' => 'transporte.module', */
             'submenu' => [
                 [
-                    'text' => 'Puntos pendientes',
-                    'url' => 'transport/pending',
-                    'icon'  => 'fa fa-exclamation-circle',
-                    'active' => ['transport/pending'],
-                    'can' => 'transporte.list.points',
-                ],
-                [
-                    'text' => 'Todos los puntos',
-                    'url'  => 'transport',
-                    'icon' => 'fa fa-check-double',
-                    'active' => ['transport'],
-                    'can' => 'transporte.list.points',
-                ],
-                [
                     'text' => 'Generar una cotizacion',
                     'url'  => 'quote/transport/create',
                     'icon' => 'fas fa-file-invoice-dollar',
@@ -573,77 +514,6 @@ return [
                     'icon' => 'fas fa-dolly-flatbed',
                     'active' => ['transport/personal'],
                     'can' => 'transporte.list'
-                ]
-            ]
-        ],
-        [
-            'text' => 'Adicionales',
-            'icon' => 'fas fa-fw fa-copy',
-            'can' => 'additional.list',
-            'submenu' => [
-                [
-                    'text' => 'Puntos pendientes - Aduanas',
-                    'url' => 'additionals/pending/custom',
-                    'icon'  => 'fa fa-exclamation-circle',
-                    'active' => ['additionals/pending/custom'],
-                    'can' => 'additional.custom'
-                ],
-                [
-                    'text' => 'Puntos pendientes - Flete',
-                    'url' => 'additionals/pending/freight',
-                    'icon'  => 'fa fa-exclamation-circle',
-                    'active' => ['additionals/pending/freight'],
-                    'can' => 'additional.freight'
-                ],
-                [
-                    'text' => 'Todos los puntos',
-                    'url'  => 'additionals',
-                    'icon' => 'fa fa-check-double',
-                    'active' => ['additionals'],
-                    'can' => 'additional.listAll'
-                ]
-            ]
-        ],
-        [
-            'text' => 'Puntos',
-            'icon' => 'fas fa-plus-circle',
-            'can' => 'points.module',
-            'submenu' => [
-                /*                 [
-                    'text' => 'Detalle por vendedor',
-                    'url'  => 'points/detail',
-                    'icon' => 'fa-solid fa-check-double',
-                    'active' => ['points/detail', 'points/detail*', 'regex:@^content/[0-9]+$@'],
-                ], */
-                [
-                    'text' => 'Puntos Flete',
-                    'url'  => 'points/freight',
-                    'icon' => 'fas fa-ship',
-                    'active' => ['points/freight', 'points/freight*', 'regex:@^content/[0-9]+$@'],
-                ],
-                [
-                    'text' => 'Puntos Aduana',
-                    'url' => 'points/customs',
-                    'icon'  => 'fas fa-pallet',
-                    'active' => ['points/customs', 'points/customs*', 'regex:@^content/[0-9]+$@'],
-                ],
-                [
-                    'text' => 'Puntos Transporte',
-                    'url'  => 'points/transport',
-                    'icon' => 'fas fa-shipping-fast',
-                    'active' => ['points/transport', 'points/transport*', 'regex:@^content/[0-9]+$@'],
-                ],
-                [
-                    'text' => 'Puntos Seguro',
-                    'url'  => 'points/insurance',
-                    'icon' => 'fas fa-shield-alt',
-                    'active' => ['points/insurance', 'points/insurance*', 'regex:@^content/[0-9]+$@'],
-                ],
-                [
-                    'text' => 'Puntos Adicionales',
-                    'url'  => 'points/additionals',
-                    'icon' => 'fas fa-plus',
-                    'active' => ['points/additionals', 'points/additionals*', 'regex:@^content/[0-9]+$@'],
                 ]
             ]
         ],

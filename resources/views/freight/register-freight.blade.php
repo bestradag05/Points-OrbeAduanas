@@ -43,7 +43,7 @@
                                     <div class="col-md-4">
                                         <p class="mb-1">Validez:
                                             <strong
-                                                class="d-block">{{ $acceptedResponse->validity_date_formatted ?? '-' }}</strong>
+                                                class="d-block">{{ $acceptedResponse->valid_until_formatted ?? '-' }}</strong>
                                         </p>
                                     </div>
                                     <div class="col-md-4">

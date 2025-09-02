@@ -34,7 +34,7 @@ return new class extends Migration
             $table->decimal('total_ocean_freight', 8, 2)->nullable();
             $table->string('nro_operation')->nullable();
             $table->string('nro_quote_commercial');
-            $table->enum('state', ['Pendiente', 'Enviado', 'Aceptado', 'Anulado', 'Rechazado'])->default('Pendiente');
+            $table->enum('state', ['Pendiente', 'Enviado', 'Cerrado', 'Anulado', 'Rechazado'])->default('Pendiente');
             $table->timestamps();
 
 

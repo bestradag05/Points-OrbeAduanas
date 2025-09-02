@@ -20,10 +20,10 @@
                                 'language' => 'es', // Configurar en español
                             ];
 
-                            $currentDate = \Carbon\Carbon::parse($comercialQuote->valid_date)->format('d/m/Y'); // Formato compatible con el picker
+                            $currentDate = \Carbon\Carbon::parse($comercialQuote->valid_until)->format('d/m/Y'); // Formato compatible con el picker
                         @endphp
 
-                        @if ($comercialQuote->state === 'Pendiente')
+                       {{--  @if ($comercialQuote->state === 'Pendiente') --}}
                             <form action={{ url('/commercial/quote/updatedate/' . $comercialQuote->id) }} method="POST"
                                 class="row align-items-center" enctype="multipart/form-data">
                                 {{ method_field('PATCH') }}
@@ -31,7 +31,7 @@
 
 
                                 <div class="col-8">
-                                    <x-adminlte-input-date id="valid_date" name="valid_date" value="{{ $currentDate }}"
+                                    <x-adminlte-input-date id="valid_until" name="valid_until" value="{{ $currentDate }}"
                                         :config="$config" placeholder="Selecciona la fecha de validez..." />
                                 </div>
 
@@ -40,10 +40,10 @@
                                             class="fas fa-sync mb-3 text-indigo"></i></button>
                                 </div>
                             </form>
-                        @else
-                            <p id="valid_date" class="form-control-plaintext text-indigo d-inline">
+                        {{-- @else
+                            <p id="valid_until" class="form-control-plaintext text-indigo d-inline">
                                 {{ $currentDate }}</p>
-                        @endif
+                        @endif --}}
 
 
 
@@ -479,7 +479,7 @@
                             @endif
                         </td>
                         <td>
-                            <div class="text-bold custom-badge status-{{ strtolower($service->state) }}">
+                            <div class="text-bold custom-badge status-{{ strtolower(str_replace(' ', '-', $service->state)) }}">
                                 {{ $service->state }}
                             </div>
                         </td>

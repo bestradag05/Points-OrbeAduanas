@@ -53,11 +53,11 @@ class ResponseFreightQuotesController extends Controller
         
         $quoteFreight = QuoteFreight::findOrFail($id)->first();
 
-        $fecha = Carbon::createFromFormat('d/m/Y', $request->validity_date)->format('Y-m-d');
+        $fecha = Carbon::createFromFormat('d/m/Y', $request->valid_until)->format('Y-m-d');
 
         $response = ResponseFreightQuotes::create([
             'nro_response' => $request->nro_response,
-            'validity_date' => $fecha,
+            'valid_until' => $fecha,
             'id_supplier' => $request->id_supplier,
             'airline_id' => $request->airline_id,
             'shipping_company_id' => $request->shipping_company_id,
@@ -176,7 +176,7 @@ class ResponseFreightQuotesController extends Controller
         return Validator::make($request->all(), [
             'nro_response' => 'required|date|unique:response_freight_quotes,nro_response,' . $id,
             'id_supplier' => 'required|number',
-            'validity_date' => 'required|date',
+            'valid_until' => 'required|date',
             'origin' => 'required|string',
             'destination' => 'required|string',
             'frequency' => 'required|string',

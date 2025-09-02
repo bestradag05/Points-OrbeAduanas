@@ -29,7 +29,7 @@ return new class extends Migration
             $table->decimal('value_sale', 8, 2)->nullable();
             $table->decimal('profit', 8, 2)->nullable();
             $table->string('regularization_date')->nullable();
-            $table->enum('state', ['Pendiente', 'Aceptado', 'Anulado', 'Rechazado'])->default('Pendiente');
+            $table->enum('state', ['Pendiente', 'Aceptado', 'En Proceso', 'Cerrado'])->default('Pendiente');
             $table->unsignedBigInteger('id_modality')->nullable();
             /* $table->unsignedBigInteger('id_insurance')->nullable(); */
             $table->string('nro_quote_commercial');

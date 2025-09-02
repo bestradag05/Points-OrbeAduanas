@@ -37,14 +37,14 @@ class CommercialQuote extends Model
         'tons',
         'measures',
         'cif_value',
-        'valid_date',
+        'valid_until',
         'state',
 
 
     ];
 
     protected $casts = [
-        'valid_date' => 'date', // Convierte 'valid_date' en un objeto Carbon
+        'valid_until' => 'date', // Convierte 'valid_until' en un objeto Carbon
     ];
 
     public function originState()

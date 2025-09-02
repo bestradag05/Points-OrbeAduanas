@@ -40,7 +40,7 @@ class QuotesSentClient extends Model
         'cif_value',
         'customs_taxes',
         'customs_perception',
-        'valid_date',
+        'valid_until',
         'total_freight',
         'total_transport',
         'total_custom',
@@ -50,7 +50,7 @@ class QuotesSentClient extends Model
     ];
 
     protected $casts = [
-        'valid_date' => 'date', // Convierte 'valid_date' en un objeto Carbon
+        'valid_until' => 'date', // Convierte 'valid_until' en un objeto Carbon
     ];
 
     protected static function booted()

@@ -5,60 +5,6 @@
 
     <div class="row p-3">
 
-        {{-- <div class="col-12  mb-4 text-right">
-            <a href="{{ url('/quote/freight') }}" class="btn btn-primary"> Atras </a>
-        </div> --}}
-
-        {{-- Chat de messagin quote --}}
-        {{-- <div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
-            <div class="card direct-chat direct-chat-primary h-100">
-                <div class="card-header bg-sisorbe-100 py-2">
-                    <h5 class="text-center text-bold text-uppercase text-indigo">Cotizacion : {{ $quote->nro_quote }}</h5>
-                </div>
-                <div class="card-body" style="max-height: 600px; overflow-y: auto;">
-                    <div class="direct-chat-messages h-100">
-                        @foreach ($messages as $message)
-                            <div class="direct-chat-msg {{ $message->sender_id != auth()->user()->id ? 'right' : '' }}">
-                                <div class="direct-chat-infos clearfix">
-                                    <span
-                                        class="direct-chat-name float-left text-indigo text-bold">{{ $message->sender->personal->names }}</span>
-                                    <span
-                                        class="direct-chat-timestamp float-right text-bold">{{ $message->created_at }}</span>
-                                </div>
-                                @if ($message->sender->personal->img_url !== null)
-                                    <img src="{{ asset('storage/' . $message->sender->personal->img_url) }}"
-                                        class="direct-chat-img" alt="User Image">
-                                @else
-                                    <img src="{{ asset('storage/personals/user_default.png') }}" class="direct-chat-img"
-                                        alt="User Image">
-                                @endif
-                                <div class="direct-chat-text">
-                                    {!! $message->message !!}
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-
-                </div>
-                <div class="card-footer">
-                    <form action="/quote/freight/message" method="POST">
-                        @csrf
-                        <div class="row">
-                            <div class="col-12">
-                                <textarea id="quote-text" name="message"></textarea>
-                                <input type="hidden" name="quote_id" value="{{ $quote->id }}">
-                            </div>
-                            <div class="col-12 row align-items-center justify-content-center mt-2">
-                                <button type="submit"
-                                    {{ $quote->state === 'Borrador' || $quote->state === 'Aceptada' ? 'disabled' : '' }}
-                                    class="btn btn-indigo">Enviar</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div> --}}
-
         <div class="col-12 col-md-12 col-lg-6 px-4">
 
             <div class="row justify-content-center align-items-center">
@@ -268,13 +214,13 @@
                                 <b class="d-block">{{ $quote->cubage_kgv }} CBM</b>
                             </p>
                         </div>
-                        
+
                         @if ($quote->commercial_quote->lcl_fcl === 'FCL')
                             <div class="col-12">
                                 <p class="text-sm">Contenedor(s) :
                                 <div class="d-flex flex-wrap">
-                                    @foreach ($quote->commercial_quote->commercialQuoteContainers as $commercialContainer) 
-                                    <ul class="list-group list-group-flush text-bold d-inline-block mr-3">
+                                    @foreach ($quote->commercial_quote->commercialQuoteContainers as $commercialContainer)
+                                        <ul class="list-group list-group-flush text-bold d-inline-block mr-3">
                                             <li class="list-group-item pl-0 pt-2">
                                                 {{ $commercialContainer->container_quantity }} x
                                                 {{ $commercialContainer->container->name }}
@@ -359,7 +305,8 @@
                         <div class="col-8 col-lg-6">
                             <h5 class="text-indigo text-center"> <i class="fas fa-file"></i> Lista de archivos</h5>
                         </div>
-                        @if (!$quote->responses->contains(fn($response) => $response->status === 'Aceptado'))
+                        {{-- !$quote->responses->contains(fn($response) => $response->status === 'Aceptado') --}}
+                        @if ($quote->state === 'Pendiente')
                             <div class="col-6 align-items-center">
                                 <button class="btn btn-indigo btn-sm" data-toggle="modal"
                                     data-target="#modalQuoteFreightDocuments">
@@ -377,7 +324,7 @@
                                             <i class="far fa-fw fa-file-pdf"></i> {{ $file['name'] }}
                                         </a>
                                     </td>
-                                    <td class="text-center {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}">
+                                    <td class="text-center {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">
                                         <a href="#" class="text-danger"
                                             onclick="handleFileDeletion('{{ $file['name'] }}', this, event)">
                                             X
@@ -399,188 +346,121 @@
                         </div>
                     </div>
 
-                    @if ($quote->ocean_freight != null && $quote->state === 'Aceptada')
-                        <div class="row">
-
-                            <div class="col-12">
-                                <h6 class="text-indigo text-center mb-3 text-bold"><i class="fas fa-dollar-sign"></i>
-                                    Detalle
-                                    de
-                                    costos
-                                </h6>
-                            </div>
-
-                            <div class="col-12 ml-4">
-
-                                <div class="row text-muted">
-                                    <div class="col-4">
-                                        <p class="text-sm">Flete :
-                                        </p>
-                                    </div>
-                                    <div class="col-6">
-                                        <b class="d-inline">$ {{ $quote->ocean_freight }}</b>
-                                    </div>
-
-                                </div>
-                                <div class="row text-muted">
-                                    <div class="col-4">
-                                        <p class="text-sm"> Orbe (utilidad) :
-                                        </p>
-                                    </div>
-                                    <div class="col-6">
-                                        <b class="d-inline">$ {{ $quote->utility }}</b>
-                                    </div>
-
-                                </div>
-                                <div class="row text-muted">
-                                    <div class="col-4">
-                                        <p class="text-sm">Operaciones :
-                                        </p>
-                                    </div>
-                                    <div class="col-6">
-                                        <b class="d-inline">$ {{ $quote->operations_commission }}</b>
-                                    </div>
-
-                                </div>
-                                <div class="row text-muted">
-                                    <div class="col-4">
-                                        <p class="text-sm">Pricing :
-                                        </p>
-                                    </div>
-                                    <div class="col-6">
-                                        <b class="d-inline">$ {{ $quote->pricing_commission }}</b>
-                                    </div>
-
-                                </div>
-
-                                <div class="row text-muted mt-3 ">
-                                    <div class="col-12 row justify-content-center">
-                                        <p class="text-uppercase text-bold text-lg">Costo del Flete :
-                                            <b class="status-{{ strtolower($quote->state) }}">$
-                                                {{ $quote->total_ocean_freight }}</b>
-                                        </p>
-                                    </div>
-
-                                </div>
-
-
-                            </div>
-
-
-                        </div>
-                    @endif
-
-                    <div class="text-center mt-5 mb-3">
-                        {{--  <button class="btn btn-sm btn-success "
-                            type="button" data-toggle="modal" data-target="#quote-freight">Cotización Aceptada</button>
-                        --}}
-
-
-                        <form action="{{ url('/quote/freight/send-pricing/' . $quote->id) }}" method="POST"
-                            class="d-inline" id="form-send-pricing">
-                            @csrf
-                            @method('PATCH')
-
-                            <button
-                                class="btn btn-outline-indigo btn-sm {{ $quote->state != 'Pediente' ? 'd-none' : '' }}">
-                                <i class="fas fa-paper-plane"></i> Enviar</button>
-                        </form>
-
-                    </div>
-
-
                 </div>
             </div>
 
         </div>
 
+        <div class="col-12">
+            <div class="text-center mt-5 mb-3">
+                <form action="{{ url('/quote/freight/send-pricing/' . $quote->id) }}" method="POST" class="d-inline"
+                    id="form-send-pricing">
+                    @csrf
+                    @method('PATCH')
 
-        <div class="col-12 px-4 mt-5">
-            <div class="text-center mb-4">
-                <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
-                @if (!$quote->responses->contains(fn($response) => $response->status === 'Aceptado'))
-                    <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
-                        data-target="#modalResponseQuoteFreight">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                @endif
+                    <button class="btn btn-outline-indigo btn-sm {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">
+                        <i class="fas fa-paper-plane"></i> Enviar cotización</button>
+                </form>
+
             </div>
 
-            @php
-                $hasAcceptedResponse = $quote->responses->contains(fn($response) => $response->status == 'Aceptado');
-            @endphp
-
-            <table class="table table-sm text-sm">
-                <thead class="thead-dark">
-                    <th>#</th>
-                    <th>N° Respuesta</th>
-                    <th>Agente</th>
-                    @if ($quote->commercial_quote->type_shipment->description === 'Aérea')
-                        <th>Aerolinea</th>
-                    @else
-                        <th>Naviera</th>
-                    @endif
-                    <th>Fecha de Validez</th>
-                    <th>Frecuencia</th>
-                    <th>Servicio</th>
-                    <th>Tiempo en transito</th>
-                    <th>Dias Libres</th>
-                    <th>Tipo de cambio</th>
-                    <th>Total</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </thead>
-                <tbody>
-                    @foreach ($quote->responses as $response)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $response->nro_response }}</td>
-                            <td>{{ $response->supplier->name_businessname }}</td>
-                            @if ($quote->commercial_quote->type_shipment->description === 'Aérea')
-                                <td>{{ $response->airline->name }}</td>
-                            @else
-                                <td>{{ $response->shippingCompany->name }}</td>
-                            @endif
-                            <td>{{ $response->validity_date_formatted }}</td>
-                            <td>{{ $response->frequency }}</td>
-                            <td>{{ $response->service }}</td>
-                            <td>{{ $response->transit_time }}</td>
-                            <td>{{ $response->free_days }}</td>
-                            <td>{{ $response->exchange_rate }}</td>
-                            <td class="text-indigo text-bold"> $ {{ $response->total }}</td>
-                            <td>
-                                <div class="custom-badge status-{{ strtolower($response->status) }}">
-                                    {{ $response->status }}
-                                </div>
-                            </td>
-
-                            <td style="width: 150px">
-                                <select name="acction_transport" class="form-control form-control-sm"
-                                    onchange="changeAcction(this.value, {{ $response->id }})">
-                                    <option value="" disabled selected>Seleccione una acción...</option>
-                                    <option>Detalle</option>
-
-                                    @if (!$hasAcceptedResponse || $response->status == 'Aceptado')
-                                        <option class="{{ $response->status != 'Aceptado' ? 'd-none' : '' }}">Generar
-                                            Flete</option>
-                                        <option class="{{ $response->status === 'Aceptado' ? 'd-none' : '' }}">Aceptar
-                                        </option>
-                                        <option class="{{ $response->status === 'Rechazada' ? 'd-none' : '' }}">Rechazar
-                                        </option>
-                                    @endif
-                                </select>
-                            </td>
-
-                        </tr>
-                    @endforeach
-
-                </tbody>
-
-            </table>
-
-
-
         </div>
+
+
+        @if ($quote->state != 'Pendiente')
+
+            <div class="col-12 px-4 mt-5">
+                <div class="text-center mb-4">
+                    <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
+                    @if (!$quote->responses->contains(fn($response) => $response->status === 'Aceptado'))
+                        <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
+                            data-target="#modalResponseQuoteFreight">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    @endif
+                </div>
+
+                @php
+                    $hasAcceptedResponse = $quote->responses->contains(
+                        fn($response) => $response->status == 'Aceptado',
+                    );
+                @endphp
+
+                <table class="table table-sm text-sm">
+                    <thead class="thead-dark">
+                        <th>#</th>
+                        <th>N° Respuesta</th>
+                        <th>Agente</th>
+                        @if ($quote->commercial_quote->type_shipment->description === 'Aérea')
+                            <th>Aerolinea</th>
+                        @else
+                            <th>Naviera</th>
+                        @endif
+                        <th>Fecha de Validez</th>
+                        <th>Frecuencia</th>
+                        <th>Servicio</th>
+                        <th>Tiempo en transito</th>
+                        <th>Dias Libres</th>
+                        <th>Tipo de cambio</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </thead>
+                    <tbody>
+                        @foreach ($quote->responses as $response)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $response->nro_response }}</td>
+                                <td>{{ $response->supplier->name_businessname }}</td>
+                                @if ($quote->commercial_quote->type_shipment->description === 'Aérea')
+                                    <td>{{ $response->airline->name }}</td>
+                                @else
+                                    <td>{{ $response->shippingCompany->name }}</td>
+                                @endif
+                                <td>{{ $response->valid_until_formatted }}</td>
+                                <td>{{ $response->frequency }}</td>
+                                <td>{{ $response->service }}</td>
+                                <td>{{ $response->transit_time }}</td>
+                                <td>{{ $response->free_days }}</td>
+                                <td>{{ $response->exchange_rate }}</td>
+                                <td class="text-indigo text-bold"> $ {{ $response->total }}</td>
+                                <td>
+                                    <div class="custom-badge status-{{ strtolower($response->status) }}">
+                                        {{ $response->status }}
+                                    </div>
+                                </td>
+
+                                <td style="width: 150px">
+                                    <select name="acction_transport" class="form-control form-control-sm"
+                                        onchange="changeAcction(this.value, {{ $response->id }})">
+                                        <option value="" disabled selected>Seleccione una acción...</option>
+                                        <option>Detalle</option>
+
+                                        @if (!$quote->freight)
+                                            <option class="{{ $response->status != 'Aceptado' ? 'd-none' : '' }}">Generar
+                                                Flete</option>
+                                            <option class="{{ $response->status === 'Aceptado' ? 'd-none' : '' }}">Aceptar
+                                            </option>
+                                            <option class="{{ $response->status === 'Rechazada' ? 'd-none' : '' }}">
+                                                Rechazar
+                                            </option>
+                                        @endif
+                                    </select>
+                                </td>
+
+                            </tr>
+                        @endforeach
+
+                    </tbody>
+
+                </table>
+
+
+
+            </div>
+
+        @endif
+
 
 
 
@@ -725,7 +605,7 @@
                                                     $currentDate = \Carbon\Carbon::now()->format('d/m/Y'); // Formato compatible con el picker
                                                 @endphp
 
-                                                <x-adminlte-input-date id="validity_date" name="validity_date"
+                                                <x-adminlte-input-date id="valid_until" name="valid_until"
                                                     value="{{ $currentDate }}" :config="$config" data-required="true"
                                                     placeholder="Selecciona la fecha de validez..." />
 
@@ -1615,7 +1495,7 @@
             // Extraer el objeto contenedor de los atributos data-*
             var commercialcontainer = button.data(
                 'commercialcontainer'); // Convertimos el JSON de vuelta a un objeto
-console.log(commercialcontainer);
+            console.log(commercialcontainer);
             // Acceder a las propiedades del objeto contenedor y colocarlas en el modal
             var modalBody = $(this).find('.modal-body #containerDetails');
 

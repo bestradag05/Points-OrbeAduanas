@@ -382,7 +382,7 @@
                     <tr>
                         <td class="title-item-table">Fecha de Validez</td>
                         <td class="text-item-table" style="font-weight: bold">
-                            {{ $quoteSentClient->valid_date->format('d/m/Y') }}</td>
+                            {{ $quoteSentClient->valid_until->format('d/m/Y') }}</td>
 
                     </tr>
 

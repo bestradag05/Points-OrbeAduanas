@@ -225,15 +225,20 @@
     color: rgb(0, 128, 0);
 }
 
+.status-cerrado {
+    background: rgba(10, 120, 172, 0.1);
+    color: rgb(5, 57, 168);
+}
+
 .badge-info,
-.status-en-proceso,
 .status-enviado,
 .status-info {
     background: rgba(0, 211, 199, 0.1);
     color: #00D3C7;
 }
 
-.status-caducado {
+.status-caducado,
+.status-en-proceso {
     background: #e0ecfc;
     color: #2f80ed;
 }
@@ -327,7 +332,6 @@
     color: green;
 }
 
-.card-custom  .detail-points{
+.card-custom .detail-points {
     font-size: 14px;
 }
-

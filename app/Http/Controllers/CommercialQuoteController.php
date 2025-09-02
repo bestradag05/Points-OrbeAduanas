@@ -272,7 +272,7 @@ class CommercialQuoteController extends Controller
             'cif_value' => $commercialQuote->cif_value,
             'customs_taxes' => $commercialQuote->custom ? $commercialQuote->custom->customs_taxes : null,
             'customs_perception' => $commercialQuote->custom ? $commercialQuote->custom->customs_perception : null,
-            'valid_date' => $commercialQuote->valid_date,
+            'valid_until' => $commercialQuote->valid_until,
             'commercial_quote_id' => $commercialQuote->id,
         ]);
 
@@ -283,7 +283,7 @@ class CommercialQuoteController extends Controller
 
 
         if ($commercialQuote->freight) {
-            $commercialQuote->freight->update(['state' => 'Aceptado']);
+            /* $commercialQuote->freight->update(['state' => 'Aceptado']); */
 
             /* Total del flete */
 
@@ -306,7 +306,7 @@ class CommercialQuoteController extends Controller
         }
 
         if ($commercialQuote->transport) {
-            $commercialQuote->transport->update(['state' => 'Aceptado']);
+            /* $commercialQuote->transport->update(['state' => 'Aceptado']); */
 
             /* Total del transporte */
 
@@ -328,7 +328,7 @@ class CommercialQuoteController extends Controller
         }
 
         if ($commercialQuote->custom) {
-            $commercialQuote->custom->update(['state' => 'Aceptado']);
+            /* $commercialQuote->custom->update(['state' => 'Aceptado']); */
             /* Total de la aduana */
             $quoteSentClient->update([
                 'total_custom' => $commercialQuote->custom->sub_total_value_sale

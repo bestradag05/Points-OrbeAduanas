@@ -121,7 +121,7 @@ class CommercialQuoteService
                 'kilograms' => $consolidated['total_kilogram'],
                 'pounds' => $this->parseDouble($request->pounds),
                 'nro_operation' => $request->nro_operation,
-                'valid_date' => now()->format('Y-m-d'),
+                'valid_until' => now()->format('Y-m-d'),
                 'id_personal' => auth()->user()->personal->id,
             ]);
 
@@ -160,7 +160,7 @@ class CommercialQuoteService
                     'kilograms' => $calcContainers['total_kilogram'],
                     'pounds' => $this->parseDouble($request->pounds),
                     'nro_operation' => $request->nro_operation,
-                    'valid_date' => now()->format('Y-m-d'),
+                    'valid_until' => now()->format('Y-m-d'),
                     'id_personal' => auth()->user()->personal->id,
                 ]);
 
@@ -207,7 +207,7 @@ class CommercialQuoteService
                     'measures' => $request->value_measures,
                     'pounds' => $this->parseDouble($request->pounds),
                     'nro_operation' => $request->nro_operation,
-                    'valid_date' => now()->format('Y-m-d'),
+                    'valid_until' => now()->format('Y-m-d'),
                     'id_personal' => auth()->user()->personal->id,
                 ]);
             }
@@ -645,9 +645,9 @@ class CommercialQuoteService
     public function updateDate($request, $id)
     {
         $commercialQuote = CommercialQuote::findOrFail($id);
-        $validDate = Carbon::createFromFormat('d/m/Y', $request->valid_date)->format('Y-m-d');
+        $validDate = Carbon::createFromFormat('d/m/Y', $request->valid_until)->format('Y-m-d');
 
-        $commercialQuote->update(['valid_date' =>  $validDate]);
+        $commercialQuote->update(['valid_until' =>  $validDate]);
 
         return $commercialQuote;
     }

@@ -42,7 +42,7 @@ return new class extends Migration
             $table->decimal('cif_value', 8 , 2)->nullable();
             $table->decimal('customs_taxes', 8 , 2)->nullable();
             $table->decimal('customs_perception', 8 , 2)->nullable();
-            $table->date('valid_date')->nullable();
+            $table->date('valid_until')->nullable();
 
             /* Guardar totales de los servicios */
             $table->decimal('total_freight', 8,2)->nullable();

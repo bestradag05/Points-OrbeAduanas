@@ -15,7 +15,7 @@ class ResponseFreightQuotes extends Model
 
     protected $fillable = [
         'nro_response',
-        'validity_date',
+        'valid_until',
         'id_supplier',
         'airline_id',
         'shipping_company_id',
@@ -33,7 +33,7 @@ class ResponseFreightQuotes extends Model
 
 
     protected $casts = [
-        'validity_date' => 'date',
+        'valid_until' => 'date',
     ];
 
     // Evento que se ejecuta antes de guardar el modelo
@@ -70,9 +70,9 @@ class ResponseFreightQuotes extends Model
     /* accessors */
 
 
-    public function getValidityDateFormattedAttribute()
+    public function getValidUntilFormattedAttribute()
     {
-        return $this->validity_date?->format('d/m/Y');
+        return $this->valid_until?->format('d/m/Y');
     }
 
 

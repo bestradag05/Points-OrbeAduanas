@@ -9,14 +9,14 @@
 
 
                 <div class="col-12 px-0">
-                    <div class="accordion bg-indigo" id="accordionImpuestos">
-                        <div class="card  bg-indigo">
+                    <div class="accordion" id="accordionImpuestos">
+                        <div class="card" style="background: #dbdbe175">
                             <div class="card-header m-0 p-1" id="headingImpuestos">
                                 <h6 class=" pb-0 mb-0  pl-2 d-flex justify-content-between align-items-center">
                                     <span class="text-uppercase">
                                         Detalle de impuestos
                                     </span>
-                                    <button class="text-white btn btn-link" type="button" data-toggle="collapse"
+                                    <button class="btn btn-link" type="button" data-toggle="collapse"
                                         data-target="#collapseImpuestos" aria-expanded="true"
                                         aria-controls="collapseImpuestos">
                                         <i class="fas fa-chevron-down"></i>
@@ -24,7 +24,7 @@
                                 </h6>
                             </div>
 
-                            <div id="collapseImpuestos" class="collapse" aria-labelledby="headingImpuestos"
+                            <div id="collapseImpuestos" class="collapse show" aria-labelledby="headingImpuestos"
                                 data-parent="#accordionImpuestos">
                                 <div class="card-body">
                                     <!-- Primer campo: Valor FOB -->
@@ -175,9 +175,9 @@
                                         $
                                     </span>
                                 </div>
-                                <input type="text" class="form-control CurrencyInput d-none" id="insurance_sales_value"
-                                    name="insurance_sales_value" data-type="currency" value="0"
-                                    placeholder="Ingrese valor de la carga"
+                                <input type="text" class="form-control CurrencyInput d-none"
+                                    id="insurance_sales_value" name="insurance_sales_value" data-type="currency"
+                                    value="0" placeholder="Ingrese valor de la carga"
                                     onchange="updateInsuranceSalesValue(this)">
                             </div>
 
@@ -310,8 +310,9 @@
                                 <label for="sub_total_value_sale" class="col-sm-6 col-form-label">Total
                                     venta / Sub Total:</label>
                                 <div class="col-sm-6">
-                                    <input type="text" class="form-control form-control-sm" id="sub_total_value_sale"
-                                        name="sub_total_value_sale" value="0.00" @readonly(true)>
+                                    <input type="text" class="form-control form-control-sm"
+                                        id="sub_total_value_sale" name="sub_total_value_sale" value="0.00"
+                                        @readonly(true)>
                                 </div>
                             </div>
                             <div class="row">
@@ -423,12 +424,15 @@
                 function selectInsurance(select) {
 
                     let typesInsurance = @json($type_insurace);
-                    let fobValue = @json($comercialQuote->load_value);
+                    let fobValue = parseFloat(@json($comercialQuote->load_value));
                     let typeShipment = @json($comercialQuote->type_shipment);
                     let selectValue = parseInt(select.value);
 
                     let insurance = typesInsurance.find(type => type.id === selectValue);
                     let rate = insurance.insurance_rate.find(rate => rate.shipment_type_description === typeShipment.description);
+
+                    let minValue = parseFloat(rate.min_value);
+
                     if (!rate) {
                         Swal.fire({
                             title: "No existe tarifa registrada para calcular el seguro",
@@ -440,7 +444,7 @@
 
                     let total = 0;
 
-                    if (fobValue <= rate.min_value) {
+                    if (fobValue <= minValue) {
                         total = parseFloat(rate.fixed_cost);
                     } else {
                         total = (fobValue * (rate.percentage / 100));

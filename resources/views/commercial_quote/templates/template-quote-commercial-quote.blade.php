@@ -5,7 +5,7 @@
 
     <div class="col-4 offset-4">
 
-        @if ($comercialQuote->state === 'Pendiente')
+{{--         @if ($comercialQuote->state === 'Pendiente') --}}
 
             <div class="form-group row">
                 <label class="col-sm-4 col-form-label">Agregar Cotizacion : </label>
@@ -32,7 +32,7 @@
 
             </div>
 
-        @endif
+{{--         @endif --}}
 
 
 
