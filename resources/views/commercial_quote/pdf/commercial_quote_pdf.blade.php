@@ -319,7 +319,7 @@
                         </tr>
                         <tr>
                             <td class="title-item-table">Peso total</td>
-                            <td class="text-item-table">{{ $quoteSentClient->kilograms }}</td>
+                            <td class="text-item-table">{{ $quoteSentClient->kilograms }} KG</td>
                         </tr>
                     @else
                         <tr>
@@ -328,7 +328,7 @@
                         </tr>
                         <tr>
                             <td class="title-item-table">Volumen</td>
-                            <td class="text-item-table">{{ $quoteSentClient->volumen }}</td>
+                            <td class="text-item-table">{{ $quoteSentClient->volumen }} CBM</td>
                         </tr>
 
                         @if ($quoteSentClient->lcl_fcl === 'FCL')

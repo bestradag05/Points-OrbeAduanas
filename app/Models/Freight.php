@@ -54,13 +54,13 @@ class Freight extends Model
         $lastCode = self::latest('id')->first();
         $year = date('y');
         $prefix = 'FLETE-';
-
+        
         // Si no hay registros, empieza desde 1
         if (!$lastCode) {
             return $prefix . $year . '1';
         } else {
             // Extraer el número y aumentarlo
-            $number = (int) substr($lastCode->nro_operation_freight, 7);
+            $number = (int) substr($lastCode->nro_operation_freight, 8);
             $number++;
             return $prefix . $year . $number;
         }

@@ -179,10 +179,17 @@ class FreightService
         //Actualizamos el valor CIF para la cotizacion:
         $commercialQuote = $freight->commercial_quote;
 
-        $oceanFreight = $freight->concepts->firstWhere('name', 'OCEAN FREIGHT');
+        if($commercialQuote->type_shipment->description === 'Marítima')
+        {
+
+            $conceptFreight = $freight->concepts->firstWhere('name', 'OCEAN FREIGHT');
+        }else{
+            $conceptFreight = $freight->concepts->firstWhere('name', 'AIR FREIGHT');
+        }
 
 
-        $cif_value = $this->parseDouble($oceanFreight->pivot->value_concept) + $this->parseDouble($insurance ? $insurance->insurance_sales_value : 0) + $this->parseDouble($commercialQuote ? $commercialQuote->load_value : 0);
+
+        $cif_value = $this->parseDouble($conceptFreight->pivot->value_concept) + $this->parseDouble($insurance ? $insurance->insurance_sales_value : 0) + $this->parseDouble($commercialQuote ? $commercialQuote->load_value : 0);
 
         $commercialQuote->update(['cif_value' => $cif_value]);
 
@@ -315,10 +322,17 @@ class FreightService
 
         $commercialQuote = $freight->commercial_quote;
 
-        $oceanFreight = $freight->concepts->firstWhere('name', 'OCEAN FREIGHT');
+        if($commercialQuote->type_shipment->description === 'Marítima')
+        {
+
+            $conceptFreight = $freight->concepts->firstWhere('name', 'OCEAN FREIGHT');
+        }else{
+            $conceptFreight = $freight->concepts->firstWhere('name', 'AIR FREIGHT');
+        }
 
 
-        $cif_value = $this->parseDouble($oceanFreight->pivot->value_concept) + $this->parseDouble($insurance ? $insurance->insurance_sales_value : 0) + $this->parseDouble($commercialQuote ? $commercialQuote->load_value : 0);
+
+        $cif_value = $this->parseDouble($conceptFreight->pivot->value_concept) + $this->parseDouble($insurance ? $insurance->insurance_sales_value : 0) + $this->parseDouble($commercialQuote ? $commercialQuote->load_value : 0);
 
         $commercialQuote->update(['cif_value' => $cif_value]);
 

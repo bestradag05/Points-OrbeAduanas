@@ -247,51 +247,52 @@
                                 </p>
                             </div>
                         @endif
+                    @else
+                        <div class="col-6">
+                            <p class="text-sm">Kilogramo / KGV :
+                                <b class="d-block">{{ $quote->cubage_kgv }} KGV</b>
+                            </p>
+                        </div>
+                        
+                            <div class="col-6">
+                                <p class="text-sm">Peso total :
+                                    <b class="d-block">{{ $quote->ton_kilogram }} KG</b>
+                                </p>
+                            </div>
+                       
+                    @endif
 
                 </div>
-            @else
-                <div class="row text-muted">
+
+
+
+
+                @if ($quote->commercial_quote->measures)
+
                     <div class="col-6">
-                        <p class="text-sm">Kilogramo volumen / KGV :
-                            <b class="d-block">{{ $quote->cubage_kgv }} KGV</b>
-                        </p>
+                        <p class="text-sm">Medidas : </p>
                     </div>
-                    <div class="col-6">
-                        <p class="text-sm">Peso total :
-                            <b class="d-block">{{ $quote->ton_kilogram }} KG</b>
-                        </p>
-                    </div>
-                </div>
-            @endif
-
-
-
-            @if ($quote->commercial_quote->measures)
-
-                <div class="col-6">
-                    <p class="text-sm">Medidas : </p>
-                </div>
-                <table class="table table-striped">
-                    <thead>
-                        <th>Cantidad</th>
-                        <th>Ancho</th>
-                        <th>Largo</th>
-                        <th>Alto</th>
-                        <th>Unidad</th>
-                    </thead>
-                    <tbody>
-                        @foreach (json_decode($quote->commercial_quote->measures) as $measure)
-                            <tr>
-                                <td>{{ $measure->amount }}</td>
-                                <td>{{ $measure->width }}</td>
-                                <td>{{ $measure->length }}</td>
-                                <td>{{ $measure->height }}</td>
-                                <td>{{ $measure->unit_measurement }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @endif
+                    <table class="table table-striped">
+                        <thead>
+                            <th>Cantidad</th>
+                            <th>Ancho</th>
+                            <th>Largo</th>
+                            <th>Alto</th>
+                            <th>Unidad</th>
+                        </thead>
+                        <tbody>
+                            @foreach (json_decode($quote->commercial_quote->measures) as $measure)
+                                <tr>
+                                    <td>{{ $measure->amount }}</td>
+                                    <td>{{ $measure->width }}</td>
+                                    <td>{{ $measure->length }}</td>
+                                    <td>{{ $measure->height }}</td>
+                                    <td>{{ $measure->unit_measurement }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
 
             @endif
 
