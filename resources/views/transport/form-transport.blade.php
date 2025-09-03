@@ -58,14 +58,7 @@
         </div>
     </div>
 
-    <div class="col-6">
-        <div class="form-group">
-            <label>Utilidad de la respuesta</label>
-            <input type="text" class="form-control text-end" @readonly(true)
-                value="{{ number_format($acceptedResponse->value_utility, 2) }}" placeholder="Utilidad">
-        </div>
-    </div>
-
+    
     <div class="col-12">
         <div class="row align-items-end">
             <div class="col-md-4">
@@ -126,8 +119,8 @@
 
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <label for="value_sale" class="form-label fw-bold mb-0">Total:</label>
-                        <input type="text" id="value_sale" name="value_sale" class="form-control text-end ms-2" style="width: 150px;"
-                            readonly value="0.00">
+                        <input type="text" id="value_sale" name="value_sale" class="form-control text-end ms-2"
+                            style="width: 150px;" readonly value="0.00">
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center">
@@ -157,7 +150,7 @@
     </div>
 
     <div class="container text-center mt-5">
-        <input class="btn btn-primary" type="submit" id="btnGuardar"
+        <input class="btn btn-indigo" type="submit" id="btnGuardar"
             value="{{ $formMode === 'edit' ? 'Actualizar' : 'Guardar' }}">
     </div>
 
@@ -167,7 +160,6 @@
 
 @push('scripts')
     <script>
-        // —– VARIABLES GLOBALES (disponibles para funciones) —–
         let conceptsArray;
         let conceptsTransport;
         let total;
@@ -175,12 +167,12 @@
         const totalUsd = parseFloat(@json($acceptedResponse->total_usd)) || 0;
         const isEditMode = "{{ $formMode ?? '' }}" === "edit";
 
+        const includesIgv = (parseFloat(@json($acceptedResponse->igv)) || 0) > 0;
         const exchangeRate = parseFloat(@json($acceptedResponse->exchange_rate)) || 1;
         const providercost = parseFloat(@json($acceptedResponse->provider_cost)) || 0;
 
 
 
-        // —– INICIALIZACIÓN & HOOKS —–
         $(document).ready(function() {
             conceptsArray = [];
 
@@ -189,14 +181,11 @@
                 conceptsTransport = @json($transport->concepts);
                 total = 0;
 
-                // Carga inicial unificada
                 conceptsTransport.forEach(c => {
                     conceptsArray.push({
                         id: c.id,
                         name: c.name,
-                        // Este es el valor que el usuario puso (value_concept), editable en edit
                         value: formatValue(c.pivot.value_concept),
-                        // Este es el sale_price de la respuesta, readonly
                         pivotValue: c.pivot.response_value
                     });
 
@@ -208,14 +197,11 @@
                 conceptsTransport = @json($conceptsTransport);
                 total = 0;
 
-                // Carga inicial unificada
                 conceptsTransport.forEach(c => {
                     conceptsArray.push({
                         id: c.concepts_id,
                         name: c.concept.name,
-                        // Este es el valor que el usuario puso (value_concept), editable en edit
                         value: 0,
-                        // Este es el sale_price de la respuesta, readonly
                         pivotValue: c.pivot.sale_price
                     });
                 });
@@ -224,9 +210,6 @@
             @endif
 
         });
-
-
-        // —– FUNCIONES AUXILIARES —–
 
         function formatValue(value) {
             if (value === null || value === undefined) return 0;
@@ -242,19 +225,22 @@
             total = TotalConcepts;
             $('#value_sale').val(total.toFixed(2));
 
-            // --- NUEVO: calcular IGV y SUBTOTAL ---
-            // Según lo pediste: IGV = 18% del total (valor mostrado en #total)
-            const subtotalValue = +(total / 1.18).toFixed(2);
-            const igvValue = +(total - subtotalValue).toFixed(2);
+            let subtotalValue, igvValue, ganancia;
 
+            if (includesIgv) {
+                subtotalValue = +(total / 1.18).toFixed(2);
+                igvValue = +(total - subtotalValue).toFixed(2);
+                ganancia = (total - totalRespuestaParam) / 1.18;
+            } else {
+                subtotalValue = +total.toFixed(2);
+                igvValue = 0.00;
+                ganancia = (total - totalRespuestaParam);
+            }
 
-            // vuelca en los campos nuevos
+            if (ganancia < 0) ganancia = 0;
+
             $('#igv').val(igvValue.toFixed(2));
             $('#subtotal').val(subtotalValue.toFixed(2));
-            // --- FIN NUEVO ---
-
-            let ganancia = (total - totalRespuestaParam) / 1.18;
-            if (ganancia < 0) ganancia = 0;
             $('#profit').val(ganancia.toFixed(2));
 
             const btn = document.querySelector('#btnGuardar');
@@ -265,9 +251,7 @@
             }
         }
 
-        /**
-         * Vuelca conceptsArray en la tabla, recalcula totales y agrega columna USD.
-         */
+
         function updateTable(conceptsArray) {
             const tbody = $('#formConceptsTransport tbody')[0];
             if (!tbody) return;
@@ -288,7 +272,7 @@
 
                 // 3) Costo Neto ($) ⇒ readonly
                 const celdaUsd = fila.insertCell(2);
-                const usdVal = parseFloat(item.pivotValue);
+                const usdVal = formatValue(item?.pivotValue ?? 0);
                 const inpUsd = document.createElement('input');
                 inpUsd.type = 'text';
                 inpUsd.value = usdVal.toFixed(2);
@@ -323,8 +307,7 @@
 
             calcTotal(sumaLocal);
         }
-
-        // —– Agrega desde dropdown —–
+                   
         function addConceptFromDropdown() {
             const sel = document.getElementById('conceptSelect');
             const inp = document.getElementById('conceptValue');
@@ -343,13 +326,14 @@
             const idx = conceptsArray.findIndex(c => c.id === conceptId);
             if (idx !== -1) {
                 conceptsArray[idx].value = value;
-                conceptsArray[idx].isNew = true; // vuelve a marcarlo editable
+                conceptsArray[idx].isNew = true; 
             } else {
                 conceptsArray.push({
                     id: conceptId,
                     name: conceptName,
                     value: value,
-                    isNew: true // aquí la novedad
+                    pivotValue: 0,
+                    isNew: true
                 });
             }
             sel.value = '';
@@ -358,14 +342,12 @@
         }
 
 
-
-
         $('#formTransport').on('submit', function(e) {
             e.preventDefault();
             const form = $(this);
             form.append(
                 `<input type="hidden" name="concepts" value='${JSON.stringify(conceptsArray)}' />`,
-                );
+            );
             form.off('submit').submit();
         });
     </script>

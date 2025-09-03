@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ResponseTransportQuote;
 use App\Models\Supplier;
 use App\Models\ConceptsQuoteTransport;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use App\Models\QuoteTransport;
 use App\Models\Concept;
 use Illuminate\Http\Request;
@@ -28,11 +29,25 @@ class ResponseTransportQuoteController extends Controller
         return view('response-transport-quotes.list', compact('quotes', 'heads'));
     }
 
+    public function show(string $id)
+    {
+        $response = ResponseTransportQuote::with([
+            'supplier',                 
+            'quoteTransport',                    
+            'conceptResponseTransports.concept', 
+        ])->findOrFail($id);
+
+        $pdf = FacadePdf::loadView('transport.pdf.responseTransport', compact('response'));
+
+        return $pdf->stream('RespuestaTransporte.pdf');
+    }
+
     public function create()
     {
         $suppliers = Supplier::where('supplier_type', 'Transportista')->get();
         return view('response-transport-quotes.register', compact('suppliers'));
     }
+
 
     public function store(Request $request)
     {
@@ -44,7 +59,7 @@ class ResponseTransportQuoteController extends Controller
         $quote = QuoteTransport::findOrFail($quoteId);
 
         $includeIgv = $request->has('includeIgv');
-        
+
 
         // 2) Creamos la respuesta con totales a 0
         $resp = ResponseTransportQuote::create([
@@ -76,24 +91,21 @@ class ResponseTransportQuoteController extends Controller
             $totalUsd  = round($vals['totalusd'], 2);
             $salePrice = round($vals['saleprice'], 2);
 
-            // sólo calculamos IGV si el usuario lo indicó
             $igv = $includeIgv
                 ? round($net * 0.18, 2)
                 : null;
 
-            // total en soles: net + igv (o solo net si no hay IGV)
             $sol = $includeIgv
                 ? round($net + $igv, 2)
                 : $net;
 
-            // Acumula en los totales globales
             $sumNet       += $net;
             $sumUtil      += $util;
             if ($includeIgv) {
                 $sumIgv  += $igv;
                 $sumSol  += $sol;
             } else {
-                $sumSol  += $sol; // sumSol suma netos si no incluye igv
+                $sumSol  += $sol;
             }
             $sumTotalUsd  += $totalUsd;
             $sumSalePrice += $salePrice;
@@ -113,7 +125,7 @@ class ResponseTransportQuoteController extends Controller
         // 6) Actualiza los totales de la cabecera
         $resp->update([
             'provider_cost'    => $sumNet,
-            'igv'              => $includeIgv ? $sumIgv : null,
+            'igv' => $includeIgv ? $sumIgv : null,
             'total_sol'       => $sumSol,
             'value_utility'    => $sumUtil,
             'total_usd'        => $sumTotalUsd,

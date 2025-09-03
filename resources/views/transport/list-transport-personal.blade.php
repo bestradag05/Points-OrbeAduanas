@@ -25,7 +25,7 @@
                 @endif
                 <td>{{ $transport->origin }}</td>
                 <td>{{ $transport->destination }}</td>
-                <td>{{ $transport->total }}</td>
+                <td>{{ $transport->value_sale }}</td>
                 <td class="text-indigo text-bold">{{ \Carbon\Carbon::parse($transport->withdrawal_date)->format('d/m/Y') }}
                 </td>
                 <td>

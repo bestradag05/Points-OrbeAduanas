@@ -79,7 +79,7 @@ class TransportController extends Controller
     {
         $transport = $this->trasnportService->storeTransport($request);
 
-        return redirect('/commercial/quote/' . $transport->quote_transport_id . '/detail');
+        return redirect('/commercial/quote/' . $transport->commercial_quote->id . '/detail');
       
     }
 
