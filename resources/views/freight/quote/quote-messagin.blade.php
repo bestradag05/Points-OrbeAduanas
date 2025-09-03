@@ -253,13 +253,13 @@
                                 <b class="d-block">{{ $quote->cubage_kgv }} KGV</b>
                             </p>
                         </div>
-                        
-                            <div class="col-6">
-                                <p class="text-sm">Peso total :
-                                    <b class="d-block">{{ $quote->ton_kilogram }} KG</b>
-                                </p>
-                            </div>
-                       
+
+                        <div class="col-6">
+                            <p class="text-sm">Peso total :
+                                <b class="d-block">{{ $quote->ton_kilogram }} KG</b>
+                            </p>
+                        </div>
+
                     @endif
 
                 </div>
@@ -854,13 +854,17 @@
                                                 </div>
                                             </div>
 
+                                            <div class="col-12 row justify-content-center gap-4">
+                                                <button type="button" class="btn btn-secondary mt-3 mx-2"
+                                                    onclick="stepper.previous()">Anterior</button>
+                                                <button class="btn btn-indigo mt-3 mx-2" type="submit"> <i
+                                                        class="fas fa-save mr-2"></i>Guardar respuesta</button>
+                                            </div>
+
                                         </div>
 
 
-                                        <button type="button" class="btn btn-secondary mt-3"
-                                            onclick="stepper.previous()">Anterior</button>
-                                        <button class="btn btn-indigo mt-3" type="submit"> <i
-                                                class="fas fa-save mr-2"></i>Guardar respuesta</button>
+
                                     </div>
                                 </div>
                             </div>

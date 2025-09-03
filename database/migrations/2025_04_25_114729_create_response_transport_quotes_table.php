@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('response_transport_quotes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('quote_transport_id')->constrained('quote_transport');
-            $table->date('valid_until');
+            /* $table->date('valid_until'); */
             $table->string('nro_response')->unique()->default('');
             $table->foreignId('provider_id')->constrained('suppliers');
             $table->string('type_vehicle', 100)->nullable();
