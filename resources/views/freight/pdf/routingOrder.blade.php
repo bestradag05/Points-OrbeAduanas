@@ -277,6 +277,7 @@
 
     </div>
 
+    
     @php
         $chunks = $concepts->chunk(7); // Dividimos cada 7
         $rows = $chunks->chunk(2); // Cada fila tendrá 2 columnas máximo
@@ -294,7 +295,7 @@
                                         {{ $concept->name }}
                                     </td>
                                     <td style="border-bottom: 1px solid #5a5a5a; text-align: right">
-                                        $ {{ $concept->pivot->total_value_concept }}
+                                        $ {{ $concept->pivot->value_concept }}
                                     </td>
                                     @if (isset($concept->pivot->additional_points) && $concept->pivot->additional_points > 0)
                                         <td style="color: red;">

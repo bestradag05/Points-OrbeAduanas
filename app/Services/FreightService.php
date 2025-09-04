@@ -223,7 +223,7 @@ class FreightService
         $freight = Freight::findOrFail($request->id_freight);
         $commercialQuote = $freight->commercial_quote;
         $concepts = $freight->concepts;
-
+        
         $freight->update(['wr_loading' => $request->wr_loading]);
         $pdf = Pdf::loadView('freight.pdf.routingOrder', compact('commercialQuote', 'concepts', 'freight'));
         $filename = 'Routing Order.pdf';

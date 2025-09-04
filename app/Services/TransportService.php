@@ -156,6 +156,13 @@ class TransportService
         $this->syncTransportConcepts($transport, $concepts, $response);
 
 
+        //Actualizamos la cotizacion del area interna a cerrada, una vez que se genero el flete
+
+        $transport->quoteTransport->update([
+            'state' => 'Cerrado'
+        ]);
+
+
         return $transport;
     }
 
@@ -259,18 +266,18 @@ class TransportService
 
     private function syncTransportConcepts($transport, $concepts, $response): void
 
-    { 
-        $conceptsTransport = ConceptsTransport::where('transport_id', $transport->id)->get(); 
+    {
+        $conceptsTransport = ConceptsTransport::where('transport_id', $transport->id)->get();
 
         if ($conceptsTransport) {
             foreach ($conceptsTransport as $concept) {
-                $concept->forceDelete(); 
+                $concept->forceDelete();
             }
         }
 
         $totalTransport = 0;
 
-        
+
         foreach ($concepts as $concept) {
             /*  $added = $this->parseDouble($concept->added);
 
