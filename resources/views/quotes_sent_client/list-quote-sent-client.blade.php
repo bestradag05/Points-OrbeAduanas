@@ -28,7 +28,7 @@
                     {{ $quoteSentClient->commercialQuote->originState->name }}</td>
                 <td class="text-uppercase">{{ $quoteSentClient->commercialQuote->destinationState->country->name }} -
                     {{ $quoteSentClient->commercialQuote->destinationState->name }}</td>
-                <td class="text-uppercase">{{ $quoteSentClient->commercialQuote->customer->name_businessname ?? '' }}</td>
+                <td class="text-uppercase">{{ $quoteSentClient->commercialQuote->customer->name_businessname ?? $quoteSentClient->commercialQuote->customer_company_name }}</td>
                 <td>{{ $quoteSentClient->commercialQuote->type_shipment->description . ' ' . ($quoteSentClient->commercialQuote->type_shipment->description === 'Marítima' ? $quoteSentClient->commercialQuote->lcl_fcl : '') }}
                 </td>
                 <td>{{ $quoteSentClient->commercialQuote->personal->names }}</td>
@@ -188,10 +188,9 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Mostrar un modal con select2 para seleccionar o registrar cliente y/o proveedor
-                    let nameCustomer = quote.customer_company_name;
                     let isConsolidated = quote.is_consolidated;
                     let idCustomer = quote.id_customer;
-                    completeCustomerInformation(quote, nameCustomer, idCustomer, isConsolidated);
+                    completeCustomerInformation(quote, idCustomer, isConsolidated);
                 }
             });
 
@@ -199,7 +198,7 @@
 
 
 
-        function completeCustomerInformation(quote, nameCustomer, idCustomer, isConsolidated) {
+        function completeCustomerInformation(quote, idCustomer, isConsolidated) {
 
             let modal = $('#commercialFillData');
             modal.find('#quoteSentClient').val(quote.id);
@@ -221,9 +220,12 @@
 
             } else {
 
-                if (nameCustomer) {
+                if (quote.customer_company_name) {
                     //Agregamos el nombre que guardo si es que lo tenia
-                    modal.find('#name_businessname').val(nameCustomer);
+                    modal.find('#name_businessname').val(quote.customer_company_name);
+                    modal.find('#contact_name').val(quote.contact);
+                    modal.find('#contact_number').val(quote.cellphone);
+                    modal.find('#contact_email').val(quote.email);
                 }
             }
 

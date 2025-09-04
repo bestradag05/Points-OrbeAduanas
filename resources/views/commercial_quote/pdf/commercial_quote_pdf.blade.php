@@ -279,7 +279,7 @@
                 <tbody>
                     <tr>
                         <td class="title-item-table">Cliente</td>
-                        <td class="text-item-table">{{ $quoteSentClient->customer->name_businessname ?? ''}}</td>
+                        <td class="text-item-table">{{ $quoteSentClient->customer->name_businessname ??  $quoteSentClient->customer_company_name}}</td>
                     </tr>
                     <tr>
                         <td class="title-item-table">Puerto de salida</td>

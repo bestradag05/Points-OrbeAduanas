@@ -17,6 +17,9 @@ class CommercialQuote extends Model
         'origin',
         'destination',
         'customer_company_name',
+        'contact',
+        'cellphone',
+        'email',
         'load_value',
         'id_personal',
         'id_type_shipment',
@@ -39,8 +42,6 @@ class CommercialQuote extends Model
         'cif_value',
         'valid_until',
         'state',
-
-
     ];
 
     protected $casts = [

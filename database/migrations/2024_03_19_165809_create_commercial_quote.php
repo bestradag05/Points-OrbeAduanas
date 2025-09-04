@@ -17,6 +17,9 @@ return new class extends Migration
             $table->unsignedBigInteger('origin');
             $table->unsignedBigInteger('destination');
             $table->string('customer_company_name')->nullable();
+            $table->string('contact')->nullable();
+            $table->string('cellphone')->nullable();
+            $table->string('email')->nullable();
             $table->decimal('load_value', 8, 2);
             $table->unsignedBigInteger('id_personal');
             $table->unsignedBigInteger('id_type_shipment');

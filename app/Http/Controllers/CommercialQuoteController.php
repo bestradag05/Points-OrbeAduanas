@@ -77,9 +77,9 @@ class CommercialQuoteController extends Controller
     public function completeData(Request $request)
     {
 
-       $respuesta =  $this->commercialQuoteService->completeDataCommercialQuote($request);
+        $respuesta =  $this->commercialQuoteService->completeDataCommercialQuote($request);
 
-       return $respuesta;
+        return $respuesta;
     }
 
 
@@ -250,6 +250,9 @@ class CommercialQuoteController extends Controller
             'origin' => $commercialQuote->origin,
             'destination' => $commercialQuote->destination,
             'customer_company_name' => $commercialQuote->customer_company_name,
+            'contact' => $commercialQuote->contact,
+            'cellphone' => $commercialQuote->cellphone,
+            'email' => $commercialQuote->email,
             'load_value' => $commercialQuote->load_value,
             'id_personal' => $commercialQuote->id_personal,
             'id_type_shipment' => $commercialQuote->id_type_shipment,

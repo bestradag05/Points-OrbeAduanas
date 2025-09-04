@@ -89,12 +89,12 @@
                 </div>
             </div>
             <div
-                class="col-12 border-bottom border-bottom-2 {{ $comercialQuote->customer_company_name ? '' : 'd-none' }}">
+                class="col-12 border-bottom border-bottom-2">
                 <div class="form-group row">
                     <label class="col-sm-4 col-form-label">Cliente : </label>
                     <div class="col-sm-8">
 
-                        <p class="form-control-plaintext">{{ $comercialQuote->customer_company_name }}</p>
+                        <p class="form-control-plaintext">{{ $comercialQuote->customer_company_name ?? $comercialQuote->customer->name_businessname}}</p>
                     </div>
 
                 </div>

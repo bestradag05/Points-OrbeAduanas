@@ -105,6 +105,9 @@ class CommercialQuoteService
                 'destination' => $request->destination,
                 'commodity' => $consolidated['commodity'],
                 'customer_company_name' => $request->customer_company_name,
+                'contact' => $request->contact,
+                'cellphone' => $request->cellphone,
+                'email' => $request->email,
                 'load_value' => $consolidated['total_load_values'],
                 'id_type_shipment' => $request->id_type_shipment,
                 'id_regime' => $request->id_regime,
@@ -144,6 +147,9 @@ class CommercialQuoteService
                     'destination' => $request->destination,
                     'commodity' => $calcContainers['commodity'],
                     'customer_company_name' => $request->customer_company_name,
+                    'contact' => $request->contact,
+                    'cellphone' => $request->cellphone,
+                    'email' => $request->email,
                     'load_value' => $calcContainers['total_load_values'],
                     'id_type_shipment' => $request->id_type_shipment,
                     'id_regime' => $request->id_regime,
@@ -187,6 +193,9 @@ class CommercialQuoteService
                     'origin' => $request->origin,
                     'destination' => $request->destination,
                     'customer_company_name' => $request->customer_company_name,
+                    'contact' => $request->contact,
+                    'cellphone' => $request->cellphone,
+                    'email' => $request->email,
                     'load_value' => $this->parseDouble($request->load_value),
                     'id_type_shipment' => $request->id_type_shipment,
                     'id_regime' => $request->id_regime,
@@ -243,7 +252,7 @@ class CommercialQuoteService
 
     public function completeDataCommercialQuote($request)
     {
-   
+
         $quoteSentClient = QuotesSentClient::findOrFail($request->quoteSentClient);
 
         $commercialQuote = $quoteSentClient->commercialQuote;
@@ -283,6 +292,9 @@ class CommercialQuoteService
             }
 
             $updateData['customer_company_name'] = null;
+            $updateData['contact'] = null;
+            $updateData['cellphone'] = null;
+            $updateData['email'] = null;
             $updateData['id_customer'] = $customer->id;
         }
 
@@ -341,7 +353,7 @@ class CommercialQuoteService
         $commercialQuote->update($updateData);
         $quoteSentClient->update($updateData);
 
-/*         $this->generatePurePoint($commercialQuote); */
+        /*         $this->generatePurePoint($commercialQuote); */
 
         return $commercialQuote;
     }
@@ -399,7 +411,7 @@ class CommercialQuoteService
             }
         }
 
-          // Filtrar los conceptos de "GASTOS OPERATIVOS" y "AGENCIAMIENTO DE ADUANAS"
+        // Filtrar los conceptos de "GASTOS OPERATIVOS" y "AGENCIAMIENTO DE ADUANAS"
         $filteredConcepts = [];
         foreach ($concepts as $concept) {
             if (($concept->name === 'GASTOS OPERATIVOS' || $concept->name === 'AGENCIAMIENTO DE ADUANAS') && $comercialQuote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Aduanas') {
@@ -612,7 +624,7 @@ class CommercialQuoteService
         return $commercialQuote;
     }
 
-/*     public function generatePurePoint($commercialQuote)
+    /*     public function generatePurePoint($commercialQuote)
     {
         if ($commercialQuote->state === 'Aceptado') {
 
@@ -831,8 +843,6 @@ class CommercialQuoteService
     public function validateForm($request, $id)
     {
 
-        /* dd($request->all()); */
-
         $request->validate([
             'nro_quote_commercial' => 'required|string|unique:commercial_quote,nro_quote_commercial,' . $id,
             'origin' => 'required|string',
@@ -848,7 +858,14 @@ class CommercialQuoteService
             'kilogram_volumen' => 'required_if:type_shipment_name,Aérea',
             'tons' => 'required_if:lcl_fcl,FCL|max:8',
             'lcl_fcl' => 'required_if:type_shipment_name,Marítima',
-            'observation' => 'nullable'
+            'observation' => 'nullable',
+
+            // Validación condicional
+            'id_customer' => 'required_if:is_customer_prospect,customer',
+            'customer_company_name' => 'required_if:is_customer_prospect,prospect',
+            'contact' => 'required_if:is_customer_prospect,prospect',
+            'cellphone' => 'required_if:is_customer_prospect,prospect',
+            'email' => 'required_if:is_customer_prospect,prospect',
         ]);
     }
 

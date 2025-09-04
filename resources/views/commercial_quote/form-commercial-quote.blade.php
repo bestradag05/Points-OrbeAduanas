@@ -128,10 +128,10 @@
               </x-adminlte-select2>
           </div>
 
-          <div class="col-6 row justify-content-center align-items-center">
+          <div class="col-12 row justify-content-center align-items-center mt-3">
               <div class="form-group text-indigo">
-                  <label>¿Es cliente o prospecto?</label>
-                  <div class="form-check form-check-inline">
+                  <label class="col-12">¿Es cliente o prospecto?</label>
+                  <div class="form-check form-check-inline mt-2">
                       <input type="radio" id="customer" name="is_customer_prospect" value="customer"
                           class="form-check-input" onchange="toggleCustomerProspectSection()">
                       <label for="customer" class="form-check-label">Cliente</label>
@@ -144,53 +144,105 @@
               </div>
           </div>
 
-          <div id="contentProspect" class="col-6">
-              <div class="form-group">
-                  <label for="customer_company_name">Razon social / Nombre</label>
+          <div id="contentProspect" class="col-12 row">
+              <div class="col-6">
+                  <div class="form-group">
+                      <label for="customer_company_name">Razon social / Nombre</label>
 
-                  <div class="input-group">
-                      <input type="text" class="form-control @error('customer_company_name') is-invalid @enderror "
-                          name="customer_company_name" id="customer_company_name"
-                          placeholder="Ingrese valor de la carga"
-                          value="{{ isset($routing->customer_company_name) ? $routing->customer_company_name : old('customer_company_name') }}">
+                      <div class="input-group">
+                          <input type="text"
+                              class="form-control @error('customer_company_name') is-invalid @enderror "
+                              name="customer_company_name" id="customer_company_name"
+                              placeholder="Ingrese valor de la carga"
+                              value="{{ isset($routing->customer_company_name) ? $routing->customer_company_name : old('customer_company_name') }}">
+                      </div>
+                      @error('customer_company_name')
+                          <span class="invalid-feedback d-block" role="alert">
+                              <strong>{{ $message }}</strong>
+                          </span>
+                      @enderror
+
                   </div>
-                  @error('customer_company_name')
-                      <span class="invalid-feedback d-block" role="alert">
-                          <strong>{{ $message }}</strong>
-                      </span>
-                  @enderror
-
               </div>
+
+              <div class="col-6">
+                  <div class="form-group">
+                      <label for="contact">Contacto</label>
+                      <input type="text" class="form-control @error('contact') is-invalid @enderror"
+                          id="contact" name="contact" placeholder="Ingrese su numero de celular"
+                          value="{{ isset($customer->contact) ? $customer->contact : old('contact') }}">
+                      @error('contact')
+                          <span class="invalid-feedback d-block" role="alert">
+                              <strong>{{ $message }}</strong>
+                          </span>
+                      @enderror
+                  </div>
+              </div>
+
+
+              <div class="col-6">
+                  <div class="form-group">
+                      <label for="cellphone">Celular</label>
+                      <input type="text" class="form-control @error('cellphone') is-invalid @enderror"
+                          id="cellphone" name="cellphone" placeholder="Ingrese su numero de celular"
+                          value="{{ isset($customer->cellphone) ? $customer->cellphone : old('cellphone') }}">
+                      @error('cellphone')
+                          <span class="invalid-feedback d-block" role="alert">
+                              <strong>{{ $message }}</strong>
+                          </span>
+                      @enderror
+                  </div>
+              </div>
+
+
+              <div class="col-6">
+
+                  <div class="form-group">
+                      <label for="email">Correo</label>
+                      <input type="text" class="form-control @error('email') is-invalid @enderror" id="email"
+                          name="email" placeholder="Ingrese su numero de celular"
+                          value="{{ isset($customer->email) ? $customer->email : old('email') }}">
+                      @error('email')
+                          <span class="invalid-feedback d-block" role="alert">
+                              <strong>{{ $message }}</strong>
+                          </span>
+                      @enderror
+                  </div>
+              </div>
+
           </div>
 
-          <div id="contentCustomer" class="col-6 d-none">
-              <div class="form-group">
-                  <label for="id_customer">Cliente <span class="text-danger">*</span></label>
+          <div id="contentCustomer" class="col-12 row justify-content-center d-none">
+              <div class="col-6">
+                  <div class="form-group">
+                      <label for="id_customer">Cliente <span class="text-danger">*</span></label>
 
-                  <x-adminlte-select2 name="id_customer" igroup-size="md"
-                      data-placeholder="Seleccione una opcion...">
-                      <option />
-                      @foreach ($customers as $customer)
-                          <option value="{{ $customer->id }}"
-                              {{ (isset($routing->id_customer) && $routing->id_customer == $customer->id) || old('id_customer') == $customer->id ? 'selected' : '' }}>
-                              {{ $customer->name_businessname }} -
-                              {{ $customer->document->name }}:{{ $customer->document_number }}
-                          </option>
-                      @endforeach
-                  </x-adminlte-select2>
-                  @error('customer_company_name')
-                      <span class="invalid-feedback d-block" role="alert">
-                          <strong>{{ $message }}</strong>
-                      </span>
-                  @enderror
+                      <x-adminlte-select2 name="id_customer" igroup-size="md"
+                          data-placeholder="Seleccione una opcion...">
+                          <option />
+                          @foreach ($customers as $customer)
+                              <option value="{{ $customer->id }}"
+                                  {{ (isset($routing->id_customer) && $routing->id_customer == $customer->id) || old('id_customer') == $customer->id ? 'selected' : '' }}>
+                                  {{ $customer->name_businessname }} -
+                                  {{ $customer->document->name }}:{{ $customer->document_number }}
+                              </option>
+                          @endforeach
+                      </x-adminlte-select2>
+                      @error('id_customer')
+                          <span class="invalid-feedback d-block" role="alert">
+                              <strong>{{ $message }}</strong>
+                          </span>
+                      @enderror
 
+                  </div>
               </div>
+
           </div>
 
 
       </div>
 
-      <button class="btn btn-primary" onclick="stepper.next()">Siguiente</button>
+      <button class="btn btn-primary mt-3" onclick="stepper.next()">Siguiente</button>
   </div>
   <div id="detalle_producto" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepperDetalleProducto">
 
