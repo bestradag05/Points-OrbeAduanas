@@ -352,7 +352,7 @@ return [
                     'icon' => 'fas fa-layer-group',
                     'active' => ['teams', 'teams*', 'regex:@^content/[0-9]+$@'],
                     'can' => 'users.listGroup',
-                ]                               
+                ]
             ]
         ],
         [
@@ -379,7 +379,7 @@ return [
         [
             'text' => 'Origen-Destino',
             'icon' => 'fas fa-fw fa-user-tie',
-            
+            'can' => 'origin.destination.module',
             'submenu' => [
                 [
                     'text' => 'Pais',
@@ -422,8 +422,9 @@ return [
         [
             'text' => 'Seguro',
             'icon' => 'fas fa-list-ul',
+            'can' => 'insurance',
             'submenu' => [
-                 [
+                [
                     'text' => 'Tipo de seguro',
                     'url'  => 'type_insurance',
                     'icon'  => 'fas fa-shield-virus',
@@ -437,53 +438,30 @@ return [
 
         ],
         [
-            'text' => 'Pricing',
-            'icon' => 'fas fa-ship',
-            'submenu' => [
-                /*  [
-                    'text' => 'Generar cotizacion',
-                    'url' => 'quote/freight/create',
-                    'icon'  => 'fas fa-file-invoice-dollar',
-                    'active' => ['quote/pricing'],
-                ],
-                [
-                    'text' => 'Listar cotizacion',
-                    'url' => 'quote/freight',
-                    'icon'  => 'fas fa-file-invoice-dollar',
-                    'active' => ['quote/freight'],
-                ], */]
-
-        ],
-        [
             'text' => 'Flete',
             'icon' => 'fas fa-ship',
             'can' => 'freight.module',
             'submenu' => [
                 [
-                    'text' => 'Generar cotizacion',
-                    'url' => 'quote/freight/create',
-                    'icon'  => 'fas fa-file-invoice-dollar',
-                    'active' => ['quote/pricing'],
-                ],
-                [
-                    'text' => 'Listar cotizacion',
+                    'text' => 'Listar cotizaciones',
                     'url' => 'quote/freight',
                     'icon'  => 'fas fa-file-invoice-dollar',
                     'active' => ['quote/freight'],
+                    'can' => 'freight.quote_freight'
                 ],
                 [
                     'text' => 'Mis Fletes',
                     'url'  => 'freight/personal',
                     'icon' => 'fas fa-ship',
                     'active' => ['freight/personal'],
-
+                    'can' => 'freight.list'
                 ],
             ]
         ],
         [
             'text' => 'Transporte',
             'icon' => 'fas fa-fw fa-truck-moving',
-            /* 'can' => 'transporte.module', */
+            'can' => 'transporte.module',
             'submenu' => [
                 [
                     'text' => 'Generar una cotizacion',
@@ -520,13 +498,14 @@ return [
         [
             'text' => 'Clientes y Proveedores',
             'icon' => 'fas fa-user-friends',
-            'can' => 'customer.list',
+            'can' => 'customerProviders.module',
             'submenu' => [
                 [
                     'text' => 'Clientes',
                     'url'  => 'customer',
                     'icon'  => 'fas fa-user-plus',
                     'active' => ['customer'],
+                    'can' => 'customer.list'
 
                 ],
                 [
@@ -534,7 +513,7 @@ return [
                     'url'  => 'suppliers',
                     'icon'  => 'fas fa-user-edit',
                     'active' => ['suppliers'],
-                    'can' => 'supplier.module'
+                    'can' => 'supplier.list'
 
                 ],
                 [
@@ -571,6 +550,7 @@ return [
         [
             'text' => 'Aerolínea y Navieras',
             'icon' => 'fas fa-clipboard-list',
+            'can' => 'airlineShippingCompanies.module',
             'submenu' => [
                 [
                     'text' => 'Aerolínea',
@@ -598,19 +578,21 @@ return [
         [
             'text' => 'Contenedores',
             'icon' => 'fas fa-fw fa-box',
-            
+            'can' => 'container.module',
             'submenu' => [
                 [
                     'text' => 'Contenedores',
                     'url' => 'containers',
                     'icon'  => 'fas fa-box-open',
                     'active' => ['containers'],
+                    'can' => 'container.list',
                 ],
                 [
                     'text' => 'Tipo de contenedores',
                     'url'  => 'type_containers',
                     'icon' => 'fas fa-cubes',
                     'active' => ['type_containers.*'],
+                    'can' => 'container.containerType',
                 ],
 
             ]
@@ -632,53 +614,52 @@ return [
         ],
         [
             'text' => 'Comisiones',
-            'icon' => 'fas fa-funnel-dollar', 
+            'icon' => 'fas fa-funnel-dollar',
+            'can' => 'commissions.module',
             'submenu' => [
                 [
                     'text' => 'Comisiones fijas',
                     'url'  => 'commissions/fixed',
                     'icon' => 'fas fa-funnel-dollar',
                     'active' => ['commissions/fixed'],
+                    'can' => 'commissions.companyCommissions'
                 ],
                 [
                     'text' => 'Gestionar comisiones',
                     'url'  => 'commissions/seller',
                     'icon' => 'fas fa-search-dollar',
                     'active' => ['commissions/seller'],
+                    'can' => 'commissions.sellerCommissions'
                 ],
 
             ]
 
         ],
-
-        [
-            'text' => 'Routing',
-            'url'  => 'routing',
-            'icon' => 'fas fa-folder-open',
-            'active' => ['routing', 'routing*', 'regex:@^content/[0-9]+$@'],
-            'can' => 'routing.list'
-        ],
         [
             'text' => 'Cotizacion Comercial',
             'icon' => 'fas fa-file-invoice-dollar',
+            'can' => 'commercialQuote.module',
             'submenu' => [
                 [
                     'text' => 'Generar Cotizacion',
                     'url'  => 'commercial/quote/create',
                     'icon' => 'fas fa-file-medical',
                     'active' => ['commercial/quote/create'],
+                    'can' => 'commercialQuote.generate',
                 ],
                 [
                     'text' => 'Lista cotizaciones',
                     'url'  => 'commercial/quote',
                     'icon' => 'fas fa-file-medical',
                     'active' => ['commercial/quote'],
+                    'can' => 'commercialQuote.list',
                 ],
                 [
                     'text' => 'Cotizaciones enviadas',
                     'url'  => 'sent-client',
                     'icon' => 'fas fa-user-tag',
                     'active' => ['sent-client'],
+                    'can' => 'commercialQuote.listSentClient',
                 ],
 
             ]

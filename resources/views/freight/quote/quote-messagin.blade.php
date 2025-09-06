@@ -377,12 +377,14 @@
             <div class="col-12 px-4 mt-5">
                 <div class="text-center mb-4">
                     <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
-                    @if (!$quote->responses->contains(fn($response) => $response->status === 'Aceptado'))
-                        <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
-                            data-target="#modalResponseQuoteFreight">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    @endif
+                    @role('Pricing')
+                        @if (!$quote->responses->contains(fn($response) => $response->status === 'Aceptado'))
+                            <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
+                                data-target="#modalResponseQuoteFreight">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        @endif
+                    @endrole
                 </div>
 
                 @php
@@ -442,13 +444,15 @@
                                         <option>Detalle</option>
 
                                         @if (!$quote->freight)
-                                            <option class="{{ $response->status != 'Aceptado' ? 'd-none' : '' }}">Generar
-                                                Flete</option>
-                                            <option class="{{ $response->status === 'Aceptado' ? 'd-none' : '' }}">Aceptar
-                                            </option>
-                                            <option class="{{ $response->status === 'Rechazada' ? 'd-none' : '' }}">
-                                                Rechazar
-                                            </option>
+                                            @role('Asesor Comercial')
+                                                <option class="{{ $response->status != 'Aceptado' ? 'd-none' : '' }}">Generar
+                                                    Flete</option>
+                                                <option class="{{ $response->status === 'Aceptado' ? 'd-none' : '' }}">Aceptar
+                                                </option>
+                                                <option class="{{ $response->status === 'Rechazada' ? 'd-none' : '' }}">
+                                                    Rechazar
+                                                </option>
+                                            @endrole
                                         @endif
                                     </select>
                                 </td>

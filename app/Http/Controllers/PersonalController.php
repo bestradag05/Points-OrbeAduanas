@@ -289,8 +289,8 @@ class PersonalController extends Controller
             'email' => 'nullable|email',
             'address' => 'nullable',
             'id_document' => 'required',
-            'areas' => 'required|array',
-            'areas.*' => 'exists:areas,id',
+            /* 'areas' => 'required|array',
+            'areas.*' => 'exists:areas,id', */
             'document_number' => [
                 'nullable',
                 'numeric',

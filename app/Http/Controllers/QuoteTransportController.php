@@ -31,8 +31,11 @@ class QuoteTransportController extends Controller
      */
     public function index()
     {
-
-        $quotes = QuoteTransport::with('routing')->get();
+        
+        $quotes = QuoteTransport::with('commercial_quote')
+        /* ->whereNot('state', 'Pendiente') */
+        ->get();
+       
 
         $heads = [
             '#',
@@ -63,7 +66,7 @@ class QuoteTransportController extends Controller
             $quotes = QuoteTransport::with('routing', 'customer')->get();
         } else {
             // Si no es Super-Admin, solo obtener los clientes que pertenecen al personal del usuario autenticado
-            $quotes = QuoteTransport::whereHas('routing', function ($query) use ($personalId) {
+            $quotes = QuoteTransport::whereHas('commercial_quote', function ($query) use ($personalId) {
                 $query->where('id_personal', $personalId);
             })
                 ->orWhereHas('customer', function ($query) use ($personalId) {

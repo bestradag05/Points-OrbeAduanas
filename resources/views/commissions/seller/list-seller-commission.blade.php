@@ -44,10 +44,9 @@
                 </td>
 
                 <td>
-                    @if (!$commissions->commercialQuote->typeService()->exists() || auth()->user()->hasRole('Super-Admin'))
+ 
                         <a href="{{ url('/commissions/seller/' . $commissions->id . '/detail') }}"><i
                                 class="fas fa-coins"></i> Gestionar comisiones</a>
-                    @endif
                 </td>
             </tr>
         @endforeach

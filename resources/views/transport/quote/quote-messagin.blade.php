@@ -319,7 +319,7 @@
                 <div class="col-6 align-items-center">
                     <h5 class="mt-3 text-muted">Archivos : </h5>
                 </div>
-                <div class="col-6 align-items-center {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}">
+                <div class="col-6 align-items-center {{ $quote->state != 'Aceptado' ? 'd-none' : '' }}">
                     <button class="btn btn-indigo btn-sm" data-toggle="modal"
                         data-target="#modalQuoteTransportDocuments">
                         <i class="fas fa-plus"></i>
@@ -456,7 +456,7 @@
                             <td class="text-end">{{ number_format($response->value_utility ?? 0, 2) }}</td>
                             <td class="text-end">{{ number_format($response->total_prices_usd ?? 0, 2) }}</td>
 
-                            <td >
+                            <td>
                                 <div class="custom-badge status-{{ strtolower($response->status) }}">
                                     {{ $response->status ?? 'Enviada' }}
                                 </div>
@@ -469,22 +469,26 @@
                                     @if ($response->status === 'Rechazada')
                                         <span class="text-muted">Rechazada</span>
                                     @elseif ($response->status === 'Aceptado')
-                                        <button class="btn btn-danger btn-sm" data-toggle="modal"
-                                            data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
-                                            Rechazar
-                                        </button>
+                                        @role('Asesor Comercial')
+                                            <button class="btn btn-danger btn-sm" data-toggle="modal"
+                                                data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
+                                                Rechazar
+                                            </button>
+                                        @endrole
                                     @elseif ($quote->response->contains('status', 'Aceptado'))
                                         <span class="text-muted">Sin acciones</span>
                                     @else
-                                        <button class="btn btn-success btn-sm" data-toggle="modal"
-                                            data-target="#quote-transport" data-response-id="{{ $response->id }}"
-                                            data-response-nro="{{ $response->nro_response }}">
-                                            Aceptar
-                                        </button>
-                                        <button class="btn btn-danger btn-sm" data-toggle="modal"
-                                            data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
-                                            Rechazar
-                                        </button>
+                                        @role('Asesor Comercial')
+                                            <button class="btn btn-success btn-sm" data-toggle="modal"
+                                                data-target="#quote-transport" data-response-id="{{ $response->id }}"
+                                                data-response-nro="{{ $response->nro_response }}">
+                                                Aceptar
+                                            </button>
+                                            <button class="btn btn-danger btn-sm" data-toggle="modal"
+                                                data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
+                                                Rechazar
+                                            </button>
+                                        @endrole
                                     @endif
                                 @endif
                                 <button type="button" class="btn btn-sm btn-primary btn-pdf-transport" title="Ver PDF"
@@ -836,8 +840,7 @@
         aria-labelledby="modalCotizarTransporte-title" aria-hidden="true">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
-                <form method="POST" action="{{ route('transport.quote.response.store') }}"
-                    id="formCotizarTransporte">
+                <form method="POST" action="{{ route('transport.quote.response.store') }}" id="formCotizarTransporte">
                     @csrf
 
                     <input type="hidden" name="quote_id" value="{{ $quote->id }}">
@@ -945,8 +948,8 @@
 
                                     {{-- Utilidad (US$) ← ESTA COLUMNA TIENE CLASS="concept-utility" --}}
                                     <div class="col-sm-2">
-                                        <input type="number" step="0.01"
-                                            id="utility_{{ $tc->id }}" data-id="{{ $tc->id }}"
+                                        <input type="number" step="0.01" id="utility_{{ $tc->id }}"
+                                            data-id="{{ $tc->id }}"
                                             name="conceptTransport[{{ $tc->id }}][utility]"
                                             class="form-control form-control-sm text-end concept-utility is-required">
                                     </div>
@@ -1091,7 +1094,7 @@
                 responseId);
 
             const $iframe = $('#pdfFrameTransport');
-            $iframe.attr('src', 'about:blank'); 
+            $iframe.attr('src', 'about:blank');
             $('#pdfDetailResponseTransport').modal('show');
 
             setTimeout(() => $iframe.attr('src', url), 150);
@@ -1103,17 +1106,17 @@
 
         Dropzone.options.myDropzone = {
 
-            url: '/quote/transport/file-upload-documents', 
-            maxFilesize: 2, 
-            acceptedFiles: '.jpg,.jpeg,.png,.gif,.pdf', 
-            autoProcessQueue: true, 
+            url: '/quote/transport/file-upload-documents',
+            maxFilesize: 2,
+            acceptedFiles: '.jpg,.jpeg,.png,.gif,.pdf',
+            autoProcessQueue: true,
             params: {
                 commercial_quote,
-                transport_quote 
+                transport_quote
             },
 
             init: function() {
-                let uploadedFiles = []; 
+                let uploadedFiles = [];
                 let myDropzone = this;
 
                 let tableBody = document.querySelector("#table-file-transport tbody");
@@ -1212,6 +1215,7 @@
                 console.error('Error al eliminar el archivo:', error);
             });
         }
+
         function recalcRow(id) {
             const exchangeRate = parseFloat(document.getElementById('exchange_rate').value) || 1;
             const price = parseFloat(document.getElementById(`price_${id}`).value) || 0;
@@ -1246,7 +1250,7 @@
 
 
         document.addEventListener('DOMContentLoaded', () => {
- 
+
             document.querySelectorAll('.concept-input').forEach(input => {
                 const id = input.dataset.id;
                 input.addEventListener('input', () => recalcRow(id));
@@ -1336,14 +1340,14 @@
 
 
             var commercialcontainer = button.data(
-                'commercialcontainer'); 
+                'commercialcontainer');
 
             var modalBody = $(this).find('.modal-body #containerDetails');
 
             var measuresTable = '';
             if (commercialcontainer.measures) {
                 var measures = JSON.parse(commercialcontainer
-                    .measures); 
+                    .measures);
                 measuresTable =
                     '<table class="table table-bordered"><thead><tr><th>Cantidad</th><th>Anchura (cm)</th><th>Longitud (cm)</th><th>Altura (cm)</th><th>Unidad de Medida</th></tr></thead><tbody>';
 

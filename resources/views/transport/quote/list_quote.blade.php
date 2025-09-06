@@ -15,7 +15,7 @@
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $quote->nro_quote }}</td>
                 <td>
-                    {{ isset($quote->routing->customer->name_businessname) ?  $quote->routing->customer->name_businessname : $quote->customer->name_businessname }}
+                    {{ isset($quote->commercial_quote->customer->name_businessname) ?  $quote->commercial_quote->customer->name_businessname : $quote->customer->name_businessname }}
                 </td>
                 <td>{{ $quote->max_attention_hour }}</td>
                 <td>{{ $quote->lcl_fcl }}</td>
@@ -23,7 +23,7 @@
                 <td>{{ $quote->ton_kilogram  }}</td>
                 <td>{{ $quote->total_weight }}</td>
                 <td class="text-indigo text-bold"> {{ isset($quote->withdrawal_date) ? \Carbon\Carbon::parse($quote->withdrawal_date)->format('d/m/Y') : '-' }}</td>
-                <td>{{ isset($quote->routing->personal->names) ? $quote->routing->personal->names: $quote->customer->personal->names  }}</td>
+                <td>{{ isset($quote->commercial_quote->personal->names) ? $quote->commercial_quote->personal->names: $quote->customer->personal->names  }}</td>
                 <td>
                     <div class="custom-badge status-{{strtolower($quote->state)}}">
                         {{ $quote->state }}

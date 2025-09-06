@@ -26,7 +26,9 @@ class QuoteFreightController extends Controller
      */
     public function index()
     {
-        $quotes = QuoteFreight::with('routing')->get();
+        $quotes = QuoteFreight::with('commercial_quote')
+        ->whereNot('state', 'Pendiente')
+        ->get();
 
         $heads = [
             '#',
