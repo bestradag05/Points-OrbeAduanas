@@ -147,7 +147,7 @@ class DatabaseSeeder extends Seeder
             'state' => 'Activo'
         ]);
 
-        $userPricing = User::create([
+/*         $userPricing = User::create([
             'email' => 'victor.gomez@orbeaduanas.com',
             'password' => bcrypt('Orbe2025'),
             'state' => 'Activo'
@@ -163,9 +163,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'jorge.laura@orbeaduanas.com',
             'password' => bcrypt('Orbe2025'),
             'state' => 'Activo'
-        ]);
+        ]); */
 
-        $user1 = User::create([
+/*         $user1 = User::create([
             'email' => 'user1@orbeaduanas.com',
             'password' => bcrypt('Orbe2025'),
             'state' => 'Activo'
@@ -223,13 +223,13 @@ class DatabaseSeeder extends Seeder
             'email' => 'user10@orbeaduanas.com',
             'password' => bcrypt('Orbe2025'),
             'state' => 'Activo'
-        ]);
+        ]); */
 
 
-        $user->assignRole($role);
+/*         $user->assignRole($role);
         $userTransport->assignRole($roleTransport);
         $userCommercial->assignRole($roleComercial);
-        $userPricing->assignRole($rolePricing);
+        $userPricing->assignRole($rolePricing); */
 
 
 
@@ -297,7 +297,7 @@ class DatabaseSeeder extends Seeder
             'id_user' => $user->id
         ]);
 
-        Personal::create([
+        /* Personal::create([
             'id' => '100',
             'document_number' => '796521448',
             'names' => 'Victor',
@@ -330,9 +330,9 @@ class DatabaseSeeder extends Seeder
             'id_document' => $document->id,
             'id_user' => $userTransport->id
         ]);
+ */
 
-
-        Personal::create([
+/*         Personal::create([
             'id' => '102',
             'document_number' => '79854269',
             'names' => 'Jorge',
@@ -347,10 +347,10 @@ class DatabaseSeeder extends Seeder
             'civil_status' => 'Soltero',
             'id_document' => $document->id,
             'id_user' => $userCommercial->id
-        ]);
+        ]); */
 
 
-        $personal1 = Personal::create([
+       /*  $personal1 = Personal::create([
             'id' => '103',
             'document_number' => '12345678',
             'names' => 'Carlos',
@@ -518,7 +518,7 @@ class DatabaseSeeder extends Seeder
             'civil_status' => 'Soltero',
             'id_document' => $document->id,
             'id_user' => $user10->id
-        ]);
+        ]); */
 
 
 
@@ -645,7 +645,7 @@ class DatabaseSeeder extends Seeder
 
 
         /* Proceso para el routing */
-        $customer = Customer::create(['document_number' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'address' => 'Av Elmer faucett 474', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'state' => 'Activo', 'id_document' => $customer_supplier_document->id, 'id_personal' => $personal->id]);
+        /* $customer = Customer::create(['document_number' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'address' => 'Av Elmer faucett 474', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'state' => 'Activo', 'id_document' => $customer_supplier_document->id, 'id_personal' => $personal->id]);
         $customer1 = Customer::create([
             'document_number' => '20550590711',
             'name_businessname' => 'Cliente 1 S.A.C.',
@@ -704,7 +704,7 @@ class DatabaseSeeder extends Seeder
             'state' => 'Activo',
             'id_document' => $customer_supplier_document->id,
             'id_personal' => $personal5->id
-        ]);
+        ]); */
 
 
 
@@ -839,24 +839,24 @@ class DatabaseSeeder extends Seeder
 
         /* Commercial Quote */
 
-        $quote1 = CommercialQuote::create([
+        /* $quote1 = CommercialQuote::create([
             'nro_quote_commercial' => 'TCOST001',
-            'origin' => 1,  // ID de origen
-            'destination' => 2,  // ID de destino
+            'origin' => 1, 
+            'destination' => 2, 
             'customer_company_name' => 'Cliente 1 S.A.C.',
             'load_value' => 5000.00,
             'id_personal' => $personal1->id,
-            'id_type_shipment' => 8,  // ID del tipo de embarque
-            'id_regime' => 1,  // ID del régimen
-            'id_incoterms' => 1,  // ID de incoterms
-            'id_type_load' => 1,  // ID del tipo de carga
+            'id_type_shipment' => 8, 
+            'id_regime' => 1, 
+            'id_incoterms' => 1, 
+            'id_type_load' => 1, 
             'id_customer' => $customer1->id,
             'id_supplier' => $supplier1->id,
             'lcl_fcl' => 'LCL',
             'is_consolidated' => false,
             'commodity' => 'Electrónicos',
             'nro_package' => '10',
-            'id_packaging_type' => 1,  // ID del tipo de embalaje
+            'id_packaging_type' => 1, 
             'kilograms' => 1000.00,
             'volumen' => 20.00,
             'pounds' => 2204.62,
@@ -870,22 +870,22 @@ class DatabaseSeeder extends Seeder
 
         $quote2 = CommercialQuote::create([
             'nro_quote_commercial' => 'TCOST002',
-            'origin' => 3,  // ID de origen
-            'destination' => 4,  // ID de destino
+            'origin' => 3, 
+            'destination' => 4, 
             'customer_company_name' => 'Cliente 2 S.A.C.',
             'load_value' => 7000.00,
             'id_personal' => $personal2->id,
-            'id_type_shipment' => 21,  // ID del tipo de embarque
-            'id_regime' => 2,  // ID del régimen
-            'id_incoterms' => 2,  // ID de incoterms
-            'id_type_load' => 2,  // ID del tipo de carga
+            'id_type_shipment' => 21, 
+            'id_regime' => 2, 
+            'id_incoterms' => 2, 
+            'id_type_load' => 2, 
             'id_customer' => $customer2->id,
             'id_supplier' => $supplier2->id,
             'lcl_fcl' => 'FCL',
             'is_consolidated' => false,
             'commodity' => 'Muebles',
             'nro_package' => '15',
-            'id_packaging_type' => 2,  // ID del tipo de embalaje
+            'id_packaging_type' => 2, 
             'kilograms' => 1500.00,
             'volumen' => 30.00,
             'pounds' => 3306.93,
@@ -982,6 +982,6 @@ class DatabaseSeeder extends Seeder
             'cif_value' => null,
             'valid_until' => now()->addDays(5),
             'state' => 'Pendiente'
-        ]);
+        ]); */
     }
 }

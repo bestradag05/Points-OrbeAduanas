@@ -7,18 +7,20 @@
 
         <div class="col-12 col-md-12 col-lg-6 px-4">
 
-            <div class="row justify-content-center align-items-center">
+            <div class="row align-items-center">
                 <div class="col-8 col-lg-6">
                     <h5 class="text-indigo text-center"> <i class="fas fa-file-alt mx-2"></i>Detalle de carga</h5>
                 </div>
-                <div class="col-4 col-lg-6">
-                    <button onclick="copieHtmlDetailQuote()" class="btn btn-sm btn-secondary">
-                        <i class="fas fa-copy"></i>
-                    </button>
-                    <button onclick="downloadImageDetailQuote('{{ $quote->nro_quote }}')" class="btn btn-sm btn-secondary">
-                        <i class="fas fa-download"></i>
-                    </button>
-                </div>
+                @role('pricing')
+                    <div class="col-4 col-lg-6">
+                        <button onclick="copieHtmlDetailQuote()" class="btn btn-sm btn-secondary">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button onclick="downloadImageDetailQuote('{{ $quote->nro_quote }}')" class="btn btn-sm btn-secondary">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                @endrole
             </div>
 
 
@@ -307,7 +309,7 @@
                             <h5 class="text-indigo text-center"> <i class="fas fa-file"></i> Lista de archivos</h5>
                         </div>
                         {{-- !$quote->responses->contains(fn($response) => $response->status === 'Aceptado') --}}
-                        @if ($quote->state === 'Pendiente')
+                        @if ($quote->state === 'Pendiente' && auth()->user()->hasRole('Asesor Comercial'))
                             <div class="col-6 align-items-center">
                                 <button class="btn btn-indigo btn-sm" data-toggle="modal"
                                     data-target="#modalQuoteFreightDocuments">
@@ -354,14 +356,16 @@
 
         <div class="col-12">
             <div class="text-center mt-5 mb-3">
-                <form action="{{ url('/quote/freight/send-pricing/' . $quote->id) }}" method="POST" class="d-inline"
-                    id="form-send-pricing">
-                    @csrf
-                    @method('PATCH')
+                @role('Asesor Comercial')
+                    <form action="{{ url('/quote/freight/send-pricing/' . $quote->id) }}" method="POST" class="d-inline"
+                        id="form-send-pricing">
+                        @csrf
+                        @method('PATCH')
 
-                    <button class="btn btn-outline-indigo btn-sm {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">
-                        <i class="fas fa-paper-plane"></i> Enviar cotización</button>
-                </form>
+                        <button class="btn btn-outline-indigo btn-sm {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">
+                            <i class="fas fa-paper-plane"></i> Enviar cotización</button>
+                    </form>
+                @endrole
 
             </div>
 
