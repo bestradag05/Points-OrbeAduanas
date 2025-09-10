@@ -53,7 +53,7 @@
                                                 <label for="cif_value">Valor CIF</label>
                                                 <div class="input-group">
                                                     <input type="text" class="form-control "
-                                                        {{ isset($comercialQuote->cif_value) ? 'readonly' : '' }}
+                                                        {{-- {{ isset($comercialQuote->cif_value) ? 'readonly' : '' }} --}}
                                                         name="cif_value" placeholder="Ingrese valor de la carga"
                                                         value="{{ isset($comercialQuote->cif_value) ? number_format($comercialQuote->cif_value, 2) : old('cif_value') }}">
                                                 </div>
@@ -73,7 +73,7 @@
                                                 <label for="customs_taxes">Impuestos de Aduanas</label>
                                                 <div class="input-group">
                                                     <input type="text" class="form-control"
-                                                        {{ isset($customs_taxes->customs_taxes) ? 'readonly' : '' }}
+                                                        {{-- {{ isset($customs_taxes->customs_taxes) ? 'readonly' : '' }} --}}
                                                         name="customs_taxes" placeholder="Ingrese valor de la carga"
                                                         value="{{ isset($customs_taxes->customs_taxes) ? $customs_taxes->customs_taxes : '' }}">
                                                 </div>
@@ -91,7 +91,7 @@
                                                 <label for="customs_perception">Percepción Aduanas</label>
                                                 <div class="input-group">
                                                     <input type="text" class="form-control"
-                                                        {{ isset($customs_taxes->customs_perception) ? 'readonly' : '' }}
+                                                        {{-- {{ isset($customs_taxes->customs_perception) ? 'readonly' : '' }} --}}
                                                         name="customs_perception"
                                                         placeholder="Ingrese valor de la carga"
                                                         value="{{ isset($customs_taxes->customs_perception) ? $customs_taxes->customs_perception : old('customs_perception') }}">
@@ -125,7 +125,7 @@
                 </div>
 
 
-                <div class="form-group">
+{{--                 <div class="form-group">
                     <div class="custom-control custom-switch">
                         <input type="checkbox" name="state_insurance" class="custom-control-input" id="seguroCustom"
                             onchange="enableCustomsInsurance(this)">
@@ -183,7 +183,7 @@
 
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <hr>
                 <div id="formConceptsAduanas" class="formConcepts row">

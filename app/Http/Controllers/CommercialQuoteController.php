@@ -301,7 +301,7 @@ class CommercialQuoteController extends Controller
 
                 $quoteSentClient->concepts()->attach(
                     $concept->id,  // El ID del concepto
-                    ['concept_value' => $concept->pivot->value_concept, 'service_type' => 'Flete']
+                    ['concept_value' => $concept->pivot->value_concept, 'service_type' => 'Flete', 'has_igv' => $concept->pivot->has_igv]
                 );
             }
 

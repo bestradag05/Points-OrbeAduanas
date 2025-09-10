@@ -141,8 +141,7 @@
 
         <div class="col-3 form-group d-flex align-items-center justify-content-center">
             <div class="custom-control custom-switch">
-                <input type="checkbox" name="hasIgv" class="custom-control-input" id="hasIgv"
-                    {{ isset($insurance) ? 'checked' : '' }}>
+                <input type="checkbox" name="hasIgv" class="custom-control-input" id="hasIgv">
                 <label class="custom-control-label" for="hasIgv">Incluido Igv</label>
             </div>
         </div>
@@ -274,8 +273,6 @@
         //PAra editar, verificamos si tiene conceptos el flete: 
 
         @if (isset($formMode) && $formMode === 'edit')
-
-            conceptFreight = @json($conceptFreight);
             //Obtenemos los valores del seguro para sumarlo al total
 
             @if ($freight->insurance)
@@ -285,9 +282,9 @@
 
             @if (isset($freight->concepts))
 
-
-                let concepts = @json($freight->concepts);
-
+            
+            let concepts = @json($freight->concepts);
+    
                 concepts.forEach((concept, index) => {
 
                     if (concept.name != "SEGURO") {
@@ -295,7 +292,8 @@
                         conceptsArray.push({
                             'id': concept.id,
                             'name': concept.name,
-                            'value': formatValue(concept.pivot.value_concept)
+                            'value': formatValue(concept.pivot.value_concept),
+                            'hasIgv': concept.pivot.has_igv
                         });
 
                     }

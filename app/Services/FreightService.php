@@ -180,27 +180,8 @@ class FreightService
 
         //Actualizamos el valor CIF para la cotizacion:
 
-        //Obtenemos la respuesta aceptada
-        $responseFreightAccepted =  $freight->quoteFreight->responses->filter(function ($response) {
-            return $response->status === 'Aceptado';  // Filtra por estado "Aceptado"
-        })->first();
+        $cif_value = $this->calculateCifValue($commercialQuote, $freight);
 
-        //Obtenemos los conceptos sin igv de la respuesta aceptada
-        $conceptsWithIgv = $responseFreightAccepted->concepts->filter(function ($concept) {
-            return $concept->pivot->has_igv === 1;  // Filtra por 'has_igv' en el pivot
-        });
-
-        //Obtenemos el valor del flete sin los conceptos que tienen igv para calcular el CIF
-        $totalFinalCostWithIgv = $conceptsWithIgv->sum(function ($concept) {
-            return $concept->pivot->final_cost;  // Sumar el 'final_cost' del pivot de cada concepto
-        });
-
-        $valueFreightWithoutIgv = $freight->value_sale - $totalFinalCostWithIgv;
-
-       /*  dd("El mongo que se restara es: {$totalFinalCostWithIgv} ah el valor de  {$freight->value_sale} y commo resultado tenemos: {$valueFreightWithoutIgv} "); */
-
-        /* $cif_value = $this->parseDouble($valueFreightWithoutIgv) + $this->parseDouble($insurance ? $insurance->insurance_sales_value : 0) + $this->parseDouble($commercialQuote ? $commercialQuote->load_value : 0); */
-        $cif_value = $this->parseDouble($valueFreightWithoutIgv) + $this->parseDouble($commercialQuote ? $commercialQuote->load_value : 0);
 
         $commercialQuote->update(['cif_value' => $cif_value]);
 
@@ -213,6 +194,36 @@ class FreightService
 
 
         return $freight;
+    }
+
+
+
+    public function calculateCifValue($commercialQuote, $freight)
+    {
+
+        $conceptsWithIgv = $freight->concepts->filter(function ($concept) {
+            return $concept->pivot->has_igv === 1;
+        });
+
+        $sumConceptsWithIgv = $conceptsWithIgv->sum(function ($concept) {
+            return $concept->pivot->value_concept;
+        });
+
+        $freigthWithoutConceptsIgv = $freight->value_sale - $sumConceptsWithIgv;
+
+        if ($freight->insurance()->exists()) {
+            //Tiene seguro en flete
+            $cif_value = $this->parseDouble($freigthWithoutConceptsIgv) + $this->parseDouble($commercialQuote ? $commercialQuote->load_value : 0);
+        } else {
+
+            //Calculamos el seguro de tabla (Aproximado)
+            $insuranceTable = $commercialQuote->load_value * 0.02;
+
+            $cif_value = $this->parseDouble($freigthWithoutConceptsIgv) + $this->parseDouble($insuranceTable) + $this->parseDouble($commercialQuote ? $commercialQuote->load_value : 0);
+        }
+
+
+        return $cif_value;
     }
 
 
@@ -333,16 +344,8 @@ class FreightService
 
         $commercialQuote = $freight->commercial_quote;
 
-        if ($commercialQuote->type_shipment->description === 'Marítima') {
 
-            $conceptFreight = $freight->concepts->firstWhere('name', 'OCEAN FREIGHT');
-        } else {
-            $conceptFreight = $freight->concepts->firstWhere('name', 'AIR FREIGHT');
-        }
-
-
-
-        $cif_value = $this->parseDouble($conceptFreight->pivot->value_concept) + $this->parseDouble($insurance ? $insurance->insurance_sales_value : 0) + $this->parseDouble($commercialQuote ? $commercialQuote->load_value : 0);
+        $cif_value = $this->calculateCifValue($commercialQuote, $freight);
 
         $commercialQuote->update(['cif_value' => $cif_value]);
 
@@ -476,7 +479,7 @@ class FreightService
             }
         }
 
-        
+
         // Relacionamos los nuevos conceptos con el flete
         foreach ($concepts as $concept) {
             $conceptFreight = ConceptFreight::create([

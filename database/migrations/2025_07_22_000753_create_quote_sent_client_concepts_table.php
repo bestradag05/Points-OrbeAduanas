@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('quote_sent_client_id');  // Relación con CodeSendClient
             $table->unsignedBigInteger('concept_id');  // Relación con la tabla de conceptos
             $table->decimal('concept_value', 8, 2);  // Valor del concepto al momento de la cotización
+            $table->boolean('has_igv')->default(false);
             $table->enum('service_type', ['Flete', 'Aduanas', 'Transporte']);  // Tipo de servicio
             $table->timestamps();
 

@@ -71,7 +71,7 @@ class Freight extends Model
     public function concepts()
     {
         return $this->belongsToMany(Concept::class, 'concepts_freight', 'id_freight', 'concepts_id')
-            ->withPivot(['value_concept']);
+            ->withPivot(['value_concept', 'has_igv']);
     }
 
 

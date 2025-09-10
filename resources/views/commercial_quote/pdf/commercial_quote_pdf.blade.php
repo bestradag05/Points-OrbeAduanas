@@ -216,7 +216,7 @@
 
         }
 
-        .total-info{
+        .total-info {
             font-size: 8px;
             display: block;
             margin-top: 10px;
@@ -265,7 +265,7 @@
 
     <div class="title">
         <h1>Cotizacion {{ $quoteSentClient->type_shipment->description }} </h1>
-        <h3>N ° {{$quoteSentClient->nro_quote_commercial }}</h3>
+        <h3>N ° {{ $quoteSentClient->nro_quote_commercial }}</h3>
 
     </div>
 
@@ -279,11 +279,14 @@
                 <tbody>
                     <tr>
                         <td class="title-item-table">Cliente</td>
-                        <td class="text-item-table">{{ $quoteSentClient->customer->name_businessname ??  $quoteSentClient->customer_company_name}}</td>
+                        <td class="text-item-table">
+                            {{ $quoteSentClient->customer->name_businessname ?? $quoteSentClient->customer_company_name }}
+                        </td>
                     </tr>
                     <tr>
                         <td class="title-item-table">Puerto de salida</td>
-                        <td class="text-item-table"> {{ $quoteSentClient->originState->country->name }} - {{ $quoteSentClient->originState->name }}</td>
+                        <td class="text-item-table"> {{ $quoteSentClient->originState->country->name }} -
+                            {{ $quoteSentClient->originState->name }}</td>
                     </tr>
                     <tr>
                         <td class="title-item-table">Puerto de llegada</td>
@@ -314,7 +317,6 @@
                                 <td class="text-item-table">{{ $quoteSentClient->volumen }} CBM</td>
                             @else
                                 <td class="text-item-table">{{ $quoteSentClient->kilogram_volumen }} KGV</td>
-
                             @endif
                         </tr>
                         <tr>
@@ -395,31 +397,71 @@
 
 
     @if ($freightConcepts->isNotEmpty())
+        @php
+            // Dividir los conceptos en dos grupos: con IGV y sin IGV
+            $conceptsWithoutIgv = $freightConcepts->filter(function ($concept) {
+                return $concept->pivot->has_igv === 0;
+            });
+
+            $conceptsWithIgv = $freightConcepts->filter(function ($concept) {
+                return $concept->pivot->has_igv === 1;
+            });
+       
+            // Calcular los montos y subtotales
+            $subtotalWithoutIgv = $conceptsWithoutIgv->sum(function ($concept) {
+                return $concept->pivot->concept_value;
+            });
+
+            $subtotalWithIgv = $conceptsWithIgv->sum(function ($concept) {
+                return $concept->pivot->concept_value;
+            });
+
+            // Calcular el total
+            $total = $subtotalWithoutIgv + $subtotalWithIgv;
+        @endphp
 
         <div id="detail-freight" class="container-service">
             <table id="table-freight" class="table">
                 <thead>
-                    <th style="width: 45% ; background-color: #234195">Flete Maritimo</th>
+                    <th style="width: 45%; background-color: #234195">Flete Maritimo</th>
                     <th style="width: 40%">Observacion</th>
                     <th style="width: 15%">Total</th>
                 </thead>
                 <tbody>
-                    @foreach ($freightConcepts as $concept)
+                    {{-- Mostrar los conceptos sin IGV --}}
+                    @foreach ($conceptsWithoutIgv as $concept)
                         <tr>
                             <td>{{ $concept->name }}</td>
                             <td id="observation"> - </td>
-                            <td> $ {{ $concept->pivot->concept_value }}</td>
+                            <td> $ {{ number_format($concept->pivot->concept_value, 2) }}</td>
                         </tr>
                     @endforeach
+
+                    {{-- Subtotal sin IGV --}}
+                    <tr class="total-service">
+                        <td colspan="2" style="text-align: right">Subtotal:</td>
+                        <td> $ {{ number_format($subtotalWithoutIgv, 2) }}</td>
+                    </tr>
+
+                    {{-- Mostrar los conceptos con IGV --}}
+                    @foreach ($conceptsWithIgv as $concept)
+                        <tr>
+                            <td>{{ $concept->name }}</td>
+                            <td id="observation"> - </td>
+                            <td> $ {{ number_format($concept->pivot->concept_value, 2) }}</td>
+                        </tr>
+                    @endforeach
+
+                    {{-- Total --}}
                     <tr class="total-service">
                         <td colspan="2" style="text-align: right">Total Flete:</td>
-                        <td> $ {{ number_format($quoteSentClient->total_freight, 2) }}</td>
+                        <td> $ {{ number_format($total, 2) }}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
-
     @endif
+
 
 
     @if ($customConcepts->isNotEmpty())
@@ -445,7 +487,9 @@
 
                     <tr class="total-service">
                         <td colspan="2" style="text-align: right">* Total impuestos:</td>
-                        <td> $ {{ number_format($quoteSentClient->customs_taxes + $quoteSentClient->customs_perception, 2) }}</td>
+                        <td> $
+                            {{ number_format($quoteSentClient->customs_taxes + $quoteSentClient->customs_perception, 2) }}
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -473,17 +517,17 @@
                     @if ($transportConcepts->isNotEmpty())
 
                         @foreach ($transportConcepts as $concept)
-
                             <tr>
                                 <td>{{ $concept->name }}</td>
                                 <td id="observation"> - </td>
-                                <td> $ {{ number_format(($concept->pivot->concept_value / 1.18), 2) }}</td>
+                                <td> $ {{ number_format($concept->pivot->concept_value / 1.18, 2) }}</td>
                             </tr>
                         @endforeach
 
 
                         @php
-                            $subtotal = $quoteSentClient->total_custom + (($quoteSentClient->total_transport / 1.18) ?? 0);
+                            $subtotal =
+                                $quoteSentClient->total_custom + ($quoteSentClient->total_transport / 1.18 ?? 0);
                             $igv = $subtotal * 0.18;
                             $cats_destinations = $subtotal * 1.18;
 
@@ -546,7 +590,7 @@
                             <tr>
                                 <td>{{ $concept->name }}</td>
                                 <td id="observation"> - </td>
-                                <td> $ {{ number_format(($concept->pivot->concept_value / 1.18), 2) }}</td>
+                                <td> $ {{ number_format($concept->pivot->concept_value / 1.18, 2) }}</td>
                             </tr>
                         @endforeach
 
@@ -616,10 +660,10 @@
                 {{-- TODO: Modificar para calcular el total de forma automatica --}}
                 <div class="total-quote">
                     TOTAL COTIZACION: $
-                    {{ number_format($quoteSentClient->total_quote_sent_client, 2)}}
+                    {{ number_format($quoteSentClient->total_quote_sent_client, 2) }}
                     <span class="total-info">*Este precio no incluye el pago de impuestos*</span>
                 </div>
-                
+
             </div>
 
         </div>

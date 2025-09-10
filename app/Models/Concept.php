@@ -96,7 +96,7 @@ class Concept extends Model
     public function quoteSentClient()
     {
         return $this->belongsToMany(QuotesSentClient::class, 'quote_sent_client_concepts', 'quote_sent_client_id', 'concept_id')
-            ->withPivot(['value_concept']);
+            ->withPivot(['value_concept', 'has_igv']);
     }
 
 
