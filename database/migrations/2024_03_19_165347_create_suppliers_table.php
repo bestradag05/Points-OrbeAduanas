@@ -16,7 +16,7 @@ return new class extends Migration
             /* $table->string('document_number')->unique(); */
             $table->string('name_businessname');
             $table->enum('area_type', ['comercial', 'transporte', 'pricing'])->default('comercial');
-            $table->enum('provider_type', ['TRANSPORTISTA', 'NAVIERA', 'AEROLINEA', 'AGENTE DE CARGA', 'COMERCIAL'])->nullable();
+            $table->enum('provider_type', ['TRANSPORTISTA', 'AGENTE DE CARGA', 'COMERCIAL'])->nullable();
             $table->string('document_number')->nullable();
             $table->string('document_type')->nullable();
             $table->string('address');

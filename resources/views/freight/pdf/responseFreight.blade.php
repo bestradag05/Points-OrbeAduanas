@@ -172,7 +172,7 @@
         </thead>
         <tbody>
             @foreach ($response->concepts as $concept)
-                <tr>
+                <tr style="background: {{$concept->pivot->has_igv ? '#f8d7da' : '#ffffff'}}">
                     <td>{{ $concept->name }}</td>
                     <td class="right">{{ $concept->pivot->unit_cost }}</td>
                     <td>{{ $concept->pivot->fixed_miltiplyable_cost }}</td>

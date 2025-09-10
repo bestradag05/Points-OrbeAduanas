@@ -16,6 +16,7 @@ class ConceptFreight extends Model
         'concepts_id',
         'id_freight',
         'value_concept',
+        'has_igv'
     ];
 
 

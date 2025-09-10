@@ -11,16 +11,16 @@
                 <div class="col-8 col-lg-6">
                     <h5 class="text-indigo text-center"> <i class="fas fa-file-alt mx-2"></i>Detalle de carga</h5>
                 </div>
-                @role('pricing')
-                    <div class="col-4 col-lg-6">
-                        <button onclick="copieHtmlDetailQuote()" class="btn btn-sm btn-secondary">
-                            <i class="fas fa-copy"></i>
-                        </button>
-                        <button onclick="downloadImageDetailQuote('{{ $quote->nro_quote }}')" class="btn btn-sm btn-secondary">
-                            <i class="fas fa-download"></i>
-                        </button>
-                    </div>
-                @endrole
+                {{--  @role('pricing') --}}
+                <div class="col-4 col-lg-6">
+                    <button onclick="copieHtmlDetailQuote()" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <button onclick="downloadImageDetailQuote('{{ $quote->nro_quote }}')" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+                {{-- @endrole --}}
             </div>
 
 
@@ -356,16 +356,16 @@
 
         <div class="col-12">
             <div class="text-center mt-5 mb-3">
-                @role('Asesor Comercial')
-                    <form action="{{ url('/quote/freight/send-pricing/' . $quote->id) }}" method="POST" class="d-inline"
-                        id="form-send-pricing">
-                        @csrf
-                        @method('PATCH')
+                {{--  @role('Asesor Comercial') --}}
+                <form action="{{ url('/quote/freight/send-pricing/' . $quote->id) }}" method="POST" class="d-inline"
+                    id="form-send-pricing">
+                    @csrf
+                    @method('PATCH')
 
-                        <button class="btn btn-outline-indigo btn-sm {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">
-                            <i class="fas fa-paper-plane"></i> Enviar cotización</button>
-                    </form>
-                @endrole
+                    <button class="btn btn-outline-indigo btn-sm {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">
+                        <i class="fas fa-paper-plane"></i> Enviar cotización</button>
+                </form>
+                {{--  @endrole --}}
 
             </div>
 
@@ -377,14 +377,14 @@
             <div class="col-12 px-4 mt-5">
                 <div class="text-center mb-4">
                     <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
-                    @role('Pricing')
-                        @if (!$quote->responses->contains(fn($response) => $response->status === 'Aceptado'))
-                            <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
-                                data-target="#modalResponseQuoteFreight">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                        @endif
-                    @endrole
+                    {{-- @role('Pricing') --}}
+                    @if (!$quote->responses->contains(fn($response) => $response->status === 'Aceptado'))
+                        <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
+                            data-target="#modalResponseQuoteFreight">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    @endif
+                    {{-- @endrole --}}
                 </div>
 
                 @php
@@ -444,15 +444,15 @@
                                         <option>Detalle</option>
 
                                         @if (!$quote->freight)
-                                            @role('Asesor Comercial')
-                                                <option class="{{ $response->status != 'Aceptado' ? 'd-none' : '' }}">Generar
-                                                    Flete</option>
-                                                <option class="{{ $response->status === 'Aceptado' ? 'd-none' : '' }}">Aceptar
-                                                </option>
-                                                <option class="{{ $response->status === 'Rechazada' ? 'd-none' : '' }}">
-                                                    Rechazar
-                                                </option>
-                                            @endrole
+                                            {{--  @role('Asesor Comercial') --}}
+                                            <option class="{{ $response->status != 'Aceptado' ? 'd-none' : '' }}">Generar
+                                                Flete</option>
+                                            <option class="{{ $response->status === 'Aceptado' ? 'd-none' : '' }}">Aceptar
+                                            </option>
+                                            <option class="{{ $response->status === 'Rechazada' ? 'd-none' : '' }}">
+                                                Rechazar
+                                            </option>
+                                            {{-- @endrole --}}
                                         @endif
                                     </select>
                                 </td>
@@ -821,7 +821,14 @@
                                                 </div>
 
                                             </div>
-
+                                            <div class="col-4 form-group d-flex align-items-center justify-content-center">
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" name="hasIgv" class="custom-control-input"
+                                                        id="hasIgv" {{ isset($insurance) ? 'checked' : '' }}>
+                                                    <label class="custom-control-label" for="hasIgv">Agregar
+                                                        IGV</label>
+                                                </div>
+                                            </div>
                                             <div class="col-12 d-flex justify-content-center align-items-center pt-3 mb-2">
                                                 <button class="btn btn-indigo" type="button" id="btnAddConcept"
                                                     onclick="addConceptResponseFreight(this)">
@@ -1324,17 +1331,16 @@
                 if (!checkExchangeRateNotEmpyt(selectedCurrency, dollarCurrency)) return;
 
                 const unitCost = parseFloat(data.unit_cost) || 0;
+                let finalCost = 0;
 
                 if (selectedCurrency.id !== dollarCurrency.id) {
                     const exchangeRateInput = $('#exchange_rate')[0];
                     const exchangeRate = parseFloat(exchangeRateInput.value) || 0;
 
-                    let finalCost = 0;
 
                     finalCost = unitCost * exchangeRate;
 
                     if (data.fixed_miltiplyable_cost === "C/W") {
-
                         let cubage_kgv = parseFloat(@json($quote->cubage_kgv)) || 0;
                         let ton_kilogram = parseFloat(@json($quote->ton_kilogram)) || 0;
 
@@ -1343,7 +1349,33 @@
 
                     }
 
+                    if (data.hasIgv === "on") {
+                        finalCost = finalCost * 1.18;
+                        data.observations = 'Con IGV';
+                    }
+
+
                     data.final_cost = finalCost.toFixed(2);
+                } else {
+                    finalCost = unitCost;
+
+                    if (data.fixed_miltiplyable_cost === "C/W") {
+                        let cubage_kgv = parseFloat(@json($quote->cubage_kgv)) || 0;
+                        let ton_kilogram = parseFloat(@json($quote->ton_kilogram)) || 0;
+
+                        let higherCost = cubage_kgv > ton_kilogram ? cubage_kgv : ton_kilogram;
+                        finalCost = finalCost * higherCost;
+
+                    }
+
+                    if (data.hasIgv === "on") {
+                        finalCost = finalCost * 1.18;
+                        data.observations = 'Con IGV';
+                    }
+
+
+                    data.final_cost = finalCost.toFixed(2);
+
                 }
 
 
@@ -1372,6 +1404,8 @@
                 tbodyRouting.innerHTML = '';
             }
 
+            let setObservation = '';
+
             TotalResponseConcepts = 0;
             let contador = 0;
 
@@ -1381,6 +1415,12 @@
                 conceptsResponseFreightArray.forEach((item, index) => {
                     contador++;
                     let fila = tbodyRouting.insertRow();
+
+                    // Establecer color de fila si tiene IGV
+                    if (item.hasIgv) {
+                        fila.style.backgroundColor = '#f8d7da'; // Color de fondo para filas con IGV
+                    }
+
                     fila.insertCell(0).textContent = contador;
                     fila.insertCell(1).textContent = item.concept.text;
                     fila.insertCell(2).textContent = item.currency.text + " " + item.unit_cost;

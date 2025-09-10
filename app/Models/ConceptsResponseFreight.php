@@ -16,9 +16,11 @@ class ConceptsResponseFreight extends Model
         'response_freight_id',
         'concept_id',
         'unit_cost',
+        'igv',
         'fixed_miltiplyable_cost',
         'observations',
         'final_cost',
+        'has_igv',
         'net_cost'
     ];
 }

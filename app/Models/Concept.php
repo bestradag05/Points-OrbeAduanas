@@ -51,7 +51,7 @@ class Concept extends Model
     public function responseQuoteFreights()
     {
         return $this->belongsToMany(ResponseFreightQuotes::class, 'concepts_response_freight', 'concept_id', 'response_freight_id')
-            ->withPivot(['unit_cost', 'fixed_miltiplyable_cost', 'observations', 'final_cost']);
+            ->withPivot(['unit_cost', 'fixed_miltiplyable_cost', 'observations', 'final_cost', 'has_igv']);
     }
 
     // Relación many‐to‐many con QuoteTransport

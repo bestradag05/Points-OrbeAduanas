@@ -85,7 +85,7 @@ class ResponseFreightQuotes extends Model
     public function concepts()
     {
         return $this->belongsToMany(Concept::class, 'concepts_response_freight', 'response_freight_id', 'concept_id')
-            ->withPivot(['unit_cost', 'fixed_miltiplyable_cost', 'observations', 'final_cost']);
+            ->withPivot(['unit_cost', 'fixed_miltiplyable_cost', 'observations', 'final_cost','has_igv']);
     }
 
     public function supplier()

@@ -17,9 +17,11 @@ return new class extends Migration
             $table->unsignedBigInteger('concept_id');
             $table->unsignedBigInteger('currency_id');
             $table->decimal('unit_cost', 8, 2);
+            $table->decimal('igv', 8, 2);
             $table->string('fixed_miltiplyable_cost')->nullable();
             $table->string('observations')->nullable();
             $table->decimal('final_cost', 8, 2);
+            $table->boolean('has_igv')->default(false);
             $table->timestamps();
 
             $table->foreign('response_freight_id')->references('id')->on('response_freight_quotes');

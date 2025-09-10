@@ -50,7 +50,7 @@ class ResponseFreightQuotesController extends Controller
         
         $concepts = json_decode($request->input('concepts'), true);
         $commissions = json_decode($request->input('commissions'), true);
-        
+     
         $quoteFreight = QuoteFreight::findOrFail($id)->first();
 
         $fecha = Carbon::createFromFormat('d/m/Y', $request->valid_until)->format('Y-m-d');
@@ -76,13 +76,23 @@ class ResponseFreightQuotesController extends Controller
         foreach ($concepts as $item) {
             $concept = $item['concept'];
             $currency = $item['currency'];
+            $has_igv = false;
+            $igv = 0;
+
+            if($item['hasIgv'] === "on")
+            {
+                $igv = $item['final_cost'] - $item['unit_cost'];
+                $has_igv = true;
+            }
 
             $response->concepts()->attach($concept['id'], [
                 'unit_cost' => $item['unit_cost'],
+                'igv' => $igv,
                 'currency_id' => $currency['id'],
                 'fixed_miltiplyable_cost' => $item['fixed_miltiplyable_cost'],
                 'observations' => $item['observations'],
                 'final_cost' => $item['final_cost'],
+                'has_igv' => $has_igv
             ]);
         }
 

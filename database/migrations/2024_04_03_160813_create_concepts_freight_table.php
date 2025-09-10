@@ -19,6 +19,7 @@ return new class extends Migration
             /*  $table->decimal('value_concept_added', 8 , 2);
             $table->decimal('total_value_concept', 8 , 2); */
             /* $table->integer('additional_points')->nullable(); */
+            $table->boolean('has_igv')->default(false);
             $table->timestamps();
 
             $table->foreign('concepts_id')->references('id')->on('concepts');

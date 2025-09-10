@@ -110,7 +110,7 @@
     </div>
 
     <div id="formConceptsFlete" class="formConcepts row justify-content-center w-100">
-        <div class="col-4">
+        <div class="col-3">
 
             <x-adminlte-select2 name="concept" id="concept_flete" label="Conceptos"
                 data-placeholder="Seleccione un concepto...">
@@ -123,7 +123,7 @@
             </x-adminlte-select2>
 
         </div>
-        <div class="col-4">
+        <div class="col-3">
             <div class="form-group">
                 <label for="value_concept">Valor ha agregar</label>
                 <div class="input-group">
@@ -139,7 +139,15 @@
 
         </div>
 
-        <div class="col-4 d-flex align-items-center pt-3 mb-2">
+        <div class="col-3 form-group d-flex align-items-center justify-content-center">
+            <div class="custom-control custom-switch">
+                <input type="checkbox" name="hasIgv" class="custom-control-input" id="hasIgv"
+                    {{ isset($insurance) ? 'checked' : '' }}>
+                <label class="custom-control-label" for="hasIgv">Incluido Igv</label>
+            </div>
+        </div>
+
+        <div class="col-3 d-flex align-items-center pt-3 mb-2">
             <button class="btn btn-indigo" type="button" id="btnAddConcept" onclick="addConcept(this)">
                 Agregar
             </button>
@@ -152,6 +160,7 @@
                     <th style="width: 10px">#</th>
                     <th>Concepto</th>
                     <th>Valor del concepto</th>
+                    <th>IGV</th>
                     <th>x</th>
                 </tr>
             </thead>
@@ -467,6 +476,7 @@
                         'id': parseInt(inputs[0].value),
                         'name': inputs[0].options[inputs[0].selectedIndex].text,
                         'value': formatValue(inputs[1].value),
+                        'hasIgv': inputs[2].checked
                     };
 
                 } else {
@@ -475,6 +485,7 @@
                         'id': parseInt(inputs[0].value),
                         'name': inputs[0].options[inputs[0].selectedIndex].text,
                         'value': formatValue(inputs[1].value),
+                        'hasIgv': inputs[2].checked
                     });
                 }
 
@@ -483,7 +494,10 @@
                 updateTable(conceptsArray);
 
                 inputs[0].value = '';
+                $(inputs[0]).trigger('change');
                 inputs[1].value = '';
+                inputs[2].checked = false; // Desmarcar el checkbox o switch
+                $(inputs[2]).trigger('change');
             }
         };
 
@@ -524,37 +538,17 @@
                     let celdaValor = fila.insertCell(2);
                     celdaValor.textContent = item.value;
 
+                    let celdaHasIgv = fila.insertCell(3);
+                    if (item.hasIgv) {
 
-                    // Insertar el valor en la cuarta celda de la fila
+                        fila.style.backgroundColor = '#f8d7da';
+                    }
+                    celdaHasIgv.textContent = item.hasIgv ? 'Si' : 'No';
 
-                    //TODO: Los puntos adicionales se calcularan desde el modulo comisiones
-                    /* let celdaPA = fila.insertCell(3);
-                    celdaPA.style.width = '15%';
-                    let inputPA = document.createElement('input');
-                    inputPA.type = 'number';
-                    inputPA.value = (conceptsArray[clave].pa) ? conceptsArray[clave].pa : '';
-                    inputPA.name = 'pa';
-                    inputPA.classList.add('form-control', 'points');
-                    inputPA.classList.remove('is-invalid');
-                    inputPA.min = 0;
-                    celdaPA.appendChild(inputPA);
-
-                    inputPA.addEventListener('keydown', (e) => {
-                        const allowedKeys = ['ArrowUp', 'ArrowDown', 'Tab', 'Enter'];
-                        if (!allowedKeys.includes(e.key)) {
-                            e.preventDefault();
-                        }
-                    });
-
-
-                    inputPA.addEventListener('input', (e) => {
-                        let val = parseInt(e.target.value) || 0;
-                        validateAndAdjustPointsOnInput(e.target);
-                    }); */
 
 
                     // Insertar un botón para eliminar la fila en la cuarta celda de la fila
-                    let celdaEliminar = fila.insertCell(3);
+                    let celdaEliminar = fila.insertCell(4);
                     let botonEliminar = document.createElement('a');
                     botonEliminar.href = '#';
                     botonEliminar.innerHTML = '<p class="text-danger">X</p>';

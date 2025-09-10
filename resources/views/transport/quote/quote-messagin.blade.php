@@ -469,7 +469,7 @@
                                     @if ($response->status === 'Rechazada')
                                         <span class="text-muted">Rechazada</span>
                                     @elseif ($response->status === 'Aceptado')
-                                        @role('Asesor Comercial')
+                                        {{-- @role('Asesor Comercial') --}}
                                             <button class="btn btn-danger btn-sm" data-toggle="modal"
                                                 data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
                                                 Rechazar
@@ -478,7 +478,7 @@
                                     @elseif ($quote->response->contains('status', 'Aceptado'))
                                         <span class="text-muted">Sin acciones</span>
                                     @else
-                                        @role('Asesor Comercial')
+                                        {{-- @role('Asesor Comercial') --}}
                                             <button class="btn btn-success btn-sm" data-toggle="modal"
                                                 data-target="#quote-transport" data-response-id="{{ $response->id }}"
                                                 data-response-nro="{{ $response->nro_response }}">
