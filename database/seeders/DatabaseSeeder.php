@@ -183,8 +183,8 @@ class DatabaseSeeder extends Seeder
 
         /* Type_Service */
 
-        TypeService::create(['name' => 'Aduanas']);
         TypeService::create(['name' => 'Flete']);
+        TypeService::create(['name' => 'Aduanas']);
         TypeService::create(['name' => 'Transporte']);
 
         /* TypeInsurance */

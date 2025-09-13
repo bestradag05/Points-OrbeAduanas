@@ -12,7 +12,7 @@
 
       <div class="row">
 
-          <div class="col-6">
+          <div class="col-6 transporte-hide">
 
               <label for="origin">Origen <span class="text-danger">*</span></label>
 
@@ -26,7 +26,7 @@
               </x-adminlte-select2>
 
           </div>
-          <div class="col-6">
+          <div class="col-6 transporte-hide">
 
               <label for="destination">Destino <span class="text-danger">*</span></label>
 
@@ -97,7 +97,7 @@
               </x-adminlte-select2>
           </div>
 
-          <div class="col-6">
+          <div class="col-6 transporte-hide">
 
               <label for="id_regime">Regimen <span class="text-danger">*</span></label>
 
@@ -112,7 +112,7 @@
               </x-adminlte-select2>
           </div>
 
-          <div class="col-6">
+          <div class="col-6 transporte-hide">
               <label for="id_incoterms">Incoterm <span class="text-danger">*</span></label>
               <a href="#" data-bs-toggle="modal" data-bs-target="#incotermModal">
                   <i class="fas fa-info-circle"></i>
@@ -248,7 +248,7 @@
 
       <div id="lcl_container" class="lcl-fields">
 
-          <div class="form-group">
+          <div class="form-group transporte-hide">
               <label>¿Es consolidado?</label>
               <div class="form-check form-check-inline">
                   <input type="radio" id="consolidadoSi" name="is_consolidated" value="1"
@@ -281,7 +281,7 @@
 
               <div class="row my-4">
 
-                  <div class="col-4">
+                  <div class="col-4 transporte-hide">
                       <div class="form-group row">
                           <label for="load_value" class="col-sm-4 col-form-label">Valor de factura <span
                                   class="text-danger">*</span></label>
@@ -449,7 +449,7 @@
 
               <div class="row mt-4">
 
-                  <div class="col-4">
+                  <div class="col-4 transporte-hide">
                       <div class="form-group row">
                           <label for="pounds" class="col-sm-4 col-form-label">Libras </label>
                           <div class="col-sm-8">
@@ -659,37 +659,10 @@
 
 
       <button class="btn btn-secondary mt-5" onclick="stepper.previous()">Anterior</button>
-      <button class="btn btn-primary mt-5" onclick="stepper.next()">Siguiente</button>
-  </div>
-
-  <div id="servicios" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepperServicios">
-
-      <div class="container">
-          <div class="row">
-              <div class="col-12 text-center">
-                  <h5 class="text-indigo mb-3">Seleccione los servicios que se cotizaran para incluir dentro de este
-                      documento</h5>
-                  @foreach ($types_services as $type_service)
-                      @if ($type_service->name != 'Aduanas')
-                          <div class="icheck-danger d-inline mx-4 mt-4">
-                              <input type="checkbox" id="type_service_{{ $type_service->id }}"
-                                  value="{{ $type_service->name }}" name="type_service[]">
-                              <label for="type_service_{{ $type_service->id }}">
-                                  {{ $type_service->name }}
-                              </label>
-                          </div>
-                      @endif
-                  @endforeach
-
-              </div>
-          </div>
-      </div>
-
-
-
-      <button class="btn btn-secondary mt-5" onclick="stepper.previous()">Anterior</button>
       <button type="submit" class="btn btn-indigo mt-5" onclick="submitForm()">Guardar</button>
   </div>
+
+ 
 
 
   <!-- Modal de Bootstrap -->
