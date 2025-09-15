@@ -474,7 +474,7 @@
                                                 data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
                                                 Rechazar
                                             </button>
-                                        @endrole
+                                        {{-- @endrole --}}
                                     @elseif ($quote->response->contains('status', 'Aceptado'))
                                         <span class="text-muted">Sin acciones</span>
                                     @else
@@ -488,7 +488,7 @@
                                                 data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
                                                 Rechazar
                                             </button>
-                                        @endrole
+                                        {{-- @endrole --}}
                                     @endif
                                 @endif
                                 <button type="button" class="btn btn-sm btn-primary btn-pdf-transport" title="Ver PDF"
@@ -741,10 +741,10 @@
                             {{ $quote->commercial_quote->lcl_fcl != null ? "({$quote->commercial_quote->lcl_fcl})" : '' }}
                         </td>
                     </tr>
-                    <tr>
+{{--                     <tr>
                         <td><strong>Incoterm</strong></td>
                         <td>{{ $quote->commercial_quote->incoterm->code }}</td>
-                    </tr>
+                    </tr> --}}
                     <tr>
                         <td><strong>Origen</strong></td>
                         <td>{{ $quote->pick_up }}</td>

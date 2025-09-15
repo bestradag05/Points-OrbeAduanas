@@ -503,7 +503,7 @@
 
                   <div class="col-4">
                       <div id="contenedor_volumen" class="form-group row  d-none">
-                          <label for="volumen" class="col-sm-4 col-form-label">Volumen </label>
+                          <label for="volumen" class="col-sm-4 col-form-label">Volumen</label>
                           <div class="col-sm-8">
                               {{-- Volumen --}}
                               <input type="text"
@@ -655,6 +655,7 @@
 
 
       <input type="hidden" id="type_shipment_name" name="type_shipment_name">
+      <input type="hidden" id="type_service_checked" name="type_service_checked">
 
 
 

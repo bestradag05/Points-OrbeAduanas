@@ -41,11 +41,13 @@ class CommercialQuote extends Model
         'measures',
         'cif_value',
         'valid_until',
+        'services_to_quote',
         'state',
     ];
 
     protected $casts = [
         'valid_until' => 'date', // Convierte 'valid_until' en un objeto Carbon
+        'services_to_quote' => 'array',
     ];
 
     public function originState()

@@ -558,6 +558,14 @@
             myModal.show();
 
             document.getElementById('btnGenerarServicios').addEventListener('click', function() {
+
+                const selectedServices = Array.from(document.querySelectorAll(
+                        'input[name="type_service[]"]:checked'))
+                    .map(cb => cb.value);
+
+
+                document.getElementById('type_service_checked').value = JSON.stringify(selectedServices);
+
                 myModal.hide();
                 updateFormFieldsVisibility();
             });
@@ -588,8 +596,6 @@
             // Obtén los checkboxes seleccionados
             const checked = Array.from(document.querySelectorAll('input[name="type_service[]"]:checked')).map(cb => cb.value
                 .toLowerCase());
-
-            console.log(checked);
 
             // Lógica: si solo está seleccionado "transporte", ocultar campos
             const onlyTransport = checked.length === 1 && checked[0] === 'transporte';

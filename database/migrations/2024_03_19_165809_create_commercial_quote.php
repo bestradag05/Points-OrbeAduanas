@@ -14,18 +14,18 @@ return new class extends Migration
         Schema::create('commercial_quote', function (Blueprint $table) {
             $table->id();
             $table->string('nro_quote_commercial')->unique();
-            $table->unsignedBigInteger('origin');
-            $table->unsignedBigInteger('destination');
+            $table->unsignedBigInteger('origin')->nullable();
+            $table->unsignedBigInteger('destination')->nullable();
             $table->string('customer_company_name')->nullable();
             $table->string('contact')->nullable();
             $table->string('cellphone')->nullable();
             $table->string('email')->nullable();
-            $table->decimal('load_value', 8, 2);
+            $table->decimal('load_value', 8, 2)->nullable();
             $table->unsignedBigInteger('id_personal');
             $table->unsignedBigInteger('id_type_shipment');
-            $table->unsignedBigInteger('id_regime');
-            $table->unsignedBigInteger('id_incoterms');
-            $table->unsignedBigInteger('id_type_load');
+            $table->unsignedBigInteger('id_regime')->nullable();
+            $table->unsignedBigInteger('id_incoterms')->nullable();
+            $table->unsignedBigInteger('id_type_load')->nullable();
             $table->unsignedBigInteger('id_customer')->nullable();
             $table->unsignedBigInteger('id_supplier')->nullable();
             $table->string('lcl_fcl')->nullable();
@@ -41,6 +41,7 @@ return new class extends Migration
             $table->text('measures')->nullable();
             $table->decimal('cif_value', 8 , 2)->nullable();
             $table->date('valid_until')->nullable();
+            $table->json('services_to_quote')->nullable();
             $table->enum('state', ['Pendiente', 'Inactivo', 'Aceptado', 'Rechazado', 'Sin respuesta'])->default('Pendiente');
             $table->timestamps();
 

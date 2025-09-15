@@ -24,11 +24,25 @@
                     @endif
                 </td>
                 <td>{{ $quoteSentClient->commercialQuote->nro_quote_commercial }}</td>
-                <td class="text-uppercase">{{ $quoteSentClient->commercialQuote->originState->country->name }} -
-                    {{ $quoteSentClient->commercialQuote->originState->name }}</td>
-                <td class="text-uppercase">{{ $quoteSentClient->commercialQuote->destinationState->country->name }} -
-                    {{ $quoteSentClient->commercialQuote->destinationState->name }}</td>
-                <td class="text-uppercase">{{ $quoteSentClient->commercialQuote->customer->name_businessname ?? $quoteSentClient->commercialQuote->customer_company_name }}</td>
+                <td class="text-uppercase">
+                    @if ($quoteSentClient->commercialQuote->originState)
+                        {{ $quoteSentClient->commercialQuote->originState->country->name }} -
+                        {{ $quoteSentClient->commercialQuote->originState->name }}
+                    @else
+                        No disponible
+                    @endif
+                </td>
+                <td class="text-uppercase">
+                    @if ($quoteSentClient->commercialQuote->destinationState)
+                        {{ $quoteSentClient->commercialQuote->destinationState->country->name }} -
+                        {{ $quoteSentClient->commercialQuote->destinationState->name }}
+                    @else
+                        No disponible
+                    @endif
+                </td>
+                <td class="text-uppercase">
+                    {{ $quoteSentClient->commercialQuote->customer->name_businessname ?? $quoteSentClient->commercialQuote->customer_company_name }}
+                </td>
                 <td>{{ $quoteSentClient->commercialQuote->type_shipment->description . ' ' . ($quoteSentClient->commercialQuote->type_shipment->description === 'Marítima' ? $quoteSentClient->commercialQuote->lcl_fcl : '') }}
                 </td>
                 <td>{{ $quoteSentClient->commercialQuote->personal->names }}</td>
@@ -338,9 +352,9 @@
 
         }
 
-         function searchSupplier(e) {
+        function searchSupplier(e) {
 
-             let name_businessname_supplier = e.value;
+            let name_businessname_supplier = e.value;
             let formFillData = $('#forCommercialFillData');
 
 
@@ -352,11 +366,14 @@
 
                     if (response.success && response.supplier) {
                         // Si el cliente existe, llenamos los campos
-                        formFillData.find('#address_supplier').val(response.supplier.address).prop('readonly', true);
-                        formFillData.find('#contact_name_supplier').val(response.supplier.contact_name).prop('readonly',
+                        formFillData.find('#address_supplier').val(response.supplier.address).prop('readonly',
                             true);
-                        formFillData.find('#contact_number_supplier').val(response.supplier.contact_number).prop(
-                            'readonly', true);
+                        formFillData.find('#contact_name_supplier').val(response.supplier.contact_name).prop(
+                            'readonly',
+                            true);
+                        formFillData.find('#contact_number_supplier').val(response.supplier.contact_number)
+                            .prop(
+                                'readonly', true);
                         formFillData.find('#contact_email_supplier').val(response.supplier.contact_email).prop(
                             'readonly', true);
                     } else {
@@ -375,7 +392,7 @@
                 }
             });
 
-         }
+        }
 
         function showError(input, message) {
             let container = input;

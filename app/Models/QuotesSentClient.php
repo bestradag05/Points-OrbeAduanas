@@ -65,7 +65,7 @@ class QuotesSentClient extends Model
                 $commercialQuote = $quoteSentClient->commercialQuote; // Obtiene la relación
 
                 // Obtener el código del régimen y del tipo de envío desde CommercialQuote
-                $operationCode = $commercialQuote->regime->code; // "10" para Importación
+                $operationCode = $commercialQuote->regime->code ?? 10; // "10" para Importación
                 $shipmentCode = $commercialQuote->type_shipment->code; // "119" para Marítimo
                 $year = date('y'); // Últimos dos dígitos del año actual
 

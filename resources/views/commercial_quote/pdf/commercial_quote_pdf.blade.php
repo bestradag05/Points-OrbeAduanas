@@ -283,20 +283,26 @@
                             {{ $quoteSentClient->customer->name_businessname ?? $quoteSentClient->customer_company_name }}
                         </td>
                     </tr>
-                    <tr>
-                        <td class="title-item-table">Puerto de salida</td>
-                        <td class="text-item-table"> {{ $quoteSentClient->originState->country->name }} -
-                            {{ $quoteSentClient->originState->name }}</td>
-                    </tr>
-                    <tr>
-                        <td class="title-item-table">Puerto de llegada</td>
-                        <td class="text-item-table">{{ $quoteSentClient->destinationState->country->name }} -
-                            {{ $quoteSentClient->destinationState->name }}</td>
-                    </tr>
-                    <tr>
-                        <td class="title-item-table">Incoterm</td>
-                        <td class="text-item-table">{{ $quoteSentClient->incoterm->code }}</td>
-                    </tr>
+                    @if ($quoteSentClient->commercialQuote->originState)
+                        <tr>
+                            <td class="title-item-table">Puerto de salida</td>
+                            <td class="text-item-table"> {{ $quoteSentClient->originState->country->name }} -
+                                {{ $quoteSentClient->originState->name }}</td>
+                        </tr>
+                    @endif
+                    @if ($quoteSentClient->commercialQuote->destinationState)
+                        <tr>
+                            <td class="title-item-table">Puerto de llegada</td>
+                            <td class="text-item-table">{{ $quoteSentClient->destinationState->country->name }} -
+                                {{ $quoteSentClient->destinationState->name }}</td>
+                        </tr>
+                    @endif
+                    @if ($quoteSentClient->incoterm)
+                        <tr>
+                            <td class="title-item-table">Incoterm</td>
+                            <td class="text-item-table">{{ $quoteSentClient->incoterm->code }}</td>
+                        </tr>
+                    @endif
                     <tr>
                         <td class="title-item-table">Tipo de embarque</td>
                         <td class="text-item-table">{{ $quoteSentClient->type_shipment->name }}</td>
@@ -349,15 +355,18 @@
 
 
                     @endif
-
-                    <tr>
-                        <td class="title-item-table">Valor de factura</td>
-                        <td class="text-item-table">{{ $quoteSentClient->load_value }}</td>
-                    </tr>
-                    <tr>
-                        <td class="title-item-table">Valor CIF</td>
-                        <td class="text-item-table">{{ $quoteSentClient->cif_value }}</td>
-                    </tr>
+                    @if ($quoteSentClient->load_value > 0)
+                        <tr>
+                            <td class="title-item-table">Valor de factura</td>
+                            <td class="text-item-table">{{ $quoteSentClient->load_value }}</td>
+                        </tr>
+                    @endif
+                    @if ($quoteSentClient->cif_value)
+                        <tr>
+                            <td class="title-item-table">Valor CIF</td>
+                            <td class="text-item-table">{{ $quoteSentClient->cif_value }}</td>
+                        </tr>
+                    @endif
                     {{--  <tr>
                         <td class="title-item-table">Valor Cif</td>
                         <td class="text-item-table">{{ $commercialQuote->type_shipment->name }}</td>
@@ -406,7 +415,7 @@
             $conceptsWithIgv = $freightConcepts->filter(function ($concept) {
                 return $concept->pivot->has_igv === 1;
             });
-       
+
             // Calcular los montos y subtotales
             $subtotalWithoutIgv = $conceptsWithoutIgv->sum(function ($concept) {
                 return $concept->pivot->concept_value;

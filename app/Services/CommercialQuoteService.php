@@ -92,6 +92,11 @@ class CommercialQuoteService
 
     public function storeCommercialQuote($request)
     {
+        $typeService = [];
+        if ($request->has('type_service_checked')) {
+            $typeService = json_decode($request->type_service_checked, true);
+        }
+
         $shippersConsolidated = json_decode($request->shippers_consolidated);
         if ($request->is_consolidated) {
 
@@ -125,6 +130,7 @@ class CommercialQuoteService
                 'pounds' => $this->parseDouble($request->pounds),
                 'nro_operation' => $request->nro_operation,
                 'valid_until' => now()->format('Y-m-d'),
+                'services_to_quote' => $typeService,
                 'id_personal' => auth()->user()->personal->id,
             ]);
 
@@ -167,6 +173,7 @@ class CommercialQuoteService
                     'pounds' => $this->parseDouble($request->pounds),
                     'nro_operation' => $request->nro_operation,
                     'valid_until' => now()->format('Y-m-d'),
+                    'services_to_quote' => $typeService,
                     'id_personal' => auth()->user()->personal->id,
                 ]);
 
@@ -217,16 +224,17 @@ class CommercialQuoteService
                     'pounds' => $this->parseDouble($request->pounds),
                     'nro_operation' => $request->nro_operation,
                     'valid_until' => now()->format('Y-m-d'),
+                    'services_to_quote' => $typeService,
                     'id_personal' => auth()->user()->personal->id,
                 ]);
             }
         }
 
 
-        if (isset($request->type_service) || !empty($request->type_service)) {
-            foreach ($request->type_service as $type_service) {
+        if (!empty($typeService)) {
+            foreach ($typeService as $service) {
 
-                switch ($type_service) {
+                switch ($service) {
                     case 'Flete':
 
                         $this->createQuoteFreight($commercialQuote);
@@ -605,7 +613,7 @@ class CommercialQuoteService
 
                 $commercialQuote->update(['state' => 'Aceptado']);
 
-               /*  $this->generatePurePoint($commercialQuote); */
+                /*  $this->generatePurePoint($commercialQuote); */
 
                 break;
 
@@ -842,31 +850,63 @@ class CommercialQuoteService
 
     public function validateForm($request, $id)
     {
+        $typeService = [];
 
-        $request->validate([
-            'nro_quote_commercial' => 'required|string|unique:commercial_quote,nro_quote_commercial,' . $id,
-            'origin' => 'required|string',
-            'destination' => 'required|string',
-            'load_value' => 'required',
-            'id_type_shipment' => 'required',
-            'id_regime' => 'required',
-            'id_type_load' => 'required',
-            'id_incoterms' => 'required',
-            'commodity' => 'required',
-            'kilograms' => 'required_unless:lcl_fcl,FCL',
-            'volumen' => 'required_if:type_shipment_name,Marítima',
-            'kilogram_volumen' => 'required_if:type_shipment_name,Aérea',
-            'tons' => 'required_if:lcl_fcl,FCL|max:8',
-            'lcl_fcl' => 'required_if:type_shipment_name,Marítima',
-            'observation' => 'nullable',
+        if ($request->has('type_service_checked')) {
+            $typeService = json_decode($request->type_service_checked, true);
+        }
 
-            // Validación condicional
-            'id_customer' => 'required_if:is_customer_prospect,customer',
-            'customer_company_name' => 'required_if:is_customer_prospect,prospect',
-            'contact' => 'required_if:is_customer_prospect,prospect',
-            'cellphone' => 'required_if:is_customer_prospect,prospect',
-            'email' => 'required_if:is_customer_prospect,prospect',
-        ]);
+
+        $onlyTransport = is_array($typeService) && count($typeService) === 1 && strtolower($typeService[0]) === 'transporte';
+
+        if ($onlyTransport) {
+            // Validación solo para transporte
+            $request->validate([
+                'nro_quote_commercial' => 'required|string|unique:commercial_quote,nro_quote_commercial,' . $id,
+                'id_type_shipment' => 'required',
+                'id_type_load' => 'required',
+                'commodity' => 'required',
+                'kilograms' => 'required_unless:lcl_fcl,FCL',
+                'volumen' => 'required_if:type_shipment_name,Marítima',
+                'kilogram_volumen' => 'required_if:type_shipment_name,Aérea',
+                'tons' => 'required_if:lcl_fcl,FCL|max:8',
+                'lcl_fcl' => 'required_if:type_shipment_name,Marítima',
+                'observation' => 'nullable',
+
+                // Validación condicional
+                'id_customer' => 'required_if:is_customer_prospect,customer',
+                'customer_company_name' => 'required_if:is_customer_prospect,prospect',
+                'contact' => 'required_if:is_customer_prospect,prospect',
+                'cellphone' => 'required_if:is_customer_prospect,prospect',
+                'email' => 'required_if:is_customer_prospect,prospect',
+            ]);
+        } else {
+
+            $request->validate([
+                'nro_quote_commercial' => 'required|string|unique:commercial_quote,nro_quote_commercial,' . $id,
+                'origin' => 'required|string',
+                'destination' => 'required|string',
+                'load_value' => 'required',
+                'id_type_shipment' => 'required',
+                'id_regime' => 'required',
+                'id_type_load' => 'required',
+                'id_incoterms' => 'required',
+                'commodity' => 'required',
+                'kilograms' => 'required_unless:lcl_fcl,FCL',
+                'volumen' => 'required_if:type_shipment_name,Marítima',
+                'kilogram_volumen' => 'required_if:type_shipment_name,Aérea',
+                'tons' => 'required_if:lcl_fcl,FCL|max:8',
+                'lcl_fcl' => 'required_if:type_shipment_name,Marítima',
+                'observation' => 'nullable',
+
+                // Validación condicional
+                'id_customer' => 'required_if:is_customer_prospect,customer',
+                'customer_company_name' => 'required_if:is_customer_prospect,prospect',
+                'contact' => 'required_if:is_customer_prospect,prospect',
+                'cellphone' => 'required_if:is_customer_prospect,prospect',
+                'email' => 'required_if:is_customer_prospect,prospect',
+            ]);
+        }
     }
 
 
