@@ -613,6 +613,29 @@ return [
             'can' => 'currencies.list',
         ],
         [
+            'text' => 'Gestión de procesos',
+            'icon' => 'fas fa-tasks',
+            'can' => 'process.module',
+            'submenu' => [
+                [
+                    'text' => 'Lista de procesos',
+                    'url'  => 'process',
+                    'icon' => 'fas fa-list-ol',
+                    'active' => ['process'],
+                    'can' => 'process.list'
+                ],
+                [
+                    'text' => 'Lista de procesos cerrados',
+                    'url'  => 'process/listClosed',
+                    'icon' => 'fas fa-check-double',
+                    'active' => ['process/listClosed'],
+                    'can' => 'process.listClosed'
+                ],
+
+            ]
+
+        ],
+        [
             'text' => 'Comisiones',
             'icon' => 'fas fa-funnel-dollar',
             'can' => 'commissions.module',

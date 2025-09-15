@@ -262,7 +262,7 @@
 
     <div class="watermark"></div>
 
-
+    
     @if (in_array('Transporte', $quoteSentClient->services_to_quote) && count($quoteSentClient->services_to_quote) == 1)
         <div class="title">
             <h1>Cotizacion de transporte </h1>

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('commission_groups', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('commercial_quote_id');  // Relación con Cotización Comercial
+            $table->unsignedBigInteger('process_management_id');  // Relación con Cotización Comercial
             $table->decimal('total_commission', 10, 2)->default(0);
             $table->decimal('total_profit', 10, 2)->default(0);   
             $table->integer('total_points_pure')->default(0);       
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('total_points')->default(0);       
              $table->enum('status', ['Pendiente', 'Generado', 'Cobrado'])->default('Pendiente');    
             // Relaciones con Cotización Comercial o Operación
-            $table->foreign('commercial_quote_id')->references('id')->on('commercial_quote')->onDelete('cascade');
+            $table->foreign('process_management_id')->references('id')->on('process_management')->onDelete('cascade');
             $table->timestamps();
         });
     }

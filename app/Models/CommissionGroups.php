@@ -12,7 +12,7 @@ class CommissionGroups extends Model
     protected $table = 'commission_groups';
 
     protected $fillable = [
-        'commercial_quote_id',
+        'process_management_id',
         'total_commission',
         'total_profit',
         'total_points_pure',
@@ -20,9 +20,9 @@ class CommissionGroups extends Model
         'total_points'
     ];
 
-    public function commercialQuote()
+    public function processManagement()
     {
-        return $this->belongsTo(CommercialQuote::class, 'commercial_quote_id');
+        return $this->belongsTo(ProcessManagement::class, 'process_management_id');
     }
 
     public function sellerCommissions()

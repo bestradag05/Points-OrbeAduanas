@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CommissionGroups;
 use App\Models\Points;
+use App\Models\ProcessManagement;
 use App\Models\QuotesSentClient;
 use App\Models\SellersCommission;
 use App\Services\ProfitValidationService;
@@ -127,8 +128,9 @@ class QuotesSentClientController extends Controller
 
                 /* Si es aceptado se debe generar un registro para la gestion de comisiones, ademas se debe generar al punto automatico para los servicios puros */
 
-                //2. Generamos el registro para gestionar comisiones
-                $this->createSellerCommission($quotesSentClient);
+                //2. Generamos registro para administrar los procesos
+
+                $this->createProcessManagement($quotesSentClient);
 
                 break;
             case 'decline':
@@ -161,7 +163,7 @@ class QuotesSentClientController extends Controller
     }
 
 
-    private function createSellerCommission(QuotesSentClient $quotesSentClient)
+    private function createProcessManagement(QuotesSentClient $quotesSentClient)
     {
         // Obtener el comercial relacionado (commercialQuote)
         $commercialQuote = $quotesSentClient->commercialQuote;
@@ -170,8 +172,16 @@ class QuotesSentClientController extends Controller
 
             //Creamos el registro para agrupar las comisiones de el vendedor
 
+            $processManagement = ProcessManagement::create([
+                'nro_quote_commercial' => $commercialQuote->nro_quote_commercial,
+                'freight_status' => $commercialQuote->freight->state ?? null,
+                'customs_status' => $commercialQuote->custom->state ?? null,
+                'transport_status' => $commercialQuote->transport->state ?? null,
+            ]);
+
+
             $groupCommission = CommissionGroups::create([
-                'commercial_quote_id' => $commercialQuote->id,
+                'process_management_id' => $processManagement->id,
                 'total_commission' => 0,
                 'total_profit' => 0,
                 'total_points' => 0

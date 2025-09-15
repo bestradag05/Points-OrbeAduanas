@@ -116,7 +116,7 @@
                 data-placeholder="Seleccione un concepto...">
                 <option />
                 @foreach ($concepts as $concept)
-                    @if ($concept->typeService->name == 'Flete' && $commercial_quote->type_shipment->id == $concept->id_type_shipment)
+                    @if ($concept->typeService->name === 'Flete' && $commercial_quote->type_shipment->id == $concept->id_type_shipment)
                         <option value="{{ $concept->id }}">{{ $concept->name }}</option>
                     @endif
                 @endforeach
