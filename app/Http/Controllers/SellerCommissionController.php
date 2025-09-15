@@ -44,8 +44,6 @@ class SellerCommissionController extends Controller
         $heads = [
             '#',
             'N° de cotizacion',
-            'Origen',
-            'Destino',
             'Cliente',
             'Fecha',
             'Total Puntos',

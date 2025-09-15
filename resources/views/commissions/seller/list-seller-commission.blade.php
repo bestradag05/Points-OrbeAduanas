@@ -19,10 +19,6 @@
                         {{ $commissions->commercialQuote->nro_quote_commercial }}
                     </a>
                 </td>
-                <td class="text-uppercase">{{ $commissions->commercialQuote->originState->country->name }} -
-                    {{ $commissions->commercialQuote->originState->name }}</td>
-                <td class="text-uppercase">{{ $commissions->commercialQuote->destinationState->country->name }} -
-                    {{ $commissions->commercialQuote->destinationState->name }}</td>
                 <td class="text-uppercase">{{ $commissions->commercialQuote->customer->name_businessname }}</td>
                 </td>
                 <td>{{ \Carbon\Carbon::parse($commissions->commercialQuote->created_at)->format('d/m/Y') }}</td>
