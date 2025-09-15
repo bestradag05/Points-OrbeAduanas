@@ -7,7 +7,7 @@
 
 {{--         @if ($comercialQuote->state === 'Pendiente') --}}
 
-            <div class="form-group row">
+{{--             <div class="form-group row">
                 <label class="col-sm-4 col-form-label">Agregar Cotizacion : </label>
                 <div class="col-sm-8">
                     <select name="type_quote_service" id="type_quote_service" class="form-control"
@@ -20,10 +20,8 @@
                         @endif
 
                         @if ($comercialQuote->quote_transport()->whereNotIn('state', ['Rechazado', 'Anulado'])->exists())
-                            {{-- Hay al menos una cotización de transporte activa -> bloquear --}}
                             <option value="Transporte" disabled>Transporte</option>
                         @else
-                            {{-- No hay transporte activo (o no hay ninguno) -> permitir crear otro --}}
                             <option value="Transporte">Transporte</option>
                         @endif
 
@@ -32,7 +30,7 @@
 
                 </div>
 
-            </div>
+            </div> --}}
 
 {{--         @endif --}}
 
@@ -651,7 +649,7 @@
 
         //Confirmacion para crear una nueva cotizacion de Transporte - Flete
 
-        function createTypeQuote(select) {
+/*         function createTypeQuote(select) {
 
             let nro_quote_commercial = @json($comercialQuote->nro_quote_commercial);
 
@@ -696,7 +694,7 @@
 
             });
         }
-
+ */
 
         // Mostrar mensaje de error
         function showError(input, message) {

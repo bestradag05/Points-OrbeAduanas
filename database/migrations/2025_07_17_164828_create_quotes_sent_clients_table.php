@@ -46,6 +46,7 @@ return new class extends Migration
             $table->decimal('customs_taxes', 8, 2)->nullable();
             $table->decimal('customs_perception', 8, 2)->nullable();
             $table->date('valid_until')->nullable();
+            $table->json('services_to_quote')->nullable();
 
             /* Guardar totales de los servicios */
             $table->decimal('total_freight', 8, 2)->nullable();

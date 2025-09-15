@@ -263,73 +263,56 @@
     <div class="watermark"></div>
 
 
-    <div class="title">
-        <h1>Cotizacion {{ $quoteSentClient->type_shipment->description }} </h1>
-        <h3>N ° {{ $quoteSentClient->nro_quote_commercial }}</h3>
+    @if (in_array('Transporte', $quoteSentClient->services_to_quote) && count($quoteSentClient->services_to_quote) == 1)
+        <div class="title">
+            <h1>Cotizacion de transporte </h1>
+            <h3>N ° {{ $quoteSentClient->nro_quote_commercial }}</h3>
 
-    </div>
+        </div>
+    @else
+        <div class="title">
+            <h1>Cotizacion {{ $quoteSentClient->type_shipment->description }} </h1>
+            <h3>N ° {{ $quoteSentClient->nro_quote_commercial }}</h3>
+
+        </div>
+    @endif
 
     <div class="detail">
         <div class="items-detail">
 
-            <table>
-                <thead>
-                    <th colspan="2" class="title-table">Detalles de la carga</th>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="title-item-table">Cliente</td>
-                        <td class="text-item-table">
-                            {{ $quoteSentClient->customer->name_businessname ?? $quoteSentClient->customer_company_name }}
-                        </td>
-                    </tr>
-                    @if ($quoteSentClient->commercialQuote->originState)
+            @if (in_array('Transporte', $quoteSentClient->services_to_quote) && count($quoteSentClient->services_to_quote) == 1)
+                <table>
+                    <thead>
+                        <th colspan="2" class="title-table">Detalles de la carga</th>
+                    </thead>
+                    <tbody>
                         <tr>
-                            <td class="title-item-table">Puerto de salida</td>
-                            <td class="text-item-table"> {{ $quoteSentClient->originState->country->name }} -
-                                {{ $quoteSentClient->originState->name }}</td>
+                            <td class="title-item-table">Origen</td>
+                            <td class="text-item-table">
+                                {{ $quoteSentClient->commercialQuote->transport->origin }}
+                            </td>
                         </tr>
-                    @endif
-                    @if ($quoteSentClient->commercialQuote->destinationState)
                         <tr>
-                            <td class="title-item-table">Puerto de llegada</td>
-                            <td class="text-item-table">{{ $quoteSentClient->destinationState->country->name }} -
-                                {{ $quoteSentClient->destinationState->name }}</td>
+                            <td class="title-item-table">Destino</td>
+                            <td class="text-item-table">
+                                {{ $quoteSentClient->commercialQuote->transport->destination }}
+                            </td>
                         </tr>
-                    @endif
-                    @if ($quoteSentClient->incoterm)
                         <tr>
-                            <td class="title-item-table">Incoterm</td>
-                            <td class="text-item-table">{{ $quoteSentClient->incoterm->code }}</td>
+                            <td class="title-item-table">Cliente</td>
+                            <td class="text-item-table">
+                                {{ $quoteSentClient->customer->name_businessname ?? $quoteSentClient->customer_company_name }}
+                            </td>
                         </tr>
-                    @endif
-                    <tr>
-                        <td class="title-item-table">Tipo de embarque</td>
-                        <td class="text-item-table">{{ $quoteSentClient->type_shipment->name }}</td>
-                    </tr>
-                    <tr>
-                        <td class="title-item-table">Tipo de carga</td>
-                        <td class="text-item-table">{{ $quoteSentClient->type_load->name }}</td>
-                    </tr>
-                    @if ($quoteSentClient->is_consolidated)
+                        <tr>
+                            <td class="title-item-table">Tipo de embarque</td>
+                            <td class="text-item-table">{{ $quoteSentClient->type_shipment->name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="title-item-table">Tipo de carga</td>
+                            <td class="text-item-table">{{ $quoteSentClient->type_load->name }}</td>
+                        </tr>
 
-                        <tr>
-                            <td class="title-item-table">Bultos</td>
-                            <td class="text-item-table">{{ $quoteSentClient->nro_package }}</td>
-                        </tr>
-                        <tr>
-                            <td class="title-item-table">Volumen / KGV</td>
-                            @if ($quoteSentClient->volumen)
-                                <td class="text-item-table">{{ $quoteSentClient->volumen }} CBM</td>
-                            @else
-                                <td class="text-item-table">{{ $quoteSentClient->kilogram_volumen }} KGV</td>
-                            @endif
-                        </tr>
-                        <tr>
-                            <td class="title-item-table">Peso total</td>
-                            <td class="text-item-table">{{ $quoteSentClient->kilograms }} KG</td>
-                        </tr>
-                    @else
                         <tr>
                             <td class="title-item-table">Bultos</td>
                             <td class="text-item-table">{{ $quoteSentClient->nro_package }}</td>
@@ -354,25 +337,103 @@
                         @endif
 
 
-                    @endif
-                    @if ($quoteSentClient->load_value > 0)
+                    </tbody>
+                </table>
+            @else
+                <table>
+                    <thead>
+                        <th colspan="2" class="title-table">Detalles de la carga</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="title-item-table">Cliente</td>
+                            <td class="text-item-table">
+                                {{ $quoteSentClient->customer->name_businessname ?? $quoteSentClient->customer_company_name }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="title-item-table">Puerto de salida</td>
+                            <td class="text-item-table"> {{ $quoteSentClient->originState->country->name }} -
+                                {{ $quoteSentClient->originState->name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="title-item-table">Puerto de llegada</td>
+                            <td class="text-item-table">{{ $quoteSentClient->destinationState->country->name }} -
+                                {{ $quoteSentClient->destinationState->name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="title-item-table">Incoterm</td>
+                            <td class="text-item-table">{{ $quoteSentClient->incoterm->code }}</td>
+                        </tr>
+                        <tr>
+                            <td class="title-item-table">Tipo de embarque</td>
+                            <td class="text-item-table">{{ $quoteSentClient->type_shipment->name }}</td>
+                        </tr>
+                        <tr>
+                            <td class="title-item-table">Tipo de carga</td>
+                            <td class="text-item-table">{{ $quoteSentClient->type_load->name }}</td>
+                        </tr>
+                        @if ($quoteSentClient->is_consolidated)
+
+                            <tr>
+                                <td class="title-item-table">Bultos</td>
+                                <td class="text-item-table">{{ $quoteSentClient->nro_package }}</td>
+                            </tr>
+                            <tr>
+                                <td class="title-item-table">Volumen / KGV</td>
+                                @if ($quoteSentClient->volumen)
+                                    <td class="text-item-table">{{ $quoteSentClient->volumen }} CBM</td>
+                                @else
+                                    <td class="text-item-table">{{ $quoteSentClient->kilogram_volumen }} KGV</td>
+                                @endif
+                            </tr>
+                            <tr>
+                                <td class="title-item-table">Peso total</td>
+                                <td class="text-item-table">{{ $quoteSentClient->kilograms }} KG</td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td class="title-item-table">Bultos</td>
+                                <td class="text-item-table">{{ $quoteSentClient->nro_package }}</td>
+                            </tr>
+                            <tr>
+                                <td class="title-item-table">Volumen</td>
+                                <td class="text-item-table">{{ $quoteSentClient->volumen }} CBM</td>
+                            </tr>
+
+                            @if ($quoteSentClient->lcl_fcl === 'FCL')
+                                <tr>
+                                    <td class="title-item-table">Peso total</td>
+                                    <td class="text-item-table">{{ $quoteSentClient->tons }} TONS</td>
+
+                                </tr>
+                            @else
+                                <tr>
+                                    <td class="title-item-table">Peso total</td>
+                                    <td class="text-item-table">{{ $quoteSentClient->kilograms }} KG</td>
+
+                                </tr>
+                            @endif
+
+
+                        @endif
                         <tr>
                             <td class="title-item-table">Valor de factura</td>
                             <td class="text-item-table">{{ $quoteSentClient->load_value }}</td>
                         </tr>
-                    @endif
-                    @if ($quoteSentClient->cif_value)
                         <tr>
                             <td class="title-item-table">Valor CIF</td>
                             <td class="text-item-table">{{ $quoteSentClient->cif_value }}</td>
                         </tr>
-                    @endif
-                    {{--  <tr>
+                        {{--  <tr>
                         <td class="title-item-table">Valor Cif</td>
                         <td class="text-item-table">{{ $commercialQuote->type_shipment->name }}</td>
                     </tr> --}}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+
+            @endif
+
 
         </div>
 

@@ -44,6 +44,7 @@ class QuotesSentClient extends Model
         'customs_taxes',
         'customs_perception',
         'valid_until',
+        'services_to_quote',
         'total_freight',
         'total_transport',
         'total_custom',
@@ -54,6 +55,7 @@ class QuotesSentClient extends Model
 
     protected $casts = [
         'valid_until' => 'date', // Convierte 'valid_until' en un objeto Carbon
+        'services_to_quote' => 'array',
     ];
 
     protected static function booted()

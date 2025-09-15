@@ -276,6 +276,7 @@ class CommercialQuoteController extends Controller
             'customs_taxes' => $commercialQuote->custom ? $commercialQuote->custom->customs_taxes : null,
             'customs_perception' => $commercialQuote->custom ? $commercialQuote->custom->customs_perception : null,
             'valid_until' => $commercialQuote->valid_until,
+            'services_to_quote' => json_encode($commercialQuote->services_to_quote),
             'commercial_quote_id' => $commercialQuote->id,
         ]);
 
