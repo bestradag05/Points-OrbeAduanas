@@ -19,18 +19,22 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use stdClass;
 
-class ProcessManagemenService
+class ProcessManagementService
 {
 
 
     public function index()
     {
-        $processes = ProcessManagement::all();
-
+        $processes = ProcessManagement::with('CommercialQuote')->get();
 
         $heads = [
             '#',
             'N° Operacion',
+            'Servicios',
+            'Origen',
+            'Destino',
+            'Tipo de embarque',
+            'Cliente',
             'Asesor Comercial',
             'Estado',
             'Acciones'

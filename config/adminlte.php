@@ -508,6 +508,14 @@ return [
                     'can' => 'customer.list'
 
                 ],
+                                [
+                    'text' => 'Prospectos',
+                    'url'  => 'prospects',
+                    'icon'  => 'fas fa-user-clock',
+                    'active' => ['prospects'],
+                    'can' => 'prospects.list'
+
+                ],
                 [
                     'text' => 'Proveedores',
                     'url'  => 'suppliers',

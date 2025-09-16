@@ -47,9 +47,7 @@ class QuotesSentClientController extends Controller
             'Estado',
             'Acciones'
         ];
-
-
-
+        
         return view('quotes_sent_client/list-quote-sent-client', array_merge($compact, compact('heads')));
     }
 

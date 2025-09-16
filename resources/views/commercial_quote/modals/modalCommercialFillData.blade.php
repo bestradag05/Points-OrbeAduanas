@@ -14,6 +14,7 @@
                         </div>
 
                         <input type="hidden" name="has_customer_data" id="has_customer_data" value="1">
+                        <input type="hidden" name="id_customer" id="id_customer" value="">
 
                         <div class="col-6">
                             <div class="form-group">
@@ -39,7 +40,6 @@
                                     </div>
                                     <input type="text" class="form-control form-control-sm" id="document_number"
                                         name="document_number" placeholder="Ingrese su numero de documento"
-                                        onchange="searchCustomer(this)"
                                         value="{{ isset($customer->document_number) ? $customer->document_number : old('document_number') }}">
 
                                 </div>

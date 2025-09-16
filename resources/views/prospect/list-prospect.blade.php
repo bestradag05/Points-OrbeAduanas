@@ -2,10 +2,10 @@
 
 @section('content_header')
     <div class="d-flex justify-content-between">
-        <h2>Clientes</h2>
+        <h2>Prospectos</h2>
         <div>
-            @can('customer.create')
-                <a href="{{ 'customer/create' }}" class="btn btn-primary"> Agregar </a>
+            @can('prospects.create')
+                <a href="{{ 'prospects/create' }}" class="btn btn-primary"> Agregar </a>
             @endcan
         </div>
     </div>
@@ -31,10 +31,10 @@
                 </td>
                 <td>
                     @can('customer.update')
-                        <a href="{{ url('/customer/' . $customer->id . '/edit') }}"> <i class="fas fa-edit"></i> </a>
+                        <a href="{{ url('/prospects/' . $customer->id . '/edit') }}"> <i class="fas fa-edit"></i> </a>
                     @endcan
                     @can('customer.delete')
-                        <form action="{{ url('/customer/' . $customer->id) }}" class="form-delete" method="POST"
+                        <form action="{{ url('/prospects/' . $customer->id) }}" class="form-delete" method="POST"
                             style="display: inline;" data-confirm-delete="true">
                             {{ method_field('DELETE') }}
                             @csrf

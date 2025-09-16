@@ -274,7 +274,7 @@ class DatabaseSeeder extends Seeder
             'state' => 'Activo'
         ]);
 
-        Customer::create(['document_number' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'address' => 'Av Elmer faucett 474', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'state' => 'Activo', 'id_document' => 1, 'id_personal' => 99]);
+        Customer::create(['document_number' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'address' => 'Av Elmer faucett 474', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'state' => 'Activo', 'id_document' => 1, 'id_personal' => 99, 'type' => 'cliente']);
 
 
 

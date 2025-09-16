@@ -17,10 +17,10 @@ class QuotesSentClient extends Model
         'nro_quote_commercial',
         'origin',
         'destination',
-        'customer_company_name',
+        /* 'customer_company_name',
         'contact',
         'cellphone',
-        'email',
+        'email', */
         'load_value',
         'id_personal',
         'id_type_shipment',

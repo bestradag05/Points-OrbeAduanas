@@ -45,12 +45,14 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InsuranceRatesController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PackingTypeController;
+use App\Http\Controllers\ProcessManagementController;
 use App\Http\Controllers\QuotesSentClientController;
 use App\Http\Controllers\ResponseFreightQuotesController;
 use App\Http\Controllers\SellerCommissionController;
 use App\Http\Controllers\ShippingCompanyController;
 use App\Http\Controllers\TypeContainerController;
 use App\Models\CommercialQuote;
+use App\Models\ProcessManagement;
 use App\Models\ResponseFreightQuotes;
 use App\Models\ResponseTransportQuote;
 use App\Models\ShippingCompany;
@@ -148,6 +150,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/consult-ruc/{ruc}', [CustomerController::class, 'consultRuc']);
     Route::get('/customer/data/{document_number}', [CustomerController::class, 'getDataForRuc']);
     Route::resource('customer', CustomerController::class);
+    Route::resource('prospects', CustomerController::class);
     Route::resource('suppliers', SupplierController::class);
     Route::resource('type_shipment', TypeShipmentController::class);
     Route::resource('type_load', TypeLoadController::class);
@@ -279,8 +282,6 @@ Route::middleware('auth')->group(function () {
 
 
 
-
-
     /* Mensaje de cotizaciones de flete */
 
     Route::resource('quote/transport/message', MessageQuoteTransportController::class);
@@ -332,6 +333,17 @@ Route::middleware('auth')->group(function () {
     Route::resource('sent-client', QuotesSentClientController::class);
     Route::post('sent-client/{id}/{action}', [QuotesSentClientController::class, 'updateStateQuoteSentClient']);
     Route::get('sent-client/generatePdf/{id}', [QuotesSentClientController::class, 'generatePDf']);
+
+
+    /* Process Management */
+    Route::resource('process', ProcessManagementController::class);
+
+     Route::prefix('process')->group(function () {
+        Route::get('{process}/show', [ProcessManagementController::class, 'show'])->name('process.show');
+        Route::post('{process}/accept', [ProcessManagementController::class, 'accept'])->name('process.accept');
+        Route::post('{process}/reject', [ProcessManagementController::class, 'reject'])->name('process.reject');
+        Route::get('{process}/generate', [ProcessManagementController::class, 'generate'])->name('process.generate');
+    });
 
     /* Packing type */
 

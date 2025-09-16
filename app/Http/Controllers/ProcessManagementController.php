@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProcessManagement;
-use App\Services\ProcessManagemenService;
+use App\Services\ProcessManagementService;
 use Illuminate\Http\Request;
 
 class ProcessManagementController extends Controller
 {
     protected $processManagementService;
 
-    public function __construct(ProcessManagemenService $processManagementService)
+    public function __construct(ProcessManagementService $processManagementService)
     {
         $this->processManagementService = $processManagementService;
     }
@@ -20,7 +20,7 @@ class ProcessManagementController extends Controller
     public function index()
     {
         $compact = $this->processManagementService->index();
-        return view('process_management.index', $compact);
+        return view('process_management.list-process-management', $compact);
     }
 
     /**
@@ -42,9 +42,11 @@ class ProcessManagementController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ProcessManagement $processManagement)
+    public function show(ProcessManagement $process)
     {
-        //
+        
+
+        return view('process_management.detail-process-management', compact('process'));
     }
 
     /**

@@ -204,7 +204,9 @@
                     // Mostrar un modal con select2 para seleccionar o registrar cliente y/o proveedor
                     let isConsolidated = quote.is_consolidated;
                     let idCustomer = quote.id_customer;
-                    completeCustomerInformation(quote, idCustomer, isConsolidated);
+                    let type = quote.commercial_quote.customer.type;
+
+                    completeCustomerInformation(quote, idCustomer, type, isConsolidated);
                 }
             });
 
@@ -212,7 +214,7 @@
 
 
 
-        function completeCustomerInformation(quote, idCustomer, isConsolidated) {
+        function completeCustomerInformation(quote, idCustomer, type, isConsolidated) {
 
             let modal = $('#commercialFillData');
             modal.find('#quoteSentClient').val(quote.id);
@@ -227,19 +229,21 @@
 
             }
 
-            if (idCustomer) {
+            if (idCustomer && type === 'cliente') {
 
                 $('#customer-data').addClass('d-none');
                 $('#has_customer_data').val(0);
 
             } else {
 
-                if (quote.customer_company_name) {
+                if (quote.commercial_quote.customer) {
                     //Agregamos el nombre que guardo si es que lo tenia
-                    modal.find('#name_businessname').val(quote.customer_company_name);
-                    modal.find('#contact_name').val(quote.contact);
-                    modal.find('#contact_number').val(quote.cellphone);
-                    modal.find('#contact_email').val(quote.email);
+                    modal.find('#id_customer').val(quote.commercial_quote.customer.id);
+                    modal.find('#name_businessname').val(quote.commercial_quote.customer.name_businessname);
+                    modal.find('#contact_name').val(quote.commercial_quote.customer.contact_name);
+                    modal.find('#contact_number').val(quote.commercial_quote.customer.contact_number);
+                    modal.find('#contact_email').val(quote.commercial_quote.customer.contact_email);
+                    modal.find('#address').val(quote.commercial_quote.customer.address);
                 }
             }
 
@@ -298,16 +302,21 @@
                         formFillData.trigger('reset');
                     },
                     error: function(xhr, status, error) {
-                        // Aquí manejamos los errores en caso de que algo falle en el envío
-                        alert('Hubo un error al guardar los datos');
-                        console.log(error);
+                        if (xhr.status === 400) {
+                            // Si el estado de la respuesta es 400, es un error
+                            var response = JSON.parse(xhr.responseText); // Parseamos la respuesta JSON
+                            toastr.error(response.error); // Mostramos el mensaje de error
+                        } else {
+                            // Si hay un error diferente, mostramos un mensaje genérico
+                            alert('Hubo un error al guardar los datos');
+                        }
                     }
                 });
             }
 
         }
 
-        function searchCustomer(e) {
+        /* function searchCustomer(e) {
             let documentNumber = e.value;
             let formFillData = $('#forCommercialFillData');
             let typeDocument = parseInt(formFillData.find('#id_document').val());
@@ -350,7 +359,7 @@
                 }
             });
 
-        }
+        } */
 
         function searchSupplier(e) {
 

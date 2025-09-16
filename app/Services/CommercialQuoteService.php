@@ -84,6 +84,7 @@ class CommercialQuoteService
         $personalId = Auth::user()->personal->id;
         $customers = Customer::with('personal')
             ->where('id_personal', $personalId)
+            ->where('type', 'cliente')
             ->get();
 
         return compact('stateCountrys', 'type_shipments', 'type_loads', 'regimes', 'incoterms', 'nro_quote_commercial', 'types_services', 'containers', 'customers', 'packingTypes');
@@ -98,6 +99,27 @@ class CommercialQuoteService
         }
 
         $shippersConsolidated = json_decode($request->shippers_consolidated);
+
+        //Registramos el cliente 
+        if ($request->is_customer_prospect == 'prospect') {
+            // Si es prospecto, creamos un nuevo cliente
+            $customer = Customer::create([
+                'name_businessname' => $request->customer_company_name,
+                'address' => $request->contact,
+                'contact_name' => $request->cellphone,
+                'contact_number' => $request->email,
+                'contact_email' => $request->email,
+                'state' => 'Activo', // o el estado que consideres para prospectos
+                'type' => 'prospecto', // Tipo prospecto
+                'id_personal' => auth()->user()->personal->id, // Relación con el personal autenticado
+            ]);
+        } else {
+            // Si es cliente, simplemente usamos el ID del cliente desde el frontend
+            $customerId = $request->id_customer; // El ID del cliente viene desde el frontend
+        }
+
+
+
         if ($request->is_consolidated) {
 
             $consolidated = [];
@@ -109,17 +131,17 @@ class CommercialQuoteService
                 'origin' => $request->origin,
                 'destination' => $request->destination,
                 'commodity' => $consolidated['commodity'],
-                'customer_company_name' => $request->customer_company_name,
+                /* 'customer_company_name' => $request->customer_company_name,
                 'contact' => $request->contact,
                 'cellphone' => $request->cellphone,
-                'email' => $request->email,
+                'email' => $request->email, */
                 'load_value' => $consolidated['total_load_values'],
                 'id_type_shipment' => $request->id_type_shipment,
                 'id_regime' => $request->id_regime,
                 'id_type_load' => $request->id_type_load,
                 'id_incoterms' => $request->id_incoterms,
                 'id_containers' =>  $request->id_containers_consolidated,
-                'id_customer' => $request->id_customer,
+                'id_customer' => $request->is_customer_prospect == 'prospect' ? $customer->id : $customerId, // Usamos el ID dependiendo de si es prospecto o cliente
                 'container_quantity' => $request->container_quantity_consolidated,
                 'lcl_fcl' => $request->lcl_fcl,
                 'is_consolidated' => $request->is_consolidated,
@@ -152,17 +174,17 @@ class CommercialQuoteService
                     'origin' => $request->origin,
                     'destination' => $request->destination,
                     'commodity' => $calcContainers['commodity'],
-                    'customer_company_name' => $request->customer_company_name,
+                    /* 'customer_company_name' => $request->customer_company_name,
                     'contact' => $request->contact,
                     'cellphone' => $request->cellphone,
-                    'email' => $request->email,
+                    'email' => $request->email, */
                     'load_value' => $calcContainers['total_load_values'],
                     'id_type_shipment' => $request->id_type_shipment,
                     'id_regime' => $request->id_regime,
                     'id_type_load' => $request->id_type_load,
                     'id_incoterms' => $request->id_incoterms,
                     'id_containers' =>  $request->id_containers_consolidated,
-                    'id_customer' => $request->id_customer,
+                    'id_customer' => $request->is_customer_prospect == 'prospect' ? $customer->id : $customerId, // Usamos el ID dependiendo de si es prospecto o cliente
                     'container_quantity' => $request->container_quantity_consolidated,
                     'lcl_fcl' => $request->lcl_fcl,
                     'is_consolidated' => $request->is_consolidated,
@@ -199,10 +221,10 @@ class CommercialQuoteService
                     'nro_quote_commercial' => $request->nro_quote_commercial,
                     'origin' => $request->origin,
                     'destination' => $request->destination,
-                    'customer_company_name' => $request->customer_company_name,
+                    /* 'customer_company_name' => $request->customer_company_name,
                     'contact' => $request->contact,
                     'cellphone' => $request->cellphone,
-                    'email' => $request->email,
+                    'email' => $request->email, */
                     'load_value' => $this->parseDouble($request->load_value),
                     'id_type_shipment' => $request->id_type_shipment,
                     'id_regime' => $request->id_regime,
@@ -213,7 +235,7 @@ class CommercialQuoteService
                     'id_packaging_type' => $request->id_packaging_type,
                     'id_containers' => $request->id_containers,
                     'container_quantity' => $request->container_quantity,
-                    'id_customer' => $request->id_customer,
+                    'id_customer' => $request->is_customer_prospect == 'prospect' ? $customer->id : $customerId, // Usamos el ID dependiendo de si es prospecto o cliente
                     'kilograms' => $request->kilograms != null ? $this->parseDouble($request->kilograms) : null,
                     'volumen' => $request->volumen != null ?  $this->parseDouble($request->volumen) : null,
                     'kilogram_volumen' => $request->kilogram_volumen != null ? $this->parseDouble($request->kilogram_volumen) : null,
@@ -260,7 +282,6 @@ class CommercialQuoteService
 
     public function completeDataCommercialQuote($request)
     {
-
         $quoteSentClient = QuotesSentClient::findOrFail($request->quoteSentClient);
 
         $commercialQuote = $quoteSentClient->commercialQuote;
@@ -281,13 +302,17 @@ class CommercialQuoteService
             if ($customer) {
                 // Verificar si el cliente pertenece a otro usuario
                 if ($customer->id_personal !== Auth::user()->personal->id) {
-                    return back()->with('error', 'El cliente que intentas registrar, esta asignado a otro usuario.');
+                    return response()->json(['error' => 'El cliente que intentas registrar está asignado a otro usuario.'], 400);
                 }
-                // Si pertenece al mismo usuario, se usa tal cual (sin crear uno nuevo)
+                //Si el cliente existe y es uno de los clientes del usuario autenticado solo actualizamos sus datos
+                if ($customer->document_number === $request->document_number && $customer->id_personal === Auth::user()->personal->id) {
+                   return response()->json(['error' => 'Ya tienes otro cliente con este numero de documento.'], 400);
+                }
             } else {
+                $customerUpdate = Customer::findOrFail($request->id_customer);
+
                 // Si no existe, se crea uno nuevo
-                $customer = Customer::create([
-                    'id_document' => $request->id_document,
+                $customerUpdate->fill([
                     'document_number' => $request->document_number,
                     'name_businessname' => $request->name_businessname,
                     'address' => $request->address,
@@ -296,14 +321,8 @@ class CommercialQuoteService
                     'contact_email' => $request->contact_email,
                     'state' => 'Activo',
                     'id_personal' => Auth::user()->personal->id
-                ]);
+                ])->save();
             }
-
-            $updateData['customer_company_name'] = null;
-            $updateData['contact'] = null;
-            $updateData['cellphone'] = null;
-            $updateData['email'] = null;
-            $updateData['id_customer'] = $customer->id;
         }
 
         if ($commercialQuote->is_consolidated) {
@@ -360,8 +379,6 @@ class CommercialQuoteService
 
         $commercialQuote->update($updateData);
         $quoteSentClient->update($updateData);
-
-        /*         $this->generatePurePoint($commercialQuote); */
 
         return $commercialQuote;
     }

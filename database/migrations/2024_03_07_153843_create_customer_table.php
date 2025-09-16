@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('customer', function (Blueprint $table) {
             $table->id();
-            $table->string('document_number')->unique();
-            $table->string('name_businessname');
+            $table->string('document_number')->unique()->nullable();
+            $table->string('name_businessname')->nullable();
             $table->string('address')->nullable();
             $table->string('contact_name');
             $table->string('contact_number')->nullable();
@@ -22,6 +22,9 @@ return new class extends Migration
             $table->string('state');
             $table->unsignedBigInteger('id_document')->nullable();
             $table->unsignedBigInteger('id_personal');
+
+            $table->enum('type', ['prospecto', 'cliente']);
+
             $table->timestamps();
 
             $table->foreign('id_document')->references('id')->on('customer_supplier_documents');

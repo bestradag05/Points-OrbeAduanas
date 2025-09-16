@@ -16,10 +16,10 @@ class CommercialQuote extends Model
         'nro_quote_commercial',
         'origin',
         'destination',
-        'customer_company_name',
+       /*  'customer_company_name',
         'contact',
         'cellphone',
-        'email',
+        'email', */
         'load_value',
         'id_personal',
         'id_type_shipment',
@@ -167,8 +167,8 @@ class CommercialQuote extends Model
         return $this->hasMany(QuotesSentClient::class, 'commercial_quote_id');
     }
 
-    public function commissionsGroup()
+    public function processManagement()
     {
-        return $this->hasOne(CommissionGroups::class, 'commercial_quote_id');
+        return $this->hasOne(ProcessManagement::class, 'commercial_quote_id');
     }
 }

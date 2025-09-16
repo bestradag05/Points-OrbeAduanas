@@ -21,6 +21,7 @@
 
     {{-- Custom stylesheets (pre AdminLTE) --}}
     @yield('adminlte_css_pre')
+    @livewireStyles
 
     {{-- Base Stylesheets --}}
     @if (!config('adminlte.enabled_laravel_mix'))
@@ -30,8 +31,6 @@
         <link rel="stylesheet" href="{{ asset('css/app.css') }}">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bs-stepper/dist/css/bs-stepper.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
-
-
 
         @if (config('adminlte.google_fonts.allowed', true))
             <link rel="stylesheet"
@@ -121,6 +120,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bs-stepper/dist/js/bs-stepper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
     <script src="{{ asset('js/formatInputCurren.js') }}"></script>
+    @livewireScripts
 
     @stack('scripts')
 

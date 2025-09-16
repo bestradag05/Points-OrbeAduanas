@@ -15,20 +15,13 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        // Listamos los clientes
+
+        // Obtener el primer segmento de la URL (prospects o customers)
+        $segment = request()->segment(1);
 
         // Obtener el ID del personal del usuario autenticado
         $personalId = Auth::user()->personal->id;
-        // Verificar si el usuario es un Super-Admin
-        if (Auth::user()->hasRole('Super-Admin') || Auth::user()->can('customar.all')) {
-            // Si es Super-Admin, obtener todos los clientes
-            $customers = Customer::with('personal')->get();
-        } else {
-            // Si no es Super-Admin, solo obtener los clientes que pertenecen al personal del usuario autenticado
-            $customers = Customer::with('personal')
-                ->where('id_personal', $personalId)
-                ->get();
-        }
+
 
         $heads = [
             '#',
@@ -44,7 +37,39 @@ class CustomerController extends Controller
         ];
 
 
-        return view("customer/list-customer", compact("customers", "heads"));
+        // Verificar si el usuario es un Super-Admin
+        if (Auth::user()->hasRole('Super-Admin')) {
+            // Si es Super-Admin, filtrar por el tipo según el segmento (prospects o customers)
+            if ($segment === 'prospects') {
+                // Obtener todos los prospectos (sin importar el personal)
+                $customers = Customer::with('personal')->where('type', 'prospecto')->get();
+                return view("prospect.list-prospect", compact("customers", "heads"));
+            } elseif ($segment === 'customer') {
+                // Obtener todos los clientes (sin importar el personal)
+                $customers = Customer::with('personal')->where('type', 'cliente')->get();
+                return view("customer.list-customer", compact("customers", "heads"));
+            }
+        } else {
+            // Si no es Super-Admin, filtrar por el tipo de cliente según el segmento
+            if ($segment === 'prospects') {
+                // Filtrar prospectos para el personal del usuario autenticado
+                $customers = Customer::with('personal')
+                    ->where('id_personal', $personalId)
+                    ->where('type', 'prospecto')
+                    ->get();
+                return view("prospect.list-prospect", compact("customers", "heads"));
+            } elseif ($segment === 'customer') {
+                // Filtrar clientes para el personal del usuario autenticado
+                $customers = Customer::with('personal')
+                    ->where('id_personal', $personalId)
+                    ->where('type', 'cliente')
+                    ->get();
+                return view("customer.list-customer", compact("customers", "heads"));
+            }
+        }
+
+        // Si no es ni "prospects" ni "customers", redirigir o manejar el error
+        return redirect()->route('home');
     }
 
     /**bb
@@ -53,10 +78,18 @@ class CustomerController extends Controller
     public function create()
     {
         // Redireccion al formulario para crear cliente
+        $segment = request()->segment(1);
 
-        $documents = CustomerSupplierDocument::all();
+        if ($segment === 'prospects') {
 
-        return view("customer/register-customer", compact('documents'));
+            $documents = CustomerSupplierDocument::all();
+
+            return view("prospect/register-prospect", compact('documents'));
+        } elseif ($segment === 'customer') {
+
+            $documents = CustomerSupplierDocument::all();
+            return view("customer/register-customer", compact('documents'));
+        }
     }
 
     /**
@@ -64,11 +97,9 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        // Guardar un cliente
-
         $this->validateForm($request, null);
-
-
+        $segment = request()->segment(1);
+        // Guardar un cliente
         Customer::create([
             'id_document' => $request->id_document,
             'document_number' => $request->document_number,
@@ -77,12 +108,22 @@ class CustomerController extends Controller
             'contact_name' => $request->contact_name,
             'contact_number' => $request->contact_number,
             'contact_email' => $request->contact_email,
+            'type' => $request->type,
             'state' => 'Activo',
             'id_personal' => Auth::user()->personal->id
         ]);
 
 
-        return redirect('customer');
+        if ($segment === 'prospects') {
+
+            return redirect('prospects');
+        } elseif ($segment === 'customer') {
+
+            return redirect('customer');
+        }
+
+
+        return redirect('home');
     }
 
 
@@ -144,10 +185,18 @@ class CustomerController extends Controller
     {
         // Redireccion al form de edit
 
+        $segment = request()->segment(1);
+
         $customer = Customer::find($id);
         $documents = CustomerSupplierDocument::all();
 
-        return view("customer/edit-customer", compact('customer', 'documents'));
+        if ($segment === 'prospects') {
+            return view("prospect/edit-prospect", compact('customer', 'documents'));
+        } elseif ($segment === 'customer') {
+            return view("customer/edit-customer", compact('customer', 'documents'));
+        }
+
+        return redirect('home');
     }
 
     /**
@@ -158,12 +207,22 @@ class CustomerController extends Controller
         // Actualizar un cliente
 
         $this->validateForm($request, $id);
+        $segment = request()->segment(1);
         $customer = Customer::find($id);
 
         $customer->fill($request->all());
         $customer->save();
 
-        return redirect('customer');
+        if ($segment === 'prospects') {
+
+            return redirect('prospects');
+        } elseif ($segment === 'customer') {
+
+            return redirect('customer');
+        }
+
+
+        return redirect('home');
     }
 
     /**
@@ -171,12 +230,23 @@ class CustomerController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $segment = request()->segment(1);
 
         $customer = Customer::find($id);
         $customer->update(['state' => 'INACTIVO']);
 
-        return redirect('customer')->with('eliminar', 'ok');
+
+        if ($segment === 'prospects') {
+
+            return redirect('prospects')->with('eliminar', 'ok');
+        } elseif ($segment === 'customer') {
+
+            return redirect('customer')->with('eliminar', 'ok');
+        }
+
+
+        return redirect('home');
+
     }
 
 

@@ -23,7 +23,7 @@ class ProcessManagement extends Model
 
     public function commercialQuote()
     {
-        return $this->belongsTo(CommercialQuote::class, 'nro_quote_commercial');
+        return $this->belongsTo(CommercialQuote::class, 'nro_quote_commercial', 'nro_quote_commercial');
     }
 
     // Relación con el flete
