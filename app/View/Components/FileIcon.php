@@ -18,12 +18,15 @@ class FileIcon extends Component
     public function __construct($path)
     {
         $this->path = $path;
+
+       
     }
+    
 
      public function iconClass()
     {
         $ext = strtolower(pathinfo($this->path, PATHINFO_EXTENSION));
-
+ 
         return match ($ext) {
            'pdf' => 'fas fa-file-pdf text-danger',
             'jpg', 'jpeg', 'png', 'gif', 'webp' => 'fas fa-file-image text-info',

@@ -1,12 +1,5 @@
-@extends('home')
-
-@section('dinamic-content')
-
+<div class="row">
     <div class="row mt-3 px-3">
-
-        <div class="col-12 text-right">
-            <a href="{{ url('/quote/freight') }}" class="btn btn-primary"> <i class="fas fa-arrow-left"></i> Atras </a>
-        </div>
 
         <div class="col-6">
 
@@ -16,6 +9,28 @@
             </h5>
 
             <div class="row">
+                <div class="col-12 border-bottom border-bottom-2">
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">N° de cotización : </label>
+                        <div class="col-sm-8">
+
+                            <p class="form-control-plaintext">
+                                {{ $commercialQuote->quote_freight()->where('state', 'Cerrado')->first()->nro_quote }}
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-12 border-bottom border-bottom-2">
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">N° de operación : </label>
+                        <div class="col-sm-8">
+
+                            <p class="form-control-plaintext">{{ $commercialQuote->freight->nro_operation_freight }}</p>
+                        </div>
+
+                    </div>
+                </div>
                 <div class="col-12 border-bottom border-bottom-2">
                     <div class="form-group row">
                         <label class="col-sm-4 col-form-label">Cliente : </label>
@@ -185,7 +200,7 @@
                                         @endif
                                         <div class="col-6">
                                             <p class="text-sm">Peso :
-                                                <b class="d-block">{{ $consolidated->kilograms }}</b>
+                                                <b class="d-block">{{ $consolidated->kilograms }} KG</b>
                                             </p>
                                         </div>
                                         @if ($measures)
@@ -281,7 +296,7 @@
                                     <label class="col-sm-4 col-form-label">Peso : </label>
                                     <div class="col-sm-8">
 
-                                        <p class="form-control-plaintext">{{ $commercialQuote->kilograms }}</p>
+                                        <p class="form-control-plaintext">{{ $commercialQuote->kilograms }} KG</p>
                                     </div>
 
                                 </div>
@@ -292,7 +307,7 @@
                                 <label class="col-sm-4 col-form-label">Volumen : </label>
                                 <div class="col-sm-8">
 
-                                    <p class="form-control-plaintext">{{ $commercialQuote->volumen }}</p>
+                                    <p class="form-control-plaintext">{{ $commercialQuote->volumen }} M3</p>
                                 </div>
 
                             </div>
@@ -306,8 +321,8 @@
 
 
                 <div class="col-12" id="extraFieldsOpen">
-                    <a class="btn btn-link btn-block text-center" data-bs-toggle="collapse" data-bs-target="#extraFields"
-                        onclick="toggleArrows(true)">
+                    <a class="btn btn-link btn-block text-center" data-bs-toggle="collapse"
+                        data-bs-target="#extraFields" onclick="toggleArrows(true)">
                         <i class="fas fa-sort-down " id="arrowDown"></i>
                     </a>
                 </div>
@@ -387,16 +402,17 @@
                 <h5 class="text-indigo m-0">
                     Documentos
                 </h5>
-                @if ($freight->state === 'Pendiente')
+                @if ($freight->state === 'Pendiente' || $freight->state === 'Notificado')
                     <button type="button" class="btn btn-indigo btn-sm mx-2 "
                         onclick="showModalUpdateDocumentFreight()"><i class="fas fa-plus"></i></button>
                 @endif
+
             </div>
 
             @php
                 $requiredDocuments = ['Routing Order', 'Factura Comercial', 'BL Draf'];
 
-                if ($freight->state === 'Enviado' || $freight->state === 'Notificado') {
+                if ($freight->state != 'Enviado' && $freight->state != 'Pendiente') {
                     $requiredDocuments[] = 'BL Final';
                 }
 
@@ -405,7 +421,6 @@
                 $allRequiredUploaded = collect($requiredDocuments)->every(function ($doc) use ($uploadedDocuments) {
                     return $uploadedDocuments->has(strtolower(trim($doc)));
                 });
-              
             @endphp
 
             <table class="table mt-2">
@@ -430,6 +445,7 @@
                             <td class="text-center">
                                 @if ($document)
                                     <a href="{{ asset($document->path) }}" target="_blank" class="btn text-danger">
+
                                         <x-file-icon :path="$document->path" />
                                     </a>
                                 @elseif($required === 'Routing Order')
@@ -450,7 +466,7 @@
                                 @endif
                             </td>
 
-                            @if ($document && $freight->state === 'Pendiente')
+                            @if ($document && ($freight->state === 'En Proceso' || $freight->state === 'Notificado'))
                                 <td>
                                     <form action="{{ url('/freight/delete_file/' . $document->id) }}" method="POST"
                                         class="d-inline">
@@ -481,10 +497,10 @@
                                         <x-file-icon :path="$document->path" />
                                     </a>
                                 </td>
-                                @if ($freight->state === 'Pendiente')
+                                @if ($freight->state === 'Pendiente' || $freight->state === 'Notificado')
                                     <td>
-                                        <form action="{{ url('/freight/delete_file/' . $document->id) }}" method="POST"
-                                            class="d-inline">
+                                        <form action="{{ url('/freight/delete_file/' . $document->id) }}"
+                                            method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn text-danger">
@@ -516,36 +532,36 @@
                 @endif
 
 
-                {{-- @if (!$freight->documents->contains('name', 'Routing Order'))
+                @if (!$freight->documents->contains('name', 'Routing Order'))
                     <div class="col-6 col-xl-6">
                         <button class="btn btn-secondary btn-sm w-100" onclick="openModalgenerateRoutingOrder()">
                             Generar Routing
                         </button>
                     </div>
-                @endif --}}
+                @endif
 
 
-                @if ($freight->state === 'Pendiente')
+                @if ($freight->state === 'Pendiente' || $freight->state === 'Notificado')
                     <div class="col-6 col-xl-6">
                         <form action="{{ url('/freight/send-operation/' . $freight->id) }}" method="POST"
                             class="d-inline">
                             @csrf
                             @method('PUT') <!-- O POST, según tu ruta -->
-                            <button class="btn btn-indigo btn-sm w-100" {{ $allRequiredUploaded ? '' : 'disabled' }}>
+                            <button class="btn btn-indigo btn-sm w-100">
                                 Enviar
                             </button>
                         </form>
                     </div>
-                @elseif($freight->state === 'Enviado')
+                @endif
+
+                @if ($freight->state === 'Notificado')
                     <div class="col-6 col-xl-6">
-                        <button class="btn btn-success btn-sm w-100"  {{ $blFinalUploaded ? '' : 'disabled' }} onclick="openModalNotification()">
-                            <i class="fas fa-check"></i> Aceptar
+
+                        <button class="btn btn-warning btn-sm w-100" onclick="openModalUpdateCosts()">
+                            <i class="fas fa-info mr-2"></i>
+                            Actualización de precios
                         </button>
-                    </div>
-                    <div class="col-6 col-xl-6">
-                        <button class="btn btn-info btn-sm w-100"  {{ $blFinalUploaded ? '' : 'disabled' }} onclick="openModalNotification()">
-                            <i class="fas fa-info-circle"></i> Solicitar Correcion
-                        </button>
+
                     </div>
                 @endif
 
@@ -579,8 +595,8 @@
                     <div class="form-group">
                         <label for="customs_perception">Archivo: </label>
                         <div class="input-group">
-                            <input type="file" class="form-control" name="file" placeholder="Ingrese el archivo"
-                                value="">
+                            <input type="file" class="form-control" name="file"
+                                placeholder="Ingrese el archivo" value="">
                         </div>
                     </div>
                 </div>
@@ -588,8 +604,8 @@
             </div>
 
             <x-slot name="footerSlot">
-                <x-adminlte-button class="btn btn-indigo" id="btnSubmit" type="submit" onclick="submitUploadFile(this)"
-                    label="Guardar Archivo" />
+                <x-adminlte-button class="btn btn-indigo" id="btnSubmit" type="submit"
+                    onclick="submitUploadFile(this)" label="Guardar Archivo" />
                 <x-adminlte-button theme="secondary" label="Cerrar" data-dismiss="modal" />
             </x-slot>
 
@@ -598,8 +614,8 @@
 
 
     {{-- Commercial Fill Data --}}
-    <x-adminlte-modal id="generateRoutingOrder" class="modal" title="Complete la informacion para generar el routing"
-        size='lg' scrollable>
+    <x-adminlte-modal id="generateRoutingOrder" class="modal"
+        title="Complete la informacion para generar el routing" size='lg' scrollable>
         <form action="/freight/routing" method="POST" id="formgenerateRoutingOrder">
             @csrf
 
@@ -653,156 +669,222 @@
         </form>
     </x-adminlte-modal>
 
+    {{-- Actualizaicion de precios --}}
+    <x-adminlte-modal id="updateCosts" class="modal" title="Solicitar actualización de precios" size='lg'
+        scrollable>
+        <form action="/freight/updateQuoteFreightCost" method="POST" id="formUpdateCosts">
+            @csrf
+
+            <div class="col-12">
+                    <p class="text-sm text-danger text-center">*Al solicitar una actualización de cotos, tendras que actualizar
+                        los costos ventas del flete internacional y volver a generar un RO con los datos actualizados
+                        para que concuerde con el BL final*</p>
+            </div>
+
+            @if ($commercialQuote->type_shipment->description === 'Marítima')
+                @if ($commercialQuote->lcl_fcl === 'FCL')
+                    <div class="col-12 ">
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Toneladas : </label>
+                            <div class="col-sm-8">
+
+                                <input name="tons"
+                                    class="form-control-plaintext">{{ $commercialQuote->tons }}</input>
+                            </div>
+
+                        </div>
+                    </div>
+                @else
+                    <div class="col-12 ">
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Peso (KG) : </label>
+                            <div class="col-sm-8">
+
+                                <input name="kilograms" class="form-control"
+                                    value="{{ $commercialQuote->kilograms }}" />
+                            </div>
+
+                        </div>
+                    </div>
+                @endif
+                <div class="col-12 ">
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label">Volumen (M3): </label>
+                        <div class="col-sm-8">
+
+                            <input name="volumen" class="form-control" value="{{ $commercialQuote->volumen }}" />
+                        </div>
+
+                    </div>
+                </div>
+
+            @endif
+
+            <x-slot name="footerSlot">
+                <x-adminlte-button class="btn btn-indigo" type="submit" onclick="submitUpdateCosts(this)"
+                    label="Solicitar" />
+                <x-adminlte-button theme="secondary" label="Cerrar" data-dismiss="modal" />
+            </x-slot>
+
+        </form>
+    </x-adminlte-modal>
+
+</div>
 
 
+<script>
+    function toggleArrows(isOpening) {
+        var arrowDown = document.getElementById('arrowDown');
+        var arrowUp = document.getElementById('arrowUp');
 
-@stop
+        if (isOpening) {
+            arrowDown.style.display = 'none';
+            arrowUp.style.display = 'inline';
+        } else {
+            arrowDown.style.display = 'inline';
+            arrowUp.style.display = 'none';
+        }
+    }
 
-@push('scripts')
-    <script>
-        function toggleArrows(isOpening) {
-            var arrowDown = document.getElementById('arrowDown');
-            var arrowUp = document.getElementById('arrowUp');
+    document.getElementById('extraFields').addEventListener('show.bs.collapse', function() {
+        toggleArrows(true);
+    });
 
-            if (isOpening) {
-                arrowDown.style.display = 'none';
-                arrowUp.style.display = 'inline';
+    document.getElementById('extraFields').addEventListener('hide.bs.collapse', function() {
+        toggleArrows(false);
+    });
+
+
+    function showModalUpdateDocumentFreight() {
+        $('#modalUploadDocumentFreight').modal('show');
+    }
+
+    function submitUploadFile() {
+
+        let formUploadFile = $('#formUploadFile');
+        let inputs = formUploadFile.find('input');
+
+        let isValid = true;
+
+        inputs.each(function() {
+            let $input = $(this); // Convertir a objeto jQuery
+            let value = $input.val();
+
+            if (value.trim() === '') {
+                $input.addClass('is-invalid');
+                isValid = false;
+                showError(this, 'Debe completar este campo');
             } else {
-                arrowDown.style.display = 'inline';
-                arrowUp.style.display = 'none';
+                $input.removeClass('is-invalid');
+                hideError(this);
             }
-        }
-
-        document.getElementById('extraFields').addEventListener('show.bs.collapse', function() {
-            toggleArrows(true);
         });
 
-        document.getElementById('extraFields').addEventListener('hide.bs.collapse', function() {
-            toggleArrows(false);
+        if (isValid) {
+            formUploadFile.submit();
+        }
+    }
+
+    function uploadRequiredFile(index) {
+        document.getElementById(`fileInput_${index}`).click()
+    }
+
+
+    function openModalgenerateRoutingOrder() {
+        $('#generateRoutingOrder').modal('show');
+
+    }
+
+    function openModalNotification() {
+        $('#generateNotification').modal('show');
+
+    }
+
+    function openModalUpdateCosts() {
+        $('#updateCosts').modal('show');
+
+    }
+
+
+    function submitGenerateRoutingOrder() {
+        let formGenerateRoutingOrder = $('#formgenerateRoutingOrder');
+        let inputs = formGenerateRoutingOrder.find('textarea');
+
+        let isValid = true;
+
+        inputs.each(function() {
+            let $input = $(this); // Convertir a objeto jQuery
+            let value = $input.val();
+
+            if (value.trim() === '') {
+                $input.addClass('is-invalid');
+                isValid = false;
+                showError(this, 'Debe completar este campo');
+            } else {
+                $input.removeClass('is-invalid');
+                hideError(this);
+            }
         });
 
-
-        function showModalUpdateDocumentFreight() {
-            $('#modalUploadDocumentFreight').modal('show');
+        if (isValid) {
+            formGenerateRoutingOrder.submit();
         }
+    }
 
-        function submitUploadFile() {
+    function submitGenerateNotification() {
+        let formGenerateNotification = $('#formGenerateNotification');
+        let inputs = formGenerateNotification.find('textarea');
 
-            let formUploadFile = $('#formUploadFile');
-            let inputs = formUploadFile.find('input');
+        let isValid = true;
 
-            let isValid = true;
+        inputs.each(function() {
+            let $input = $(this); // Convertir a objeto jQuery
+            let value = $input.val();
 
-            inputs.each(function() {
-                let $input = $(this); // Convertir a objeto jQuery
-                let value = $input.val();
-
-                if (value.trim() === '') {
-                    $input.addClass('is-invalid');
-                    isValid = false;
-                    showError(this, 'Debe completar este campo');
-                } else {
-                    $input.removeClass('is-invalid');
-                    hideError(this);
-                }
-            });
-
-            if (isValid) {
-                formUploadFile.submit();
+            if (value.trim() === '') {
+                $input.addClass('is-invalid');
+                isValid = false;
+                showError(this, 'Debe completar este campo');
+            } else {
+                $input.removeClass('is-invalid');
+                hideError(this);
             }
+        });
+
+        if (isValid) {
+            formGenerateNotification.submit();
         }
+    }
 
-        function uploadRequiredFile(index) {
-            document.getElementById(`fileInput_${index}`).click()
+
+    function submitUpdateCosts() {
+
+    }
+
+
+    function sendFreightInformation() {
+        console.log("enviado para cambiar de estado");
+    }
+
+
+    // Mostrar mensaje de error
+    function showError(input, message) {
+        let errorSpan = input.nextElementSibling;
+        if (!errorSpan || !errorSpan.classList.contains('invalid-feedback')) {
+            errorSpan = document.createElement('span');
+            errorSpan.classList.add('invalid-feedback');
+            input.after(errorSpan);
         }
+        errorSpan.textContent = message;
+        errorSpan.style.display = 'block';
+    }
 
 
-        function openModalgenerateRoutingOrder() {
-            $('#generateRoutingOrder').modal('show');
-
+    // Ocultar mensaje de error
+    function hideError(input) {
+        let errorSpan = input.nextElementSibling;
+        if (errorSpan && errorSpan.classList.contains('invalid-feedback')) {
+            errorSpan.style.display = 'none';
         }
-
-        function openModalNotification() {
-            $('#generateNotification').modal('show');
-
-        }
-
-
-        function submitGenerateRoutingOrder() {
-            let formGenerateRoutingOrder = $('#formgenerateRoutingOrder');
-            let inputs = formGenerateRoutingOrder.find('textarea');
-
-            let isValid = true;
-
-            inputs.each(function() {
-                let $input = $(this); // Convertir a objeto jQuery
-                let value = $input.val();
-
-                if (value.trim() === '') {
-                    $input.addClass('is-invalid');
-                    isValid = false;
-                    showError(this, 'Debe completar este campo');
-                } else {
-                    $input.removeClass('is-invalid');
-                    hideError(this);
-                }
-            });
-
-            if (isValid) {
-                formGenerateRoutingOrder.submit();
-            }
-        }
-
-        function submitGenerateNotification() {
-            let formGenerateNotification = $('#formGenerateNotification');
-            let inputs = formGenerateNotification.find('textarea');
-
-            let isValid = true;
-
-            inputs.each(function() {
-                let $input = $(this); // Convertir a objeto jQuery
-                let value = $input.val();
-
-                if (value.trim() === '') {
-                    $input.addClass('is-invalid');
-                    isValid = false;
-                    showError(this, 'Debe completar este campo');
-                } else {
-                    $input.removeClass('is-invalid');
-                    hideError(this);
-                }
-            });
-
-            if (isValid) {
-                formGenerateNotification.submit();
-            }
-        }
-
-
-        function sendFreightInformation() {
-            console.log("enviado para cambiar de estado");
-        }
-
-
-        // Mostrar mensaje de error
-        function showError(input, message) {
-            let errorSpan = input.nextElementSibling;
-            if (!errorSpan || !errorSpan.classList.contains('invalid-feedback')) {
-                errorSpan = document.createElement('span');
-                errorSpan.classList.add('invalid-feedback');
-                input.after(errorSpan);
-            }
-            errorSpan.textContent = message;
-            errorSpan.style.display = 'block';
-        }
-
-
-        // Ocultar mensaje de error
-        function hideError(input) {
-            let errorSpan = input.nextElementSibling;
-            if (errorSpan && errorSpan.classList.contains('invalid-feedback')) {
-                errorSpan.style.display = 'none';
-            }
-        }
-    </script>
-@endpush
+    }
+</script>

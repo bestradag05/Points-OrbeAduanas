@@ -95,9 +95,9 @@ class FreightController extends Controller
 
     public function generateRouting(Request $request)
     {
-        $this->freightService->generateRoutingOrder($request);
+        $process = $this->freightService->generateRoutingOrder($request);
 
-        return redirect()->route('freight.show', $request->id_freight)->with('success', 'Routing Order generado correctamente.');
+        return redirect()->route('process.show', $process->id)->with('success', 'Routing Order generado correctamente.');
     }
 
 
@@ -114,9 +114,14 @@ class FreightController extends Controller
 
     public function uploadFreightFiles(Request $request, $id)
     {
-        $this->freightService->uploadFreightFiles($request, $id);
+        $process = $this->freightService->uploadFreightFiles($request, $id);
 
-        return redirect()->route('freight.show', $id)->with('success', 'Archivo subido correctamente.');
+        if(Auth::user()->role === 'Operaciones'){
+            return redirect()->route('freight.show', $process->freight->id)->with('success', 'Archivo subido correctamente.');
+        }else{
+            return redirect()->route('process.show', $process->id)->with('success', 'Archivo subido correctamente.');
+        }
+
     }
 
 
@@ -188,7 +193,7 @@ class FreightController extends Controller
             }
         }
 
-        $freight->state = 'En Proceso';
+        $freight->state = 'Enviado';
         $freight->save();
 
         return back()->with('success', 'Flete enviado al área de operaciones.');

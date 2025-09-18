@@ -10,7 +10,7 @@
 
 @stop
 @section('dinamic-content')
-    <x-adminlte-datatable id="table1" :heads="$heads">
+    <x-adminlte-datatable id="table1" :heads="$heads" class="text-sm">
         @foreach ($commercial_quotes as $commercial_quote)
             <tr>
                 <td>{{ $loop->iteration }}</td>
@@ -21,8 +21,8 @@
                 </td>
                  <td class="text-uppercase">{{ implode(', ', $commercial_quote->services_to_quote) }} </td>
                 @if (in_array('Transporte', $commercial_quote->services_to_quote) && count($commercial_quote->services_to_quote) == 1)
-                    <td class="text-uppercase">{{ $commercial_quote->transport->origin }} </td>
-                    <td class="text-uppercase">{{ $commercial_quote->transport->destination }} </td>
+                    <td class="text-uppercase">{!! $commercial_quote->transport->origin ?? '<span class="text-muted">Falta informacion</span>' !!} </td>
+                    <td class="text-uppercase">{!! $commercial_quote->transport->destination ??  '<span class="text-muted">Falta informacion</span>' !!} </td>
                 @else
                     <td class="text-uppercase">{{ $commercial_quote->originState->country->name }} -
                         {{ $commercial_quote->originState->name }}</td>

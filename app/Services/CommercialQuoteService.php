@@ -304,14 +304,12 @@ class CommercialQuoteService
                 if ($customer->id_personal !== Auth::user()->personal->id) {
                     return response()->json(['error' => 'El cliente que intentas registrar está asignado a otro usuario.'], 400);
                 }
-                //Si el cliente existe y es uno de los clientes del usuario autenticado solo actualizamos sus datos
-                if ($customer->document_number === $request->document_number && $customer->id_personal === Auth::user()->personal->id) {
-                   return response()->json(['error' => 'Ya tienes otro cliente con este numero de documento.'], 400);
-                }
+
+                 return response()->json(['error' => 'Ya existe un cliente registrado con ese numero de documento.'], 400);
+
             } else {
                 $customerUpdate = Customer::findOrFail($request->id_customer);
 
-                // Si no existe, se crea uno nuevo
                 $customerUpdate->fill([
                     'document_number' => $request->document_number,
                     'name_businessname' => $request->name_businessname,

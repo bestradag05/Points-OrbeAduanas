@@ -110,17 +110,17 @@ class QuotesSentClientController extends Controller
 
                 if ($quotesSentClient->commercialQuote->freight) {
                     $quotesSentClient->commercialQuote->freight->update([
-                        'state' => 'En Proceso'
+                        'state' => 'Pendiente'
                     ]);  // Agregar el servicio de flete
                 }
                 if ($quotesSentClient->commercialQuote->custom) {
                     $quotesSentClient->commercialQuote->custom->update([
-                        'state' => 'En Proceso'
+                        'state' => 'Pendiente'
                     ]);
                 }
                 if ($quotesSentClient->commercialQuote->transport) {
                     $services[] = $quotesSentClient->commercialQuote->transport->update([
-                        'state' => 'En Proceso'
+                        'state' => 'Pendiente'
                     ]); 
                 }
 

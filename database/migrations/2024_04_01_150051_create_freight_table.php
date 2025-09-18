@@ -28,7 +28,7 @@ return new class extends Migration
             $table->decimal('profit', 8, 2);
 /*             $table->integer('total_additional_points');
             $table->integer('total_additional_points_used'); */
-            $table->enum('state', ['Pendiente', 'Aceptado', 'En Proceso', 'Cerrado'])->default('Pendiente');
+            $table->enum('state', ['Pendiente', 'Aceptado', 'Enviado', 'En Proceso', 'Notificado', 'Cerrado'])->default('Pendiente');
             /* $table->unsignedBigInteger('id_insurance')->nullable(); */
             $table->string('nro_operation')->nullable();
             $table->string('nro_quote_commercial')->nullable();

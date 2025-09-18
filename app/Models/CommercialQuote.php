@@ -169,6 +169,6 @@ class CommercialQuote extends Model
 
     public function processManagement()
     {
-        return $this->hasOne(ProcessManagement::class, 'commercial_quote_id');
+        return $this->hasOne(ProcessManagement::class, 'nro_quote_commercial', 'nro_quote_commercial');
     }
 }

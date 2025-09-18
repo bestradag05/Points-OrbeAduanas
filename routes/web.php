@@ -345,6 +345,9 @@ Route::middleware('auth')->group(function () {
         Route::get('{process}/generate', [ProcessManagementController::class, 'generate'])->name('process.generate');
     });
 
+    Route::get('/step-content/{step}', [ProcessManagementController::class, 'getStepContent'])->name('step.content');
+
+
     /* Packing type */
 
     Route::resource('packing_type', PackingTypeController::class);
@@ -356,6 +359,8 @@ Route::middleware('auth')->group(function () {
     /* Navieras */
 
     Route::resource('shipping_company', ShippingCompanyController::class);
+
+    
 
     /* Reportes */
 

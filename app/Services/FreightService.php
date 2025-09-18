@@ -244,6 +244,7 @@ class FreightService
     {
         $freight = Freight::findOrFail($request->id_freight);
         $commercialQuote = $freight->commercial_quote;
+        $process = $commercialQuote->processManagement;
         $concepts = $freight->concepts;
 
         $freight->update(['wr_loading' => $request->wr_loading]);
@@ -252,7 +253,7 @@ class FreightService
 
         $this->freightDocumentService->storeFreightDocument($freight, $pdf->output(), $filename);
 
-        return compact('freight', 'commercialQuote');
+        return $process;
     }
 
     public function editFreight(string $id)
@@ -311,6 +312,7 @@ class FreightService
     public function uploadFreightFiles($request, $id)
     {
         $freight = Freight::findOrFail($id);
+        $process = $freight->commercial_quote->processManagement;
         // Validar que venga el archivo
         if (!$request->hasFile('file')) {
             return redirect()->route('freight.show', $freight->id)->with('error', 'Hubo un error, el archivo no se pudo cargar');
@@ -321,8 +323,10 @@ class FreightService
         $content = file_get_contents($file);
         $nameForDB = $request->name_file;
         $extension = $file->getClientOriginalExtension();
-
+        
         $this->freightDocumentService->storeFreightDocument($freight, $content, $nameForDB, $extension);
+
+        return $process;
     }
 
 

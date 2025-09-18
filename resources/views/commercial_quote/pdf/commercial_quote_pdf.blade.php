@@ -508,10 +508,12 @@
                     @endforeach
 
                     {{-- Subtotal sin IGV --}}
-                    <tr class="total-service">
-                        <td colspan="2" style="text-align: right">Subtotal:</td>
-                        <td> $ {{ number_format($subtotalWithoutIgv, 2) }}</td>
-                    </tr>
+                    @if($conceptsWithIgv->isNotEmpty())
+                        <tr class="total-service">
+                            <td colspan="2" style="text-align: right">Subtotal:</td>
+                            <td> $ {{ number_format($subtotalWithoutIgv, 2) }}</td>
+                        </tr>
+                    @endif
 
                     {{-- Mostrar los conceptos con IGV --}}
                     @foreach ($conceptsWithIgv as $concept)

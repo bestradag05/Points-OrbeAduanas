@@ -20,6 +20,7 @@
         "spatie/laravel-permission": "^6.3",
         "spatie/pdf-to-text": "^1.52",
         "tymon/jwt-auth": "^2.1",
+        "vildanbina/livewire-wizard": "^2.1",
         "yoeunes/toastr": "^2.3"
     },
     "require-dev": {

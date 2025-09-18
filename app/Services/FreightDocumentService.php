@@ -20,10 +20,7 @@ class FreightDocumentService
             $extension = pathinfo($filename, PATHINFO_EXTENSION);
         }
 
-        // Generar nombre encriptado con extensión
-        $encryptedName = Str::random(40) . '.' . $extension;
-
-        $path = $folder . '/' . $encryptedName;
+        $path = $folder . '/' . $filename .'.'. $extension;
 
         Storage::disk('public')->put($path, $fileContent);
 
