@@ -142,7 +142,19 @@ class ResponseFreightQuotesController extends Controller
         $response = ResponseFreightQuotes::findOrFail($id);
         $compact = $this->freightService->createFreight($response->quote->id);
 
-        return view('freight/register-freight', $compact);
+        //Obtener los conceptos con IGV si es que los tiene
+
+        $conceptsWithIgv = $response->concepts->filter(function($concept) {
+            return $concept->pivot->has_igv === 1;
+        });
+
+        $conceptsWithIgvArray = $conceptsWithIgv->toArray();
+        $conceptsWithIgvArray = array_values($conceptsWithIgvArray);
+        
+        $compact['conceptsWithIgv'] = $conceptsWithIgvArray;
+
+
+        return view('freight/register-freight',  $compact);
     }
 
     public function reject($id)

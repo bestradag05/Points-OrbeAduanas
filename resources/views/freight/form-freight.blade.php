@@ -282,9 +282,9 @@
 
             @if (isset($freight->concepts))
 
-            
-            let concepts = @json($freight->concepts);
-    
+
+                let concepts = @json($freight->concepts);
+
                 concepts.forEach((concept, index) => {
 
                     if (concept.name != "SEGURO") {
@@ -302,6 +302,26 @@
             @endif
 
             calcTotal(TotalConcepts, value_insurance, insurance_sales_value);
+        @else
+
+            @if (isset($conceptsWithIgv))
+
+
+                let conceptsWithIgv = @json($conceptsWithIgv);
+
+                conceptsWithIgv.forEach((concept, index) => {
+
+                    console.log(concept);
+
+                    conceptsArray.push({
+                        'id': concept.id,
+                        'name': concept.name,
+                        'value': formatValue(concept.pivot.unit_cost),
+                        'hasIgv': concept.pivot.has_igv
+                    });
+
+                });
+            @endif
         @endif
 
 
