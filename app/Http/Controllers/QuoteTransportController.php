@@ -31,11 +31,11 @@ class QuoteTransportController extends Controller
      */
     public function index()
     {
-        
+
         $quotes = QuoteTransport::with('commercial_quote')
-        /* ->whereNot('state', 'Pendiente') */
-        ->get();
-       
+            /* ->whereNot('state', 'Pendiente') */
+            ->get();
+
 
         $heads = [
             '#',
@@ -331,7 +331,7 @@ class QuoteTransportController extends Controller
      */
     public function edit(string $id)
     {
-        
+
         $quote = QuoteTransport::findOrFail($id);
         $showModal = false;
 
@@ -379,7 +379,7 @@ class QuoteTransportController extends Controller
         // 1) Decodificar conceptos enviados desde el modal
         $concepts = json_decode(
             $request->input('conceptsTransportModal', '[]'),
-            true      
+            true
         );
 
         $concepts[] = [
@@ -442,17 +442,17 @@ class QuoteTransportController extends Controller
             'justification' => 'required|string',
         ]);
 
+        $justification = $request->input('justification');
+
         $response = ResponseTransportQuote::findOrFail($request->response_id);
 
-        // 1. Marcar la respuesta seleccionada como Aceptado
         $response->update([
             'status' => 'Aceptado',
         ]);
 
-        // 2. Marcar todas las demás como Rechazada
-        ResponseTransportQuote::where('quote_transport_id', $response->quote_transport_id)
-            ->where('id', '!=', $response->id)
-            ->update(['status' => 'Rechazada']);
+        if ($justification) {
+            $response->registerJustification($response, $response->status, $justification);
+        }
 
         $quote = QuoteTransport::findOrFail($response->quote_transport_id);
 

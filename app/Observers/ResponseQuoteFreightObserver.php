@@ -22,12 +22,7 @@ class ResponseQuoteFreightObserver
     public function updated(ResponseFreightQuotes $responseFreightQuotes): void
     {
         //
-
-        if ($responseFreightQuotes->isDirty('status')) {
-            //Verificamos si viene la justificacion por parte del usuario y si no agregamos el mensaje por defecto.
-            $justification = Request::input('justification', 'Cambio de estado de la respuesta');
-            $responseFreightQuotes->registerTrace($responseFreightQuotes->status, $justification);
-        }
+        $responseFreightQuotes->registerTrace('Actualizado', 'Respuesta de cotizacion de flete actualizada');
     }
 
     /**
@@ -35,7 +30,7 @@ class ResponseQuoteFreightObserver
      */
     public function deleted(ResponseFreightQuotes $responseFreightQuotes): void
     {
-       $responseFreightQuotes->registerTrace('deleted', 'respuesta de transporte eliminada');
+       $responseFreightQuotes->registerTrace('Eliminado', 'respuesta de transporte eliminada');
     }
 
     /**

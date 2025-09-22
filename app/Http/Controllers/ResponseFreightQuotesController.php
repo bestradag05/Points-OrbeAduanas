@@ -130,9 +130,15 @@ class ResponseFreightQuotesController extends Controller
 
     public function accept(Request $request, $id)
     {
+        $justification = $request->input('justification');
+
         $response = ResponseFreightQuotes::findOrFail($id);
         $response->status = 'Aceptado';
         $response->save();
+
+         if ($justification) {
+            $response->registerJustification($response, $response->status, $justification);
+        }
 
         return redirect()->back()->with('success', 'Respuesta aceptada correctamente.');
     }
@@ -147,11 +153,6 @@ class ResponseFreightQuotesController extends Controller
         $conceptsWithIgv = $response->concepts->filter(function($concept) {
             return $concept->pivot->has_igv === 1;
         });
-
-        $conceptsWithIgvArray = $conceptsWithIgv->toArray();
-        $conceptsWithIgvArray = array_values($conceptsWithIgvArray);
-        
-        $compact['conceptsWithIgv'] = $conceptsWithIgvArray;
 
 
         return view('freight/register-freight',  $compact);

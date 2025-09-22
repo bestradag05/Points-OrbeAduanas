@@ -37,7 +37,7 @@ class SellerCommissionController extends Controller
         // Obtener el personal autenticado
         $personal = auth()->user()->personal;
 
-        $commissionsGroup = CommissionGroups::whereHas('commercialQuote', function ($query) use ($personal) {
+        $commissionsGroup = CommissionGroups::whereHas('processManagement.commercialQuote', function ($query) use ($personal) {
             $query->where('id_personal', $personal->id);
         })->get();
 
@@ -57,7 +57,7 @@ class SellerCommissionController extends Controller
     }
 
 
-    public function getDetalCommissionsSeeller(String $id)
+    public function getDetailCommissionsSeeller(String $id)
     {
 
         // Obtener el grupo y sus comisiones respectivas
@@ -86,9 +86,9 @@ class SellerCommissionController extends Controller
         ];
 
         // Validamos las condiciones para cada servicio
-        /* if ($freightCommissions->isNotEmpty()) {
+        if ($freightCommissions->isNotEmpty()) {
             $canGenerateProfit['freight'] = $this->profitValidationService->validateAllConditions($freightCommissions->first());
-        } */
+        }
         if ($localCommissions->isNotEmpty()) {
 
             $localCommissions->each(function ($commission) use ($localCommissions) {

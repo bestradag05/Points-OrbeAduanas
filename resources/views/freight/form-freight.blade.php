@@ -153,21 +153,44 @@
 
         </div>
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th style="width: 10px">#</th>
-                    <th>Concepto</th>
-                    <th>Valor del concepto</th>
-                    <th>IGV</th>
-                    <th>x</th>
-                </tr>
-            </thead>
-            <tbody id="tbodyFlete">
+        <div class="col-12 my-3">
+            <h5 class="text-center text-indigo mb-3">Conceptos sin IGV</h5>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width: 10px">#</th>
+                        <th>Concepto</th>
+                        <th>Valor del concepto</th>
+                        <th>IGV</th>
+                        <th>x</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyFlete">
 
 
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-12 my-3">
+            <h5 class="text-center text-indigo mb-3">Conceptos sin IGV</h5>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width: 10px">#</th>
+                        <th>Concepto</th>
+                        <th>Valor del concepto</th>
+                        <th>IGV</th>
+                        <th>x</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyFleteWithIgv">
+
+
+                </tbody>
+            </table>
+        </div>
+
 
     </div>
 
@@ -302,26 +325,6 @@
             @endif
 
             calcTotal(TotalConcepts, value_insurance, insurance_sales_value);
-        @else
-
-            @if (isset($conceptsWithIgv))
-
-
-                let conceptsWithIgv = @json($conceptsWithIgv);
-
-                conceptsWithIgv.forEach((concept, index) => {
-
-                    console.log(concept);
-
-                    conceptsArray.push({
-                        'id': concept.id,
-                        'name': concept.name,
-                        'value': formatValue(concept.pivot.unit_cost),
-                        'hasIgv': concept.pivot.has_igv
-                    });
-
-                });
-            @endif
         @endif
 
 
@@ -521,18 +524,70 @@
 
 
 
+        function renderConceptRow(item, tbody, contador) {
+            contador++; // Incrementar el contador en cada iteración
+            // Crear una nueva fila
+            let fila = tbody.insertRow();
+
+            // Insertar el número de iteración en la primera celda de la fila
+            let celdaNumero = fila.insertCell(0);
+            celdaNumero.textContent = contador;
+
+            // Insertar la clave en la segunda celda de la fila
+            let celdaClave = fila.insertCell(1);
+            celdaClave.textContent = item.name;
+
+            // Insertar el valor en la tercera celda de la fila
+            let celdaValor = fila.insertCell(2);
+            celdaValor.textContent = item.value;
+
+            let celdaHasIgv = fila.insertCell(3);
+            if (item.hasIgv) {
+
+                fila.style.backgroundColor = '#f8d7da';
+            }
+            celdaHasIgv.textContent = item.hasIgv ? 'Si' : 'No';
+
+
+
+            // Insertar un botón para eliminar la fila en la cuarta celda de la fila
+            let celdaEliminar = fila.insertCell(4);
+            let botonEliminar = document.createElement('a');
+            botonEliminar.href = '#';
+            botonEliminar.innerHTML = '<p class="text-danger">X</p>';
+            botonEliminar.addEventListener('click', function(event) {
+                event.preventDefault();
+                // Eliminar la fila correspondiente al hacer clic en el botón
+                let fila = this.parentNode.parentNode;
+                let indice = fila.rowIndex -
+                    1; // Restar 1 porque el índice de las filas en tbody comienza en 0
+                conceptsArray.splice(indice, 1); // Eliminar el elemento en el índice correspondiente
+                updateTable(conceptsArray);
+            });
+            celdaEliminar.appendChild(botonEliminar);
+
+            TotalConcepts += parseFloat(item.value);
+        }
 
         function updateTable(conceptsArray) {
 
-            let tbodyRouting = $(`#formConceptsFlete`).find('tbody')[0];
+            let tbodyFreight = $(`#formConceptsFlete`).find('tbody#tbodyFlete')[0];
+            let tbodyFreightWithIgv = $(`#formConceptsFlete`).find('tbody#tbodyFleteWithIgv')[0];
 
-            if (tbodyRouting) {
+            if (tbodyFreight) {
 
-                tbodyRouting.innerHTML = '';
+                tbodyFreight.innerHTML = '';
             }
+
+            if (tbodyFreightWithIgv) {
+
+                tbodyFreightWithIgv.innerHTML = '';
+            }
+
             TotalConcepts = 0;
 
             let contador = 0;
+            let contadorWithIgv = 0;
 
             for (let clave in conceptsArray) {
 
@@ -540,48 +595,14 @@
                 let item = conceptsArray[clave];
 
                 if (conceptsArray.hasOwnProperty(clave)) {
-                    contador++; // Incrementar el contador en cada iteración
-                    // Crear una nueva fila
-                    let fila = tbodyRouting.insertRow();
+                    if (!item.hasIgv) {
 
-                    // Insertar el número de iteración en la primera celda de la fila
-                    let celdaNumero = fila.insertCell(0);
-                    celdaNumero.textContent = contador;
+                        renderConceptRow(item, tbodyFreight, contador);
 
-                    // Insertar la clave en la segunda celda de la fila
-                    let celdaClave = fila.insertCell(1);
-                    celdaClave.textContent = item.name;
-
-                    // Insertar el valor en la tercera celda de la fila
-                    let celdaValor = fila.insertCell(2);
-                    celdaValor.textContent = item.value;
-
-                    let celdaHasIgv = fila.insertCell(3);
-                    if (item.hasIgv) {
-
-                        fila.style.backgroundColor = '#f8d7da';
+                    }else{
+                        renderConceptRow(item, tbodyFreightWithIgv, contadorWithIgv);
                     }
-                    celdaHasIgv.textContent = item.hasIgv ? 'Si' : 'No';
 
-
-
-                    // Insertar un botón para eliminar la fila en la cuarta celda de la fila
-                    let celdaEliminar = fila.insertCell(4);
-                    let botonEliminar = document.createElement('a');
-                    botonEliminar.href = '#';
-                    botonEliminar.innerHTML = '<p class="text-danger">X</p>';
-                    botonEliminar.addEventListener('click', function(event) {
-                        event.preventDefault();
-                        // Eliminar la fila correspondiente al hacer clic en el botón
-                        let fila = this.parentNode.parentNode;
-                        let indice = fila.rowIndex -
-                            1; // Restar 1 porque el índice de las filas en tbody comienza en 0
-                        conceptsArray.splice(indice, 1); // Eliminar el elemento en el índice correspondiente
-                        updateTable(conceptsArray);
-                    });
-                    celdaEliminar.appendChild(botonEliminar);
-
-                    TotalConcepts += parseFloat(item.value);
                 }
             }
 

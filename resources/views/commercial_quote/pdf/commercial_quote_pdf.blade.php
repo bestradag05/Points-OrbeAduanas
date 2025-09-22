@@ -519,7 +519,7 @@
                     @foreach ($conceptsWithIgv as $concept)
                         <tr>
                             <td>{{ $concept->name }}</td>
-                            <td id="observation"> - </td>
+                            <td id="observation" style="color: #234195"> Incluye IGV </td>
                             <td> $ {{ number_format($concept->pivot->concept_value, 2) }}</td>
                         </tr>
                     @endforeach

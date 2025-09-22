@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasJustifications;
 use App\Traits\HasTrace;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,6 +11,7 @@ class ResponseFreightQuotes extends Model
 {
     use HasFactory;
     use HasTrace;
+    use HasJustifications;
 
     protected $table = 'response_freight_quotes';
 

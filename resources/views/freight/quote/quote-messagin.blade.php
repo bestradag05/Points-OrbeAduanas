@@ -1429,6 +1429,40 @@
         };
 
 
+        function renderConceptRow(item, index, tbody, contador) {
+
+            contador++; // Solo contar los conceptos sin IGV
+            let fila = tbody.insertRow();
+            if(item.hasIgv){
+                fila.style.backgroundColor = '#f8d7da';
+            }
+
+            // Insertar los datos en las celdas
+            fila.insertCell(0).textContent = contador;
+            fila.insertCell(1).textContent = item.concept.text;
+            fila.insertCell(2).textContent = item.currency.text + " " + item.unit_cost;
+            fila.insertCell(3).textContent = item.fixed_miltiplyable_cost;
+            fila.insertCell(4).textContent = item.observations;
+            fila.insertCell(5).textContent = "$ " + parseFloat(item.final_cost).toFixed(2);
+
+            // Crear el botón de eliminar
+            let celdaEliminar = fila.insertCell(6);
+            let botonEliminar = document.createElement('a');
+            botonEliminar.href = '#';
+            botonEliminar.innerHTML = '<p class="text-danger">X</p>';
+            botonEliminar.addEventListener('click', function() {
+                // Eliminar el concepto
+                conceptsResponseFreightArray.splice(index, 1);
+                updateTableRespnoseFreight(conceptsResponseFreightArray); // Re-renderizar tabla
+            });
+            celdaEliminar.appendChild(botonEliminar);
+
+            // Sumar al total
+            TotalResponseConcepts += parseFloat(item.final_cost);
+
+        }
+
+
         function updateTableRespnoseFreight(conceptsResponseFreightArray) {
             let tbodyFreight = $(`#divResponseFreight`).find('tbody#tbodyQuoteResponseFreight')[0];
             let tbodyFreightWithIgv = $(`#divResponseFreight`).find('tbody#tbodyQuoteResponseFreightWithIgv')[0];
@@ -1450,67 +1484,13 @@
                 // 1. Primero renderizamos los conceptos SIN IGV
                 conceptsResponseFreightArray.forEach((item, index) => {
                     if (!item.hasIgv) {
-                        contador++; // Solo contar los conceptos sin IGV
-                        let fila = tbodyFreight.insertRow();
-
-                        // Insertar los datos en las celdas
-                        fila.insertCell(0).textContent = contador;
-                        fila.insertCell(1).textContent = item.concept.text;
-                        fila.insertCell(2).textContent = item.currency.text + " " + item.unit_cost;
-                        fila.insertCell(3).textContent = item.fixed_miltiplyable_cost;
-                        fila.insertCell(4).textContent = item.observations;
-                        fila.insertCell(5).textContent = "$ " + parseFloat(item.final_cost).toFixed(2);
-
-                        // Crear el botón de eliminar
-                        let celdaEliminar = fila.insertCell(6);
-                        let botonEliminar = document.createElement('a');
-                        botonEliminar.href = '#';
-                        botonEliminar.innerHTML = '<p class="text-danger">X</p>';
-                        botonEliminar.addEventListener('click', function() {
-                            // Eliminar el concepto
-                            conceptsResponseFreightArray.splice(index, 1);
-                            updateTableRespnoseFreight(conceptsResponseFreightArray); // Re-renderizar tabla
-                        });
-                        celdaEliminar.appendChild(botonEliminar);
-
-                        // Sumar al total
-                        TotalResponseConcepts += parseFloat(item.final_cost);
+                        renderConceptRow(item, index, tbodyFreight, contador);
+                    }else{
+                        renderConceptRow(item, index, tbodyFreightWithIgv, contadorWithIgv);
                     }
                 });
 
-                // 2. Luego renderizamos los conceptos CON IGV
-                conceptsResponseFreightArray.forEach((item, index) => {
-                    if (item.hasIgv) {
-                        contadorWithIgv++; // Contar solo los conceptos con IGV
-                        let fila = tbodyFreightWithIgv.insertRow();
-
-                        // Establecer color de fila si tiene IGV
-                        fila.style.backgroundColor = '#f8d7da'; // Color de fondo para filas con IGV
-
-                        // Insertar los datos en las celdas
-                        fila.insertCell(0).textContent = contadorWithIgv;
-                        fila.insertCell(1).textContent = item.concept.text;
-                        fila.insertCell(2).textContent = item.currency.text + " " + item.unit_cost;
-                        fila.insertCell(3).textContent = item.fixed_miltiplyable_cost;
-                        fila.insertCell(4).textContent = item.observations;
-                        fila.insertCell(5).textContent = "$ " + parseFloat(item.final_cost).toFixed(2);
-
-                        // Crear el botón de eliminar
-                        let celdaEliminar = fila.insertCell(6);
-                        let botonEliminar = document.createElement('a');
-                        botonEliminar.href = '#';
-                        botonEliminar.innerHTML = '<p class="text-danger">X</p>';
-                        botonEliminar.addEventListener('click', function() {
-                            // Eliminar el concepto
-                            conceptsResponseFreightArray.splice(index, 1);
-                            updateTableRespnoseFreight(conceptsResponseFreightArray); // Re-renderizar tabla
-                        });
-                        celdaEliminar.appendChild(botonEliminar);
-
-                        // Sumar al total
-                        TotalResponseConcepts += parseFloat(item.final_cost);
-                    }
-                });
+                
             }
 
             // 3. Luego renderizamos las comisiones fijas SOLO para la tabla sin IGV

@@ -14,10 +14,7 @@ class ResponseQuoteTransportObserver
 
     public function updated(ResponseTransportQuote $response)
     {
-        if ($response->isDirty('status')) {
-            $justification = Request::input('justification', 'Cambio de estado de la respuesta');
-            $response->registerTrace($response->status, $justification);
-        }
+            $response->registerTrace('Actualizado','Respuesta de cotización de transporte actualizado');
     }
 
     public function deleted(ResponseTransportQuote $response)

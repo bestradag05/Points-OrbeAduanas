@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasJustifications;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 

@@ -3,6 +3,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasJustifications;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\HasTrace;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ResponseTransportQuote extends Model
 {
     use HasTrace;
+    use HasJustifications;
 
     protected $fillable = [
         'quote_transport_id',
