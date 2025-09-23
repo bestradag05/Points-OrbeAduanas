@@ -85,10 +85,15 @@ class SellerCommissionController extends Controller
             'local' => false,
         ];
 
+        $serviceAdjustment = [];
+
         // Validamos las condiciones para cada servicio
         if ($freightCommissions->isNotEmpty()) {
             $canGenerateProfit['freight'] = $this->profitValidationService->validateAllConditions($freightCommissions->first());
+            $serviceAdjustment['freight'] = $this->profitValidationService->checkMinUtility($freightCommissions->first());
         }
+
+
         if ($localCommissions->isNotEmpty()) {
 
             $localCommissions->each(function ($commission) use ($localCommissions) {
@@ -106,7 +111,8 @@ class SellerCommissionController extends Controller
             'commissionsGroup',
             'canGenerateProfit',
             'freightCommissions',
-            'localCommissions'
+            'localCommissions',
+            'serviceAdjustment'
         ));
     }
 
@@ -225,7 +231,7 @@ class SellerCommissionController extends Controller
             $totalAdditionalPoints += $commission->additional_points;
 
             // Acumulamos los profits y las comisiones generadas
-            $totalProfit += $commission->distributed_profit; // Ganancia bruta
+            $totalProfit += $commission->seller_profit; // Ganancia bruta
             $totalCommission += $commission->generated_commission; // Comisión generada
         }
 
@@ -239,11 +245,13 @@ class SellerCommissionController extends Controller
         ]);
     }
 
-    public function generateProfit(String $commissionType, String $commissionsGroup)
+    public function generateProfit(Request $request)
     {
-        if ($commissionType === 'local') {
+        $adjustmentService = json_decode($request->input('adjustmentService'));
+
+        if ($request->commissionType === 'local') {
             $localCommissions = SellersCommission::whereIn('commissionable_type', ['App\Models\Custom', 'App\Models\Transport'])
-                ->where('commission_group_id', $commissionsGroup)  // Aseguramos que sea el grupo correcto
+                ->where('commission_group_id', $request->commissionsGroup)  // Aseguramos que sea el grupo correcto
                 ->get();
 
 
@@ -258,32 +266,54 @@ class SellerCommissionController extends Controller
 
                 // Asignar el profit distribuido a la comisión
                 $commission->update([
-                    'distributed_profit' => $commissionProfit,  // Asignar el profit proporcional
+                    'seller_profit' => $commissionProfit,
+                    'company_profit' => $commissionProfit,
                     'remaining_balance' => 0,
                 ]);
             });
 
-            $this->recalcCommisionGroup($commissionsGroup);
-            return redirect()->back()->with('success', "Profit generado correctamente para este servicio.");
+            $this->recalcCommisionGroup($request->commissionsGroup);
+            return redirect()->back()->with('success', 'Profit generado correctamente para este servicio.');
         }
 
 
-        if ($commissionType == 'freight') {
+        if ($request->commissionType == 'freight') {
 
             $freightCommission = SellersCommission::where('commissionable_type', 'App\Models\Freight')
-                ->where('commission_group_id', $commissionsGroup) // Aseguramos que sea el grupo correcto
+                ->where('commission_group_id', $request->commissionsGroup) // Aseguramos que sea el grupo correcto
                 ->first();
 
-            $sellerProfit = $freightCommission->remaining_balance / 2;
-            $companyProfit = $freightCommission->remaining_balance / 2;
 
-            
-            $freightCommission->update([
-                'distributed_profit' => $sellerProfit,  // Asignar los puntos calculados
-                'remaining_balance' => 0,
-            ]);
 
-            $this->recalcCommisionGroup($commissionsGroup);
+            if ($adjustmentService->isAdjusted) {
+                //Tenemos que actualizar los valores de las comisiones si se ha echo un reajuste
+                $newUtility = $freightCommission->utility + $adjustmentService->discountForUtility;
+
+
+                $freightCommission->update([
+                    'utility' => $newUtility,
+                    'gross_profit' => $adjustmentService->remaining_balance,
+                    'seller_profit' => $adjustmentService->adjustedProfit,
+                    'company_profit' => $adjustmentService->adjustedProfit,
+                    'remaining_balance' => 0,
+                    'is_adjusted' => $adjustmentService->isAdjusted
+                ]);
+            } else {
+
+                $sellerProfit = $freightCommission->remaining_balance / 2;
+                $companyProfit = $freightCommission->remaining_balance / 2;
+
+
+                $freightCommission->update([
+                    'seller_profit' => $sellerProfit,
+                    'company_profit' => $companyProfit,
+                    'remaining_balance' => 0,
+                ]);
+            }
+
+
+
+            $this->recalcCommisionGroup($request->commissionsGroup);
 
             return redirect()->back()->with('success', 'Profit generado correctamente para este servicio.');
         }

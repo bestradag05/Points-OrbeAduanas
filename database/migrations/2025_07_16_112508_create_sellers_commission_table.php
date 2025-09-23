@@ -23,9 +23,11 @@ return new class extends Migration
             $table->decimal('gross_profit', 10, 2); 
             $table->integer('pure_points'); 
             $table->integer('additional_points')->nullable(); 
-            $table->decimal('distributed_profit', 10, 2)->nullable(); 
+            $table->decimal('seller_profit', 10, 2)->nullable(); 
+            $table->decimal('company_profit', 10, 2)->nullable(); 
             $table->decimal('remaining_balance', 10, 2)->nullable(); 
             $table->decimal('generated_commission', 10, 2)->nullable(); 
+            $table->boolean('is_adjusted')->default(0); 
             $table->timestamps();
 
             $table->foreign('commission_group_id')->references('id')->on('commission_groups')->onDelete('cascade');

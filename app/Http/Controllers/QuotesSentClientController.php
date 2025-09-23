@@ -237,7 +237,7 @@ class QuotesSentClientController extends Controller
                     'gross_profit' => $service->profit,  // Ganancia bruta total
                     'pure_points' => $purePoints,  // Puntos puros generados
                     'additional_points' => 0,  // Puntos adicionales generados
-                    'distributed_profit' => 0,  // Ganancia distribuida
+                    'seller_profit' => 0,  // Ganancia distribuida
                     'remaining_balance' =>  $service->profit,  // Saldo restante para el vendedor
                     'generated_commission' => 10,  // Comisión generada
                 ]);
@@ -259,7 +259,7 @@ class QuotesSentClientController extends Controller
 
                 $totalPurePoints += $sellerCommission->pure_points;
                 $totalAdditionalPoints += $sellerCommission->additional_points;
-                $totalGrossProfit += $sellerCommission->distributed_profit;
+                $totalGrossProfit += $sellerCommission->seller_profit;
                 $totalGeneratedCommission += $sellerCommission->generated_commission;
             }
 

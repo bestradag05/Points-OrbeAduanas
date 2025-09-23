@@ -187,7 +187,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [SellerCommissionController::class, 'getCommissionsSeeller']);
         Route::get('/{commercialQuote}/detail', [SellerCommissionController::class, 'getDetailCommissionsSeeller']);
         Route::get('/generate/points/{commissionType}/{commissionsGroup}', [SellerCommissionController::class, 'generatePointSeller']);
-        Route::get('/generate/profit/{commissionType}/{commissionsGroup}', [SellerCommissionController::class, 'generateProfit']);
+        Route::post('/generate/profit', [SellerCommissionController::class, 'generateProfit']);
     });
 
 

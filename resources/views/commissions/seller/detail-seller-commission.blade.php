@@ -6,7 +6,8 @@
 
 
         <div class="col-12 my-3">
-            <h3 class="text-center text-bold text-indigo">Gestion de comisiones - {{$commissionsGroup->processManagement->commercialQuote->nro_quote_commercial}}</h3>
+            <h3 class="text-center text-bold text-indigo">Gestion de comisiones -
+                {{ $commissionsGroup->processManagement->commercialQuote->nro_quote_commercial }}</h3>
         </div>
 
         <div class="col-12 row">
@@ -126,7 +127,7 @@
                                 <td>{{ $commission->additional_points }}</td>
                                 <td>
                                     <div class="custom-badge status-info">
-                                        ${{ $commission->distributed_profit }}
+                                        ${{ $commission->seller_profit }}
                                     </div>
                                 </td>
                                 <td>${{ $commission->remaining_balance }}</td>
@@ -192,7 +193,7 @@
                                 <td>{{ $commission->additional_points }}</td>
                                 <td>
                                     <div class="custom-badge status-info">
-                                        ${{ $commission->distributed_profit }}
+                                        ${{ $commission->seller_profit }}
                                     </div>
                                 </td>
                                 <td>${{ $commission->remaining_balance }}</td>
@@ -217,7 +218,7 @@
                             <td>${{ number_format($localCommissions->sum('gross_profit'), 2) }}</td>
                             <td>{{ $localCommissions->sum('pure_points') }}</td>
                             <td>{{ $localCommissions->sum('additional_points') }}</td>
-                            <td class="text-center">${{ number_format($localCommissions->sum('distributed_profit'), 2) }}
+                            <td class="text-center">${{ number_format($localCommissions->sum('seller_profit'), 2) }}
                             </td>
                             <td>${{ number_format($localCommissions->sum('remaining_balance'), 2) }}</td>
                             <td class="text-center text-success">
@@ -277,7 +278,7 @@
                                 <td>{{ $commission->additional_points }}</td>
                                 <td>
                                     <div class="custom-badge status-info">
-                                        ${{ $commission->distributed_profit }}
+                                        ${{ $commission->seller_profit }}
                                     </div>
                                 </td>
                                 <td>${{ $commission->remaining_balance }}</td>
@@ -337,7 +338,7 @@
                                 <td>{{ $commission->additional_points }}</td>
                                 <td>
                                     <div class="custom-badge status-info">
-                                        ${{ $commission->distributed_profit }}
+                                        ${{ $commission->seller_profit }}
                                     </div>
                                 </td>
                                 <td>${{ $commission->remaining_balance }}</td>
@@ -365,10 +366,41 @@
 
     </div>
 
+
+    <div class="modal fade" id="profitModal" tabindex="-1" role="dialog" aria-labelledby="profitModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="profitModalLabel">Confirmación de Generación de Profit</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalMessage"></p> <!-- Mensaje personalizado que se actualizará dinámicamente -->
+                    <form id="profitForm" method="POST" action="/commissions/seller/generate/profit" class="form-inline">
+                        @csrf <!-- Si usas Laravel, el token CSRF es necesario para solicitudes POST -->
+                        <input type="hidden" id="commissionTypeInput" name="commissionType" value="">
+                        <input type="hidden" id="commissionsGroupInput" name="commissionsGroup" value="">
+                        <input type="hidden" id="adjustmentService" name="adjustmentService" value="">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="submitProfitForm">Generar Profit</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 @stop
 
 @push('scripts')
     <script>
+        let serviceAdjustment = @json($serviceAdjustment);
+
         // Función para mostrar la alerta de confirmación antes de generar los puntos
         function confirmPointsGeneration(remainingBalance, commissionType) {
             // Calcular los puntos a generar
@@ -408,25 +440,43 @@
 
 
         function confirmProfitGeneration(profit, commissionType) {
+            // Obtener el servicio de ajuste según el tipo de comisión
+            let adjustmentService = serviceAdjustment[commissionType];
+
             // Calcular los puntos a generar
-            const sellerProfit = profit / 2;
+            let sellerProfit = profit / 2;
+
+            if (adjustmentService && adjustmentService.isAdjusted) {
+                sellerProfit = adjustmentService.adjustedProfit; // Usamos el adjustedProfit cuando hay un ajuste
+            }
+
             let commissionsGroup = @json($commissionsGroup->id);
 
-            // Mostrar la alerta de SweetAlert
-            Swal.fire({
-                title: '¿Estás seguro?',
-                html: `Estimado vendedor usted es candidado para obtener un profit del 50% de la ganancia, el monto que obtendra sera <strong class="text-indigo">$${sellerProfit}</strong> y el otro 50% sera para la empresa, ¿Esta de acuerdo?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí, generar profit',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href =
-                        `/commissions/seller/generate/profit/${commissionType}/${commissionsGroup}`;
-                }
+            // Si se realizó un ajuste, mostrar un mensaje personalizado en el modal
+            let alertMessage =
+                `Usted es candidato para obtener un profit del 50% de la ganancia, el monto que obtendrá será <strong class="text-indigo">$${sellerProfit}</strong> y el otro 50% será para la empresa, ¿Está de acuerdo?`;
+
+            if (adjustmentService && adjustmentService.isAdjusted) {
+                alertMessage = `
+        <p>Para cumplir con la utilidad mínima de 250, se descontará <strong class="text-red">$${adjustmentService.discountForUtility}</strong> de su ganancia, quedando un profit final de <strong class="text-indigo">$${adjustmentService.remaining_balance}</strong>.</p>
+        <p>${alertMessage}</p>
+        `;
+            }
+
+            // Actualizar el mensaje en el modal
+            document.getElementById('modalMessage').innerHTML = alertMessage;
+
+            // Rellenar los valores ocultos del formulario en el modal
+            document.getElementById('commissionTypeInput').value = commissionType;
+            document.getElementById('commissionsGroupInput').value = commissionsGroup;
+            document.getElementById('adjustmentService').value = JSON.stringify(adjustmentService);
+            // Mostrar el modal de confirmación
+            $('#profitModal').modal('show');
+
+            // Manejar el envío del formulario
+            document.getElementById('submitProfitForm').addEventListener('click', function() {
+                // Enviar el formulario
+                document.getElementById('profitForm').submit();
             });
         }
     </script>

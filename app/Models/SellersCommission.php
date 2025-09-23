@@ -23,9 +23,11 @@ class SellersCommission extends Model
         'gross_profit',
         'pure_points',
         'additional_points',
-        'distributed_profit',
+        'seller_profit',
+        'company_profit',
         'remaining_balance',
-        'generated_commission'
+        'generated_commission',
+        'is_adjusted'
     ];
 
     // Relación con el modelo `Personal`

@@ -13,30 +13,51 @@ class ProfitValidationService
     public function checkMinUtility($service)
     {
 
-        $requiredUtility = 250;
-        $requiredProfit = 200; // La ganancia mínima que debe existir
+        $requiredUtility = 250; // Utilidad mínima
 
-
+        // Verificar si la utilidad actual es suficiente
         if ($service->utility < $requiredUtility) {
+            // Calcular cuánto falta para alcanzar la utilidad mínima
+            $requiredBalance = $requiredUtility - $service->utility;
 
-            $remainingBalance = $service->remaining_balance;
-            $requiredBalanceToReachUtility = $requiredUtility - $service->utility;
-
-            // Verificamos si la ganancia es suficiente para cubrir la diferencia entre la utilidad y la requerida
-            if ($remainingBalance >= $requiredBalanceToReachUtility) {
-                // Calculamos cuánto quedaría de ganancia después de mover la cantidad necesaria a la utilidad
-                $remainingBalanceAfterAdjustment = $remainingBalance - $requiredBalanceToReachUtility;
-
-                // Verificamos que, después del ajuste, la ganancia siga cumpliendo con el mínimo de 200
+            // Verificar si el vendedor tiene suficiente saldo restante para cubrir la diferencia
+            if ($service->remaining_balance >= $requiredBalance) {
+                // Calcular la ganancia ajustada después de cubrir la diferencia
+                $remainingBalanceAfterAdjustment = $service->remaining_balance - $requiredBalance;
                 if ($this->checkMinRemainingProfit($remainingBalanceAfterAdjustment)) {
-                    return true;
-                } else {
-                    return false;
+
+                    $adjustedSellerProfit = $remainingBalanceAfterAdjustment / 2; // Dividir entre 2
+
+                    // Retornar tanto el monto descontado como el nuevo profit ajustado
+                    return [
+                        'checkCondition' => true,
+                        'adjustedProfit' => $adjustedSellerProfit,
+                        'remaining_balance' => $remainingBalanceAfterAdjustment,
+                        'discountForUtility' => $requiredBalance,
+                        'isAdjusted' => true,
+                    ];
                 }
             }
+        } else {
+
+            // Si no es necesario hacer ajustes, solo retornar la ganancia dividida entre 2
+            return [
+                'checkCondition' => true,
+                'adjustedProfit' => $service->remaining_balance / 2,
+                'remaining_balance' => $service->remaining_balance,
+                'discountForUtility' => 0,
+                'isAdjusted' => false,
+            ];
         }
 
-        return $service->utility >= $requiredUtility;  
+        // Si no es necesario hacer ajustes, solo retornar la ganancia dividida entre 2
+        return [
+            'checkCondition' => false,
+            'adjustedProfit' => $service->remaining_balance / 2,
+            'remaining_balance' => $service->remaining_balance,
+            'discountForUtility' => 0,
+            'isAdjusted' => false,
+        ];
     }
 
     /**
@@ -140,8 +161,11 @@ class ProfitValidationService
         }
 
         if ($service->first()->commissionable_type === "App\Models\Freight") {
+
+            $utilityCheck = $this->checkMinUtility($service);
+
             $conditions = [
-                $this->checkMinUtility($service),
+                $utilityCheck['checkCondition'],
                 $minPoints,
                 $this->checkMinRemainingProfit($service->remaining_balance)
             ];
@@ -152,7 +176,6 @@ class ProfitValidationService
                 $this->checkMinRemainingProfit($totalRemainingBalance)
             ];
         }
-
 
         // Si alguna condición no se cumple, retorna false
         return !in_array(false, $conditions);
