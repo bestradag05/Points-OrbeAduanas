@@ -375,12 +375,14 @@
                     <div class="col-8 col-lg-6">
                         <h5 class="text-indigo text-center"> <i class="fas fa-file"></i> Lista de archivos</h5>
                     </div>
+                    @if ($quote->state === 'Pendiente' && auth()->user()->hasRole('Asesor Comercial'))
                     <div class="col-6 align-items-center ">
                         <button class="btn btn-indigo btn-sm" data-toggle="modal"
                             data-target="#modalQuoteTransportDocuments">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
+                     @endif
                 </div>
                 <table id="table-file-transport" class="table">
                     <tbody>
@@ -420,14 +422,14 @@
             <div class="text-center mb-4">
                 <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
                 <!-- Botón para abrir el modal -->
-                {{--  @role('Trasporte') --}}
+                 @role('Trasporte')
                 @if (!$quote->response->contains('status', 'Aceptado'))
                     <button type="button" class="btn btn-indigo" data-toggle="modal"
                         data-target="#modalCotizarTransporte">
                         <i class="fas fa-plus"></i>
                     </button>
                 @endif
-                {{-- @endrole --}}
+                @endrole
             </div>
             <table class="table table-bordered table-hover table-sm text-sm my-4">
                 <thead class="thead-dark">
@@ -472,16 +474,16 @@
                                     @if ($response->status === 'Rechazada')
                                         <span class="text-muted">Rechazada</span>
                                     @elseif ($response->status === 'Aceptado')
-                                        {{-- @role('Asesor Comercial') --}}
+                                        @role('Asesor Comercial')
                                         <button class="btn btn-danger btn-sm" data-toggle="modal"
                                             data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
                                             Rechazar
                                         </button>
-                                        {{-- @endrole --}}
+                                        @endrole
                                     @elseif ($quote->response->contains('status', 'Aceptado'))
                                         <span class="text-muted">Sin acciones</span>
                                     @else
-                                        {{-- @role('Asesor Comercial') --}}
+                                        @role('Asesor Comercial')
                                         <button class="btn btn-success btn-sm" data-toggle="modal"
                                             data-target="#quote-transport" data-response-id="{{ $response->id }}"
                                             data-response-nro="{{ $response->nro_response }}">
@@ -491,7 +493,7 @@
                                             data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
                                             Rechazar
                                         </button>
-                                        {{-- @endrole --}}
+                                        @endrole
                                     @endif
                                 @endif
                                 <button type="button" class="btn btn-sm btn-primary btn-pdf-transport" title="Ver PDF"

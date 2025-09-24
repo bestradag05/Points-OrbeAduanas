@@ -11,7 +11,7 @@
                 <div class="col-8 col-lg-6">
                     <h5 class="text-indigo text-center"> <i class="fas fa-file-alt mx-2"></i>Detalle de carga</h5>
                 </div>
-                {{--  @role('pricing') --}}
+                 @role('pricing')
                 <div class="col-4 col-lg-6">
                     <button onclick="copieHtmlDetailQuote()" class="btn btn-sm btn-secondary">
                         <i class="fas fa-copy"></i>
@@ -20,7 +20,7 @@
                         <i class="fas fa-download"></i>
                     </button>
                 </div>
-                {{-- @endrole --}}
+                @endrole
             </div>
 
 
@@ -309,14 +309,14 @@
                             <h5 class="text-indigo text-center"> <i class="fas fa-file"></i> Lista de archivos</h5>
                         </div>
                         {{-- !$quote->responses->contains(fn($response) => $response->status === 'Aceptado') --}}
-                       {{--  @if ($quote->state === 'Pendiente' && auth()->user()->hasRole('Asesor Comercial')) --}}
+                        @if ($quote->state === 'Pendiente' && auth()->user()->hasRole('Asesor Comercial'))
                             <div class="col-6 align-items-center">
                                 <button class="btn btn-indigo btn-sm" data-toggle="modal"
                                     data-target="#modalQuoteFreightDocuments">
                                     <i class="fas fa-plus"></i>
                                 </button>
                             </div>
-                      {{--   @endif --}}
+                        @endif
                     </div>
                     <table id="table-file-freight" class="table">
                         <tbody>
@@ -356,7 +356,7 @@
 
         <div class="col-12">
             <div class="text-center mt-5 mb-3">
-                {{--  @role('Asesor Comercial') --}}
+                 @role('Asesor Comercial')
                 <form action="{{ url('/quote/freight/send-pricing/' . $quote->id) }}" method="POST" class="d-inline"
                     id="form-send-pricing">
                     @csrf
@@ -365,7 +365,7 @@
                     <button class="btn btn-outline-indigo btn-sm {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">
                         <i class="fas fa-paper-plane"></i> Enviar cotización</button>
                 </form>
-                {{--  @endrole --}}
+                 @endrole
 
             </div>
 
@@ -377,14 +377,14 @@
             <div class="col-12 px-4 mt-5">
                 <div class="text-center mb-4">
                     <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
-                    {{-- @role('Pricing') --}}
+                    @role('Pricing')
                     @if (!$quote->responses->contains(fn($response) => $response->status === 'Aceptado'))
                         <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
                             data-target="#modalResponseQuoteFreight">
                             <i class="fas fa-plus"></i>
                         </button>
                     @endif
-                    {{-- @endrole --}}
+                    @endrole
                 </div>
 
                 @php
@@ -444,7 +444,7 @@
                                         <option>Detalle</option>
 
                                         @if (!$quote->freight)
-                                            {{--  @role('Asesor Comercial') --}}
+                                             @role('Asesor Comercial')
                                             <option class="{{ $response->status != 'Aceptado' ? 'd-none' : '' }}">Generar
                                                 Flete</option>
                                             <option class="{{ $response->status === 'Aceptado' ? 'd-none' : '' }}">Aceptar
@@ -452,7 +452,7 @@
                                             <option class="{{ $response->status === 'Rechazada' ? 'd-none' : '' }}">
                                                 Rechazar
                                             </option>
-                                            {{-- @endrole --}}
+                                            @endrole
                                         @endif
                                     </select>
                                 </td>
