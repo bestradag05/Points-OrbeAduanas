@@ -161,7 +161,6 @@
                         <th style="width: 10px">#</th>
                         <th>Concepto</th>
                         <th>Valor del concepto</th>
-                        <th>IGV</th>
                         <th>x</th>
                     </tr>
                 </thead>
@@ -180,7 +179,6 @@
                         <th style="width: 10px">#</th>
                         <th>Concepto</th>
                         <th>Valor del concepto</th>
-                        <th>IGV</th>
                         <th>x</th>
                     </tr>
                 </thead>
@@ -525,9 +523,14 @@
 
 
         function renderConceptRow(item, tbody, contador) {
-            contador++; // Incrementar el contador en cada iteración
+
             // Crear una nueva fila
             let fila = tbody.insertRow();
+
+            if (item.hasIgv) {
+
+                fila.style.backgroundColor = '#f8d7da';
+            }
 
             // Insertar el número de iteración en la primera celda de la fila
             let celdaNumero = fila.insertCell(0);
@@ -541,17 +544,8 @@
             let celdaValor = fila.insertCell(2);
             celdaValor.textContent = item.value;
 
-            let celdaHasIgv = fila.insertCell(3);
-            if (item.hasIgv) {
-
-                fila.style.backgroundColor = '#f8d7da';
-            }
-            celdaHasIgv.textContent = item.hasIgv ? 'Si' : 'No';
-
-
-
             // Insertar un botón para eliminar la fila en la cuarta celda de la fila
-            let celdaEliminar = fila.insertCell(4);
+            let celdaEliminar = fila.insertCell(3);
             let botonEliminar = document.createElement('a');
             botonEliminar.href = '#';
             botonEliminar.innerHTML = '<p class="text-danger">X</p>';
@@ -559,12 +553,14 @@
                 event.preventDefault();
                 // Eliminar la fila correspondiente al hacer clic en el botón
                 let fila = this.parentNode.parentNode;
-                let indice = fila.rowIndex -
-                    1; // Restar 1 porque el índice de las filas en tbody comienza en 0
+                let indice = fila.getAttribute('data-index');
+
                 conceptsArray.splice(indice, 1); // Eliminar el elemento en el índice correspondiente
                 updateTable(conceptsArray);
             });
             celdaEliminar.appendChild(botonEliminar);
+
+            fila.setAttribute('data-index', contador - 1);
 
             TotalConcepts += parseFloat(item.value);
         }
@@ -587,7 +583,6 @@
             TotalConcepts = 0;
 
             let contador = 0;
-            let contadorWithIgv = 0;
 
             for (let clave in conceptsArray) {
 
@@ -597,10 +592,12 @@
                 if (conceptsArray.hasOwnProperty(clave)) {
                     if (!item.hasIgv) {
 
+                        contador++;
                         renderConceptRow(item, tbodyFreight, contador);
 
-                    }else{
-                        renderConceptRow(item, tbodyFreightWithIgv, contadorWithIgv);
+                    } else {
+                        contador++;
+                        renderConceptRow(item, tbodyFreightWithIgv, contador);
                     }
 
                 }
@@ -612,12 +609,12 @@
 
         }
 
-
+/* 
         function calculateTotal(conceptsArray) {
             return Object.values(conceptsArray).reduce((acc, concept) => {
                 return acc + parseFloat(concept.value || 0) + parseFloat(concept.added || 0);
             }, 0);
-        }
+        } */
 
 
         $('#insurance_points').on('input', function() {

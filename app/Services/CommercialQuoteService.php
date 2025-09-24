@@ -305,8 +305,7 @@ class CommercialQuoteService
                     return response()->json(['error' => 'El cliente que intentas registrar está asignado a otro usuario.'], 400);
                 }
 
-                 return response()->json(['error' => 'Ya existe un cliente registrado con ese numero de documento.'], 400);
-
+                return response()->json(['error' => 'Ya existe un cliente registrado con ese numero de documento.'], 400);
             } else {
                 $customerUpdate = Customer::findOrFail($request->id_customer);
 
@@ -323,57 +322,27 @@ class CommercialQuoteService
             }
         }
 
-        if ($commercialQuote->is_consolidated) {
 
-            foreach ($commercialQuote->consolidatedCargos as $loads) {
 
-                $supplerdata = json_decode($loads->supplier_temp);
+        if ($request->has_supplier_data) {
 
-                $supplier = Supplier::where('name_businessname', $supplerdata->shipper_name)->first();
+            // Buscar proveedor por nombre (ajústalo si tienes un campo clave único)
+            $supplier = Supplier::where('name_businessname', $request->name_businessname_supplier)->first();
 
-                if (!$supplier) {
-                    $supplier = Supplier::create([
-                        'name_businessname' => $supplerdata->shipper_name,
-                        'address' => $supplerdata->shipper_address,
-                        'contact_name' => $supplerdata->shipper_contact,
-                        'contact_number' => $supplerdata->shipper_contact_phone,
-                        'contact_email' => $supplerdata->shipper_contact_email,
-                        'state' => 'Activo',
-                    ]);
-                }
-                // Una vez que se acepta, se cambia el supplier temporal por el supplier registrado.
-                $loads->update([
-                    'supplier_temp' => null,
-                    'supplier_id' => $supplier->id
+            if (!$supplier) {
+                $supplier = Supplier::create([
+                    'name_businessname' => $request->name_businessname_supplier,
+                    'address' => $request->address_supplier,
+                    'contact_name' => $request->contact_name_supplier,
+                    'contact_number' => $request->contact_number_supplier,
+                    'contact_email' => $request->contact_email_supplier,
+                    'state' => 'Activo',
                 ]);
-
-                //Obtenemos el supplier que tenga mayor valor de factura, para actualizarlo en la cotizacion
-
-                $maxLoadCargo = $commercialQuote->consolidatedCargos->sortByDesc('load_value')->first();
-                $supplierId = $maxLoadCargo->supplier_id;
-                $updateData['id_supplier'] = $supplierId;
             }
-        } else {
 
-            if ($request->has_supplier_data) {
-
-                // Buscar proveedor por nombre (ajústalo si tienes un campo clave único)
-                $supplier = Supplier::where('name_businessname', $request->name_businessname_supplier)->first();
-
-                if (!$supplier) {
-                    $supplier = Supplier::create([
-                        'name_businessname' => $request->name_businessname_supplier,
-                        'address' => $request->address_supplier,
-                        'contact_name' => $request->contact_name_supplier,
-                        'contact_number' => $request->contact_number_supplier,
-                        'contact_email' => $request->contact_email_supplier,
-                        'state' => 'Activo',
-                    ]);
-                }
-
-                $updateData['id_supplier'] = $supplier->id;
-            }
+            $updateData['id_supplier'] = $supplier->id;
         }
+
 
         $commercialQuote->update($updateData);
         $quoteSentClient->update($updateData);

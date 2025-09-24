@@ -7,6 +7,7 @@ use App\Models\Points;
 use App\Models\ProcessManagement;
 use App\Models\QuotesSentClient;
 use App\Models\SellersCommission;
+use App\Models\Supplier;
 use App\Services\ProfitValidationService;
 use App\Services\QuotesSentClientService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -47,7 +48,7 @@ class QuotesSentClientController extends Controller
             'Estado',
             'Acciones'
         ];
-        
+
         return view('quotes_sent_client/list-quote-sent-client', array_merge($compact, compact('heads')));
     }
 
@@ -95,6 +96,7 @@ class QuotesSentClientController extends Controller
     {
 
         $quotesSentClient = QuotesSentClient::findOrFail($id);
+        $commercialQuote = $quotesSentClient->commercialQuote;
         $status = '';
 
         if (!$quotesSentClient) {
@@ -107,6 +109,44 @@ class QuotesSentClientController extends Controller
             case 'accept':
                 # code...
                 $status = 'Aceptado';
+
+                //Si es consolidado registramos los supplier y asignamos el que tenga mayor valor de factura
+                if ($quotesSentClient->is_consolidated) {
+
+                    foreach ($commercialQuote->consolidatedCargos as $loads) {
+
+                        $updateData = [];
+
+                        $supplerdata = json_decode($loads->supplier_temp);
+
+                        $supplier = Supplier::where('name_businessname', $supplerdata->shipper_name)->first();
+
+                        if (!$supplier) {
+                            $supplier = Supplier::create([
+                                'name_businessname' => $supplerdata->shipper_name,
+                                'address' => $supplerdata->shipper_address,
+                                'contact_name' => $supplerdata->shipper_contact,
+                                'contact_number' => $supplerdata->shipper_contact_phone,
+                                'contact_email' => $supplerdata->shipper_contact_email,
+                                'state' => 'Activo',
+                            ]);
+                        }
+                        // Una vez que se acepta, se cambia el supplier temporal por el supplier registrado.
+                        $loads->update([
+                            'supplier_temp' => null,
+                            'supplier_id' => $supplier->id
+                        ]);
+
+                        //Obtenemos el supplier que tenga mayor valor de factura, para actualizarlo en la cotizacion
+
+                        $maxLoadCargo = $commercialQuote->consolidatedCargos->sortByDesc('load_value')->first();
+                        $supplierId = $maxLoadCargo->supplier_id;
+                        $updateData['id_supplier'] = $supplierId;
+                    }
+
+                    $commercialQuote->update($updateData);
+                    $quotesSentClient->update($updateData);
+                }
 
                 if ($quotesSentClient->commercialQuote->freight) {
                     $quotesSentClient->commercialQuote->freight->update([
@@ -121,7 +161,7 @@ class QuotesSentClientController extends Controller
                 if ($quotesSentClient->commercialQuote->transport) {
                     $services[] = $quotesSentClient->commercialQuote->transport->update([
                         'state' => 'Pendiente'
-                    ]); 
+                    ]);
                 }
 
                 /* Si es aceptado se debe generar un registro para la gestion de comisiones, ademas se debe generar al punto automatico para los servicios puros */

@@ -309,14 +309,14 @@
                             <h5 class="text-indigo text-center"> <i class="fas fa-file"></i> Lista de archivos</h5>
                         </div>
                         {{-- !$quote->responses->contains(fn($response) => $response->status === 'Aceptado') --}}
-                        @if ($quote->state === 'Pendiente' && auth()->user()->hasRole('Asesor Comercial'))
+                       {{--  @if ($quote->state === 'Pendiente' && auth()->user()->hasRole('Asesor Comercial')) --}}
                             <div class="col-6 align-items-center">
                                 <button class="btn btn-indigo btn-sm" data-toggle="modal"
                                     data-target="#modalQuoteFreightDocuments">
                                     <i class="fas fa-plus"></i>
                                 </button>
                             </div>
-                        @endif
+                      {{--   @endif --}}
                     </div>
                     <table id="table-file-freight" class="table">
                         <tbody>
@@ -438,7 +438,7 @@
                                 </td>
 
                                 <td style="width: 150px">
-                                    <select name="acction_transport" class="form-control form-control-sm"
+                                    <select name="acction_freight" class="form-control form-control-sm"
                                         onchange="changeAcction(this.value, {{ $response->id }})">
                                         <option value="" disabled selected>Seleccione una acción...</option>
                                         <option>Detalle</option>

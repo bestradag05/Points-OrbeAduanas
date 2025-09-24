@@ -60,18 +60,23 @@
                             onchange="changeStatus(this.value, {{ $quoteSentClient->id }})">
                             <option value="" disabled selected>Seleccione una acción...</option>
 
-                            <option value="accept" class="{{ $quoteSentClient->status === 'Aceptado' ? 'd-none' : '' }}">
-                                Aceptar
-                            </option>
-                            <option value="decline" class="{{ $quoteSentClient->status === 'Rechazada' ? 'd-none' : '' }}">
-                                Rechazar
-                            </option>
-                            <option value="expired" class="{{ $quoteSentClient->status === 'Caducada' ? 'd-none' : '' }}">
-                                Caducada
-                            </option>
-                            <option value="cancel" class="{{ $quoteSentClient->status === 'Anulado' ? 'd-none' : '' }}">
-                                Anulada
-                            </option>
+                            @if ($quoteSentClient->status === 'Aceptado')
+                                <option value="cancel"
+                                    class="{{ $quoteSentClient->status === 'Anulado' ? 'd-none' : '' }}">
+                                    Anular
+                                </option>
+                            @else
+                                <option value="accept"
+                                    class="{{ $quoteSentClient->status === 'Aceptado' ? 'd-none' : '' }}">
+                                    Aceptar
+                                </option>
+                                <option value="decline"
+                                    class="{{ $quoteSentClient->status === 'Rechazada' ? 'd-none' : '' }}">
+                                    Rechazar
+                                </option>
+                            @endif
+
+
                         </select>
                     @else
                         <p class="text-muted p-0"> Sin Acciones </p>
@@ -101,11 +106,10 @@
                     let allQuotes = @json($quotesSentClient);
                     let quote = allQuotes.find(q => q.id === quoteSentClient);
 
-                    if (!quote.id_customer || !quote.id_supplier) {
+                    let servicesToQuote = quote.commercial_quote.services_to_quote;
 
-                        confirmCustomerAndSupplierData(quote);
 
-                    } else {
+                    if (servicesToQuote.includes('Transporte') && servicesToQuote.length === 1) {
 
                         Swal.fire({
                             title: '¿El cliente acepto la cotización?',
@@ -122,8 +126,34 @@
 
                             }
                         });
-                    }
 
+                    } else {
+
+
+                        if (!quote.id_customer || (!quote.id_supplier && !quote.is_consolidated)) {
+
+                            confirmCustomerAndSupplierData(quote);
+
+                        } else {
+
+                            Swal.fire({
+                                title: '¿El cliente acepto la cotización?',
+                                text: 'Esta accion cambiara ha aceptada el estado de la cotización',
+                                icon: 'question',
+                                showCancelButton: true,
+                                confirmButtonText: 'Aceptar',
+                                cancelButtonText: 'Cancelar',
+                                confirmButtonColor: '#2e37a4'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    let route = `/sent-client/${quoteSentClient}/${action}`
+                                    openModalJustification(action, route);
+
+                                }
+                            });
+                        }
+
+                    }
 
 
                     break;
@@ -138,8 +168,11 @@
                         cancelButtonText: 'Cancelar',
                         confirmButtonColor: '#d33'
                     }).then((result) => {
-                        let route = `/sent-client/${quoteSentClient}/${action}`;
-                        openModalJustification(action, route);
+                        if (result.isConfirmed) {
+
+                            let route = `/sent-client/${quoteSentClient}/${action}`;
+                            openModalJustification(action, route);
+                        }
                     });
 
                     break;

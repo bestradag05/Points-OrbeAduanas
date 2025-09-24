@@ -249,41 +249,6 @@ class QuoteTransportController extends Controller
                 ->with('warning', "La cotización {$quote->nro_quote} está {$quote->state}. No es posible ver el detalle.");
         }
 
-        $displayConcepts = $quote->transportConcepts
-            ->map(fn($tc) => $tc->setRelation('concepts', $tc->concepts));
-
-        $latestResp = $quote
-            ->response()
-            ->orderBy('id', 'desc')
-            ->first();
-
-
-        // 2) Obtengo el id_type_shipment de la cotización
-        $shipmentId = $quote->commercial_quote->type_shipment->id;
-
-        // 3) Busco el concepto “TRANSPORTE” que corresponda a ese tipo de shipment
-        $transporteConcepts = Concept::where('name', 'TRANSPORTE')
-            ->where('id_type_shipment', $shipmentId)
-            ->whereHas('typeService', fn($q) => $q->where('name', 'Transporte'))
-            ->first();
-
-        // 4) Inyecto “Transporte” al principio si aún no vino seleccionado
-        $chosen = $quote->transportConcepts->keyBy('concepts_id');
-        if ($transporteConcepts && ! $chosen->has($transporteConcepts->id)) {
-            $fake = new \App\Models\ConceptsQuoteTransport([
-                'concepts_id'   => $transporteConcepts->id,
-                'value_concepts' => null,
-            ]);
-            $fake->setRelation('concept', $transporteConcepts);
-            $quote->setRelation(
-                'transportConcepts',
-                $quote->transportConcepts->prepend($fake)
-            );
-        }
-
-        // 5) Mensajes
-        $messages = $quote->messages;
-
         // 6) Archivos
         $folderPath = "commercial_quote/{$quote->commercial_quote->nro_quote_commercial}/quote_transport/{$quote->nro_quote}";
         $files = collect(Storage::disk('public')->files($folderPath))
@@ -299,30 +264,19 @@ class QuoteTransportController extends Controller
             ->orderBy('name_businessname')
             ->get();
 
-        $status = DB::select("SHOW TABLE STATUS LIKE 'response_transport_quotes'");
-        $nextRespId = $status[0]->Auto_increment;
         $nro_response = (new ResponseTransportQuote())->generateNroResponse();
 
 
         $locked = in_array(optional($quote->transport)->state, ['Aceptado', 'Rechazado', 'Anulado']);
+        
 
 
         // 9) Retornar la vista con **todas** las variables
         return view('transport.quote.quote-messagin', [
             'quote'           => $quote,
-            'messages'        => $quote->messages,
-            'files'           => $files = collect(Storage::disk('public')
-                ->files("commercial_quote/{$quote->commercial_quote->nro_quote_commercial}/quote_transport/{$quote->nro_quote}"))
-                ->map(fn($f) => [
-                    'name' => basename($f),
-                    'url'  => asset("storage/{$f}"),
-                ]),
-            'transportSuppliers' => Supplier::where('area_type', 'transporte')->where('state', 'Activo')->get(),
-            'displayConcepts'  => $displayConcepts,
-            'latestResp'       => $latestResp,
+            'files'           => $files,                                                                                                                                  
             'transportSuppliers' => $transportSuppliers,
             'nro_response'     => $nro_response,
-            'nextRespId'          => $nextRespId,
             'locked' => $locked
         ]);
     }
@@ -405,7 +359,7 @@ class QuoteTransportController extends Controller
 
         // 5) Preparar los mensajes y archivos como en show()
         $messages = $quote->messages;
-        $folderPath = "quote_transport/{$quote->nro_quote}";
+        $folderPath = "commercial_quote/{$quote->commercial_quote->nro_quote_commercial}/quote_transport/{$quote->nro_quote}";
         $files = collect(Storage::disk('public')->files($folderPath))
             ->map(fn($file) => [
                 'name' => basename($file),
@@ -425,14 +379,7 @@ class QuoteTransportController extends Controller
 
 
         // 7) Renderizar la misma vista y pasarle TODO lo necesario
-        return view('transport.quote.quote-messagin', compact(
-            'quote',
-            'messages',
-            'files',
-            'transportSuppliers',
-            'nro_response',
-            'locked'
-        ));
+        return redirect('/quote/transport/' . $quote->id);
     }
 
     public function acceptResponse(Request $request)
@@ -646,7 +593,6 @@ class QuoteTransportController extends Controller
 
         $quote->update([
             'withdrawal_date' => $dateFormat,
-            'state' => 'Aceptado',
         ]);
 
         // NOTA: no se acepta la respuesta aquí

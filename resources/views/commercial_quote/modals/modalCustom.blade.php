@@ -54,7 +54,7 @@
                                                 <div class="input-group">
                                                     <input type="text" class="form-control "
                                                         {{-- {{ isset($comercialQuote->cif_value) ? 'readonly' : '' }} --}}
-                                                        name="cif_value" placeholder="Ingrese valor de la carga"
+                                                        name="cif_value" placeholder="Ingrese valor de la carga" @readonly(true)
                                                         value="{{ isset($comercialQuote->cif_value) ? number_format($comercialQuote->cif_value, 2) : old('cif_value') }}">
                                                 </div>
                                                 @error('cif_value')
@@ -74,7 +74,7 @@
                                                 <div class="input-group">
                                                     <input type="text" class="form-control"
                                                         {{-- {{ isset($customs_taxes->customs_taxes) ? 'readonly' : '' }} --}}
-                                                        name="customs_taxes" placeholder="Ingrese valor de la carga"
+                                                        name="customs_taxes" placeholder="Ingrese valor de la carga" @readonly(true)
                                                         value="{{ isset($customs_taxes->customs_taxes) ? $customs_taxes->customs_taxes : '' }}">
                                                 </div>
                                                 @error('customs_taxes')
@@ -93,7 +93,7 @@
                                                     <input type="text" class="form-control"
                                                         {{-- {{ isset($customs_taxes->customs_perception) ? 'readonly' : '' }} --}}
                                                         name="customs_perception"
-                                                        placeholder="Ingrese valor de la carga"
+                                                        placeholder="Ingrese valor de la carga" @readonly(true)
                                                         value="{{ isset($customs_taxes->customs_perception) ? $customs_taxes->customs_perception : old('customs_perception') }}">
                                                 </div>
                                             </div>
@@ -627,7 +627,7 @@
                                     let fila = this.parentNode.parentNode;
                                     let indice = fila.rowIndex -
                                         1; // Restar 1 porque el índice de las filas en tbody comienza en 0
-                                    delete conceptsCustomArray[Object.keys(conceptsCustomArray)[indice]];
+                                     conceptsCustomArray.splice(indice, 1);
                                     updateTableCustom(conceptsCustomArray);
                                 });
                                 celdaEliminar.appendChild(botonEliminar);

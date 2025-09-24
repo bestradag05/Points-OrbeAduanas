@@ -8,7 +8,7 @@
         {{-- <div class="col-12  mb-4 text-right">
             <a href="{{ url('/quote/freight') }}" class="btn btn-primary"> Atras </a>
 </div> --}}
-        <div class="col-12 col-md-12 col-lg-5">
+        <div class="col-12 col-md-12 col-lg-6">
             <h5 class="mb-0 text-indigo"><i class="fas fa-file-alt mr-2"></i> Detalle de carga</h5>
 
             <br>
@@ -303,50 +303,6 @@
             @endif
 
 
-
-            <div class="row text-muted mt-3">
-                <div class="col-6">
-                    <p class="text-uppercase ">Estado :
-                        <b class="status-{{ strtolower($quote->state) }}">{{ $quote->state }}</b>
-                        <b class="status-{{ strtolower($quote->state) }}"><i class="fas fa-circle"></i></b>
-                    </p>
-                </div>
-
-            </div>
-
-            <hr>
-            <div class="row align-items-center">
-                <div class="col-6 align-items-center">
-                    <h5 class="mt-3 text-muted">Archivos : </h5>
-                </div>
-                <div class="col-6 align-items-center {{ $quote->state != 'Aceptado' ? 'd-none' : '' }}">
-                    <button class="btn btn-indigo btn-sm" data-toggle="modal"
-                        data-target="#modalQuoteTransportDocuments">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                </div>
-            </div>
-            <table id="table-file-transport" class="table">
-                <tbody>
-                    @foreach ($files as $file)
-                        <tr>
-                            <td>
-                                <a href="{{ $file['url'] }}" target="_blank" class="btn-link text-secondary">
-                                    <i class="far fa-fw fa-file-pdf"></i> {{ $file['name'] }}
-                                </a>
-                            </td>
-                            <td class="text-center {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}"">
-                                <a href=" #" class="text-danger"
-                                    onclick="handleFileDeletion('{{ $file['name'] }}', this, event)">
-                                    X
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-
-            <hr>
             @if ($quote->cost_transport != null && $quote->state === 'Aceptado')
                 <div class="row">
 
@@ -412,19 +368,66 @@
                 </div>
             @endif
         </div>
-        <!-- Crear lista de respuestas -->
-        <div class="col-12 col-md-12 col-lg-6">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="text-indigo"><i class="fas fa-file-alt"></i> Lista de respuestas</h5>
-                <!-- Botón para abrir el modal -->
-                @can('transporte.quote.response')
-                    @if (!$quote->response->contains('status', 'Aceptado'))
-                        <button type="button" class="btn btn-indigo" data-toggle="modal"
-                            data-target="#modalCotizarTransporte">
-                            <i class="fas fa-truck mr-1"></i> Responder
+
+        <div class="col-12 col-md-12 col-lg-6 px-4 row">
+            <div class="col-12">
+                <div class="row justify-content-between mb-4">
+                    <div class="col-8 col-lg-6">
+                        <h5 class="text-indigo text-center"> <i class="fas fa-file"></i> Lista de archivos</h5>
+                    </div>
+                    <div class="col-6 align-items-center ">
+                        <button class="btn btn-indigo btn-sm" data-toggle="modal"
+                            data-target="#modalQuoteTransportDocuments">
+                            <i class="fas fa-plus"></i>
                         </button>
-                    @endif
-                @endcan
+                    </div>
+                </div>
+                <table id="table-file-transport" class="table">
+                    <tbody>
+                        @foreach ($files as $file)
+                            <tr>
+                                <td>
+                                    <a href="{{ $file['url'] }}" target="_blank" class="btn-link text-secondary">
+                                        <i class="far fa-fw fa-file-pdf"></i> {{ $file['name'] }}
+                                    </a>
+                                </td>
+                                <td class="text-center {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}"">
+                                    <a href=" #" class="text-danger"
+                                        onclick="handleFileDeletion('{{ $file['name'] }}', this, event)">
+                                        X
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
+            </div>
+
+            <div class="col-12 d-flex flex-column justify-content-end">
+
+                <div class="text-center">
+                    <div class="custom-badge status-{{ strtolower($quote->state) }}">
+                        <i class="fas fa-circle"></i> {{ $quote->state }}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Crear lista de respuestas -->
+        <div class="col-12 px-4 mt-5">
+            <div class="text-center mb-4">
+                <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
+                <!-- Botón para abrir el modal -->
+                {{--  @role('Trasporte') --}}
+                @if (!$quote->response->contains('status', 'Aceptado'))
+                    <button type="button" class="btn btn-indigo" data-toggle="modal"
+                        data-target="#modalCotizarTransporte">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                @endif
+                {{-- @endrole --}}
             </div>
             <table class="table table-bordered table-hover table-sm text-sm my-4">
                 <thead class="thead-dark">
@@ -470,24 +473,24 @@
                                         <span class="text-muted">Rechazada</span>
                                     @elseif ($response->status === 'Aceptado')
                                         {{-- @role('Asesor Comercial') --}}
-                                            <button class="btn btn-danger btn-sm" data-toggle="modal"
-                                                data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
-                                                Rechazar
-                                            </button>
+                                        <button class="btn btn-danger btn-sm" data-toggle="modal"
+                                            data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
+                                            Rechazar
+                                        </button>
                                         {{-- @endrole --}}
                                     @elseif ($quote->response->contains('status', 'Aceptado'))
                                         <span class="text-muted">Sin acciones</span>
                                     @else
                                         {{-- @role('Asesor Comercial') --}}
-                                            <button class="btn btn-success btn-sm" data-toggle="modal"
-                                                data-target="#quote-transport" data-response-id="{{ $response->id }}"
-                                                data-response-nro="{{ $response->nro_response }}">
-                                                Aceptar
-                                            </button>
-                                            <button class="btn btn-danger btn-sm" data-toggle="modal"
-                                                data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
-                                                Rechazar
-                                            </button>
+                                        <button class="btn btn-success btn-sm" data-toggle="modal"
+                                            data-target="#quote-transport" data-response-id="{{ $response->id }}"
+                                            data-response-nro="{{ $response->nro_response }}">
+                                            Aceptar
+                                        </button>
+                                        <button class="btn btn-danger btn-sm" data-toggle="modal"
+                                            data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
+                                            Rechazar
+                                        </button>
                                         {{-- @endrole --}}
                                     @endif
                                 @endif
@@ -496,6 +499,7 @@
                                     <i class="far fa-file-pdf"></i>
                                 </button>
                             </td>
+                            
                         </tr>
                     @endforeach
                 </tbody>
@@ -741,7 +745,7 @@
                             {{ $quote->commercial_quote->lcl_fcl != null ? "({$quote->commercial_quote->lcl_fcl})" : '' }}
                         </td>
                     </tr>
-{{--                     <tr>
+                    {{--                     <tr>
                         <td><strong>Incoterm</strong></td>
                         <td>{{ $quote->commercial_quote->incoterm->code }}</td>
                     </tr> --}}

@@ -14,94 +14,37 @@
 
     @if ($acceptedResponse)
         <div class="row">
-            <div class="col-12">
-                <div class="accordion bg-indigo" id="accordionAcceptedResponse">
-                    <div class="card mt-2 bg-indigo">
-                        <div class="card-header p-2" id="headingAcceptedResponse">
-                            <h6 class=" mb-0 d-flex justify-content-between align-items-center">
-                                <span class="text-uppercase">
-                                    Resumen de Respuesta Aceptada: {{ $acceptedResponse->nro_response }}
-                                </span>
-                                <button class="text-white btn btn-link p-0" type="button" data-toggle="collapse"
-                                    data-target="#collapseAcceptedResponse" aria-expanded="true"
-                                    aria-controls="collapseAcceptedResponse">
-                                    <i class="fas fa-chevron-down"></i>
-                                </button>
-                            </h6>
-                        </div>
+            <div class="col-12 text-center p-2 rounded">
+                <h5 class="p-0 m-0 text-bold">Resumen de la respuesta aceptada: <span
+                        class="text-indigo">{{ $acceptedResponse->nro_response }}
+                        <button class="btn" onclick="showDetail({{ $acceptedResponse->id }})">
+                            <i class="fas fa-file-pdf text-danger"></i>
 
-                        <div id="collapseAcceptedResponse" class="collapse" aria-labelledby="headingAcceptedResponse"
-                            data-parent="#accordionAcceptedResponse">
-                            <div class="card-body ">
-                                <div class="row text-sm text-muted text-white">
-                                    <div class="col-md-4">
-                                        <p class="mb-1">Proveedor:
-                                            <strong
-                                                class="d-block">{{ $acceptedResponse->supplier->name_businessname ?? '-' }}</strong>
-                                        </p>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <p class="mb-1">Validez:
-                                            <strong
-                                                class="d-block">{{ $acceptedResponse->valid_until_formatted ?? '-' }}</strong>
-                                        </p>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <p class="mb-1">Servicio:
-                                            <strong class="d-block">{{ $acceptedResponse->service ?? '-' }}</strong>
-                                        </p>
-                                    </div>
-                                    @if ($acceptedResponse->quote->commercial_quote->type_shipment->description === 'Aérea')
-                                        <div class="col-md-4">
-                                            <p class="mb-1">Servicio:
-                                                <strong
-                                                    class="d-block">{{ $acceptedResponse->airline->name ?? '-' }}</strong>
-                                            </p>
-                                        </div>
-                                    @else
-                                        <div class="col-md-4">
-                                            <p class="mb-1">Servicio:
-                                                <strong class="d-block">{{ $acceptedResponse->shippingCompany->name ?? '-' }}</strong>
-                                            </p>
-                                        </div>
-                                    @endif
-
-                                    <div class="col-md-4">
-                                        <p class="mb-1">Frecuencia:
-                                            <strong class="d-block">{{ $acceptedResponse->frequency ?? '-' }}</strong>
-                                        </p>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <p class="mb-1">Tiempo en tránsito:
-                                            <strong class="d-block">{{ $acceptedResponse->transit_time ?? '-' }}</strong>
-                                        </p>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <p class="mb-1">Tipo de cambio:
-                                            <strong class="d-block">{{ $acceptedResponse->exchange_rate ?? '-' }}</strong>
-                                        </p>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <p class="mb-1">Total respuesta:
-                                            <strong class="d-block text-warning">$
-                                                {{ number_format($acceptedResponse->total, 2) }}</strong>
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <hr class="my-2">
-
-                                <p class="mb-0 text-sm text-muted text-white">
-                                    Para crear el flete, asegúrese de que el <strong class="text-warning">total de los
-                                        conceptos agregados</strong> supere este total de respuesta.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                        </button>
+                    </span></h5>
             </div>
         </div>
     @endif
+
+
+    <!-- Modal para PDF -->
+    <div class="modal fade" id="pdfDetailResponse" tabindex="-1" role="dialog" aria-labelledby="pdfDetailResponseLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalle de Cotización</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-0">
+                    <iframe id="pdfFrame" src="" frameborder="0" style="width: 100%; height: 80vh;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
     <form action="/freight" method="post" id="formFreight" enctype="multipart/form-data">
@@ -111,3 +54,20 @@
 
 
 @stop
+
+
+@push('scripts')
+
+    <script>
+        function showDetail(responseId) {
+
+            //Abrir modal
+            const url = `/quote/freight/response/${responseId}/show`;
+            $('#pdfFrame').attr('src', url);
+            $('#pdfDetailResponse').modal('show');
+            return;
+        }
+    </script>
+
+
+@endpush
