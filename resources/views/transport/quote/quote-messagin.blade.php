@@ -417,12 +417,31 @@
             </div>
         </div>
 
+         <div class="col-12">
+            <div class="text-center mt-5 mb-3">
+                 @role('Asesor Comercial')
+                <form action="{{ url('/quote/transport/send-transport/' . $quote->id) }}" method="POST" class="d-inline"
+                    id="form-send-transport">
+                    @csrf
+                    @method('PATCH')
+
+                    <button class="btn btn-outline-indigo btn-sm {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">
+                        <i class="fas fa-paper-plane"></i> Enviar cotización</button>
+                </form>
+                 @endrole
+
+            </div>
+
+        </div>
+
+        @if ($quote->state != 'Pendiente')
+
         <!-- Crear lista de respuestas -->
         <div class="col-12 px-4 mt-5">
             <div class="text-center mb-4">
                 <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
                 <!-- Botón para abrir el modal -->
-                 @role('Trasnporte')
+                 @role('Transporte')
                 @if (!$quote->response->contains('status', 'Aceptado'))
                     <button type="button" class="btn btn-indigo btn-sm" data-toggle="modal"
                         data-target="#modalCotizarTransporte">
@@ -508,6 +527,10 @@
             </table>
 
         </div>
+
+        @endif
+
+        
     </div>
 
     {{-- Modal de “Cerrar Cotización” con selección de respuesta --}}

@@ -47,7 +47,7 @@
                 </td>
                 <td>{{ $quoteSentClient->commercialQuote->personal->names }}</td>
                 <td>{{ $quoteSentClient->commercialQuote->is_consolidated ? 'SI' : 'NO' }}</td>
-                <td>{{ \Carbon\Carbon::parse($quoteSentClient->commercialQuote->valid_until)->format('d/m/Y') }}</td>
+                <td>{{ \Carbon\Carbon::parse($quoteSentClient->valid_until)->format('d/m/Y') }}</td>
                 <td>
                     <div class="custom-badge status-{{ strtolower($quoteSentClient->status) }}">
                         {{ $quoteSentClient->status }}

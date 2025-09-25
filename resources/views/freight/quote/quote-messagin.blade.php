@@ -11,7 +11,7 @@
                 <div class="col-8 col-lg-6">
                     <h5 class="text-indigo text-center"> <i class="fas fa-file-alt mx-2"></i>Detalle de carga</h5>
                 </div>
-                 @role('pricing')
+                 @role('Pricing')
                 <div class="col-4 col-lg-6">
                     <button onclick="copieHtmlDetailQuote()" class="btn btn-sm btn-secondary">
                         <i class="fas fa-copy"></i>

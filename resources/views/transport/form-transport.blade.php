@@ -58,7 +58,7 @@
         </div>
     </div>
 
-    
+
     <div class="col-12">
         <div class="row align-items-end">
             <div class="col-md-4">
@@ -99,6 +99,7 @@
                     <th style="width: 35%;">Concepto</th>
                     <th style="width: 30%;">Costo Neto ($)</th>
                     <th style="width: 30%;">Valor del concepto</th>
+                    <th style="width: 30%;">Acciones</th>
                 </tr>
             </thead>
             <tbody id="tbodyConcepts">
@@ -302,12 +303,28 @@
                     celdaVal.textContent = item.value;
                 }
 
+                let celdaEliminar = fila.insertCell(4);
+                let botonEliminar = document.createElement('a');
+                botonEliminar.href = '#';
+                botonEliminar.innerHTML = '<p class="text-danger">X</p>';
+                botonEliminar.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    // Eliminar la fila correspondiente al hacer clic en el botón
+                    let fila = this.parentNode.parentNode;
+                    let indice = fila.getAttribute('data-index');
+
+                    conceptsArray.splice(indice, 1); // Eliminar el elemento en el índice correspondiente
+                    updateTable(conceptsArray);
+                });
+                celdaEliminar.appendChild(botonEliminar);
+
+
                 sumaLocal += parseFloat(item.value || 0);
             });
 
             calcTotal(sumaLocal);
         }
-                   
+
         function addConceptFromDropdown() {
             const sel = document.getElementById('conceptSelect');
             const inp = document.getElementById('conceptValue');
@@ -326,7 +343,7 @@
             const idx = conceptsArray.findIndex(c => c.id === conceptId);
             if (idx !== -1) {
                 conceptsArray[idx].value = value;
-                conceptsArray[idx].isNew = true; 
+                conceptsArray[idx].isNew = true;
             } else {
                 conceptsArray.push({
                     id: conceptId,

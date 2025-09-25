@@ -37,7 +37,7 @@ return new class extends Migration
             $table->date('withdrawal_date')->nullable();
             $table->string('nro_operation')->nullable();
             $table->string('nro_quote_commercial');
-            $table->enum('state', ['Pendiente', 'Aceptado', 'Anulado', 'Cerrado', 'Rechazado'])->default('Pendiente');
+            $table->enum('state', ['Pendiente', 'Aceptado', 'Enviado', 'Anulado', 'Cerrado', 'Rechazado'])->default('Pendiente');
             $table->timestamps();
 
             $table->foreign('nro_operation')->references('nro_operation')->on('routing');

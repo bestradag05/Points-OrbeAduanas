@@ -26,6 +26,11 @@ class ProcessManagement extends Model
         return $this->belongsTo(CommercialQuote::class, 'nro_quote_commercial', 'nro_quote_commercial');
     }
 
+    public function commissionGroup()
+    {
+        return $this->hasOne(CommissionGroups::class, 'process_management_id');
+    }
+
     // Relación con el flete
     public function freight()
     {

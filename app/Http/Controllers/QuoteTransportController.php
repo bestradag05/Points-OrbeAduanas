@@ -33,7 +33,7 @@ class QuoteTransportController extends Controller
     {
 
         $quotes = QuoteTransport::with('commercial_quote')
-            /* ->whereNot('state', 'Pendiente') */
+            ->whereNot('state', 'Pendiente')
             ->get();
 
 
@@ -243,6 +243,7 @@ class QuoteTransportController extends Controller
             'response',
         ])->findOrFail($id);
 
+
         if (in_array($quote->state, ['Anulado', 'Rechazado'])) {
             return redirect()
                 ->route('quote.transport.personal')
@@ -268,13 +269,13 @@ class QuoteTransportController extends Controller
 
 
         $locked = in_array(optional($quote->transport)->state, ['Aceptado', 'Rechazado', 'Anulado']);
-        
+
 
 
         // 9) Retornar la vista con **todas** las variables
         return view('transport.quote.quote-messagin', [
             'quote'           => $quote,
-            'files'           => $files,                                                                                                                                  
+            'files'           => $files,
             'transportSuppliers' => $transportSuppliers,
             'nro_response'     => $nro_response,
             'locked' => $locked
@@ -283,6 +284,17 @@ class QuoteTransportController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
+
+
+    public function sendInfoAndNotifyTransport($id)
+    {
+        $quote = QuoteTransport::with('commercial_quote.personal.user')->findOrFail($id);
+        
+        $quote->update(['state' => 'Enviado']);
+
+        return back()->with('success', 'Informacion Enviada.');
+    }
+
     public function edit(string $id)
     {
 

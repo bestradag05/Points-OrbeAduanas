@@ -71,7 +71,6 @@ class CommercialQuoteService
 
     public function createCommercialQuote()
     {
-        $nro_quote_commercial = $this->getNroQuoteCommercial();
         $stateCountrys = StateCountry::all()->load('country');
         $type_shipments = TypeShipment::all();
         $type_loads = TypeLoad::all();
@@ -87,7 +86,7 @@ class CommercialQuoteService
             ->where('type', 'cliente')
             ->get();
 
-        return compact('stateCountrys', 'type_shipments', 'type_loads', 'regimes', 'incoterms', 'nro_quote_commercial', 'types_services', 'containers', 'customers', 'packingTypes');
+        return compact('stateCountrys', 'type_shipments', 'type_loads', 'regimes', 'incoterms', 'types_services', 'containers', 'customers', 'packingTypes');
     }
 
 
@@ -97,9 +96,9 @@ class CommercialQuoteService
         if ($request->has('type_service_checked')) {
             $typeService = json_decode($request->type_service_checked, true);
         }
-
+        
         $shippersConsolidated = json_decode($request->shippers_consolidated);
-
+        
         //Registramos el cliente 
         if ($request->is_customer_prospect == 'prospect') {
             // Si es prospecto, creamos un nuevo cliente
@@ -117,7 +116,7 @@ class CommercialQuoteService
             // Si es cliente, simplemente usamos el ID del cliente desde el frontend
             $customerId = $request->id_customer; // El ID del cliente viene desde el frontend
         }
-
+        
 
 
         if ($request->is_consolidated) {
@@ -846,7 +845,6 @@ class CommercialQuoteService
         if ($onlyTransport) {
             // Validación solo para transporte
             $request->validate([
-                'nro_quote_commercial' => 'required|string|unique:commercial_quote,nro_quote_commercial,' . $id,
                 'id_type_shipment' => 'required',
                 'id_type_load' => 'required',
                 'commodity' => 'required',
@@ -867,7 +865,6 @@ class CommercialQuoteService
         } else {
 
             $request->validate([
-                'nro_quote_commercial' => 'required|string|unique:commercial_quote,nro_quote_commercial,' . $id,
                 'origin' => 'required|string',
                 'destination' => 'required|string',
                 'load_value' => 'required',
@@ -965,23 +962,5 @@ class CommercialQuoteService
     }
 
 
-    public function getNroQuoteCommercial()
-    {
-        $lastCode = CommercialQuote::latest('id')->first();
-        $prefix = 'TCOST';
-
-        // Si no hay registros, empieza desde 1
-        if (!$lastCode) {
-            $number = 1;
-        } else {
-            // Extraer el número y aumentarlo
-            $number = (int) substr($lastCode->nro_quote_commercial, 5);
-            $number++;
-        }
-
-        // Formatear el número con ceros a la izquierda
-        $codigo = $prefix . str_pad($number, 3, '0', STR_PAD_LEFT);
-
-        return $codigo;
-    }
+   
 }

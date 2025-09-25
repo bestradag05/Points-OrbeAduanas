@@ -16,8 +16,17 @@ class SupplierController extends Controller
     {
         // Listamos los clientes
 
-        // Obtener el ID del personal del usuario autenticado
-        $suppliers = Supplier::all();
+        $userRole = auth()->user()->roles->first()->name;
+
+
+        if ($userRole === 'Super-Admin') {
+
+            $suppliers = Supplier::all();
+        } else {
+
+            // Obtener el ID del personal del usuario autenticado
+            $suppliers = Supplier::where('area_type', $this->getAreaTypeByRole($userRole))->get();
+        }
 
         $heads = [
             '#',
@@ -38,6 +47,23 @@ class SupplierController extends Controller
 
         return view("supplier/list-supplier", compact("suppliers", "heads"));
     }
+
+
+    private function getAreaTypeByRole($role)
+    {
+        // Mapear los roles a los valores de area_type
+        switch ($role) {
+            case 'Pricing':
+                return 'pricing';
+            case 'Transporte':
+                return 'transporte';
+            case 'Asesor Comercial':
+                return 'comercial';
+            default:
+                return ''; // Si el rol no coincide con los casos anteriores, devolver un valor vacío o manejar el caso
+        }
+    }
+
 
     /**
      * Show the form for creating a new resource.

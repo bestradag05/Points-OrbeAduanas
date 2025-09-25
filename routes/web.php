@@ -262,6 +262,8 @@ Route::middleware('auth')->group(function () {
     Route::post('quote/transport/file-upload-documents', [QuoteTransportController::class, 'uploadFilesQuoteTransport']);
     Route::post('quote/transport/file-delete-documents', [QuoteTransportController::class, 'deleteFilesQuoteTransport']);
 
+    Route::patch('quote/transport/send-transport/{id}', [QuoteTransportController::class, 'sendInfoAndNotifyTransport']);
+
     Route::resource('quote/transport', QuoteTransportController::class)->names([
         'create' => 'quote.transport.create',
         'store' => 'quote.transport.store',

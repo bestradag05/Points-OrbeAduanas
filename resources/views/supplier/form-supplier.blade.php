@@ -118,7 +118,7 @@
 
             const fieldsByArea = {
                 'Transporte': ['group-cargo-type', 'group-unit', 'group-document', 'group-document-type'],
-                'Comercial': ['group-document', 'group-document-type'],
+                'Asesor Comercial': ['group-document', 'group-document-type'],
                 'Pricing': ['group-country', 'group-city'],
             };
 

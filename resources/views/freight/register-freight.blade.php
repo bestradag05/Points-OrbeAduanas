@@ -4,7 +4,7 @@
     <div class="d-flex justify-content-between">
         <h2>Registra un Flete</h2>
         <div>
-            <a href="{{ url('/quote/freight') }}" class="btn btn-primary"> Atras </a>
+            <a href="{{ url()->previous() }}" class="btn btn-primary"> Atras </a>
         </div>
     </div>
 

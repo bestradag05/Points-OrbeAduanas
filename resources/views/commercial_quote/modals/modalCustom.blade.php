@@ -52,9 +52,8 @@
                                             <div class="form-group">
                                                 <label for="cif_value">Valor CIF</label>
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control "
-                                                        {{-- {{ isset($comercialQuote->cif_value) ? 'readonly' : '' }} --}}
-                                                        name="cif_value" placeholder="Ingrese valor de la carga" @readonly(true)
+                                                    <input type="text" class="form-control CurrencyInput"
+                                                        name="cif_value" placeholder="Ingrese valor de la carga" data-type="currency"
                                                         value="{{ isset($comercialQuote->cif_value) ? number_format($comercialQuote->cif_value, 2) : old('cif_value') }}">
                                                 </div>
                                                 @error('cif_value')
@@ -72,9 +71,8 @@
                                             <div class="form-group">
                                                 <label for="customs_taxes">Impuestos de Aduanas</label>
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control"
-                                                        {{-- {{ isset($customs_taxes->customs_taxes) ? 'readonly' : '' }} --}}
-                                                        name="customs_taxes" placeholder="Ingrese valor de la carga" @readonly(true)
+                                                    <input type="text" class="form-control CurrencyInput"
+                                                        name="customs_taxes" placeholder="Ingrese valor de la carga" data-type="currency"
                                                         value="{{ isset($customs_taxes->customs_taxes) ? $customs_taxes->customs_taxes : '' }}">
                                                 </div>
                                                 @error('customs_taxes')
@@ -90,10 +88,9 @@
                                             <div class="form-group">
                                                 <label for="customs_perception">Percepción Aduanas</label>
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control"
-                                                        {{-- {{ isset($customs_taxes->customs_perception) ? 'readonly' : '' }} --}}
+                                                    <input type="text" class="form-control CurrencyInput"
                                                         name="customs_perception"
-                                                        placeholder="Ingrese valor de la carga" @readonly(true)
+                                                        placeholder="Ingrese valor de la carga" data-type="currency"
                                                         value="{{ isset($customs_taxes->customs_perception) ? $customs_taxes->customs_perception : old('customs_perception') }}">
                                                 </div>
                                             </div>

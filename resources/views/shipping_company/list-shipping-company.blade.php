@@ -2,7 +2,7 @@
 
 @section('content_header')
     <div class="d-flex justify-content-between">
-        <h2>Aerolineas</h2>
+        <h2>Navieras</h2>
         <div>
             <a href="{{ 'shipping_company/create' }}" class="btn btn-primary"> Agregar </a>
         </div>

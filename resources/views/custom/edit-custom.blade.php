@@ -4,7 +4,7 @@
     <div class="d-flex justify-content-between">
         <h2>Editar una aduana</h2>
         <div>
-            <button class="btn btn-primary"> Atras </button>
+           <a href="{{ url()->previous() }}" class="btn btn-primary"> Atras </a>
         </div>
     </div>
 

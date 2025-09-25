@@ -16,7 +16,7 @@ class CommercialQuote extends Model
         'nro_quote_commercial',
         'origin',
         'destination',
-       /*  'customer_company_name',
+        /*  'customer_company_name',
         'contact',
         'cellphone',
         'email', */
@@ -49,6 +49,40 @@ class CommercialQuote extends Model
         'valid_until' => 'date', // Convierte 'valid_until' en un objeto Carbon
         'services_to_quote' => 'array',
     ];
+
+
+
+    // Evento que se ejecuta antes de guardar el modelo
+    protected static function booted()
+    {
+        static::creating(function ($commercialQuote) {
+            // Si no tiene un número de operación, generarlo
+            if (empty($commercialQuote->nro_quote_commercial)) {
+                $commercialQuote->nro_quote_commercial = $commercialQuote->generateNroQuoteCommercial();
+            }
+        });
+    }
+
+    public function generateNroQuoteCommercial()
+    {
+        $lastCode = self::latest('id')->first();
+        $prefix = 'TCOST';
+
+        // Si no hay registros, empieza desde 1
+        if (!$lastCode) {
+            $number = 1;
+        } else {
+            // Extraer el número y aumentarlo
+            $number = (int) substr($lastCode->nro_quote_commercial, 5);
+            $number++;
+        }
+
+        // Formatear el número con ceros a la izquierda
+        $codigo = $prefix . str_pad($number, 3, '0', STR_PAD_LEFT);
+
+        return $codigo;
+    }
+
 
     public function originState()
     {

@@ -15,24 +15,17 @@ use stdClass;
 class CustomService
 {
 
-    public function storeCustom($request){
+    public function storeCustom($request)
+    {
 
         $concepts = json_decode($request->concepts);
-        
+
         $custom = $this->createOrUpdateCustoms($request);
-
-        $insurance = $this->createOrUpdateInsurance($request, $custom);
-
-        if ($insurance) {
-            $concepts = $this->updateConceptInsurance($concepts, $custom, $request);
-        }
-
 
         $this->syncCustomsConcepts($custom, $concepts);
 
 
         return $custom;
-
     }
 
     public function editCustom($id)
@@ -47,34 +40,48 @@ class CustomService
             $insurance = $custom->insurance;
         }
 
-        $commercial_quote = $custom->commercial_quote;
+        $commercialQuote = $custom->commercial_quote;
 
-        //Verificamos si tiene flete para calcular los impuestos: 
-        if ($commercial_quote->freight()->exists()) {
-           
-            //Calculamos impuestos para la aduana si es que lo llega a usar.
-            $customs_taxes = $this->calculateCustomTaxes($commercial_quote);
-           
-        }
 
         $modalitys = Modality::all();
         $type_insurace = TypeInsurance::with('insuranceRate')->get();
         $concepts = Concept::all();
 
-        $conceptCustom = null;
-
-        foreach ($concepts as $concept) {
 
 
-            if ($custom->commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Aduanas' && $concept->name === 'AGENCIAMIENTO DE ADUANAS') {
-                $conceptCustom = $concept;
+        $customs_agency = 0;
+        $pleasantOperatives = 35;
+
+        if (isset($commercialQuote->load_value)) {
+            if ($commercialQuote->load_value >= 23000) {
+                $customs_agency = $commercialQuote->load_value * 0.0045;
+            } else {
+                $customs_agency = 100;
             }
+        }
 
- 
+        // Filtrar los conceptos de "GASTOS OPERATIVOS" y "AGENCIAMIENTO DE ADUANAS"
+        $filteredConcepts = [];
+        foreach ($concepts as $concept) {
+            if (($concept->name === 'GASTOS OPERATIVOS' || $concept->name === 'AGENCIAMIENTO DE ADUANAS') && $commercialQuote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Aduanas') {
+                $conceptData = [
+                    'id' => $concept->id,
+                    'name' => $concept->name,  // Nombre del concepto
+                    'value' => 0  // Valor inicial
+                ];
+
+                if ($concept->name === 'AGENCIAMIENTO DE ADUANAS') {
+                    $conceptData['value'] = $customs_agency;  // Asignamos el precio calculado
+                } elseif ($concept->name === 'GASTOS OPERATIVOS') {
+                    $conceptData['value'] = $pleasantOperatives;  // Valor fijo para "GASTOS OPERATIVOS"
+                }
+
+                $filteredConcepts[] = $conceptData;  // Agregamos al arreglo final
+            }
         }
 
 
-        return  compact('custom', 'commercial_quote', 'modalitys', 'insurance', 'type_insurace', 'concepts', 'customs_taxes' , 'conceptCustom');
+        return  compact('custom', 'commercialQuote', 'modalitys', 'insurance', 'type_insurace', 'concepts', 'filteredConcepts');
     }
 
 
@@ -84,18 +91,9 @@ class CustomService
 
         $custom = $this->createOrUpdateCustoms($request, $id);
 
-        $insurance = $this->createOrUpdateInsurance($request, $custom);
-
-        if ($insurance) {
-            $concepts = $this->updateConceptInsurance($concepts, $custom, $request);
-        }
-
-
         $this->syncCustomsConcepts($custom, $concepts);
 
         return $custom;
-        
-
     }
 
 
@@ -119,6 +117,12 @@ class CustomService
 
         $custom->save();
 
+        // Ahora accedemos a la relación y actualizamos el cif_value en CommercialQuote
+        if ($custom->commercial_quote) {  // Verifica si la relación existe
+            $commercialQuote = $custom->commercial_quote;
+            $commercialQuote->cif_value = $this->parseDouble($request->cif_value);
+            $commercialQuote->save();  // Guardar los cambios en CommercialQuote
+        }
 
         return $custom;
     }
@@ -220,7 +224,6 @@ class CustomService
                 'value_concept' => $this->parseDouble($concept->value),
                 'value_sale' => $this->parseDouble($concept->value_sale),
             ]);
-           
         }
     }
 
@@ -245,6 +248,5 @@ class CustomService
         $customs_taxes->customs_perception = number_format($customs_perception_value, 2);
 
         return $customs_taxes;
-
     }
 }

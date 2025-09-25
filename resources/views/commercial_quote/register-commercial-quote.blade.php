@@ -94,7 +94,7 @@
                 </form>
                 <div class="modal-footer">
                     <button type="button" id="btnGenerarServicios" class="btn btn-primary">Generar</button>
-                    <button class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <a class="btn btn-secondary"  href="{{ route('quote.index') }}" >Cancelar</a>
                 </div>
 
             </div>

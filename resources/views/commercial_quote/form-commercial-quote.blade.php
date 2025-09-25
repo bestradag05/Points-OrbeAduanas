@@ -1,15 +1,4 @@
   <div id="informacion" role="tabpanel" class="bs-stepper-pane active dstepper-block" aria-labelledby="stepperInformacion">
-
-      <div class="form-group">
-          <label for="nro_quote_commercial">N° de Cotizacion</label>
-          <input type="text" class="form-control" id="nro_quote_commercial" name="nro_quote_commercial"
-              placeholder="Ingrese el numero de operacion" @readonly(true)
-              value="{{ isset($quote_commercial->nro_quote_commercial) ? $quote_commercial->nro_quote_commercial : $nro_quote_commercial }}">
-          @error('nro_quote_commercial')
-              <div class="text-danger">{{ $message }}</div>
-          @enderror
-      </div>
-
       <div class="row">
 
           <div class="col-6 transporte-hide">
