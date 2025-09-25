@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('total_points_pure')->default(0);       
             $table->integer('total_points_additional')->default(0);       
             $table->integer('total_points')->default(0);       
-             $table->enum('status', ['Pendiente', 'Generado', 'Cobrado'])->default('Pendiente');    
+             $table->enum('status', ['Pendiente', 'Generado', 'Anulado', 'Cobrado'])->default('Pendiente');    
             // Relaciones con Cotización Comercial o Operación
             $table->foreign('process_management_id')->references('id')->on('process_management')->onDelete('cascade');
             $table->timestamps();

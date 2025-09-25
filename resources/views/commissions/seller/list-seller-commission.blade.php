@@ -15,13 +15,13 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>
-                    <a href="{{ url('/commercial/quote/' . $commissions->processManagement->commercialQuote->id . '/detail') }}">
-                        {{ $commissions->processManagement->commercialQuote->nro_quote_commercial }}
+                    <a href="{{ url('/commercial/quote/' . $commissions->processManagement->quotesSentClient->commercialQuote->id . '/detail') }}">
+                        {{ $commissions->processManagement->quotesSentClient->commercialQuote->nro_quote_commercial }}
                     </a>
                 </td>
-                <td class="text-uppercase">{{ $commissions->processManagement->commercialQuote->customer->name_businessname }}</td>
+                <td class="text-uppercase">{{ $commissions->processManagement->quotesSentClient->commercialQuote->customer->name_businessname }}</td>
                 </td>
-                <td>{{ \Carbon\Carbon::parse($commissions->processManagement->commercialQuote->created_at)->format('d/m/Y') }}</td>
+                <td>{{ \Carbon\Carbon::parse($commissions->processManagement->quotesSentClient->commercialQuote->created_at)->format('d/m/Y') }}</td>
                 <td>{{ $commissions->total_points }}</td>
                 <td class="text-info">
                     <div class="custom-badge badge-info }}">

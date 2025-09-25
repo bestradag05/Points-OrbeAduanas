@@ -201,8 +201,5 @@ class CommercialQuote extends Model
         return $this->hasMany(QuotesSentClient::class, 'commercial_quote_id');
     }
 
-    public function processManagement()
-    {
-        return $this->hasOne(ProcessManagement::class, 'nro_quote_commercial', 'nro_quote_commercial');
-    }
+
 }

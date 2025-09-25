@@ -37,8 +37,12 @@ class SellerCommissionController extends Controller
         // Obtener el personal autenticado
         $personal = auth()->user()->personal;
 
-        $commissionsGroup = CommissionGroups::whereHas('processManagement.commercialQuote', function ($query) use ($personal) {
-            $query->where('id_personal', $personal->id);
+        $commissionsGroup = CommissionGroups::whereHas('processManagement', function ($query) use ($personal) {
+            $query->where('status', '!=', 'Anulado') // Excluir registros con ProcessManagement en estado 'Anulado'
+                ->whereHas('quotesSentClient', function ($query) use ($personal) {
+                    $query->where('status', '!=', 'Anulado') // Excluir registros con QuotesSentClient en estado 'Anulado'
+                        ->where('id_personal', $personal->id); // Filtrar por el personal autenticado
+                });
         })->get();
 
         $heads = [

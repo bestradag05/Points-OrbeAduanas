@@ -180,6 +180,9 @@ class QuotesSentClientController extends Controller
                 $status = 'Caducado';
                 break;
             case 'cancel':
+
+                //Anulamos los modelos relacionados
+                $this->updateStatusModels($quotesSentClient);
                 # code...
                 $status = 'Anulado';
                 break;
@@ -201,6 +204,22 @@ class QuotesSentClientController extends Controller
     }
 
 
+    public function updateStatusModels($quotesSentClient)
+    {
+
+        $processManagement = $quotesSentClient->processManagement;
+        if ($processManagement) {
+            $processManagement->update(['status' => 'Anulado']);
+        }
+
+        // 2. Anular commissionGroup
+        $commissionGroup = $processManagement ? $processManagement->commissionGroup : null;
+        if ($commissionGroup) {
+            $commissionGroup->update(['status' => 'Anulado']);
+        }
+    }
+
+
     private function createProcessManagement(QuotesSentClient $quotesSentClient)
     {
         // Obtener el comercial relacionado (commercialQuote)
@@ -211,7 +230,7 @@ class QuotesSentClientController extends Controller
             //Creamos el registro para agrupar las comisiones de el vendedor
 
             $processManagement = ProcessManagement::create([
-                'nro_quote_commercial' => $commercialQuote->nro_quote_commercial,
+                'nro_quote_commercial' => $quotesSentClient->nro_quote_commercial,
                 'freight_status' => $commercialQuote->freight->state ?? null,
                 'customs_status' => $commercialQuote->custom->state ?? null,
                 'transport_status' => $commercialQuote->transport->state ?? null,

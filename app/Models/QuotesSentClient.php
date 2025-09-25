@@ -177,4 +177,10 @@ class QuotesSentClient extends Model
         return $this->belongsToMany(Concept::class, 'quote_sent_client_concepts', 'quote_sent_client_id', 'concept_id')
             ->withPivot(['concept_value', 'service_type', 'has_igv']);
     }
+
+
+        public function processManagement()
+    {
+        return $this->hasOne(ProcessManagement::class, 'nro_quote_commercial', 'nro_quote_commercial');
+    }
 }

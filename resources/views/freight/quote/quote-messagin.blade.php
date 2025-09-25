@@ -11,15 +11,15 @@
                 <div class="col-8 col-lg-6">
                     <h5 class="text-indigo text-center"> <i class="fas fa-file-alt mx-2"></i>Detalle de carga</h5>
                 </div>
-                 @role('Pricing')
-                <div class="col-4 col-lg-6">
-                    <button onclick="copieHtmlDetailQuote()" class="btn btn-sm btn-secondary">
-                        <i class="fas fa-copy"></i>
-                    </button>
-                    <button onclick="downloadImageDetailQuote('{{ $quote->nro_quote }}')" class="btn btn-sm btn-secondary">
-                        <i class="fas fa-download"></i>
-                    </button>
-                </div>
+                @role('Pricing')
+                    <div class="col-4 col-lg-6">
+                        <button onclick="copieHtmlDetailQuote()" class="btn btn-sm btn-secondary">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button onclick="downloadImageDetailQuote('{{ $quote->nro_quote }}')" class="btn btn-sm btn-secondary">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
                 @endrole
             </div>
 
@@ -356,16 +356,16 @@
 
         <div class="col-12">
             <div class="text-center mt-5 mb-3">
-                 @role('Asesor Comercial')
-                <form action="{{ url('/quote/freight/send-pricing/' . $quote->id) }}" method="POST" class="d-inline"
-                    id="form-send-pricing">
-                    @csrf
-                    @method('PATCH')
+                @hasrole(['Asesor Comercial', 'Super-Admin'])
+                    <form action="{{ url('/quote/freight/send-pricing/' . $quote->id) }}" method="POST" class="d-inline"
+                        id="form-send-pricing">
+                        @csrf
+                        @method('PATCH')
 
-                    <button class="btn btn-outline-indigo btn-sm {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">
-                        <i class="fas fa-paper-plane"></i> Enviar cotización</button>
-                </form>
-                 @endrole
+                        <button class="btn btn-outline-indigo btn-sm {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">
+                            <i class="fas fa-paper-plane"></i> Enviar cotización</button>
+                    </form>
+                @endhasrole
 
             </div>
 
@@ -377,14 +377,14 @@
             <div class="col-12 px-4 mt-5">
                 <div class="text-center mb-4">
                     <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
-                    @role('Pricing')
-                    @if (!$quote->responses->contains(fn($response) => $response->status === 'Aceptado'))
-                        <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
-                            data-target="#modalResponseQuoteFreight">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    @endif
-                    @endrole
+                    @hasrole(['Asesor Comercial', 'Super-Admin'])
+                        @if (!$quote->responses->contains(fn($response) => $response->status === 'Aceptado'))
+                            <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
+                                data-target="#modalResponseQuoteFreight">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        @endif
+                    @endhasrole
                 </div>
 
                 @php
@@ -444,15 +444,15 @@
                                         <option>Detalle</option>
 
                                         @if (!$quote->freight)
-                                             @role('Asesor Comercial')
-                                            <option class="{{ $response->status != 'Aceptado' ? 'd-none' : '' }}">Generar
-                                                Flete</option>
-                                            <option class="{{ $response->status === 'Aceptado' ? 'd-none' : '' }}">Aceptar
-                                            </option>
-                                            <option class="{{ $response->status === 'Rechazada' ? 'd-none' : '' }}">
-                                                Rechazar
-                                            </option>
-                                            @endrole
+                                           @hasrole(['Asesor Comercial', 'Super-Admin'])
+                                                <option class="{{ $response->status != 'Aceptado' ? 'd-none' : '' }}">Generar
+                                                    Flete</option>
+                                                <option class="{{ $response->status === 'Aceptado' ? 'd-none' : '' }}">Aceptar
+                                                </option>
+                                                <option class="{{ $response->status === 'Rechazada' ? 'd-none' : '' }}">
+                                                    Rechazar
+                                                </option>
+                                            @endhasrole
                                         @endif
                                     </select>
                                 </td>
@@ -1433,7 +1433,7 @@
 
             contador++; // Solo contar los conceptos sin IGV
             let fila = tbody.insertRow();
-            if(item.hasIgv){
+            if (item.hasIgv) {
                 fila.style.backgroundColor = '#f8d7da';
             }
 
@@ -1485,12 +1485,12 @@
                 conceptsResponseFreightArray.forEach((item, index) => {
                     if (!item.hasIgv) {
                         renderConceptRow(item, index, tbodyFreight, contador);
-                    }else{
+                    } else {
                         renderConceptRow(item, index, tbodyFreightWithIgv, contadorWithIgv);
                     }
                 });
 
-                
+
             }
 
             // 3. Luego renderizamos las comisiones fijas SOLO para la tabla sin IGV

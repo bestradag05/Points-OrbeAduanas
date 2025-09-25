@@ -3,7 +3,7 @@
 @section('content_header')
     <div class="d-flex justify-content-center">
         <h2 class="text-uppercase">Detalle del proceso <span
-                class="text-indigo">{{ $process->commercialQuote->nro_quote_commercial }}</span></h2>
+                class="text-indigo">{{ $process->quotesSentClient->commercialQuote->nro_quote_commercial }}</span></h2>
 
     </div>
 

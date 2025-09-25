@@ -17,11 +17,11 @@ return new class extends Migration
             $table->enum('freight_status', ['Pendiente', 'En Proceso', 'Completado'])->nullable();
             $table->enum('customs_status', ['Pendiente', 'En Proceso', 'Completado'])->nullable();
             $table->enum('transport_status', ['Pendiente', 'En Proceso', 'Completado'])->nullable();
-            $table->enum('state', ['Pendiente', 'En Proceso', 'Completado'])->default('Pendiente');
+            $table->enum('status', ['Pendiente', 'En Proceso', 'Enviado', 'Completado'])->default('Pendiente');
             $table->boolean('process_completed')->default(false);
             $table->timestamps();
 
-             $table->foreign('nro_quote_commercial')->references('nro_quote_commercial')->on('commercial_quote')->onDelete('cascade');
+             $table->foreign('nro_quote_commercial')->references('nro_quote_commercial')->on('quotes_sent_clients')->onDelete('cascade');
 
         });
     }

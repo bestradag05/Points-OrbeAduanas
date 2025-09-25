@@ -17,7 +17,8 @@ class CommissionGroups extends Model
         'total_profit',
         'total_points_pure',
         'total_points_additional',
-        'total_points'
+        'total_points',
+        'status'
     ];
 
     public function processManagement()
