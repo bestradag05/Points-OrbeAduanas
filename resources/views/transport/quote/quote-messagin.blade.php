@@ -422,9 +422,9 @@
             <div class="text-center mb-4">
                 <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
                 <!-- Botón para abrir el modal -->
-                 @role('Trasporte')
+                 @role('Trasnporte')
                 @if (!$quote->response->contains('status', 'Aceptado'))
-                    <button type="button" class="btn btn-indigo" data-toggle="modal"
+                    <button type="button" class="btn btn-indigo btn-sm" data-toggle="modal"
                         data-target="#modalCotizarTransporte">
                         <i class="fas fa-plus"></i>
                     </button>
