@@ -614,6 +614,13 @@ return [
             'can' => 'incoterms.list',
         ],
         [
+            'text' => 'Almacenes',
+            'url'  => 'warehouses',
+            'icon' => 'fa-solid fa-warehouse',
+            'active' => ['warehouses'],
+            'can' => 'warehouses.list',
+        ],
+        [
             'text' => 'Monedas',
             'url'  => 'currencies',
             'icon' => 'fas fa-coins',

@@ -51,6 +51,7 @@ use App\Http\Controllers\ResponseFreightQuotesController;
 use App\Http\Controllers\SellerCommissionController;
 use App\Http\Controllers\ShippingCompanyController;
 use App\Http\Controllers\TypeContainerController;
+use App\Http\Controllers\WarehousesController;
 use App\Models\CommercialQuote;
 use App\Models\ProcessManagement;
 use App\Models\ResponseFreightQuotes;
@@ -158,6 +159,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('type_insurance', TypeInsuranceController::class);
     Route::resource('insurance_rates', InsuranceRatesController::class);
     Route::resource('incoterms', IncotermsController::class);
+    Route::resource('warehouses', WarehousesController::class);
     Route::resource('modality', ModalityController::class);
 
     Route::resource('routing', RoutingController::class);
