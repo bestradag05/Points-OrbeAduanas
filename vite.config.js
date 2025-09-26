@@ -12,9 +12,9 @@ export default defineConfig({
             refresh: true,
         }),
     ],
-    server: {
+    /* server: {
         cors: {
             origin: /^https?:\/\/(?:localhost|127\.0\.0\.1|sisorbe\.orbeaduanas\.com)(?::\d+)?$/, // Permitir localhost y producción
         },
-    },
+    }, */
 });

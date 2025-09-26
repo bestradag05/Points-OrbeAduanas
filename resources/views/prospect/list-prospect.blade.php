@@ -16,7 +16,7 @@
         @foreach ($customers as $customer)
             <tr>
                 <td>{{ $loop->iteration }}</td>
-                <td>{{ $customer->document->name }}</td>
+                <td>{{ $customer->document->name ?? '' }}</td>
                 <td>{{ $customer->document_number }}</td>
                 <td>{{ $customer->name_businessname }}</td>
                 <td>{{ $customer->contact_name }}</td>

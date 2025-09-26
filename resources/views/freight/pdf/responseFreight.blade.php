@@ -101,7 +101,7 @@
             <td class="highlight">FRECUENCIA</td>
             <td>{{ $response->frequency }}</td>
         </tr>
-         <tr>
+        <tr>
             <td class="highlight">TIEMPO DE TRANSITO</td>
             <td>{{ $response->transit_time }}</td>
             <td class="highlight">DIAS LIBRES</td>
@@ -124,10 +124,16 @@
         @if ($response->quote->commercial_quote->type_shipment->description === 'Marítima')
 
             @if ($response->quote->commercial_quote->lcl_fcl === 'FCL')
+
                 <tr>
                     <td class="highlight">CONTENEDOR</td>
-                    <td colspan="3">{{ $response->quote->commercial_quote->container_quantity }} x
-                        {{ $response->quote->commercial_quote->container->name }}</td>
+                    <td colspan="3">
+                        @foreach ($response->quote->commercial_quote->containersFcl as $container)
+                            {{ $container->pivot->container_quantity }} x
+                            {{ $container->name }} <br>
+                            @endforeach
+                    </td>
+
                 </tr>
                 <tr>
                     <td class="highlight">PESO</td>
@@ -172,7 +178,7 @@
         </thead>
         <tbody>
             @foreach ($response->concepts as $concept)
-                <tr style="background: {{$concept->pivot->has_igv ? '#f8d7da' : '#ffffff'}}">
+                <tr style="background: {{ $concept->pivot->has_igv ? '#f8d7da' : '#ffffff' }}">
                     <td>{{ $concept->name }}</td>
                     <td class="right">{{ $concept->pivot->unit_cost }}</td>
                     <td>{{ $concept->pivot->fixed_miltiplyable_cost }}</td>

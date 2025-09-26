@@ -87,6 +87,7 @@ Route::get('/', function () {
 
 Route::get('/link', function () {
     Artisan::call('storage:link');
+    Artisan::call('permission:cache-reset');
 });
 
 /* Route::get('/alert', function () {
