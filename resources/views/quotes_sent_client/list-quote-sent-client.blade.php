@@ -60,21 +60,18 @@
                             onchange="changeStatus(this.value, {{ $quoteSentClient->id }})">
                             <option value="" disabled selected>Seleccione una acción...</option>
 
-                            @if ($quoteSentClient->status === 'Aceptado')
-                                <option value="cancel"
-                                    class="{{ $quoteSentClient->status === 'Anulado' ? 'd-none' : '' }}">
-                                    Anular
-                                </option>
-                            @else
-                                <option value="accept"
-                                    class="{{ $quoteSentClient->status === 'Aceptado' ? 'd-none' : '' }}">
-                                    Aceptar
-                                </option>
-                                <option value="decline"
-                                    class="{{ $quoteSentClient->status === 'Rechazada' ? 'd-none' : '' }}">
-                                    Rechazar
-                                </option>
-                            @endif
+
+                            <option value="cancel" class="{{ $quoteSentClient->status === 'Anulado' ? 'd-none' : '' }}">
+                                Anular
+                            </option>
+
+                            <option value="accept" class="{{ $quoteSentClient->status === 'Aceptado' ? 'd-none' : '' }}">
+                                Aceptar
+                            </option>
+                            <option value="decline" class="{{ $quoteSentClient->status === 'Rechazada' ? 'd-none' : '' }}">
+                                Rechazar
+                            </option>
+
 
 
                         </select>
@@ -207,11 +204,15 @@
                         cancelButtonText: 'Cancelar',
                         confirmButtonColor: '#d33'
                     }).then((result) => {
-                        let form = $('<form method="POST" action="/sent-client/' + quoteSentClient + '/' + action +
-                            '"></form>');
-                        form.append('@csrf'); // Incluir el token CSRF
-                        $('body').append(form); // Adjuntamos el formulario al body
-                        form.submit(); // Enviamos el formulario
+                        if (result.isConfirmed) {
+                            let form = $('<form method="POST" action="/sent-client/' + quoteSentClient + '/' +
+                                action +
+                                '"></form>');
+                            form.append('@csrf'); // Incluir el token CSRF
+                            $('body').append(form); // Adjuntamos el formulario al body
+                            form.submit(); // Enviamos el formulario
+                        }
+
                     });
                     break;
 

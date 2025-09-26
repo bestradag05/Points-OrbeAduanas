@@ -375,7 +375,7 @@
                     <div class="col-8 col-lg-6">
                         <h5 class="text-indigo text-center"> <i class="fas fa-file"></i> Lista de archivos</h5>
                     </div>
-                    @if ($quote->state === 'Pendiente' && auth()->user()->hasRole('Asesor Comercial'))
+                    @if ($quote->state === 'Pendiente' && (auth()->user()->hasRole('Asesor Comercial') || auth()->user()->hasRole('Super-Admin') ))
                     <div class="col-6 align-items-center ">
                         <button class="btn btn-indigo btn-sm" data-toggle="modal"
                             data-target="#modalQuoteTransportDocuments">
@@ -393,7 +393,7 @@
                                         <i class="far fa-fw fa-file-pdf"></i> {{ $file['name'] }}
                                     </a>
                                 </td>
-                                <td class="text-center {{ $quote->state === 'Aceptado' ? 'd-none' : '' }}"">
+                                <td class="text-center {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">
                                     <a href=" #" class="text-danger"
                                         onclick="handleFileDeletion('{{ $file['name'] }}', this, event)">
                                         X
@@ -419,7 +419,7 @@
 
          <div class="col-12">
             <div class="text-center mt-5 mb-3">
-                 @role('Asesor Comercial')
+                 @hasrole(['Asesor Comercial', 'Super-Admin'])
                 <form action="{{ url('/quote/transport/send-transport/' . $quote->id) }}" method="POST" class="d-inline"
                     id="form-send-transport">
                     @csrf
@@ -428,7 +428,7 @@
                     <button class="btn btn-outline-indigo btn-sm {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">
                         <i class="fas fa-paper-plane"></i> Enviar cotización</button>
                 </form>
-                 @endrole
+                 @endhasrole
 
             </div>
 
@@ -441,14 +441,14 @@
             <div class="text-center mb-4">
                 <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
                 <!-- Botón para abrir el modal -->
-                 @role('Transporte')
+                 @hasrole(['Transporte', 'Super-Admin'])
                 @if (!$quote->response->contains('status', 'Aceptado'))
                     <button type="button" class="btn btn-indigo btn-sm" data-toggle="modal"
                         data-target="#modalCotizarTransporte">
                         <i class="fas fa-plus"></i>
                     </button>
                 @endif
-                @endrole
+                @endhasrole
             </div>
             <table class="table table-bordered table-hover table-sm text-sm my-4">
                 <thead class="thead-dark">
@@ -493,16 +493,16 @@
                                     @if ($response->status === 'Rechazada')
                                         <span class="text-muted">Rechazada</span>
                                     @elseif ($response->status === 'Aceptado')
-                                        @role('Asesor Comercial')
+                                        @hasrole(['Asesor Comercial', 'Super-Admin'])
                                         <button class="btn btn-danger btn-sm" data-toggle="modal"
                                             data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
                                             Rechazar
                                         </button>
-                                        @endrole
+                                        @endhasrole
                                     @elseif ($quote->response->contains('status', 'Aceptado'))
                                         <span class="text-muted">Sin acciones</span>
                                     @else
-                                        @role('Asesor Comercial')
+                                        @hasrole(['Asesor Comercial', 'Super-Admin'])
                                         <button class="btn btn-success btn-sm" data-toggle="modal"
                                             data-target="#quote-transport" data-response-id="{{ $response->id }}"
                                             data-response-nro="{{ $response->nro_response }}">
@@ -512,7 +512,7 @@
                                             data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
                                             Rechazar
                                         </button>
-                                        @endrole
+                                        @endhasrole
                                     @endif
                                 @endif
                                 <button type="button" class="btn btn-sm btn-primary btn-pdf-transport" title="Ver PDF"
@@ -1238,8 +1238,8 @@
                 commercial_quote,
                 transport_quote
             }).then(response => {
-                let listItem = element.parentElement;
-                row.remove();
+                let listItem = element.parentElement.parentElement;
+                listItem.remove();
             }).catch(error => {
                 console.error('Error al eliminar el archivo:', error);
             });

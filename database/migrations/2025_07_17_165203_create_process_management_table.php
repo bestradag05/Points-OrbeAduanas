@@ -17,7 +17,7 @@ return new class extends Migration
             $table->enum('freight_status', ['Pendiente', 'En Proceso', 'Completado'])->nullable();
             $table->enum('customs_status', ['Pendiente', 'En Proceso', 'Completado'])->nullable();
             $table->enum('transport_status', ['Pendiente', 'En Proceso', 'Completado'])->nullable();
-            $table->enum('status', ['Pendiente', 'En Proceso', 'Enviado', 'Completado'])->default('Pendiente');
+            $table->enum('status', ['Pendiente', 'En Proceso', 'Anulado', 'Enviado', 'Completado'])->default('Pendiente');
             $table->boolean('process_completed')->default(false);
             $table->timestamps();
 

@@ -309,7 +309,7 @@
                             <h5 class="text-indigo text-center"> <i class="fas fa-file"></i> Lista de archivos</h5>
                         </div>
                         {{-- !$quote->responses->contains(fn($response) => $response->status === 'Aceptado') --}}
-                        @if ($quote->state === 'Pendiente' && auth()->user()->hasRole('Asesor Comercial'))
+                        @if ($quote->state === 'Pendiente' && (auth()->user()->hasRole('Asesor Comercial') || auth()->user()->hasRole('Super-Admin') ))
                             <div class="col-6 align-items-center">
                                 <button class="btn btn-indigo btn-sm" data-toggle="modal"
                                     data-target="#modalQuoteFreightDocuments">
@@ -377,7 +377,7 @@
             <div class="col-12 px-4 mt-5">
                 <div class="text-center mb-4">
                     <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
-                    @hasrole(['Asesor Comercial', 'Super-Admin'])
+                    @hasrole(['Pricing', 'Super-Admin'])
                         @if (!$quote->responses->contains(fn($response) => $response->status === 'Aceptado'))
                             <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
                                 data-target="#modalResponseQuoteFreight">
@@ -1979,8 +1979,8 @@
                 commercial_quote: commercial_quote,
                 freight_quote: freight_quote
             }).then(response => {
-                let listItem = element.parentElement;
-                row.remove();
+                let listItem = element.parentElement.parentElement;
+                listItem.remove();
             }).catch(error => {
                 console.error('Error al eliminar el archivo:', error);
             });

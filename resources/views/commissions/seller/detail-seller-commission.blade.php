@@ -7,7 +7,7 @@
 
         <div class="col-12 my-3">
             <h3 class="text-center text-bold text-indigo">Gestion de comisiones -
-                {{ $commissionsGroup->processManagement->commercialQuote->nro_quote_commercial }}</h3>
+                {{ $commissionsGroup->processManagement->quotesSentClient->commercialQuote->nro_quote_commercial }}</h3>
         </div>
 
         <div class="col-12 row">
