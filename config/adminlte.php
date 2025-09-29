@@ -616,7 +616,7 @@ return [
         [
             'text' => 'Almacenes',
             'url'  => 'warehouses',
-            'icon' => 'fa-solid fa-warehouse',
+            'icon' => 'fa fa-industry',
             'active' => ['warehouses'],
             'can' => 'warehouses.list',
         ],

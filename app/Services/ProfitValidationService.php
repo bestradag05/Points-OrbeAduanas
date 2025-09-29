@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Freight;
 use App\Models\SellersCommission;
+use Illuminate\Support\Facades\Log;
 
 class ProfitValidationService
 {
@@ -82,9 +83,15 @@ class ProfitValidationService
             $totalPointsThisMonth = SellersCommission::where('personal_id', $personal->id)
                 ->whereYear('created_at', $currentYear)
                 ->whereMonth('created_at', $currentMonth)
+                ->whereHas('commissionsGroup', function ($query) {
+                    $query->where('status', '!=', 'Anulado');  // Excluir los SellerCommissions de grupos anulados
+                })
                 ->sum('pure_points') + SellersCommission::where('personal_id', $personal->id)
                 ->whereYear('created_at', $currentYear)
                 ->whereMonth('created_at', $currentMonth)
+                ->whereHas('commissionsGroup', function ($query) {
+                    $query->where('status', '!=', 'Anulado');  // Excluir los SellerCommissions de grupos anulados
+                })
                 ->sum('additional_points');
 
             // Verificar los puntos faltantes para llegar a 10

@@ -63,7 +63,7 @@ class WarehousesController extends Controller
     {
         $warehouses = Warehouses::findorFail($id);
 
-        return view("warehouses.edit-warehouse", compact('warehouses', 'formMode'));
+        return view("warehouses.edit-warehouse", compact('warehouses'));
     }
 
     // Actualizar régimen
@@ -83,7 +83,7 @@ class WarehousesController extends Controller
     public function destroy($id)
     {
         $warehouse = Warehouses::find($id);
-        $warehouse->update(['state' => 'Inactivo']);
+        $warehouse->update(['status' => 'Inactivo']);
 
         return redirect('warehouses')->with('eliminar', 'ok');
     }

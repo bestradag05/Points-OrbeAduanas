@@ -16,24 +16,31 @@
         @foreach ($warehouses as $warehouse)
             <tr>
                 <td>{{ $loop->iteration }}</td>
-                <td>{{ $warehouse->ruc}}</td>
-                <td>{{ $warehouse->name_businessname}}</td>
-                <td>{{ $warehouse->contact_name}}</td>
-                <td>{{ $warehouse->contact_number}}</td>
-                <td>{{ $warehouse->contact_email}}</td>
-                <td>{{ $warehouse->warehouses_type}}</td>
-                <td>{{ $warehouse->status}}</td>   
+                <td>{{ $warehouse->ruc }}</td>
+                <td>{{ $warehouse->name_businessname }}</td>
+                <td>{{ $warehouse->contact_name }}</td>
+                <td>{{ $warehouse->contact_number }}</td>
+                <td>{{ $warehouse->contact_email }}</td>
+                <td>{{ $warehouse->warehouses_type }}</td>
+                <td>
+                    <div class="custom-badge status-{{ strtolower($warehouse->status) }}">
+                        {{ $warehouse->status }}
+                    </div>
+                </td>
 
                 <td>
                     @can('warehouse.update')
-                     <a href="{{ url('warehouses/'. $warehouse->id . '/edit' ) }}"> <i class="fas fa-edit"></i> </a>
+                        <a href="{{ url('warehouses/' . $warehouse->id . '/edit') }}"> <i class="fas fa-edit"></i> </a>
                     @endcan
                     @can('warehouse.delete')
-                     <form action="{{ url('/warehouses/'.$warehouse->id . '/destroy' ) }}" class="form-delete" method="POST" style="display: inline;" data-confirm-delete="true">
-                        {{ method_field('DELETE') }}
-                        @csrf
-                        <button  type="submit" style="border: none; background: none; padding: 0; margin: 0; cursor: pointer;"> <i class="fas fa-trash text-primary"></i> </button>
-                    </form>
+                        <form action="{{ url('/warehouses/' . $warehouse->id) }}" class="form-delete" method="POST"
+                            style="display: inline;" data-confirm-delete="true">
+                            {{ method_field('DELETE') }}
+                            @csrf
+                            <button type="submit"
+                                style="border: none; background: none; padding: 0; margin: 0; cursor: pointer;"> <i
+                                    class="fas fa-trash text-primary"></i> </button>
+                        </form>
                     @endcan
                 </td>
             </tr>
@@ -42,7 +49,7 @@
 @stop
 
 @push('scripts')
-    @if(session('eliminar') == 'ok')
+    @if (session('eliminar') == 'ok')
         <script>
             Swal.fire('Eliminado!', 'El registro fue eliminado.', 'success');
         </script>
