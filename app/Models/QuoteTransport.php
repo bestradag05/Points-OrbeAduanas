@@ -16,7 +16,9 @@ class QuoteTransport extends Model
     protected $fillable = [
         'nro_quote',
         'pick_up',
+        'pickup_warehouse',
         'delivery',
+        'delivery_warehouse',
         'container_return',
         'gang',
         'cost_gang',
@@ -121,18 +123,18 @@ class QuoteTransport extends Model
     {
         return $this->hasMany(
             ResponseTransportQuote::class,
-            'quote_transport_id',     
+            'quote_transport_id',
         );
     }
 
-      //TODO: (Task) Llamarlo concepts unicamente, cuando hay relaciones que sean similares ahi si se especifica.
-      //TODO: Todas las relaciones que devuelven muchos debe ser en plural
+    //TODO: (Task) Llamarlo concepts unicamente, cuando hay relaciones que sean similares ahi si se especifica.
+    //TODO: Todas las relaciones que devuelven muchos debe ser en plural
     public function transportConcepts()
     {
         return $this->belongsToMany(
             Concept::class,
-            'concepts_quote_transport',      
-            'quote_transport_id',          
+            'concepts_quote_transport',
+            'quote_transport_id',
             'concepts_id'
         );
     }
@@ -143,5 +145,16 @@ class QuoteTransport extends Model
     public function clientTrace()
     {
         return $this->hasOne(ClientQuoteTrace::class, 'quote_id');
+    }
+
+    public function pickupWarehouse()
+    {
+        return $this->belongsTo(Warehouses::class, 'pickup_warehouse');
+    }
+
+    // Relación pertenece a (para el almacén de entrega)
+    public function deliveryWarehouse()
+    {
+        return $this->belongsTo(Warehouses::class, 'delivery_warehouse');
     }
 }

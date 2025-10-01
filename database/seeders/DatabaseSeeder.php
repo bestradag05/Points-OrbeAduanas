@@ -29,6 +29,7 @@ use App\Models\TypeLoad;
 use App\Models\TypeService;
 use App\Models\TypeShipment;
 use App\Models\User;
+use App\Models\Warehouses;
 use Illuminate\Database\Seeder;
 use PhpOffice\PhpSpreadsheet\Calculation\DateTimeExcel\Current;
 use Spatie\Permission\Models\Permission;
@@ -277,6 +278,22 @@ class DatabaseSeeder extends Seeder
         Customer::create(['document_number' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'address' => 'Av Elmer faucett 474', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'state' => 'Activo', 'id_document' => 1, 'id_personal' => 99, 'type' => 'cliente']);
 
 
+        Warehouses::create(['ruc' => '20137422604', 'name_businessname' => 'SHOHIN S.A.' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Aérea']);
+        Warehouses::create(['ruc' => '20204621242', 'name_businessname' => 'TALMA SERVICIOS AEROPORTUARIOS S.A ' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Aérea']);
+        Warehouses::create(['ruc' => '20550083613', 'name_businessname' => 'SERVICIOS AEROPORTUARIOS ANDINOS S.A ' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Aérea']);
+        Warehouses::create(['ruc' => '20606777257', 'name_businessname' => 'ALMACENES FORWARDER S.A.C.' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Aérea']);
+        Warehouses::create(['ruc' => '20101128777', 'name_businessname' => 'DHL EXPRESS PERÚ S.A.C.' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Aérea']);
+        Warehouses::create(['ruc' => '20312239117', 'name_businessname' => 'AQP EXPRESS CARGO S.A.C' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Aérea']);
+        
+        Warehouses::create(['ruc' => '20543083888', 'name_businessname' => 'APM TERMINALS CALLAO SOCIEDAD ANONIMA' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
+        Warehouses::create(['ruc' => '20513462388', 'name_businessname' => 'DP WORLD CALLAO S.R.L.' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
+        Warehouses::create(['ruc' => '20100010217', 'name_businessname' => 'DP WORLD LOGISTICS S.R.L' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
+        Warehouses::create(['ruc' => '20508782013', 'name_businessname' => 'VILLAS OQUENDO S.A.' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
+        Warehouses::create(['ruc' => '20427919111', 'name_businessname' => 'DINET S.A.' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
+        Warehouses::create(['ruc' => '20606777257', 'name_businessname' => 'ALMACENES FORWARDER S.A.C' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
+        Warehouses::create(['ruc' => '20259171891', 'name_businessname' => 'INVERS.MARITIMAS UNIVERSALES PERU S.A ' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
+        Warehouses::create(['ruc' => '20507646051', 'name_businessname' => 'TERMINALES PORTUARIOS PERUANOS SAC' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
+        Warehouses::create(['ruc' => '20507646051', 'name_businessname' => 'CONTRANS S.A.C. ' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
 
 
         $this->call(CountrySeeder::class);

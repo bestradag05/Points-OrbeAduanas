@@ -5,9 +5,9 @@
 
     <div class="col-4 offset-4">
 
-{{--         @if ($comercialQuote->state === 'Pendiente') --}}
+        {{--         @if ($comercialQuote->state === 'Pendiente') --}}
 
-{{--             <div class="form-group row">
+        {{--             <div class="form-group row">
                 <label class="col-sm-4 col-form-label">Agregar Cotizacion : </label>
                 <div class="col-sm-8">
                     <select name="type_quote_service" id="type_quote_service" class="form-control"
@@ -32,7 +32,7 @@
 
             </div> --}}
 
-{{--         @endif --}}
+        {{--         @endif --}}
 
 
 
@@ -138,8 +138,18 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $quote->nro_quote }}</td>
-                            <td>{!! $quote->pick_up ? e($quote->pick_up) : '<span class="text-muted">Falta información</span>' !!}</td>
-                            <td>{!! $quote->delivery ? e($quote->delivery) : '<span class="text-muted">Falta información</span>' !!}</td>
+                            <td>
+                                {!! $quote->pick_up
+                                    ? e($quote->pick_up)
+                                    : ($quote->pickupWarehouse && $quote->pickupWarehouse->name_businessname
+                                        ? e($quote->pickupWarehouse->name_businessname)
+                                        : '<span class="text-muted">Falta información</span>') !!}
+                            </td>
+                            <td>{!! $quote->delivery
+                                ? e($quote->delivery)
+                                : ($quote->deliveryWarehouse && $quote->deliveryWarehouse->name_businessname
+                                    ? e($quote->deliveryWarehouse->name_businessname)
+                                    : '<span class="text-muted">Falta información</span>') !!}</td>
                             <td
                                 class="{{ $comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none' }}">
                                 {{ $quote->commercial_quote->lcl_fcl }}
@@ -210,15 +220,85 @@
                 <div class="modal-body">
                     <p class="text-warning text-center">Para completar la cotizacion de transporte, por favor brinde la
                         siguiente información: </p>
-                    <div class="form-group">
-                        <label for="pick_up">Dirección de Recojo:</label>
-                        <input id="pick_up" class="form-control" type="text" name="pick_up">
-                    </div>
-                    <div class="form-group">
-                        <label for="delivery">Dirección de entrega</label>
-                        <input id="delivery" class="form-control" type="text" name="delivery">
-                    </div>
 
+                    <div class="row mb-3">
+                        <div class="col-12">
+
+                            <label for="pickup_warehouse">Dirección de Recojo:</label>
+                        </div>
+                        <div class="col-12 row">
+
+                            <div class="col-8">
+
+                                <!-- Lista de almacenes -->
+                                <select id="pickup_warehouse" class="form-control" name="pickup_warehouse">
+                                    <option value="">Seleccione una dirección...</option>
+                                    @foreach ($warehouses as $warehouse)
+                                        @if ($comercialQuote->type_shipment->description === $warehouse->warehouses_type)
+                                            <option value="{{ $warehouse->id }}">{{ $warehouse->name_businessname }} -
+                                                {{ $warehouse->ruc }}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <!-- Campo para dirección personalizada que se muestra cuando se selecciona "Otra Dirección" -->
+
+                                <input id="pickup" class="form-control d-none" type="text" name="pickup">
+
+                            </div>
+                            <div class="col-4">
+                                <!-- Checkbox para elegir "Otra Dirección" -->
+                                <div class="input-group-append mx-5">
+                                    <div class="form-check">
+                                        <input type="checkbox" id="other_pickup" class="form-check-input"
+                                            onchange="togglePickUpAddress()">
+                                        <label class="form-check-label" for="other_pickup">Otra Dirección</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+
+                            <label for="delivery">Dirección de entrega:</label>
+                        </div>
+                        <div class="col-12 row">
+
+                            <div class="col-8">
+
+                                <!-- Lista de almacenes -->
+                                <select id="delivery_warehouse" class="form-control" name="delivery_warehouse">
+                                    <option value="">Seleccione una dirección...</option>
+                                    @foreach ($warehouses as $warehouse)
+                                        @if ($comercialQuote->type_shipment->description === $warehouse->warehouses_type)
+                                            <option value="{{ $warehouse->id }}">{{ $warehouse->name_businessname }} -
+                                                {{ $warehouse->ruc }}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <!-- Campo para dirección personalizada que se muestra cuando se selecciona "Otra Dirección" -->
+
+                                <input id="delivery" class="form-control d-none" type="text" name="delivery">
+
+                            </div>
+                            <div class="col-4">
+                                <!-- Checkbox para elegir "Otra Dirección" -->
+                                <div class="input-group-append mx-5">
+                                    <div class="form-check">
+                                        <input type="checkbox" id="other_delivery" class="form-check-input"
+                                            onchange="toggleDeliveryAddress()">
+                                        <label class="form-check-label" for="other_delivery">Otra Dirección</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
                     <div class="form-group" id="container_return">
                         <label for="container_return">Devolución de contenedor</label>
                         <input id="container_return" class="form-control" type="text" name="container_return">
@@ -504,7 +584,7 @@
                 case 'Detalle':
                     // Para ver el detalle
                     if (typeQuote === 'Transporte') {
-                        if (!quote.pick_up || !quote.delivery) {
+                        if ((!quote.pick_up && !quote.pickup_warehouse) || (!quote.delivery && !quote.delivery_warehouse)) {
                             openModalTransport(quote);
                         } else {
                             window.location.href = `/quote/transport/${quote.id}`;
@@ -647,54 +727,52 @@
 
 
 
-        //Confirmacion para crear una nueva cotizacion de Transporte - Flete
+        function togglePickUpAddress() {
+            var checkBox = document.getElementById('other_pickup');
+            var selectField = document.getElementById('pickup_warehouse');
+            var customField = document.getElementById('pickup');
 
-/*         function createTypeQuote(select) {
+            if (checkBox.checked) {
+                selectField.classList.remove('d-block'); // Ocultar la lista de almacenes
+                selectField.classList.add('d-none');
 
-            let nro_quote_commercial = @json($comercialQuote->nro_quote_commercial);
+                customField.classList.remove('d-none'); // Mostrar el campo para dirección personalizada
+                customField.classList.add('d-block');
+                selectField.value = '';
+            } else {
+                selectField.classList.remove('d-none'); // Mostrar la lista de almacenes
+                selectField.classList.add('d-block');
 
-            Swal.fire({
-                title: `Crearas una cotizacion para ${select.value}`,
-                text: "Se enviara una nueva cotizacion para el area correspondiente",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Si, crear cotización",
-                cancelButtonText: "Cancelar",
-            }).then((result) => {
+                customField.classList.remove('d-block'); // Ocultar el campo para dirección personalizada
+                customField.classList.add('d-none');
 
-                if (result.isConfirmed) {
-
-                    $.ajax({
-                        type: "GET",
-                        url: `/commercial/createQuote/${nro_quote_commercial}`,
-                        data: {
-                            type_quote: select.value
-                        },
-                        dataType: "JSON",
-                        success: function(response) {
-
-                            Swal.fire({
-                                title: `${response.message}`,
-                                icon: "success",
-                                allowOutsideClick: false // Evita que se cierre al hacer clic fuera
-                            }).then((result) => {
-                                location.reload(); // Recarga la página
-                            });
-
-                        }
-                    });
-
-
-                } else {
-                    select.value = '';
-                }
-
-
-            });
+                customField.value = '';
+            }
         }
- */
+
+        // Función para mostrar u ocultar el campo de dirección personalizada para Entrega
+        function toggleDeliveryAddress() {
+            var checkBox = document.getElementById('other_delivery');
+            var selectField = document.getElementById('delivery_warehouse');
+            var customField = document.getElementById('delivery');
+
+            if (checkBox.checked) {
+                selectField.classList.remove('d-block'); // Ocultar la lista de almacenes
+                selectField.classList.add('d-none');
+
+                customField.classList.remove('d-none'); // Mostrar el campo para dirección personalizada
+                customField.classList.add('d-block');
+                selectField.value = '';
+            } else {
+                selectField.classList.remove('d-none'); // Mostrar la lista de almacenes
+                selectField.classList.add('d-block');
+
+                customField.classList.remove('d-block'); // Ocultar el campo para dirección personalizada
+                customField.classList.add('d-none');
+
+                customField.value = '';
+            }
+        }
 
         // Mostrar mensaje de error
         function showError(input, message) {

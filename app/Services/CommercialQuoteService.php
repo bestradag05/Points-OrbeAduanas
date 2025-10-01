@@ -23,6 +23,7 @@ use App\Models\TypeInsurance;
 use App\Models\TypeLoad;
 use App\Models\TypeService;
 use App\Models\TypeShipment;
+use App\Models\Warehouses;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -451,6 +452,7 @@ class CommercialQuoteService
     public function getTemplateQuoteCommercialQuote(string $id)
     {
         $comercialQuote = CommercialQuote::find($id);
+        $warehouses = Warehouses::all();
 
         // 1. Corregir nombre del modelo a singular
         // 2. Usar with() para eager loading de la relación
@@ -465,6 +467,7 @@ class CommercialQuoteService
 
         $data = [
             'comercialQuote' => $comercialQuote,
+            'warehouses' => $warehouses,
             'concepts' => $concepts, // 4. Incluir la variable en los datos
             'tab' => $tab,
         ];

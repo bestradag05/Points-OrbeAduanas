@@ -32,12 +32,12 @@
                 </div>
                 <div class="col-6">
                     <p class="text-sm">Origen :
-                        <b class="d-block">{{ $quote->pick_up }}</b>
+                        <b class="d-block">{{ $quote->pick_up ?? $quote->pickupWarehouse->name_businessname }}</b>
                     </p>
                 </div>
                 <div class="col-6">
                     <p class="text-sm">Destino :
-                        <b class="d-block">{{ $quote->delivery }}</b>
+                        <b class="d-block">{{ $quote->delivery ?? $quote->deliveryWarehouse->name_businessname }}</b>
                     </p>
                 </div>
                 <div class="col-6">

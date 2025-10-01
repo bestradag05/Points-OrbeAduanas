@@ -18,4 +18,14 @@ class Warehouses extends Model
         'warehouses_type',
         'status'
     ];
+
+    public function quoteTransportsPickup()
+    {
+        return $this->hasMany(QuoteTransport::class, 'pickup_warehouse');
+    }
+
+    public function quoteTransportsDelivery()
+    {
+        return $this->hasMany(QuoteTransport::class, 'delivery_warehouse');
+    }
 }

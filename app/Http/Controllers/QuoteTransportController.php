@@ -153,8 +153,6 @@ class QuoteTransportController extends Controller
      */
     public function store(Request $request)
     {
-        /* dd($request->all()); */
-
         $validator = $this->validateForm($request, null);
 
         if ($validator->fails()) {
@@ -333,6 +331,7 @@ class QuoteTransportController extends Controller
 
     public function updateQuoteTransport(Request $request, string $id)
     {
+        /* dd($request->all()); */
         $quote = QuoteTransport::with(['response.commissions', 'commercial_quote.commercialQuoteContainers.packingType'])->findOrFail($id);
 
         //Buscar concepto de transporte manualmente:
@@ -356,7 +355,9 @@ class QuoteTransportController extends Controller
         // 2) Obtener la cotización y actualizar solo los campos válidos
         $quote->update([
             'pick_up'          => $request->pick_up,
+            'pickup_warehouse'          => $request->pickup_warehouse,
             'delivery'         => $request->delivery,
+            'delivery_warehouse'         => $request->delivery_warehouse,
             'stackable' => $request->stackable,
             'container_return' => $request->container_return,
         ]);
@@ -369,28 +370,7 @@ class QuoteTransportController extends Controller
             $quote->transportConcepts()->attach($item['id']);
         }
 
-        // 5) Preparar los mensajes y archivos como en show()
-        $messages = $quote->messages;
-        $folderPath = "commercial_quote/{$quote->commercial_quote->nro_quote_commercial}/quote_transport/{$quote->nro_quote}";
-        $files = collect(Storage::disk('public')->files($folderPath))
-            ->map(fn($file) => [
-                'name' => basename($file),
-                'size' => Storage::disk('public')->size($file),
-                'url'  => asset("storage/{$file}"),
-            ]);
-
-        $transportSuppliers = Supplier::where('area_type', 'transporte')
-            ->where('state', 'Activo')
-            ->orderBy('name_businessname')
-            ->get();
-
-
-        $nro_response = ResponseTransportQuote::generateNroResponse();
-
-        $locked = in_array(optional($quote->transport)->state, ['Aceptado', 'Rechazado', 'Anulado']);
-
-
-        // 7) Renderizar la misma vista y pasarle TODO lo necesario
+    
         return redirect('/quote/transport/' . $quote->id);
     }
 
