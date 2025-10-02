@@ -200,7 +200,7 @@
                     <td class="title">pounds</td>
                     <td> {{ $commercialQuote->total_kilogram_consolidated }} </td>
                     <td class="title">kilograms</td>
-                    @if ($commercialQuote->type_shipment->description === 'Marítima')
+                    @if ($commercialQuote->type_shipment->name === 'Marítima')
                         <td>{{ $commercialQuote->total_volumen_consolidated }} <span class="title">M3</span></td>
                     @else
                         <td>{{ $commercialQuote->total_kilogram_volumen_consolidated }} <span class="title">KGV</span></td>
@@ -224,7 +224,7 @@
                     <td class="title">pounds</td>
                     <td> {{ $commercialQuote->kilograms }} </td>
                     <td class="title">kilograms</td>
-                    @if ($commercialQuote->type_shipment->description === 'Marítima')
+                    @if ($commercialQuote->type_shipment->name === 'Marítima')
                         <td>{{ $commercialQuote->volumen }} <span class="title">M3</span></td>
                     @else
                         <td>{{ $commercialQuote->kilogram_volumen }} <span class="title">KGV</span></td>

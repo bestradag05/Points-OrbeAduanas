@@ -36,7 +36,7 @@ class InsuranceRatesController extends Controller
     public function create()
     {
         $insuranceTypes = TypeInsurance::all();
-        $typeShipments = TypeShipment::select('description')->distinct()->get();
+        $typeShipments = TypeShipment::all();
 
         return view('insurances/insurance_rates.register-insurance-rates', compact('insuranceTypes', 'typeShipments'));
     }

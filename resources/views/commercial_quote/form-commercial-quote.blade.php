@@ -41,7 +41,7 @@
                           @foreach ($type_shipments as $type_shipment)
                               <option value="{{ $type_shipment->id }}"
                                   {{ (isset($routing->id_type_shipment) && $routing->id_type_shipment == $type_shipment->id) || old('id_type_shipment') == $type_shipment->id ? 'selected' : '' }}>
-                                  {{ $type_shipment->code . ' - ' . $type_shipment->name }}
+                                  {{ $type_shipment->name }}
                               </option>
                           @endforeach
                       </x-adminlte-select2>
@@ -70,6 +70,27 @@
 
 
           </div>
+
+          <div class="col-6">
+              <div class="row" id="lclfcl_content">
+                  <div class="col-12">
+                      <label for="id_customs_district">Circunscripción - Aduana</label>
+                      <x-adminlte-select2 name="id_customs_district" igroup-size="md"
+                          data-placeholder="Seleccione una opcion...">
+                          <option />
+                          @foreach ($customsDistricts as $customDistrict)
+                              <option value="{{ $customDistrict->id }}"
+                                  {{ (isset($routing->id_customs_district) && $routing->id_customs_district == $customDistrict->id) || old('id_customs_district') == $customDistrict->id ? 'selected' : '' }}>
+                                  {{ $customDistrict->code . ' - ' . $customDistrict->name }}
+                              </option>
+                          @endforeach
+                      </x-adminlte-select2>
+                  </div>
+
+              </div>
+
+          </div>
+
 
           <div class="col-6">
 
@@ -454,9 +475,9 @@
 
                   <div class="col-4">
                       <div id="contenedor_weight" class="form-group row lcl-fields d-none">
-                          <label for="kilograms" class="col-sm-4 col-form-label">Peso Total <span
+                          <label for="kilograms" class="col-sm-5 col-form-label">Peso Total (KG) <span
                                   class="text-danger">*</span> </label>
-                          <div class="col-sm-8">
+                          <div class="col-sm-7">
                               <input type="text"
                                   class="form-control CurrencyInput @error('kilograms') is-invalid @enderror"
                                   id="kilograms" name="kilograms" data-type="currency"
@@ -492,8 +513,8 @@
 
                   <div class="col-4">
                       <div id="contenedor_volumen" class="form-group row  d-none">
-                          <label for="volumen" class="col-sm-4 col-form-label">Volumen</label>
-                          <div class="col-sm-8">
+                          <label for="volumen" class="col-sm-5 col-form-label">Volumen (m³)</label>
+                          <div class="col-sm-7">
                               {{-- Volumen --}}
                               <input type="text"
                                   class="form-control CurrencyInput @error('volumen') is-invalid @enderror"
@@ -652,7 +673,7 @@
       <button type="submit" class="btn btn-indigo mt-5" onclick="submitForm()">Guardar</button>
   </div>
 
- 
+
 
 
   <!-- Modal de Bootstrap -->
@@ -857,9 +878,9 @@
               var typeShipmentCurrent = data.find(typeShipment => typeShipment.id === parseInt(idShipment));
 
 
-              if (typeShipmentCurrent.description === "Marítima") {
+              if (typeShipmentCurrent.name === "Marítima") {
 
-                  $('#type_shipment_name').val(typeShipmentCurrent.description);
+                  $('#type_shipment_name').val(typeShipmentCurrent.name);
 
                   $('#lclfcl_content').addClass('row');
                   $('#lclfcl_content').children().first().removeClass('col-12 p-0').addClass(
@@ -877,7 +898,7 @@
 
               } else {
 
-                  $('#type_shipment_name').val(typeShipmentCurrent.description);
+                  $('#type_shipment_name').val(typeShipmentCurrent.name);
 
                   $('#lclfcl_content').removeClass('row');
                   $('#lclfcl_content').children().first().removeClass('col-8').addClass(

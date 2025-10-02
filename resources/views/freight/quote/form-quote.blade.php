@@ -20,8 +20,8 @@
                 <label for="type_shipment" class="col-sm-2 col-form-label">Tipo de embarque</label>
                 <div class="col-sm-10 type_shipment_quote">
                     <input type="text" class="form-control @error('type_shipment') is-invalid @enderror"
-                        id="type_shipment" name="type_shipment" placeholder="Ingresa el cliente" {{isset($quote->routing->type_shipment->description) ? 'readonly' : ''}}
-                        value="{{ isset($quote->routing->type_shipment->description) ? $quote->routing->type_shipment->description : old('type_shipment') }}">
+                        id="type_shipment" name="type_shipment" placeholder="Ingresa el cliente" {{isset($quote->routing->type_shipment->name) ? 'readonly' : ''}}
+                        value="{{ isset($quote->routing->type_shipment->name) ? $quote->routing->type_shipment->name : old('type_shipment') }}">
 
                 </div>
 

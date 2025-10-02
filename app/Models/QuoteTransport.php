@@ -157,4 +157,9 @@ class QuoteTransport extends Model
     {
         return $this->belongsTo(Warehouses::class, 'delivery_warehouse');
     }
+
+    public function returnWarehouse()
+    {
+        return $this->belongsTo(Warehouses::class, 'container_return');
+    }
 }

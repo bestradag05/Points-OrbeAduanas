@@ -50,7 +50,7 @@
                     <th>Origen</th>
                     <th>Destino</th>
                     <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Producto</th>
-                    <th class="{{ $comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none' }}">
+                    <th class="{{ $comercialQuote->type_shipment->name === 'Marítima' ? '' : 'd-none' }}">
                         LCL / FCL</th>
                     <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Cubicaje-KGV</th>
                     <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Tonelada-KG</th>
@@ -70,8 +70,7 @@
                             <td>{{ $quote->destination }}</td>
                             <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
                                 {{ $quote->commodity }}</td>
-                            <td
-                                class="{{ $comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none' }}">
+                            <td class="{{ $comercialQuote->type_shipment->name === 'Marítima' ? '' : 'd-none' }}">
                                 {{ $quote->commercial_quote->lcl_fcl }}</td>
                             <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
                                 {{ $quote->cubage_kgv }}</td>
@@ -123,7 +122,7 @@
                     <th>N° cotizacion</th>
                     <th>Recojo</th>
                     <th>Entrega</th>
-                    <th class="{{ $comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none' }}">
+                    <th class="{{ $comercialQuote->type_shipment->name === 'Marítima' ? '' : 'd-none' }}">
                         LCL / FCL</th>
                     <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Cubicaje-KGV</th>
                     <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Tonelada-KG</th>
@@ -150,8 +149,7 @@
                                 : ($quote->deliveryWarehouse && $quote->deliveryWarehouse->name_businessname
                                     ? e($quote->deliveryWarehouse->name_businessname)
                                     : '<span class="text-muted">Falta información</span>') !!}</td>
-                            <td
-                                class="{{ $comercialQuote->type_shipment->description === 'Marítima' ? '' : 'd-none' }}">
+                            <td class="{{ $comercialQuote->type_shipment->name === 'Marítima' ? '' : 'd-none' }}">
                                 {{ $quote->commercial_quote->lcl_fcl }}
                             </td>
                             <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
@@ -234,7 +232,7 @@
                                 <select id="pickup_warehouse" class="form-control" name="pickup_warehouse">
                                     <option value="">Seleccione una dirección...</option>
                                     @foreach ($warehouses as $warehouse)
-                                        @if ($comercialQuote->type_shipment->description === $warehouse->warehouses_type)
+                                        @if ($comercialQuote->type_shipment->name === $warehouse->warehouses_type)
                                             <option value="{{ $warehouse->id }}">{{ $warehouse->name_businessname }} -
                                                 {{ $warehouse->ruc }}</option>
                                         @endif
@@ -273,7 +271,7 @@
                                 <select id="delivery_warehouse" class="form-control" name="delivery_warehouse">
                                     <option value="">Seleccione una dirección...</option>
                                     @foreach ($warehouses as $warehouse)
-                                        @if ($comercialQuote->type_shipment->description === $warehouse->warehouses_type)
+                                        @if ($comercialQuote->type_shipment->name === $warehouse->warehouses_type)
                                             <option value="{{ $warehouse->id }}">{{ $warehouse->name_businessname }} -
                                                 {{ $warehouse->ruc }}</option>
                                         @endif
@@ -301,7 +299,16 @@
                     </div>
                     <div class="form-group" id="container_return">
                         <label for="container_return">Devolución de contenedor</label>
-                        <input id="container_return" class="form-control" type="text" name="container_return">
+                        <select id="container_return" class="form-control" name="container_return">
+                            <option value="">Seleccione una opcion...</option>
+                            @foreach ($warehouses as $warehouse)
+                                @if ($comercialQuote->type_shipment->name === $warehouse->warehouses_type)
+                                    <option value="{{ $warehouse->id }}">{{ $warehouse->name_businessname }} -
+                                        {{ $warehouse->ruc }}</option>
+                                @endif
+                            @endforeach
+                        </select>
+
                     </div>
 
 

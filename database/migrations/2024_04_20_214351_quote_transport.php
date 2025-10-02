@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('pickup_warehouse')->nullable();
             $table->string('delivery')->nullable();
             $table->unsignedBigInteger('delivery_warehouse')->nullable();
-            $table->string('container_return')->nullable();
+            $table->unsignedBigInteger('container_return')->nullable();
             $table->string('gang')->nullable();
             $table->decimal('cost_gang', 8, 2)->nullable();
             $table->string('guard')->nullable();
@@ -47,6 +47,7 @@ return new class extends Migration
             $table->foreign('nro_quote_commercial')->references('nro_quote_commercial')->on('commercial_quote');
             $table->foreign('pickup_warehouse')->references('id')->on('warehouses');
             $table->foreign('delivery_warehouse')->references('id')->on('warehouses');
+            $table->foreign('container_return')->references('id')->on('warehouses');
 
 
         });

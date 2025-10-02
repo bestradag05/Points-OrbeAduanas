@@ -11,17 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('concepts', function (Blueprint $table) {
+        Schema::create('customs_districts', function (Blueprint $table) {
             $table->id();
+            $table->string('code')->unique();
             $table->string('name');
-            $table->unsignedBigInteger('id_type_shipment');
-            $table->unsignedBigInteger('id_type_service');
+            $table->string('description');
+            $table->enum('status', ['Activo', 'Inactivo'])->default('Activo');
             $table->timestamps();
-
-            $table->softDeletes();
-
-            $table->foreign('id_type_shipment')->references('id')->on('type_shipment');
-            $table->foreign('id_type_service')->references('id')->on('type_service');
         });
     }
 
@@ -30,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('concepts');
+        Schema::dropIfExists('customs_districts');
     }
 };

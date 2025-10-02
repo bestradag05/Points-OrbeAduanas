@@ -126,5 +126,7 @@ class AddPermissionsSeeder extends Seeder
         Permission::create(['name' => 'container.list', 'alias' => 'Gestion de contenedores', 'guard_name' => 'web']);
         Permission::create(['name' => 'container.containerType', 'alias' => 'Gestion de tipo de contenedores', 'guard_name' => 'web']);
 
+        Permission::create(['name' => 'origin.destination.module', 'alias' => 'Modulo de Origen - Destino ', 'guard_name' => 'web']);
+
     }
 }

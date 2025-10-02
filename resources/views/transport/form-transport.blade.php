@@ -23,7 +23,7 @@
             <label for="utility">Recojo</label>
             <input type="text" class="form-control" id="pick_up" name="pick_up" @readonly(true)
                 placeholder="Ingrese la direccion de recojo"
-                value="{{ isset($quote->pick_up) ? $quote->pick_up : old('pick_up') }}">
+                value="{{ isset($quote->pick_up) ? $quote->pick_up : $quote->pickupWarehouse->name_businessname }}">
         </div>
     </div>
 
@@ -32,7 +32,7 @@
             <label for="utility">Entrega</label>
             <input type="text" class="form-control" id="delivery" name="delivery" @readonly(true)
                 placeholder="Ingrese la direccion de entrega"
-                value="{{ isset($quote->delivery) ? $quote->delivery : old('delivery') }}">
+                value="{{ isset($quote->delivery) ? $quote->delivery : $quote->deliveryWarehouse->name_businessname }}">
 
         </div>
     </div>
@@ -43,7 +43,7 @@
                 <label for="utility">Devolucion de contenedor</label>
                 <input type="text" class="form-control" id="delivery" name="container_return" @readonly(true)
                     placeholder="Ingrese la devolucion del contenedor"
-                    value="{{ isset($quote->container_return) ? $quote->container_return : old('container_return') }}">
+                    value="{{ isset($quote->container_return) ?  $quote->returnWarehouse->name_businessname : old('container_return') }}">
             </div>
         </div>
     @endif

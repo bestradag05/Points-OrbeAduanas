@@ -90,7 +90,7 @@
                     </div>
                 </div>
 
-                @if ($comercialQuote->type_shipment->description === 'Aérea')
+                @if ($comercialQuote->type_shipment->name === 'Aérea')
                     <div class="col-12 border-bottom border-bottom-2">
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">Peso KG : </label>
@@ -113,7 +113,7 @@
                     </div>
                 @endif
 
-                @if ($comercialQuote->type_shipment->description === 'Marítima')
+                @if ($comercialQuote->type_shipment->name === 'Marítima')
                     @if ($comercialQuote->lcl_fcl === 'FCL')
                         <div class="col-12 border-bottom border-bottom-2">
                             <div class="form-group row">
@@ -180,7 +180,7 @@
                         <div class="col-sm-8">
 
                             <p class="form-control-plaintext">
-                                {{ $comercialQuote->type_shipment->description . ($comercialQuote->type_shipment->description === 'Marítima' && $comercialQuote->lcl_fcl ? ' (' . $comercialQuote->lcl_fcl . ')' : '') }}
+                                {{ $comercialQuote->type_shipment->name . ($comercialQuote->type_shipment->name === 'Marítima' && $comercialQuote->lcl_fcl ? ' (' . $comercialQuote->lcl_fcl . ')' : '') }}
 
                             </p>
                         </div>
@@ -235,7 +235,7 @@
 
                         </div>
                     </div>
-                    @if ($comercialQuote->type_shipment->description === 'Marítima')
+                    @if ($comercialQuote->type_shipment->name === 'Marítima')
 
                         @if ($comercialQuote->lcl_fcl === 'FCL')
                             <div class="col-12 border-bottom border-bottom-2">
@@ -334,7 +334,7 @@
                                                 <b class="d-block">{{ $consolidated->packingType->name }}</b>
                                             </p>
                                         </div>
-                                        @if ($consolidated->commercialQuote->type_shipment->description === 'Marítima')
+                                        @if ($consolidated->commercialQuote->type_shipment->name === 'Marítima')
                                             <div class="col-6">
                                                 <p class="text-sm">Volumen :
                                                     <b class="d-block">{{ $consolidated->volumen }} CBM</b>
@@ -392,7 +392,7 @@
                         </div>
                     </div>
 
-                    @if ($comercialQuote->type_shipment->description === 'Aérea')
+                    @if ($comercialQuote->type_shipment->name === 'Aérea')
                         <div class="col-12 border-bottom border-bottom-2">
                             <div class="form-group row">
                                 <label class="col-sm-4 col-form-label">Peso KG : </label>
@@ -415,7 +415,7 @@
                         </div>
                     @endif
 
-                    @if ($comercialQuote->type_shipment->description === 'Marítima')
+                    @if ($comercialQuote->type_shipment->name === 'Marítima')
                         @if ($comercialQuote->lcl_fcl === 'FCL')
                             <div class="col-12 border-bottom border-bottom-2">
                                 <div class="form-group row">
@@ -516,7 +516,7 @@
                             <div class="col-sm-8">
 
                                 <p class="form-control-plaintext">
-                                    {{ $comercialQuote->type_shipment->description . ($comercialQuote->type_shipment->description === 'Marítima' && $comercialQuote->lcl_fcl ? ' (' . $comercialQuote->lcl_fcl . ')' : '') }}
+                                    {{ $comercialQuote->type_shipment->name . ($comercialQuote->type_shipment->name === 'Marítima' && $comercialQuote->lcl_fcl ? ' (' . $comercialQuote->lcl_fcl . ')' : '') }}
 
                                 </p>
                             </div>

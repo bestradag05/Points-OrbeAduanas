@@ -43,7 +43,7 @@
                 <td class="text-uppercase">
                     {{ $quoteSentClient->commercialQuote->customer->name_businessname ?? $quoteSentClient->commercialQuote->customer_company_name }}
                 </td>
-                <td>{{ $quoteSentClient->commercialQuote->type_shipment->description . ' ' . ($quoteSentClient->commercialQuote->type_shipment->description === 'Marítima' ? $quoteSentClient->commercialQuote->lcl_fcl : '') }}
+                <td>{{ $quoteSentClient->commercialQuote->type_shipment->name . ' ' . ($quoteSentClient->commercialQuote->type_shipment->name === 'Marítima' ? $quoteSentClient->commercialQuote->lcl_fcl : '') }}
                 </td>
                 <td>{{ $quoteSentClient->commercialQuote->personal->names }}</td>
                 <td>{{ $quoteSentClient->commercialQuote->is_consolidated ? 'SI' : 'NO' }}</td>

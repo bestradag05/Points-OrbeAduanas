@@ -23,6 +23,7 @@ class CommercialQuote extends Model
         'load_value',
         'id_personal',
         'id_type_shipment',
+        'id_customs_district',
         'id_regime',
         'id_incoterms',
         'id_type_load',

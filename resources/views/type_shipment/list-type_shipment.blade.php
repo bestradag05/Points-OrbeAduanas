@@ -14,9 +14,13 @@
         @foreach ($type_shipments as $type_shipment)
             <tr>
                 <td>{{ $loop->iteration }}</td>
-                <td>{{ $type_shipment->code }}</td>
                 <td>{{ $type_shipment->name }}</td>
-                <td>{{ $type_shipment->description }}</td>
+                <td>{{ $type_shipment->name }}</td>
+                <td>
+                    <div class="text-bold custom-badge status-{{ strtolower($type_shipment->status) }}">
+                        {{ $type_shipment->status }}
+                    </div>
+                </td>
         
                 <td>
                      <a href="{{ url('/type_shipment/'. $type_shipment->id . '/edit') }}"> <i class="fas fa-edit"></i> </a>

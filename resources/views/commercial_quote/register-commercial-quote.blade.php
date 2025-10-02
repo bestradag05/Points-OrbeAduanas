@@ -462,7 +462,7 @@
                         </div>
 
                         <div class="col-6">
-                            <label for="kilograms">Peso Total </label>
+                            <label for="kilograms">Peso Total</label>
 
                             <input type="text"
                                 class="form-control CurrencyInput @error('kilograms') is-invalid @enderror" id="kilograms"

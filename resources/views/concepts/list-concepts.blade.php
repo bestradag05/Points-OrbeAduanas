@@ -15,7 +15,7 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $concept->name }}</td>
-                <td>{{ $concept->typeShipment->description }}</td>
+                <td>{{ $concept->typeShipment->name }}</td>
                 <td>{{ $concept->typeService->name }}</td>
         
                 <td>

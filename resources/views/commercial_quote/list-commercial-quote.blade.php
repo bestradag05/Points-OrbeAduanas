@@ -30,7 +30,7 @@
                         {{ $commercial_quote->destinationState->name }}</td>
                 @endif
                 <td class="text-uppercase">{{ $commercial_quote->customer->name_businessname ?? '' }}</td>
-                <td>{{ $commercial_quote->type_shipment->description . ' ' . ($commercial_quote->type_shipment->description === 'Marítima' ? $commercial_quote->lcl_fcl : '') }}
+                <td>{{ $commercial_quote->type_shipment->name . ' ' . ($commercial_quote->type_shipment->name === 'Marítima' ? $commercial_quote->lcl_fcl : '') }}
                 </td>
                 <td>{{ $commercial_quote->personal->names }}</td>
                 <td>{{ $commercial_quote->is_consolidated ? 'SI' : 'NO' }}</td>

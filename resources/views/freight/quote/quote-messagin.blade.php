@@ -58,7 +58,7 @@
 
                 <div class="col-6">
                     <p class="text-sm">Tipo de embarque :
-                        <b class="d-block">{{ $quote->commercial_quote->type_shipment->description }}
+                        <b class="d-block">{{ $quote->commercial_quote->type_shipment->name }}
                             {{ $quote->commercial_quote->lcl_fcl != null ? '(' . $quote->commercial_quote->lcl_fcl . ')' : '' }}</b>
                     </p>
                 </div>
@@ -153,7 +153,7 @@
                                             <b class="d-block">{{ $consolidated->packingType->name }}</b>
                                         </p>
                                     </div>
-                                    @if ($consolidated->commercialQuote->type_shipment->description === 'Marítima')
+                                    @if ($consolidated->commercialQuote->type_shipment->name === 'Marítima')
                                         <div class="col-6">
                                             <p class="text-sm">Volumen :
                                                 <b class="d-block">{{ $consolidated->volumen }} CBM</b>
@@ -208,7 +208,7 @@
                     </div>
 
 
-                    @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+                    @if ($quote->commercial_quote->type_shipment->name === 'Marítima')
 
 
                         <div class="col-6">
@@ -398,7 +398,7 @@
                         <th>#</th>
                         <th>N° Respuesta</th>
                         <th>Agente</th>
-                        @if ($quote->commercial_quote->type_shipment->description === 'Aérea')
+                        @if ($quote->commercial_quote->type_shipment->name === 'Aérea')
                             <th>Aerolinea</th>
                         @else
                             <th>Naviera</th>
@@ -419,7 +419,7 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $response->nro_response }}</td>
                                 <td>{{ $response->supplier->name_businessname }}</td>
-                                @if ($quote->commercial_quote->type_shipment->description === 'Aérea')
+                                @if ($quote->commercial_quote->type_shipment->name === 'Aérea')
                                     <td>{{ $response->airline->name }}</td>
                                 @else
                                     <td>{{ $response->shippingCompany->name }}</td>
@@ -620,7 +620,7 @@
 
                                             </div>
 
-                                            @if ($quote->commercial_quote->type_shipment->description === 'Aérea')
+                                            @if ($quote->commercial_quote->type_shipment->name === 'Aérea')
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label for="airline_id">Aerolinea <span
@@ -637,7 +637,7 @@
                                                     </div>
                                                 </div>
                                             @endif
-                                            @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+                                            @if ($quote->commercial_quote->type_shipment->name === 'Marítima')
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label for="shipping_company_id">Naviera</label>
@@ -717,7 +717,7 @@
                                                     <label class="m-0">Detalle de la carga: </label>
                                                 </div>
 
-                                                @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+                                                @if ($quote->commercial_quote->type_shipment->name === 'Marítima')
                                                     <div class="col-2">
                                                         <label class="m-0" for="cubage_kgv">Volumen : <span
                                                                 class="font-weight-normal">{{ $quote->cubage_kgv }}
@@ -1058,7 +1058,7 @@
                             <td><strong>Producto</strong></td>
                             <td>{{ $consolidated->commodity }}</td>
                         </tr>
-                        @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+                        @if ($quote->commercial_quote->type_shipment->name === 'Marítima')
                             @if ($quote->commercial_quote->lcl_fcl === 'FCL')
                                 <tr>
                                     <td><strong>Tipo de contenedor</strong></td>
@@ -1143,7 +1143,7 @@
                         <td><strong>Producto</strong></td>
                         <td>{{ $quote->commodity }}</td>
                     </tr>
-                    @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+                    @if ($quote->commercial_quote->type_shipment->name === 'Marítima')
 
                         <tr>
                             <td><strong>Volumen</strong></td>

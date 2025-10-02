@@ -23,8 +23,8 @@
             data-placeholder="Seleccione una opcion...">
             <option />
             @foreach ($typeShipments as $type)
-                <option value="{{ $type->description }}"  {{isset($insurance_rate) && $insurance_rate->shipment_type_description === $type->description ? 'selected' : ''}}>
-                    {{ $type->description }}
+                <option value="{{ $type->name }}"  {{isset($insurance_rate) && $insurance_rate->shipment_type_description === $type->name ? 'selected' : ''}}>
+                    {{ $type->name }}
                 </option>
             @endforeach
         </x-adminlte-select2>

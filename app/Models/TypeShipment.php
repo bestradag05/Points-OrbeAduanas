@@ -11,7 +11,7 @@ class TypeShipment extends Model
 
     protected $table = 'type_shipment';
 
-    protected $fillable = ['code', 'description'];
+    protected $fillable = ['name', 'description', 'status'];
 
 
 

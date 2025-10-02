@@ -65,7 +65,7 @@
                     <td>{{ $insurance->insurable->routing->customer->document_number }}</td>
                     <td>{{ $insurance->insurable->routing->personal->names }}</td>
                     <td>{{ $insurance->insurable->routing->regime->description }}</td>
-                    <td>{{ $insurance->insurable->routing->type_shipment->description  }}</td>
+                    <td>{{ $insurance->insurable->routing->type_shipment->name  }}</td>
                     <td>{{ $insurance->name_service }}</td>
                     <td>{{ $insurance->insurable->routing->load_value }}</td>
                     <td>{{ $insurance->insurance_sale }}</td>

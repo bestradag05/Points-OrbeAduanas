@@ -33,7 +33,7 @@
                 </tr>
                 <tr>
                     <td class="text-secondary text-bold text-uppercase">Tipo de embarque</td>
-                    <td>{{ $routing->type_shipment->description }}</td>
+                    <td>{{ $routing->type_shipment->name }}</td>
                 </tr>
                 <tr>
                     <td class="text-secondary text-bold text-uppercase">Regimen</td>

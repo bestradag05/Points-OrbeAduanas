@@ -86,7 +86,7 @@
 
                         </div>
                     </div>
-                    @if ($commercialQuote->type_shipment->description === 'Marítima')
+                    @if ($commercialQuote->type_shipment->name === 'Marítima')
 
                         @if ($commercialQuote->lcl_fcl === 'FCL')
                             <div class="col-12 border-bottom border-bottom-2">
@@ -185,7 +185,7 @@
                                                 <b class="d-block">{{ $consolidated->packaging_type }}</b>
                                             </p>
                                         </div>
-                                        @if ($consolidated->commercialQuote->type_shipment->description === 'Marítima')
+                                        @if ($consolidated->commercialQuote->type_shipment->name === 'Marítima')
                                             <div class="col-6">
                                                 <p class="text-sm">Volumen :
                                                     <b class="d-block">{{ $consolidated->volumen }} CBM</b>
@@ -243,7 +243,7 @@
                         </div>
                     </div>
 
-                    @if ($commercialQuote->type_shipment->description === 'Aérea')
+                    @if ($commercialQuote->type_shipment->name === 'Aérea')
                         <div class="col-12 border-bottom border-bottom-2">
                             <div class="form-group row">
                                 <label class="col-sm-4 col-form-label">Peso KG : </label>
@@ -266,7 +266,7 @@
                         </div>
                     @endif
 
-                    @if ($commercialQuote->type_shipment->description === 'Marítima')
+                    @if ($commercialQuote->type_shipment->name === 'Marítima')
                         @if ($commercialQuote->lcl_fcl === 'FCL')
                             <div class="col-12 border-bottom border-bottom-2">
                                 <div class="form-group row">
@@ -365,7 +365,7 @@
                             <div class="col-sm-8">
 
                                 <p class="form-control-plaintext">
-                                    {{ $commercialQuote->type_shipment->description . ($commercialQuote->type_shipment->description === 'Marítima' && $commercialQuote->lcl_fcl ? ' (' . $commercialQuote->lcl_fcl . ')' : '') }}
+                                    {{ $commercialQuote->type_shipment->name . ($commercialQuote->type_shipment->name === 'Marítima' && $commercialQuote->lcl_fcl ? ' (' . $commercialQuote->lcl_fcl . ')' : '') }}
 
                                 </p>
                             </div>
@@ -681,7 +681,7 @@
                         para que concuerde con el BL final*</p>
             </div>
 
-            @if ($commercialQuote->type_shipment->description === 'Marítima')
+            @if ($commercialQuote->type_shipment->name === 'Marítima')
                 @if ($commercialQuote->lcl_fcl === 'FCL')
                     <div class="col-12 ">
                         <div class="form-group row">

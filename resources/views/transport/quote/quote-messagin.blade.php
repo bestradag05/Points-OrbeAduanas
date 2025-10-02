@@ -42,7 +42,7 @@
                 </div>
                 <div class="col-6">
                     <p class="text-sm">Tipo de embarque :
-                        <b class="d-block">{{ $quote->commercial_quote->type_shipment->description }}
+                        <b class="d-block">{{ $quote->commercial_quote->type_shipment->name }}
                             {{ $quote->commercial_quote->lcl_fcl != null ? '(' . $quote->commercial_quote->lcl_fcl . ')' : '' }}</b>
                     </p>
                 </div>
@@ -139,7 +139,7 @@
                                             <b class="d-block">{{ $consolidated->packaging_type }}</b>
                                         </p>
                                     </div>
-                                    @if ($consolidated->commercialQuote->type_shipment->description === 'Marítima')
+                                    @if ($consolidated->commercialQuote->type_shipment->name === 'Marítima')
                                         <div class="col-6">
                                             <p class="text-sm">Volumen :
                                                 <b class="d-block">{{ $consolidated->volumen }} CBM</b>
@@ -206,7 +206,7 @@
                         </p>
                     </div>
 
-                    @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+                    @if ($quote->commercial_quote->type_shipment->name === 'Marítima')
 
 
                         <div class="col-6">
@@ -216,6 +216,14 @@
                         </div>
 
                         @if ($quote->commercial_quote->lcl_fcl === 'FCL')
+
+                            <div class="col-6">
+                                <p class="text-sm">Devolucion :
+                                    <b
+                                        class="d-block">{{ $quote->returnWarehouse->name_businessname }}</b>
+                                </p>
+                            </div>
+
                             <div class="col-12">
                                 <p class="text-sm">Contenedor(s) :
                                 <div class="d-flex flex-wrap">
@@ -375,14 +383,16 @@
                     <div class="col-8 col-lg-6">
                         <h5 class="text-indigo text-center"> <i class="fas fa-file"></i> Lista de archivos</h5>
                     </div>
-                    @if ($quote->state === 'Pendiente' && (auth()->user()->hasRole('Asesor Comercial') || auth()->user()->hasRole('Super-Admin') ))
-                    <div class="col-6 align-items-center ">
-                        <button class="btn btn-indigo btn-sm" data-toggle="modal"
-                            data-target="#modalQuoteTransportDocuments">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                     @endif
+                    @if (
+                        $quote->state === 'Pendiente' &&
+                            (auth()->user()->hasRole('Asesor Comercial') || auth()->user()->hasRole('Super-Admin')))
+                        <div class="col-6 align-items-center ">
+                            <button class="btn btn-indigo btn-sm" data-toggle="modal"
+                                data-target="#modalQuoteTransportDocuments">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    @endif
                 </div>
                 <table id="table-file-transport" class="table">
                     <tbody>
@@ -417,18 +427,18 @@
             </div>
         </div>
 
-         <div class="col-12">
+        <div class="col-12">
             <div class="text-center mt-5 mb-3">
-                 @hasrole(['Asesor Comercial', 'Super-Admin'])
-                <form action="{{ url('/quote/transport/send-transport/' . $quote->id) }}" method="POST" class="d-inline"
-                    id="form-send-transport">
-                    @csrf
-                    @method('PATCH')
+                @hasrole(['Asesor Comercial', 'Super-Admin'])
+                    <form action="{{ url('/quote/transport/send-transport/' . $quote->id) }}" method="POST"
+                        class="d-inline" id="form-send-transport">
+                        @csrf
+                        @method('PATCH')
 
-                    <button class="btn btn-outline-indigo btn-sm {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">
-                        <i class="fas fa-paper-plane"></i> Enviar cotización</button>
-                </form>
-                 @endhasrole
+                        <button class="btn btn-outline-indigo btn-sm {{ $quote->state != 'Pendiente' ? 'd-none' : '' }}">
+                            <i class="fas fa-paper-plane"></i> Enviar cotización</button>
+                    </form>
+                @endhasrole
 
             </div>
 
@@ -436,101 +446,103 @@
 
         @if ($quote->state != 'Pendiente')
 
-        <!-- Crear lista de respuestas -->
-        <div class="col-12 px-4 mt-5">
-            <div class="text-center mb-4">
-                <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
-                <!-- Botón para abrir el modal -->
-                 @hasrole(['Transporte', 'Super-Admin'])
-                @if (!$quote->response->contains('status', 'Aceptado'))
-                    <button type="button" class="btn btn-indigo btn-sm" data-toggle="modal"
-                        data-target="#modalCotizarTransporte">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                @endif
-                @endhasrole
-            </div>
-            <table class="table table-bordered table-hover table-sm text-sm my-4">
-                <thead class="thead-dark">
-                    <th>#</th>
-                    <th>N° respuesta</th>
-                    <th>Proveedor</th>
-                    <th class="text-end">Costo Neto (S/.)</th>
-                    <th class="text-end">IGV (S/.)</th>
-                    <th class="text-end">Total (S/.)</th>
-                    <th class="text-end">Total (US$)</th>
-                    <th class="text-end">Utilidad (US$)</th>
-                    <th class="text-end">Total + Util (US$)</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </thead>
-                <tbody>
-                    @foreach ($quote->response as $response)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $response->nro_response }}</td>
-                            <td>{{ optional($response->supplier)->name_businessname ?? '—' }}</td>
+            <!-- Crear lista de respuestas -->
+            <div class="col-12 px-4 mt-5">
+                <div class="text-center mb-4">
+                    <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
+                    <!-- Botón para abrir el modal -->
+                    @hasrole(['Transporte', 'Super-Admin'])
+                        @if (!$quote->response->contains('status', 'Aceptado'))
+                            <button type="button" class="btn btn-indigo btn-sm" data-toggle="modal"
+                                data-target="#modalCotizarTransporte">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        @endif
+                    @endhasrole
+                </div>
+                <table class="table table-bordered table-hover table-sm text-sm my-4">
+                    <thead class="thead-dark">
+                        <th>#</th>
+                        <th>N° respuesta</th>
+                        <th>Proveedor</th>
+                        <th class="text-end">Costo Neto (S/.)</th>
+                        <th class="text-end">IGV (S/.)</th>
+                        <th class="text-end">Total (S/.)</th>
+                        <th class="text-end">Total (US$)</th>
+                        <th class="text-end">Utilidad (US$)</th>
+                        <th class="text-end">Total + Util (US$)</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </thead>
+                    <tbody>
+                        @foreach ($quote->response as $response)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $response->nro_response }}</td>
+                                <td>{{ optional($response->supplier)->name_businessname ?? '—' }}</td>
 
-                            {{-- Mostrar valores con number_format y proteger nulls --}}
-                            <td class="text-end">{{ number_format($response->provider_cost ?? 0, 2) }}</td>
-                            <td class="text-end">{{ number_format($response->igv ?? 0, 2) }}</td>
-                            <td class="text-end">{{ number_format($response->total_sol ?? 0, 2) }}</td>
+                                {{-- Mostrar valores con number_format y proteger nulls --}}
+                                <td class="text-end">{{ number_format($response->provider_cost ?? 0, 2) }}</td>
+                                <td class="text-end">{{ number_format($response->igv ?? 0, 2) }}</td>
+                                <td class="text-end">{{ number_format($response->total_sol ?? 0, 2) }}</td>
 
-                            <td class="text-end">{{ number_format($response->total_usd ?? 0, 2) }}</td>
-                            <td class="text-end">{{ number_format($response->value_utility ?? 0, 2) }}</td>
-                            <td class="text-end">{{ number_format($response->total_prices_usd ?? 0, 2) }}</td>
+                                <td class="text-end">{{ number_format($response->total_usd ?? 0, 2) }}</td>
+                                <td class="text-end">{{ number_format($response->value_utility ?? 0, 2) }}</td>
+                                <td class="text-end">{{ number_format($response->total_prices_usd ?? 0, 2) }}</td>
 
-                            <td>
-                                <div class="custom-badge status-{{ strtolower($response->status) }}">
-                                    {{ $response->status ?? 'Enviada' }}
-                                </div>
-                            </td>
+                                <td>
+                                    <div class="custom-badge status-{{ strtolower($response->status) }}">
+                                        {{ $response->status ?? 'Enviada' }}
+                                    </div>
+                                </td>
 
-                            <td>
-                                @if ($locked)
-                                    <span class="text-muted">Cotización cerrada</span>
-                                @else
-                                    @if ($response->status === 'Rechazada')
-                                        <span class="text-muted">Rechazada</span>
-                                    @elseif ($response->status === 'Aceptado')
-                                        @hasrole(['Asesor Comercial', 'Super-Admin'])
-                                        <button class="btn btn-danger btn-sm" data-toggle="modal"
-                                            data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
-                                            Rechazar
-                                        </button>
-                                        @endhasrole
-                                    @elseif ($quote->response->contains('status', 'Aceptado'))
-                                        <span class="text-muted">Sin acciones</span>
+                                <td>
+                                    @if ($locked)
+                                        <span class="text-muted">Cotización cerrada</span>
                                     @else
-                                        @hasrole(['Asesor Comercial', 'Super-Admin'])
-                                        <button class="btn btn-success btn-sm" data-toggle="modal"
-                                            data-target="#quote-transport" data-response-id="{{ $response->id }}"
-                                            data-response-nro="{{ $response->nro_response }}">
-                                            Aceptar
-                                        </button>
-                                        <button class="btn btn-danger btn-sm" data-toggle="modal"
-                                            data-target="#modalRejectResponse" data-response-id="{{ $response->id }}">
-                                            Rechazar
-                                        </button>
-                                        @endhasrole
+                                        @if ($response->status === 'Rechazada')
+                                            <span class="text-muted">Rechazada</span>
+                                        @elseif ($response->status === 'Aceptado')
+                                            @hasrole(['Asesor Comercial', 'Super-Admin'])
+                                                <button class="btn btn-danger btn-sm" data-toggle="modal"
+                                                    data-target="#modalRejectResponse"
+                                                    data-response-id="{{ $response->id }}">
+                                                    Rechazar
+                                                </button>
+                                            @endhasrole
+                                        @elseif ($quote->response->contains('status', 'Aceptado'))
+                                            <span class="text-muted">Sin acciones</span>
+                                        @else
+                                            @hasrole(['Asesor Comercial', 'Super-Admin'])
+                                                <button class="btn btn-success btn-sm" data-toggle="modal"
+                                                    data-target="#quote-transport" data-response-id="{{ $response->id }}"
+                                                    data-response-nro="{{ $response->nro_response }}">
+                                                    Aceptar
+                                                </button>
+                                                <button class="btn btn-danger btn-sm" data-toggle="modal"
+                                                    data-target="#modalRejectResponse"
+                                                    data-response-id="{{ $response->id }}">
+                                                    Rechazar
+                                                </button>
+                                            @endhasrole
+                                        @endif
                                     @endif
-                                @endif
-                                <button type="button" class="btn btn-sm btn-primary btn-pdf-transport" title="Ver PDF"
-                                    data-response-id="{{ $response->id }}">
-                                    <i class="far fa-file-pdf"></i>
-                                </button>
-                            </td>
-                            
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                                    <button type="button" class="btn btn-sm btn-primary btn-pdf-transport"
+                                        title="Ver PDF" data-response-id="{{ $response->id }}">
+                                        <i class="far fa-file-pdf"></i>
+                                    </button>
+                                </td>
 
-        </div>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
+            </div>
 
         @endif
 
-        
+
     </div>
 
     {{-- Modal de “Cerrar Cotización” con selección de respuesta --}}
@@ -687,7 +699,7 @@
                             <td><strong>Producto</strong></td>
                             <td>{{ $consolidated->commodity }}</td>
                         </tr>
-                        @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+                        @if ($quote->commercial_quote->type_shipment->name === 'Marítima')
                             @if ($quote->commercial_quote->lcl_fcl === 'FCL')
                                 <div class="col-12">
                                     <p class="text-sm">Contenedor(s) :
@@ -786,7 +798,7 @@
                         <td><strong>Producto</strong></td>
                         <td>{{ $quote->commodity }}</td>
                     </tr>
-                    @if ($quote->commercial_quote->type_shipment->description === 'Marítima')
+                    @if ($quote->commercial_quote->type_shipment->name === 'Marítima')
 
                         <tr>
                             <td><strong>Volumen</strong></td>

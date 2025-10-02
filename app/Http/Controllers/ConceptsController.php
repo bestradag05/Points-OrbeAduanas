@@ -35,13 +35,13 @@ class ConceptsController extends Controller
      */
     public function create()
     {
-         // Redireccion al formulario para crear un concepto
+        // Redireccion al formulario para crear un concepto
 
-         $type_services = TypeService::all();
-         $type_shipments = TypeShipment::all();
+        $type_services = TypeService::all();
+        $type_shipments = TypeShipment::all();
 
 
-         return view("concepts/register-concepts", compact('type_services', 'type_shipments'));
+        return view("concepts/register-concepts", compact('type_services', 'type_shipments'));
     }
 
     /**
@@ -49,18 +49,55 @@ class ConceptsController extends Controller
      */
     public function store(Request $request)
     {
-        // Guardar el concepto
-
+        // Validar los datos del formulario
         $this->validateForm($request, null);
 
-        Concept::create([
-            'name' => $request->name,
-            'id_type_shipment' => $request->id_type_shipment,
-            'id_type_service' => $request->id_type_service
-        ]);
+        // Verificar si el radio button "Sí" está seleccionado
+        if ($request->allServiceCheck == 1) {
+            $typeShipments = TypeShipment::all();
+            $typeServices = TypeService::all();
 
+            // Verificar si ya existe alguna combinación de nombre, tipo de embarque y tipo de servicio
+            foreach ($typeShipments as $typeShipment) {
+                foreach ($typeServices as $typeService) {
+                    $existingConcept = Concept::where('name', $request->name)
+                        ->where('id_type_shipment', $typeShipment->id)
+                        ->where('id_type_service', $typeService->id)
+                        ->first();
+
+                    if ($existingConcept) {
+                        return back()->with('error', 'Este concepto ya existe para esta combinación de servicio y embarque.');
+                    }
+
+                    // Crear el concepto para cada combinación si no existe
+                    Concept::create([
+                        'name' => $request->name,
+                        'id_type_shipment' => $typeShipment->id,
+                        'id_type_service' => $typeService->id
+                    ]);
+                }
+            }
+        } else {
+            // Verificar si el concepto con el mismo nombre y combinación ya existe
+            $existingConcept = Concept::where('name', $request->name)
+                ->where('id_type_shipment', $request->id_type_shipment)
+                ->where('id_type_service', $request->id_type_service)
+                ->first();
+
+            if ($existingConcept) {
+                return redirect()->back()->with('error', 'Este concepto ya existe para esta combinación de servicio y embarque.');
+            }
+
+            // Si no existe, guardar el concepto
+            Concept::create([
+                'name' => $request->name,
+                'id_type_shipment' => $request->id_type_shipment,
+                'id_type_service' => $request->id_type_service
+            ]);
+        }
+
+        // Redirigir a la lista de conceptos
         return redirect('concepts');
-
     }
 
     /**
@@ -91,7 +128,7 @@ class ConceptsController extends Controller
     {
         //
 
-        
+
         $this->validateForm($request, $id);
         $concept = Concept::find($id);
 
@@ -113,12 +150,12 @@ class ConceptsController extends Controller
     }
 
 
-    public function validateForm($request, $id){
+    public function validateForm($request, $id)
+    {
         $request->validate([
             'name' => 'required|string',
-            'id_type_shipment' => 'required',
-            'id_type_service' => 'required',
+            'id_type_shipment' => 'required_if:allServiceCheck,0',
+            'id_type_service' => 'required_if:allServiceCheck,0',
         ]);
-    
     }
 }

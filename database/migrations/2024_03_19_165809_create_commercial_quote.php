@@ -23,6 +23,7 @@ return new class extends Migration
             $table->decimal('load_value', 8, 2)->nullable();
             $table->unsignedBigInteger('id_personal');
             $table->unsignedBigInteger('id_type_shipment');
+            $table->unsignedBigInteger('id_customs_district')->nullable();
             $table->unsignedBigInteger('id_regime')->nullable();
             $table->unsignedBigInteger('id_incoterms')->nullable();
             $table->unsignedBigInteger('id_type_load')->nullable();
@@ -51,6 +52,7 @@ return new class extends Migration
             $table->foreign('id_supplier')->references('id') ->on('suppliers');
             $table->foreign('id_personal')->references('id')->on('personal');
             $table->foreign('id_type_shipment')->references('id')->on('type_shipment');
+            $table->foreign('id_customs_district')->references('id')->on('customs_districts');
             $table->foreign('id_regime')->references('id')->on('regime');
             $table->foreign('id_incoterms')->references('id')->on('incoterms');
             $table->foreign('id_type_load')->references('id')->on('type_load');

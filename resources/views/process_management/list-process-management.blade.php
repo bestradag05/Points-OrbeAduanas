@@ -30,7 +30,7 @@
                         {{ $process->QuotesSentClient->commercialQuote->destinationState->name }}</td>
                 @endif
                 <td class="text-uppercase">{{ $process->QuotesSentClient->commercialQuote->customer->name_businessname ?? '' }}</td>
-                <td>{{ $process->QuotesSentClient->commercialQuote->type_shipment->description . ' ' . ($process->QuotesSentClient->commercialQuote->type_shipment->description === 'Marítima' ? $process->QuotesSentClient->commercialQuote->lcl_fcl : '') }}
+                <td>{{ $process->QuotesSentClient->commercialQuote->type_shipment->name . ' ' . ($process->QuotesSentClient->commercialQuote->type_shipment->name === 'Marítima' ? $process->QuotesSentClient->commercialQuote->lcl_fcl : '') }}
                 </td>
                 <td>{{ $process->QuotesSentClient->commercialQuote->personal->names }}</td>
                 <td>

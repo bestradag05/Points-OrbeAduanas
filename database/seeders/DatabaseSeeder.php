@@ -10,6 +10,7 @@ use App\Models\Commission;
 use App\Models\Concept;
 use App\Models\Container;
 use App\Models\Currency;
+use App\Models\CustomDistrict;
 use App\Models\Customer;
 use App\Models\CustomerSupplierDocument;
 use App\Models\Incoterms;
@@ -126,31 +127,36 @@ class DatabaseSeeder extends Seeder
         Regime::create(['code' => '80', 'description' => 'TRANSITO']);
         Regime::create(['code' => '89', 'description' => 'REEMBARQUE']);
 
-        /*  type_shipment */
+        /*  customs_districts */
 
-        TypeShipment::create(['code' => '046', 'name' => 'Paita', 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '028', 'name' => 'Talara', 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '082', 'name' => 'Salaverry', 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '091', 'name' => 'Chimbote', 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '127', 'name' => 'Pisco', 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '163', 'name' => 'Ilo', 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '145', 'name' => 'Mollendo', 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '118', 'name' => 'Marítima del Callao', 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '019', 'name' => 'Tumbes', 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '055', 'name' => 'IAT Lambayeque', 'description' => 'Marítima']);
-        TypeShipment::create(['code' => '154', 'name' => 'Arequipa', 'description' => 'Terrestre']);
-        TypeShipment::create(['code' => '172', 'name' => 'Tacna', 'description' => 'Terrestre']);
-        TypeShipment::create(['code' => '262', 'name' => 'Desaguadero', 'description' => 'Terrestre']);
-        TypeShipment::create(['code' => '280', 'name' => 'Puerto Maldonado', 'description' => 'Terrestre']);
-        TypeShipment::create(['code' => '299', 'name' => 'La Tina', 'description' => 'Terrestre']);
-        TypeShipment::create(['code' => '181', 'name' => 'Puno', 'description' => 'Terrestre']);
-        TypeShipment::create(['code' => '271', 'name' => 'Tarapoto', 'description' => 'Terrestre']);
-        TypeShipment::create(['code' => '226', 'name' => 'Iquitos', 'description' => 'Fluvial']);
-        TypeShipment::create(['code' => '217', 'name' => 'Pucallpa', 'description' => 'Fluvial']);
-        TypeShipment::create(['code' => '190', 'name' => 'Cusco', 'description' => 'Fluvial']);
-        TypeShipment::create(['code' => '235', 'name' => 'Aerea del Callao', 'description' => 'Aérea']);
-        TypeShipment::create(['code' => '244', 'name' => 'Postal', 'description' => 'Aérea']);
+        CustomDistrict::create(['code' => '046', 'name' => 'Paita', 'description' => 'Marítima']);
+        CustomDistrict::create(['code' => '028', 'name' => 'Talara', 'description' => 'Marítima']);
+        CustomDistrict::create(['code' => '082', 'name' => 'Salaverry', 'description' => 'Marítima']);
+        CustomDistrict::create(['code' => '091', 'name' => 'Chimbote', 'description' => 'Marítima']);
+        CustomDistrict::create(['code' => '127', 'name' => 'Pisco', 'description' => 'Marítima']);
+        CustomDistrict::create(['code' => '163', 'name' => 'Ilo', 'description' => 'Marítima']);
+        CustomDistrict::create(['code' => '145', 'name' => 'Mollendo', 'description' => 'Marítima']);
+        CustomDistrict::create(['code' => '118', 'name' => 'Marítima del Callao', 'description' => 'Marítima']);
+        CustomDistrict::create(['code' => '019', 'name' => 'Tumbes', 'description' => 'Marítima']);
+        CustomDistrict::create(['code' => '055', 'name' => 'IAT Lambayeque', 'description' => 'Marítima']);
+        CustomDistrict::create(['code' => '154', 'name' => 'Arequipa', 'description' => 'Terrestre']);
+        CustomDistrict::create(['code' => '172', 'name' => 'Tacna', 'description' => 'Terrestre']);
+        CustomDistrict::create(['code' => '262', 'name' => 'Desaguadero', 'description' => 'Terrestre']);
+        CustomDistrict::create(['code' => '280', 'name' => 'Puerto Maldonado', 'description' => 'Terrestre']);
+        CustomDistrict::create(['code' => '299', 'name' => 'La Tina', 'description' => 'Terrestre']);
+        CustomDistrict::create(['code' => '181', 'name' => 'Puno', 'description' => 'Terrestre']);
+        CustomDistrict::create(['code' => '271', 'name' => 'Tarapoto', 'description' => 'Terrestre']);
+        CustomDistrict::create(['code' => '226', 'name' => 'Iquitos', 'description' => 'Fluvial']);
+        CustomDistrict::create(['code' => '217', 'name' => 'Pucallpa', 'description' => 'Fluvial']);
+        CustomDistrict::create(['code' => '190', 'name' => 'Cusco', 'description' => 'Fluvial']);
+        CustomDistrict::create(['code' => '235', 'name' => 'Aerea del Callao', 'description' => 'Aérea']);
+        CustomDistrict::create(['code' => '244', 'name' => 'Postal', 'description' => 'Aérea']);
 
+        /* Type shipment */
+
+        TypeShipment::create(['name' => 'Marítima', 'description' => 'Para cargas maritimas']);
+        TypeShipment::create(['name' => 'Aérea', 'description' => 'para cargas aereas o courier']);
+        TypeShipment::create(['name' => 'Terrestre', 'description' => 'para cargas terrestres']);
 
         /* Type load */
 
@@ -278,22 +284,22 @@ class DatabaseSeeder extends Seeder
         Customer::create(['document_number' => '20550590710', 'name_businessname' => 'Orbe Aduanas S.A.C', 'address' => 'Av Elmer faucett 474', 'contact_name' => 'Jhon Cordova', 'contact_number' => '977834697', 'contact_email' => 'jhon.cordova@orbeaduanas.com', 'state' => 'Activo', 'id_document' => 1, 'id_personal' => 99, 'type' => 'cliente']);
 
 
-        Warehouses::create(['ruc' => '20137422604', 'name_businessname' => 'SHOHIN S.A.' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Aérea']);
-        Warehouses::create(['ruc' => '20204621242', 'name_businessname' => 'TALMA SERVICIOS AEROPORTUARIOS S.A ' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Aérea']);
-        Warehouses::create(['ruc' => '20550083613', 'name_businessname' => 'SERVICIOS AEROPORTUARIOS ANDINOS S.A ' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Aérea']);
-        Warehouses::create(['ruc' => '20606777257', 'name_businessname' => 'ALMACENES FORWARDER S.A.C.' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Aérea']);
-        Warehouses::create(['ruc' => '20101128777', 'name_businessname' => 'DHL EXPRESS PERÚ S.A.C.' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Aérea']);
-        Warehouses::create(['ruc' => '20312239117', 'name_businessname' => 'AQP EXPRESS CARGO S.A.C' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Aérea']);
-        
-        Warehouses::create(['ruc' => '20543083888', 'name_businessname' => 'APM TERMINALS CALLAO SOCIEDAD ANONIMA' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
-        Warehouses::create(['ruc' => '20513462388', 'name_businessname' => 'DP WORLD CALLAO S.R.L.' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
-        Warehouses::create(['ruc' => '20100010217', 'name_businessname' => 'DP WORLD LOGISTICS S.R.L' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
-        Warehouses::create(['ruc' => '20508782013', 'name_businessname' => 'VILLAS OQUENDO S.A.' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
-        Warehouses::create(['ruc' => '20427919111', 'name_businessname' => 'DINET S.A.' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
-        Warehouses::create(['ruc' => '20606777257', 'name_businessname' => 'ALMACENES FORWARDER S.A.C' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
-        Warehouses::create(['ruc' => '20259171891', 'name_businessname' => 'INVERS.MARITIMAS UNIVERSALES PERU S.A ' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
-        Warehouses::create(['ruc' => '20507646051', 'name_businessname' => 'TERMINALES PORTUARIOS PERUANOS SAC' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
-        Warehouses::create(['ruc' => '20507646051', 'name_businessname' => 'CONTRANS S.A.C. ' , 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
+        Warehouses::create(['ruc' => '20137422604', 'name_businessname' => 'SHOHIN S.A.', 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Aérea']);
+        Warehouses::create(['ruc' => '20204621242', 'name_businessname' => 'TALMA SERVICIOS AEROPORTUARIOS S.A ', 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Aérea']);
+        Warehouses::create(['ruc' => '20550083613', 'name_businessname' => 'SERVICIOS AEROPORTUARIOS ANDINOS S.A ', 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Aérea']);
+        Warehouses::create(['ruc' => '20606777257', 'name_businessname' => 'ALMACENES FORWARDER S.A.C.', 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Aérea']);
+        Warehouses::create(['ruc' => '20101128777', 'name_businessname' => 'DHL EXPRESS PERÚ S.A.C.', 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Aérea']);
+        Warehouses::create(['ruc' => '20312239117', 'name_businessname' => 'AQP EXPRESS CARGO S.A.C', 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Aérea']);
+
+        Warehouses::create(['ruc' => '20543083888', 'name_businessname' => 'APM TERMINALS CALLAO SOCIEDAD ANONIMA', 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
+        Warehouses::create(['ruc' => '20513462388', 'name_businessname' => 'DP WORLD CALLAO S.R.L.', 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
+        Warehouses::create(['ruc' => '20100010217', 'name_businessname' => 'DP WORLD LOGISTICS S.R.L', 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
+        Warehouses::create(['ruc' => '20508782013', 'name_businessname' => 'VILLAS OQUENDO S.A.', 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
+        Warehouses::create(['ruc' => '20427919111', 'name_businessname' => 'DINET S.A.', 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
+        Warehouses::create(['ruc' => '20606777257', 'name_businessname' => 'ALMACENES FORWARDER S.A.C', 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
+        Warehouses::create(['ruc' => '20259171891', 'name_businessname' => 'INVERS.MARITIMAS UNIVERSALES PERU S.A ', 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
+        Warehouses::create(['ruc' => '20507646051', 'name_businessname' => 'TERMINALES PORTUARIOS PERUANOS SAC', 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
+        Warehouses::create(['ruc' => '20507646051', 'name_businessname' => 'CONTRANS S.A.C. ', 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
 
 
         $this->call(CountrySeeder::class);

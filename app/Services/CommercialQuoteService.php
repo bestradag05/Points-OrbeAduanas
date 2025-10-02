@@ -7,6 +7,7 @@ use App\Models\CommercialQuote;
 use App\Models\Concept;
 use App\Models\ConsolidatedCargos;
 use App\Models\Container;
+use App\Models\CustomDistrict;
 use App\Models\Customer;
 use App\Models\CustomerSupplierDocument;
 use App\Models\Incoterms;
@@ -74,6 +75,7 @@ class CommercialQuoteService
     {
         $stateCountrys = StateCountry::all()->load('country');
         $type_shipments = TypeShipment::all();
+        $customsDistricts = CustomDistrict::all();
         $type_loads = TypeLoad::all();
         $regimes = Regime::all();
         $incoterms = Incoterms::all();
@@ -87,7 +89,7 @@ class CommercialQuoteService
             ->where('type', 'cliente')
             ->get();
 
-        return compact('stateCountrys', 'type_shipments', 'type_loads', 'regimes', 'incoterms', 'types_services', 'containers', 'customers', 'packingTypes');
+        return compact('stateCountrys', 'type_shipments', 'customsDistricts', 'type_loads', 'regimes', 'incoterms', 'types_services', 'containers', 'customers', 'packingTypes');
     }
 
 
@@ -137,6 +139,7 @@ class CommercialQuoteService
                 'email' => $request->email, */
                 'load_value' => $consolidated['total_load_values'],
                 'id_type_shipment' => $request->id_type_shipment,
+                'id_customs_district' => $request->id_customs_district,
                 'id_regime' => $request->id_regime,
                 'id_type_load' => $request->id_type_load,
                 'id_incoterms' => $request->id_incoterms,
@@ -180,6 +183,7 @@ class CommercialQuoteService
                     'email' => $request->email, */
                     'load_value' => $calcContainers['total_load_values'],
                     'id_type_shipment' => $request->id_type_shipment,
+                    'id_customs_district' => $request->id_customs_district,
                     'id_regime' => $request->id_regime,
                     'id_type_load' => $request->id_type_load,
                     'id_incoterms' => $request->id_incoterms,
@@ -227,6 +231,7 @@ class CommercialQuoteService
                     'email' => $request->email, */
                     'load_value' => $this->parseDouble($request->load_value),
                     'id_type_shipment' => $request->id_type_shipment,
+                    'id_customs_district' => $request->id_customs_district,
                     'id_regime' => $request->id_regime,
                     'id_type_load' => $request->id_type_load,
                     'id_incoterms' => $request->id_incoterms,

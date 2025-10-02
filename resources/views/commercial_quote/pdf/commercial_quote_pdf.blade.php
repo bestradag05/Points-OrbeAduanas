@@ -271,7 +271,7 @@
         </div>
     @else
         <div class="title">
-            <h1>Cotizacion {{ $quoteSentClient->type_shipment->description }} </h1>
+            <h1>Cotizacion {{ $quoteSentClient->type_shipment->name }} </h1>
             <h3>N ° {{ $quoteSentClient->nro_quote_commercial }}</h3>
 
         </div>

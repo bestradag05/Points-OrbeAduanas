@@ -388,7 +388,7 @@ return [
                     'active' => ['country'],
                 ],
                 [
-                    'text' => 'Ciudad',
+                    'text' => 'Puerto',
                     'url'  => 'state_country',
                     'icon' => 'fa fa-check-double',
                     'active' => ['state_country'],
@@ -540,6 +540,13 @@ return [
             'icon' => 'fas fa-dolly',
             'active' => ['type_shipment', 'type_shipment*', 'regex:@^content/[0-9]+$@'],
             'can' => 'type_shipment.list',
+        ],
+        [
+            'text' => 'Circunscripciónes - Aduanas ',
+            'url'  => 'customs_districts',
+            'icon' => 'fas fa-dolly',
+            'active' => ['customs_districts', 'customs_districts*', 'regex:@^content/[0-9]+$@'],
+            'can' => 'customs_districts.list',
         ],
         [
             'text' => 'Regimen',

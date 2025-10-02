@@ -18,9 +18,9 @@ class TypeShipmentController extends Controller
         
          $heads = [
              '#',
-             'Code',
              'Nombre',
              'Descripcion',
+             'Estado',
              'Acciones'
          ];
          
@@ -48,7 +48,7 @@ class TypeShipmentController extends Controller
          $this->validateForm($request, null);
 
          TypeShipment::create([
-             'code' => $request->code,
+             'name' => $request->name,
              'description' => $request->description
          ]);
  
@@ -98,7 +98,7 @@ class TypeShipmentController extends Controller
     public function destroy(string $id)
     {
         $type_shipment = TypeShipment::find($id);
-        $type_shipment->update(['state' => 'Inactivo']);
+        $type_shipment->update(['status' => 'Inactivo']);
 
         return redirect('type_shipment')->with('eliminar', 'ok');
     }
@@ -106,7 +106,7 @@ class TypeShipmentController extends Controller
 
     public function validateForm($request, $id){
         $request->validate([
-            'code' => 'required|numeric|unique:type_shipment,code,' . $id,
+            'name' => 'required|string',
             'description' => 'required|string'
         ]);
     

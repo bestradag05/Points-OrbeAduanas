@@ -41,6 +41,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ContainerController;
 use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\CustomDistrictController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InsuranceRatesController;
 use App\Http\Controllers\NotificationController;
@@ -151,6 +152,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('prospects', CustomerController::class);
     Route::resource('suppliers', SupplierController::class);
     Route::resource('type_shipment', TypeShipmentController::class);
+    Route::resource('customs_districts', CustomDistrictController::class);
     Route::resource('type_load', TypeLoadController::class);
     Route::resource('type_insurance', TypeInsuranceController::class);
     Route::resource('insurance_rates', InsuranceRatesController::class);

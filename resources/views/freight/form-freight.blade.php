@@ -361,7 +361,7 @@
             let selectValue = parseInt(select.value);
 
             let insurance = typesInsurance.find(type => type.id === selectValue);
-            let rate = insurance.insurance_rate.find(rate => rate.shipment_type_description === typeShipment.description);
+            let rate = insurance.insurance_rate.find(rate => rate.shipment_type_description === typeShipment.name);
 
             let minValue = parseFloat(rate.min_value);
 

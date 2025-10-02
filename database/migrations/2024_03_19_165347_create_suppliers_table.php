@@ -19,7 +19,7 @@ return new class extends Migration
             $table->enum('provider_type', ['TRANSPORTISTA', 'AGENTE DE CARGA', 'COMERCIAL'])->nullable();
             $table->string('document_number')->nullable();
             $table->string('document_type')->nullable();
-            $table->string('address');
+            $table->string('address')->nullable();
             $table->string('contact_name')->nullable();
             $table->string('contact_number');
             $table->string('contact_email')->nullable();

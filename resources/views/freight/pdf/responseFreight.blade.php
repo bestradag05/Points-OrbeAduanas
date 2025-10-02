@@ -91,7 +91,7 @@
             <td>{{ $response->service }}</td>
         </tr>
         <tr>
-            @if ($response->quote->commercial_quote->type_shipment->description === 'Marítima')
+            @if ($response->quote->commercial_quote->type_shipment->name === 'Marítima')
                 <td class="highlight">NAVIERA</td>
                 <td>{{ $response->shippingCompany->name }}</td>
             @else
@@ -121,7 +121,7 @@
             <td class="highlight">TIPO DE CAMBIO</td>
             <td>{{ $response->exchange_rate }}</td>
         </tr>
-        @if ($response->quote->commercial_quote->type_shipment->description === 'Marítima')
+        @if ($response->quote->commercial_quote->type_shipment->name === 'Marítima')
 
             @if ($response->quote->commercial_quote->lcl_fcl === 'FCL')
 
