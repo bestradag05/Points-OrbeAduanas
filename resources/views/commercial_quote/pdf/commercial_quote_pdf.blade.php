@@ -21,7 +21,7 @@
         }
 
         .image {
-            width: 180px;
+            width: 150px;
             text-align: center;
         }
 
@@ -45,11 +45,13 @@
             text-decoration-thickness: 2px;
             text-shadow: 0px 3px 0px #234195;
             color: #234195;
+            margin: 0;
+            padding: 0;
 
         }
 
         .detail {
-            width: 90%;
+            width: 100%;
             display: table;
             margin-top: 30px;
 
@@ -163,12 +165,12 @@
             /* Distribuye cada tabla al 50% */
             vertical-align: top;
             /* Alinea el contenido arriba */
+            padding: 15px
         }
 
         #detail-quote .item-detail-quote:first-child {
-            border: 2px solid black;
-            border-left: none;
-            padding: 5px;
+            text-align: center;
+            padding: 15px;
         }
 
         #detail-quote .item-detail-quote:first-child p {
@@ -200,9 +202,6 @@
 
         .total-quote {
             background: #48c759;
-            position: absolute;
-            bottom: 0;
-            left: 0;
             width: 100%;
             height: auto;
             /* Para que ocupe todo el ancho */
@@ -244,7 +243,7 @@
             background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
-            opacity: 0.1;
+            opacity: 0.2;
             z-index: -1;
             transform: translate(-50%, -50%) rotate(-45deg);
             /* Rotación en diagonal */
@@ -255,14 +254,14 @@
 </head>
 
 <body>
-    {{-- 
+
     <div class="image">
         <img src="{{ public_path('vendor/adminlte/dist/img/logoorbe.png') }}">
-    </div> --}}
+    </div>
 
     <div class="watermark"></div>
 
-    
+
     @if (in_array('Transporte', $quoteSentClient->services_to_quote) && count($quoteSentClient->services_to_quote) == 1)
         <div class="title">
             <h1>Cotizacion de transporte </h1>
@@ -271,7 +270,8 @@
         </div>
     @else
         <div class="title">
-            <h1>Cotizacion {{ $quoteSentClient->type_shipment->name }} </h1>
+            <h1>Cotizacion {{ $quoteSentClient->type_shipment->name }}
+                {{ $quoteSentClient->lcl_fcl ? ' - ' . $quoteSentClient->lcl_fcl : '' }} </h1>
             <h3>N ° {{ $quoteSentClient->nro_quote_commercial }}</h3>
 
         </div>
@@ -439,25 +439,39 @@
 
         <div class="items-detail">
 
-            <table>
+            <table style="align-content: center">
                 <tbody>
                     <tr>
                         <td class="title-item-table">Fecha de Creacion</td>
-                        <td class="text-item-table" style="font-weight: bold">
+                        <td class="text-item-table" style="font-weight: bold; padding-right: 50px">
                             {{ $quoteSentClient->created_at->format('d/m/Y') }}</td>
                     </tr>
                     <tr>
                         <td class="title-item-table">ReF ##</td>
-                        <td class="text-item-table" style="font-weight: bold">
+                        <td class="text-item-table" style="font-weight: bold; padding-right: 50px">
                             {{ $quoteSentClient->commercialQuote->nro_quote_commercial }}</td>
                     </tr>
                     <tr>
                         <td class="title-item-table">Fecha de Validez</td>
-                        <td class="text-item-table" style="font-weight: bold">
+                        <td class="text-item-table" style="font-weight: bold; padding-right: 50px">
                             {{ $quoteSentClient->valid_until->format('d/m/Y') }}</td>
 
                     </tr>
-
+                    <tr>
+                        <td colspan="2">
+                            <div style="text-align: center; padding-top: 10px">
+                                <img src="{{ public_path('storage/' . $quoteSentClient->personal->img_url) }}"
+                                    width="100px" height="100px">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align: center;">
+                            <p style="padding: 0; margin: 0">{{ $personal->names }} {{ $personal->last_name }}</p>
+                            <p style="padding: 0; margin: 0">+51 {{ $personal->cellphone }} -
+                                {{ $personal->user->email }}</p>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
 
@@ -508,10 +522,17 @@
                     @endforeach
 
                     {{-- Subtotal sin IGV --}}
-                    @if($conceptsWithIgv->isNotEmpty())
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">Subtotal:</td>
-                            <td> $ {{ number_format($subtotalWithoutIgv, 2) }}</td>
+                    @if ($conceptsWithIgv->isNotEmpty())
+                        <tr>
+                            <td colspan="2" style="text-align: right;  padding: 0; margin: 0;">
+                                <div class="total-service"
+                                    style="padding: 5px; display: inline-block; min-width: 120px">
+
+                                    Subtotal:
+                                </div>
+                            </td>
+                            <td class="total-service" style=" padding: 0; margin: 0;"> $
+                                {{ number_format($subtotalWithoutIgv, 2) }}</td>
                         </tr>
                     @endif
 
@@ -525,9 +546,15 @@
                     @endforeach
 
                     {{-- Total --}}
-                    <tr class="total-service">
-                        <td colspan="2" style="text-align: right">Total Flete:</td>
-                        <td> $ {{ number_format($total, 2) }}</td>
+                    <tr>
+                        <td colspan="2" style="text-align: right;  padding: 0; margin: 0;">
+                            <div class="total-service" style="padding: 5px; display: inline-block; min-width: 120px">
+
+                                Total Flete:
+                            </div>
+                        </td>
+                        <td class="total-service" style=" padding: 0; margin: 0;"> $ {{ number_format($total, 2) }}
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -557,12 +584,17 @@
                         <td>$ {{ $quoteSentClient->customs_perception }}</td>
                     </tr>
 
-                    <tr class="total-service">
-                        <td colspan="2" style="text-align: right">* Total impuestos:</td>
-                        <td> $
+                    <tr>
+                        <td colspan="2" style="text-align: right;  padding: 0; margin: 0;">
+                            <div class="total-service" style="padding: 5px; display: inline-block; min-width: 120px">
+                                * Total impuestos:
+                            </div>
+                        </td>
+                        <td class="total-service" style=" padding: 0; margin: 0;"> $
                             {{ number_format($quoteSentClient->customs_taxes + $quoteSentClient->customs_perception, 2) }}
                         </td>
                     </tr>
+
                 </tbody>
             </table>
         </div>
@@ -577,11 +609,9 @@
                     @foreach ($customConcepts as $concept)
                         <tr>
                             <td>{{ $concept->name }}</td>
-                            @if ($concept->name === 'AGENCIAMIENTO DE ADUANAS')
-                                <td id="observation"> 0.4 % x fob / min $100.00 </td>
-                            @else
-                                <td id="observation"> - </td>
-                            @endif
+
+                            <td id="observation"> - </td>
+
                             <td> $ {{ $concept->pivot->concept_value }}</td>
                         </tr>
                     @endforeach
@@ -605,18 +635,40 @@
 
                         @endphp
 
+                        <tr>
+                            <td colspan="2" style="text-align: right;  padding: 0; margin: 0;">
+                                <div class="total-service"
+                                    style="padding: 5px; display: inline-block; min-width: 120px">
+                                    Sub Total:
+                                </div>
+                            </td>
+                            <td class="total-service" style=" padding: 0; margin: 0;"> $
+                                {{ number_format($subtotal, 2) }}
+                            </td>
+                        </tr>
 
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">Sub Total:</td>
-                            <td> $ {{ number_format($subtotal, 2) }}</td>
+                        <tr>
+                            <td colspan="2" style="text-align: right;  padding: 0; margin: 0;">
+                                <div class="total-service"
+                                    style="padding: 5px; display: inline-block; min-width: 120px">
+                                    IGV:
+                                </div>
+                            </td>
+                            <td class="total-service" style=" padding: 0; margin: 0;"> $
+                                {{ number_format($igv, 2) }}
+                            </td>
                         </tr>
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">IGV:</td>
-                            <td> $ {{ number_format($igv, 2) }}</td>
-                        </tr>
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">Total:</td>
-                            <td> $ {{ number_format($cats_destinations, 2) }}</td>
+
+                        <tr>
+                            <td colspan="2" style="text-align: right;  padding: 0; margin: 0;">
+                                <div class="total-service"
+                                    style="padding: 5px; display: inline-block; min-width: 120px">
+                                    Total:
+                                </div>
+                            </td>
+                            <td class="total-service" style=" padding: 0; margin: 0;"> $
+                                {{ number_format($cats_destinations, 2) }}
+                            </td>
                         </tr>
                     @else
                         @php
@@ -627,23 +679,43 @@
                         @endphp
 
 
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">Sub Total:</td>
-                            <td> $ {{ number_format($subtotal, 2) }}</td>
+                        <tr>
+                            <td colspan="2" style="text-align: right;  padding: 0; margin: 0;">
+                                <div class="total-service"
+                                    style="padding: 5px; display: inline-block; min-width: 120px">
+                                    Sub Total:
+                                </div>
+                            </td>
+                            <td class="total-service" style=" padding: 0; margin: 0;"> $
+                                {{ number_format($subtotal, 2) }}
+                            </td>
                         </tr>
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">IGV:</td>
-                            <td> $ {{ number_format($igv, 2) }}</td>
+
+                        <tr>
+                            <td colspan="2" style="text-align: right;  padding: 0; margin: 0;">
+                                <div class="total-service"
+                                    style="padding: 5px; display: inline-block; min-width: 120px">
+                                    IGV:
+                                </div>
+                            </td>
+                            <td class="total-service" style=" padding: 0; margin: 0;"> $
+                                {{ number_format($igv, 2) }}
+                            </td>
                         </tr>
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">Total:</td>
-                            <td> $ {{ number_format($cats_destinations, 2) }}</td>
+
+                        <tr>
+                            <td colspan="2" style="text-align: right;  padding: 0; margin: 0;">
+                                <div class="total-service"
+                                    style="padding: 5px; display: inline-block; min-width: 120px">
+                                    Total:
+                                </div>
+                            </td>
+                            <td class="total-service" style=" padding: 0; margin: 0;"> $
+                                {{ number_format($cats_destinations, 2) }}
+                            </td>
                         </tr>
 
                     @endif
-
-
-
                 </tbody>
             </table>
         </div>
@@ -675,17 +747,40 @@
                         @endphp
 
 
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">Sub Total:</td>
-                            <td> $ {{ number_format($subtotal, 2) }}</td>
+                         <tr>
+                            <td colspan="2" style="text-align: right;  padding: 0; margin: 0;">
+                                <div class="total-service"
+                                    style="padding: 5px; display: inline-block; min-width: 120px">
+                                    Sub Total:
+                                </div>
+                            </td>
+                            <td class="total-service" style=" padding: 0; margin: 0;"> $
+                                {{ number_format($subtotal, 2) }}
+                            </td>
                         </tr>
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">IGV:</td>
-                            <td> $ {{ number_format($igv, 2) }}</td>
+
+                        <tr>
+                            <td colspan="2" style="text-align: right;  padding: 0; margin: 0;">
+                                <div class="total-service"
+                                    style="padding: 5px; display: inline-block; min-width: 120px">
+                                    IGV:
+                                </div>
+                            </td>
+                            <td class="total-service" style=" padding: 0; margin: 0;"> $
+                                {{ number_format($igv, 2) }}
+                            </td>
                         </tr>
-                        <tr class="total-service">
-                            <td colspan="2" style="text-align: right">Total:</td>
-                            <td> $ {{ number_format($cats_destinations, 2) }}</td>
+
+                        <tr>
+                            <td colspan="2" style="text-align: right;  padding: 0; margin: 0;">
+                                <div class="total-service"
+                                    style="padding: 5px; display: inline-block; min-width: 120px">
+                                    Total:
+                                </div>
+                            </td>
+                            <td class="total-service" style=" padding: 0; margin: 0;"> $
+                                {{ number_format($cats_destinations, 2) }}
+                            </td>
                         </tr>
 
                     </tbody>
@@ -695,6 +790,15 @@
         @endif
 
     @endif
+
+    <div class="">
+                <div class="total-quote">
+                    TOTAL COTIZACION: $
+                    {{ number_format($quoteSentClient->total_quote_sent_client, 2) }}
+                    <span class="total-info">*Este precio no incluye el pago de impuestos*</span>
+                </div>
+
+            </div>
 
 
     <div class="container-footer-quote">
@@ -724,19 +828,14 @@
                         4. LOS COSTOS QUE SE INDICARON COMO APROXIMADOS EN LA COTIZACION ESTAN SUJETAS A LA FACTURACION
                         FINAL DE LOS OPERADORES DE SERVICIO EN DESTINO PERU.
                     </li>
+                    <li>
+                        5. NO SE DEBE PAGAR EN EFECTIVO O A CUENTAS AJENAS A LA EMPRESA, ESTO QUEDA BAJO RESPONSABILIDAD DEL IMPORTADOR / EXPORTADOR.
+                    </li>
                 </ul>
 
             </div>
 
-            <div class="item-detail-quote">
-                {{-- TODO: Modificar para calcular el total de forma automatica --}}
-                <div class="total-quote">
-                    TOTAL COTIZACION: $
-                    {{ number_format($quoteSentClient->total_quote_sent_client, 2) }}
-                    <span class="total-info">*Este precio no incluye el pago de impuestos*</span>
-                </div>
-
-            </div>
+            
 
         </div>
 

@@ -703,7 +703,7 @@
                 function submitCustomsForm() {
 
                     let form = $(`#${container.id}`).find('form');
-                    const inputs = form.find('input, select').not('.formConcepts  input, .formConcepts select, input.d-none');
+                    const inputs = form.find('input, select').not('.formConcepts  input, .formConcepts select, input.d-none, #collapseImpuestos input');
 
                     inputs.each(function(index, input) {
 

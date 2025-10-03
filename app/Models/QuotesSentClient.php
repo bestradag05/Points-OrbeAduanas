@@ -83,7 +83,7 @@ class QuotesSentClient extends Model
                 $formattedCorrelative = str_pad($nextCorrelative, 4, '0', STR_PAD_LEFT);
 
                 // Generar el código de cotización
-                $quoteSentClient->nro_quote_commercial = "COTI-{$operationCode}{$shipmentCode}-{$formattedCorrelative}-{$year}";
+                $quoteSentClient->nro_quote_commercial = "COTI-{$operationCode}{$shipmentCode}-{$year}-{$formattedCorrelative}";
             }
         });
     }
