@@ -21,9 +21,10 @@ return new class extends Migration
             $table->integer('nro_packages');
             $table->unsignedBigInteger('id_packaging_type');
             $table->unsignedBigInteger('id_incoterms');
-            $table->decimal('kilogram_volumen', 10, 2)->nullable();
-            $table->decimal('volumen', 10, 2)->nullable();
-            $table->decimal('kilograms', 10, 2)->nullable();
+            $table->decimal('weight', 8, 2)->nullable();
+            $table->string('unit_of_weight')->nullable();
+            $table->decimal('volumen_kgv', 8, 2)->nullable();
+            $table->string('unit_of_volumen_kgv')->nullable();
             $table->json('value_measures')->nullable(); // JSON para medidas
             $table->timestamps();
 
@@ -31,8 +32,6 @@ return new class extends Migration
             $table->foreign('id_incoterms')->references('id')->on('incoterms');
             $table->foreign('supplier_id')->references('id')->on('suppliers');
             $table->foreign('id_packaging_type')->references('id')->on('packing_types');
-
-
         });
     }
 

@@ -94,7 +94,7 @@
                 </form>
                 <div class="modal-footer">
                     <button type="button" id="btnGenerarServicios" class="btn btn-primary">Generar</button>
-                    <a class="btn btn-secondary"  href="{{ route('quote.index') }}" >Cancelar</a>
+                    <a class="btn btn-secondary" href="{{ route('quote.index') }}">Cancelar</a>
                 </div>
 
             </div>
@@ -131,7 +131,7 @@
                                 <div class="form-group">
                                     <label for="shipper_name">Proveedor:</label>
                                     <input id="shipper_name" class="form-control required" type="text"
-                                        name="shipper_name">
+                                        name="shipper_name" onchange="searchSupplier(this)">
                                 </div>
                             </div>
                             <div class="col-4">
@@ -205,30 +205,57 @@
                                 </div>
                             </div>
 
-                            <div id="contenedor_vol_consolidated" class="col-4">
-                                <div class="form-group">
-                                    <label for="volumen">Volumen:</label>
-                                    <input id="volumen" class="form-control CurrencyInput" data-type="currency"
-                                        type="text" name="volumen">
+                            <div class="col-6">
+                                <div class="form-group ">
+                                    <label for="weight" class="col-form-label">Peso</label>
+
+                                    <div class="input-group">
+                                        <input type="text"
+                                            class="form-control CurrencyInput @error('weight') is-invalid @enderror"
+                                            data-type="currency" id="weight" name="weight"
+                                            value="{{ isset($routing->weight) ? $routing->weight : old('weight') }}">
+                                        <div class="input-group-prepend">
+                                            <select class="form-control" name="unit_of_weight" id="unit_of_weight">
+                                                <option>kg</option>
+                                                <option>ton</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+                                    @error('weight')
+                                        <span class="invalid-feedback d-block" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
                                 </div>
                             </div>
 
-                            <div id="contenedor_kg_vol_consolidated" class="col-4 d-none">
+                            <div class="col-6">
                                 <div class="form-group">
-                                    <label for="kilogram_volumen">KGV:</label>
-                                    <input id="kilogram_volumen" class="form-control CurrencyInput" data-type="currency"
-                                        type="text" name="kilogram_volumen">
+                                    <label for="volumen_kgv" class="col-form-label">Volumen</label>
+
+                                    <div class="input-group">
+                                        <input type="text"
+                                            class="form-control CurrencyInput @error('volumen_kgv') is-invalid @enderror"
+                                            data-type="currency" id="volumen_kgv" name="volumen_kgv"
+                                            value="{{ isset($routing->volumen_kgv) ? $routing->volumen_kgv : old('volumen_kgv') }}">
+                                        <div class="input-group-prepend">
+                                            <select class="form-control" name="unit_of_volumen_kgv"
+                                                id="unit_of_volumen_kgv">
+                                                <option>m³</option>
+                                                <option>kgv</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    @error('volumen_kgv')
+                                        <span class="invalid-feedback d-block" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
                                 </div>
                             </div>
-
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label for="kilograms">Peso total:</label>
-                                    <input id="kilograms" class="form-control CurrencyInput" data-type="currency"
-                                        type="text" name="kilograms">
-                                </div>
-                            </div>
-
 
                             <div id="container-measures-consolidated" class="col-12 mt-2">
 
@@ -445,35 +472,56 @@
                         </div>
 
                         <div class="col-6">
-                            <label for="volumen">Volumen (m³)</label>
+                            <div class="form-group ">
+                                <label for="weight" class="col-form-label">Peso</label>
 
-                            {{-- Volumen --}}
-                            <input type="text"
-                                class="form-control CurrencyInput @error('volumen') is-invalid @enderror" id="volumen"
-                                name="volumen" data-type="currency" placeholder="Ingrese el nro de paquetes.."
-                                value="{{ isset($routing->volumen) ? $routing->volumen : old('volumen') }}">
+                                <div class="input-group">
+                                    <input type="text"
+                                        class="form-control CurrencyInput @error('weight') is-invalid @enderror"
+                                        data-type="currency" id="weight" name="weight"
+                                        value="{{ isset($routing->weight) ? $routing->weight : old('weight') }}">
+                                    <div class="input-group-prepend">
+                                        <select class="form-control" name="unit_of_weight" id="unit_of_weight">
+                                            <option>kg</option>
+                                            <option>ton</option>
+                                        </select>
+                                    </div>
+                                </div>
 
-                            @error('volumen')
-                                <span class="invalid-feedback d-block" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
 
+                                @error('weight')
+                                    <span class="invalid-feedback d-block" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
                         </div>
-
                         <div class="col-6">
-                            <label for="kilograms">Peso Total (TON)</label>
+                            <div class="form-group">
+                                <label for="volumen_kgv" class="col-form-label">Volumen</label>
 
-                            <input type="text"
-                                class="form-control CurrencyInput @error('kilograms') is-invalid @enderror" id="kilograms"
-                                name="kilograms" data-type="currency" placeholder="Ingrese el peso.."
-                                value="{{ isset($routing->kilograms) ? $routing->kilograms : old('kilograms') }}">
-                            @error('kilograms')
-                                <span class="invalid-feedback d-block" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
+                                <div class="input-group">
+                                    <input type="text"
+                                        class="form-control CurrencyInput @error('volumen_kgv') is-invalid @enderror"
+                                        data-type="currency" id="volumen_kgv" name="volumen_kgv"
+                                        value="{{ isset($routing->volumen_kgv) ? $routing->volumen_kgv : old('volumen_kgv') }}">
+                                    <div class="input-group-prepend">
+                                        <select class="form-control" name="unit_of_volumen_kgv" id="unit_of_volumen_kgv">
+                                            <option>m³</option>
+                                            <option>kgv</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                @error('volumen_kgv')
+                                    <span class="invalid-feedback d-block" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+
                         </div>
+
 
                         <div id="container_measures" class="col-12 mt-3">
 
@@ -605,5 +653,50 @@
                 el.style.display = onlyTransport ? 'none' : '';
             });
         }
+
+          function searchSupplier(e) {
+
+            let name_businessname_supplier = e.value;
+            let formFillData = $('#form-consolidated');
+
+
+            // Hacer una llamada AJAX para obtener los datos del cliente desde el servidor
+            $.ajax({
+                url: `/suppliers/${name_businessname_supplier}`,
+                method: 'GET',
+                success: function(response) {
+
+                    if (response.success && response.supplier) {
+                        // Si el cliente existe, llenamos los campos
+                        formFillData.find('#shipper_contact_email').val(response.supplier.address).prop('readonly',
+                            true);
+                        formFillData.find('#shipper_contact').val(response.supplier.contact_name).prop(
+                            'readonly',
+                            true);
+                        formFillData.find('#shipper_contact_phone').val(response.supplier.contact_number)
+                            .prop(
+                                'readonly', true);
+                        formFillData.find('#shipper_contact_email').val(response.supplier.contact_email).prop(
+                            'readonly', true);
+                        formFillData.find('#shipper_address').val(response.supplier.address);
+                    } else {
+                        // Si el cliente no existe, limpiar los campos
+                        formFillData.find('#shipper_contact_email').val('').prop('readonly', false);
+                        formFillData.find('#shipper_contact').val('').prop('readonly', false);
+                        formFillData.find('#shipper_contact_phone').val('').prop('readonly', false);
+                        formFillData.find('#shipper_contact_email').val('').prop('readonly', false);
+                        formFillData.find('#shipper_address').val('').prop('readonly', false);
+
+                        // También podrías mostrar un mensaje si no se encuentra el cliente
+                        toastr.info(response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al buscar cliente:', error);
+                }
+            });
+
+        }
+
     </script>
 @endpush

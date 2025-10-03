@@ -71,7 +71,7 @@
 
           </div>
 
-          <div class="col-6">
+          <div class="col-6 transporte-hide">
               <div class="row" id="lclfcl_content">
                   <div class="col-12">
                       <label for="id_customs_district">Circunscripción - Aduana</label>
@@ -460,30 +460,39 @@
               <div class="row mt-4">
 
                   <div class="col-4 transporte-hide">
-                      <div class="form-group row">
-                          <label for="pounds" class="col-sm-4 col-form-label">Libras </label>
-                          <div class="col-sm-8">
-                              <input type="text" class="form-control CurrencyInput" id="pounds" name="pounds"
-                                  data-type="currency" placeholder="Ingrese las libras"
-                                  value="{{ isset($routing) ? $routing->pounds : '' }}" @readonly(true)>
-                              @error('pounds')
-                                  <div class="text-danger">{{ $message }}</div>
-                              @enderror
-                          </div>
+                      <div class="form-group">
+                          <label for="pounds" class="col-form-label">Libras </label>
+
+                          <input type="text" class="form-control CurrencyInput" id="pounds" name="pounds"
+                              data-type="currency" placeholder="Ingrese las libras"
+                              value="{{ isset($routing) ? $routing->pounds : '' }}" @readonly(true)>
+                          @error('pounds')
+                              <div class="text-danger">{{ $message }}</div>
+                          @enderror
+
                       </div>
                   </div>
 
                   <div class="col-4">
-                      <div id="contenedor_weight" class="form-group row lcl-fields d-none">
-                          <label for="kilograms" class="col-sm-5 col-form-label">Peso Total (KG) <span
-                                  class="text-danger">*</span> </label>
-                          <div class="col-sm-7">
-                              <input type="text"
-                                  class="form-control CurrencyInput @error('kilograms') is-invalid @enderror"
-                                  id="kilograms" name="kilograms" data-type="currency"
-                                  placeholder="Ingrese el peso.."
-                                  value="{{ isset($routing->kilograms) ? $routing->kilograms : old('kilograms') }}">
-                              @error('kilograms')
+                      <div id="contenedor_weight" class="form-group lcl-fields">
+                          <div class="form-group ">
+                              <label for="weight" class="col-form-label">Peso</label>
+
+                              <div class="input-group">
+                                  <input type="text"
+                                      class="form-control CurrencyInput @error('weight') is-invalid @enderror"
+                                      data-type="currency" id="weight" name="weight"
+                                      value="{{ isset($routing->weight) ? $routing->weight : old('weight') }}">
+                                  <div class="input-group-prepend">
+                                      <select class="form-control" name="unit_of_weight" id="unit_of_weight">
+                                          <option>kg</option>
+                                          <option>ton</option>
+                                      </select>
+                                  </div>
+                              </div>
+
+
+                              @error('weight')
                                   <span class="invalid-feedback d-block" role="alert">
                                       <strong>{{ $message }}</strong>
                                   </span>
@@ -491,60 +500,35 @@
                           </div>
                       </div>
 
-                      <div id="contenedor_tons" class="form-group row fcl-fields d-none">
-                          <label for="tons" class="col-sm-4 col-form-label">Toneladas <span
-                                  class="text-danger">*</span> </label>
-                          <div class="col-sm-8">
-                              <input type="text"
-                                  class="form-control CurrencyInput @error('tons') is-invalid @enderror"
-                                  id="tons" name="tons" data-type="currency"
-                                  placeholder="Ingrese el peso en toneladas.."
-                                  value="{{ isset($routing->tons) ? $routing->tons : old('tons') }}">
-                          </div>
-                          @error('tons')
-                              <span class="invalid-feedback d-block" role="alert">
-                                  <strong>{{ $message }}</strong>
-                              </span>
-                          @enderror
-                      </div>
-
                   </div>
 
 
                   <div class="col-4">
-                      <div id="contenedor_volumen" class="form-group row  d-none">
-                          <label for="volumen" class="col-sm-5 col-form-label">Volumen (m³)</label>
-                          <div class="col-sm-7">
-                              {{-- Volumen --}}
-                              <input type="text"
-                                  class="form-control CurrencyInput @error('volumen') is-invalid @enderror"
-                                  id="volumen" name="volumen" data-type="currency"
-                                  placeholder="Ingrese el nro de paquetes.."
-                                  value="{{ isset($routing->volumen) ? $routing->volumen : old('volumen') }}">
+                      <div id="contenedor_volumen" class="form-group">
+                          <div class="form-group">
+                              <label for="volumen_kgv" class="col-form-label">Volumen</label>
+
+                              <div class="input-group">
+                                  <input type="text"
+                                      class="form-control CurrencyInput @error('volumen_kgv') is-invalid @enderror"
+                                      data-type="currency" id="volumen_kgv" name="volumen_kgv"
+                                      value="{{ isset($routing->volumen_kgv) ? $routing->volumen_kgv : old('volumen_kgv') }}">
+                                  <div class="input-group-prepend">
+                                      <select class="form-control" name="unit_of_volumen_kgv"
+                                          id="unit_of_volumen_kgv">
+                                          <option>m³</option>
+                                          <option>kgv</option>
+                                      </select>
+                                  </div>
+                              </div>
+
+                              @error('volumen_kgv')
+                                  <span class="invalid-feedback d-block" role="alert">
+                                      <strong>{{ $message }}</strong>
+                                  </span>
+                              @enderror
                           </div>
 
-                          @error('volumen')
-                              <span class="invalid-feedback d-block" role="alert">
-                                  <strong>{{ $message }}</strong>
-                              </span>
-                          @enderror
-                      </div>
-                      <div id="contenedor_kg_vol" class="form-group row d-none">
-                          <label for="volumen" class="col-sm-4 col-form-label">Kg/vol: </label>
-                          <div class="col-sm-8">
-                              {{-- Kilogramo volumen --}}
-
-                              <input type="text"
-                                  class="form-control CurrencyInput @error('kilogram_volumen') is-invalid @enderror"
-                                  id="kilogram_volumen" name="kilogram_volumen" data-type="currency"
-                                  placeholder="Ingrese el nro de paquetes.."
-                                  value="{{ isset($routing->kilogram_volumen) ? $routing->kilogram_volumen : old('kilogram_volumen') }}">
-                          </div>
-                          @error('kilogram_volumen')
-                              <span class="invalid-feedback d-block" role="alert">
-                                  <strong>{{ $message }}</strong>
-                              </span>
-                          @enderror
                       </div>
 
                   </div>
@@ -568,9 +552,8 @@
                           <th>Valor de la carga</th>
                           <th>Bultos</th>
                           <th>Embalaje</th>
-                          <th>Volumen</th>
-                          <th>KGV</th>
                           <th>Peso</th>
+                          <th>Volumen</th>
                           <th>Accion</th>
                       </tr>
                   </thead>
@@ -638,11 +621,11 @@
                   <i class="fas fa-plus"></i>
               </button>
           </div>
-          <table class="table" id="table-containers">
+          <table class="table text-sm" id="table-containers">
               <thead class="thead-dark">
                   <tr>
                       <th scope="col">Contenedor</th>
-                      <th scope="col">Cantidad de contenedor</th>
+                      <th scope="col">N° contenedor</th>
                       <th scope="col">Producto</th>
                       <th scope="col">N° Bultos</th>
                       <th scope="col">Tipo de Embalaje</th>
@@ -888,13 +871,16 @@
                   $('#lclfcl_content').children().last().removeClass('d-none');
 
                   $('#contenedor_volumen').removeClass('d-none');
-                  $('#contenedor_vol_consolidated').removeClass('d-none');
+/*                   $('#contenedor_vol_consolidated').removeClass('d-none');
                   $('#contenedor_kg_vol').addClass('d-none');
-                  $('#contenedor_kg_vol_consolidated').addClass('d-none');
+                  $('#contenedor_kg_vol_consolidated').addClass('d-none'); */
 
                   $('#contenedor_volumen').find('input').val("");
-                  $('#contenedor_kg_vol').find('input').val("");
-                  $('#contenedor_kg_vol_consolidated').find('input').val("");
+                  /* $('#contenedor_kg_vol').find('input').val("");
+                  $('#contenedor_kg_vol_consolidated').find('input').val(""); */
+
+                  $('#unit_of_volumen_kgv').val('m³');
+                  
 
               } else {
 
@@ -906,15 +892,14 @@
                   $('#lclfcl_content').children().last().addClass('d-none');
                   $('input[name="lcl_fcl"]').prop('checked', false);
 
-                  $('#contenedor_volumen').addClass('d-none');
-                  $('#contenedor_vol_consolidated').addClass('d-none');
+                /*   $('#contenedor_vol_consolidated').addClass('d-none');
                   $('#contenedor_kg_vol').removeClass('d-none');
                   $('#contenedor_kg_vol_consolidated').removeClass('d-none');
 
                   $('#contenedor_kg_vol').find('input').val("");
                   $('#contenedor_kg_vol_consolidated').find('input').val("");
                   $('#contenedor_volumen').find('input').val("");
-                  $('#contenedor_vol_consolidated').find('input').val("");
+                  $('#contenedor_vol_consolidated').find('input').val(""); */
 
                   $('#containerTypeWrapper').find('input').val("");
                   $('#containerTypeWrapper').addClass('d-none');
@@ -926,9 +911,11 @@
                   $('#containerQuantityWrapperConsolidated').find('input').val("");
                   $('#containerQuantityWrapperConsolidated').addClass('d-none');
 
-                  $('#contenedor_tons').find('input').val("");
+               /*    $('#contenedor_tons').find('input').val("");
                   $('#contenedor_tons').addClass('d-none');
-                  $('#contenedor_weight').removeClass('d-none');
+                  $('#contenedor_weight').removeClass('d-none'); */
+
+                   $('#unit_of_volumen_kgv').val('kgv');
 
                   $('#lcl_container').removeClass('d-none');
                   $('#fcl_container').addClass('d-none');
@@ -992,7 +979,7 @@
 
 
 
-          $('#kilograms').on('change', (e) => {
+          $('#weight').on('change', (e) => {
 
               let kilogramsVal = $(e.target).val();
               let kilograms = kilogramsVal.replace(/,/g, '');
@@ -1200,6 +1187,8 @@
 
                   let containerName = $('#id_containers option:selected').text().trim();
                   let packaginTypeName = $('#formContainer #id_packaging_type option:selected').text().trim();
+                  let unit_of_volumen_kgv = $('#formContainer #unit_of_volumen_kgv option:selected').text().trim();
+                  let unit_of_weight = $('#formContainer #unit_of_weight option:selected').text().trim();
 
                   let container = {
                       'id_container': getValueByNameFCL('id_containers'),
@@ -1210,11 +1199,14 @@
                       'id_packaging_type': getValueByNameFCL('id_packaging_type'),
                       'packaginTypeName': packaginTypeName,
                       'load_value': getValueByNameFCL('load_value'),
-                      'volumen': getValueByNameFCL('volumen'),
-                      'kilograms': getValueByNameFCL('kilograms'),
+                      'volumen_kgv': getValueByNameFCL('volumen_kgv'),
+                      'unit_of_volumen_kgv': unit_of_volumen_kgv,
+                      'weight': getValueByNameFCL('weight'),
+                      'unit_of_weight': unit_of_weight,
                       'value_measures': getValueByNameFCL('value_measures') ? JSON.parse(getValueByNameFCL(
                           'value_measures')) : ''
                   };
+
 
                   let index = containers.length;
                   containers.push(container);
@@ -1230,8 +1222,8 @@
                         <td>${container.nro_package}</td>
                         <td>${container.packaginTypeName}</td>
                         <td>${container.load_value}</td>
-                        <td>${container.volumen}</td>
-                        <td>${container.kilograms}</td>
+                        <td>${container.volumen_kgv} ${container.unit_of_volumen_kgv}</td>
+                        <td>${container.weight} ${container.unit_of_weight}</td>
                         <td>
                             <button class="btn btn-info btn-sm btn-detail"><i class="fas fa-folder-open"></i></button>
                             <button class="btn btn-danger btn-sm delete-row"><i class="fas fa-trash"></i></button>
@@ -1296,8 +1288,8 @@
                 <tr><th>N° de bultos</th><td>${container.nro_package}</td></tr>
                 <tr><th>Tipo de embalaje</th><td>${container.packaginTypeName}</td></tr>
                 <tr><th>Valor de factura</th><td>${container.load_value}</td></tr>
-                <tr><th>Volumen</th><td>${container.volumen}</td></tr>
-                <tr><th>Peso</th><td>${container.kilograms}</td></tr>
+                <tr><th>Volumen</th><td>${container.volumen_kgv} ${container.unit_of_volumen_kgv}</td></tr>
+                <tr><th>Peso</th><td>${container.weight} ${container.unit_of_weight}</td></tr>
                 <tr><th>Medidas</th><td>
                     <table class="table table-bordered">
                         <thead>
@@ -1394,9 +1386,10 @@
                   'id_packaging_type_consolidated': getValueByName('id_packaging_type_consolidated'),
                   'name_packaging_type_consolidated': $('#id_packaging_type_consolidated').find('option:selected').text()
                       .trim(),
-                  'volumen': getValueByName('volumen'),
-                  'kilogram_volumen': getValueByName('kilogram_volumen'),
-                  'kilograms': getValueByName('kilograms'),
+                  'weight': getValueByName('weight'),
+                  'unit_of_weight': getValueByName('unit_of_weight'),
+                  'volumen_kgv': getValueByName('volumen_kgv'),
+                  'unit_of_volumen_kgv': getValueByName('unit_of_volumen_kgv'),
                   'value_measures': getValueByName('value-measures-consolidated') ? JSON.parse(getValueByName(
                       'value-measures-consolidated')) : ''
               };
@@ -1417,9 +1410,8 @@
                         <td>${shipper.load_value}</td>
                         <td>${shipper.nro_packages_consolidated}</td>
                         <td>${shipper.name_packaging_type_consolidated}</td>
-                        <td>${shipper.volumen}</td>
-                        <td>${shipper.kilogram_volumen}</td>
-                        <td>${shipper.kilograms}</td>
+                        <td>${shipper.weight} ${shipper.unit_of_weight}</td>
+                        <td>${shipper.volumen_kgv} ${shipper.unit_of_volumen_kgv}</td>
                         <td>
                             <button class="btn btn-info btn-sm btn-detail"><i class="fas fa-folder-open"></i></button>
                             <button class="btn btn-danger btn-sm delete-row"><i class="fas fa-trash"></i></button>
@@ -1488,8 +1480,8 @@
                 <tr><th>Valor de Carga</th><td>${shipper.load_value}</td></tr>
                 <tr><th>Nro. Paquetes</th><td>${shipper.nro_packages_consolidated}</td></tr>
                 <tr><th>Tipo de Empaque</th><td>${shipper.name_packaging_type_consolidated}</td></tr>
-                <tr><th>Volumen</th><td>${shipper.volumen}</td></tr>
-                <tr><th>Kilogramos</th><td>${shipper.kilograms}</td></tr>
+                <tr><th>Peso</th><td>${shipper.weight} ${shipper.unit_of_weight}</td></tr>
+                <tr><th>Volumen</th><td>${shipper.volumen_kgv} ${shipper.unit_of_volumen_kgv}</td></tr>
                 <tr><th>Medidas</th><td>
                     <table class="table table-bordered">
                         <thead>

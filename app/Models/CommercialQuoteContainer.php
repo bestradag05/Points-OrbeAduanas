@@ -19,8 +19,10 @@ class CommercialQuoteContainer extends Model
         'nro_package',
         'id_packaging_type',
         'load_value',
-        'kilograms',
-        'volumen',
+        'weight',
+        'unit_of_weight',
+        'volumen_kgv',
+        'unit_of_volumen_kgv',
         'measures'
     ];
 

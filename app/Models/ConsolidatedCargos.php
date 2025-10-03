@@ -21,9 +21,10 @@ class ConsolidatedCargos extends Model
         'load_value',
         'nro_packages',
         'id_packaging_type',
-        'kilogram_volumen',
-        'volumen',
-        'kilograms',
+        'weight',
+        'unit_of_weight',
+        'volumen_kgv',
+        'unit_of_volumen_kgv',
         'value_measures',
     ];
 
