@@ -128,78 +128,18 @@ class CustomService
     }
 
 
-    private function createOrUpdateInsurance(Request $request, Custom $custom)
+    public function calculateTaxescustom($comercialQuote)
     {
+        $customs_taxes = new stdClass();
 
-        if (!$request->state_insurance) {
+        $customs_taxes_value = $comercialQuote->cif_value * 0.215;
+        $customs_perception_value = ($comercialQuote->cif_value + $customs_taxes_value) * 0.035;
 
-            //Eliminamos el seguro vinculado al flete si existe.
-            Insurance::where('id_insurable_service', $custom->id)
-                ->where('model_insurable_service', Custom::class)->delete();
+        $customs_taxes->customs_taxes = number_format($customs_taxes_value, 2);
+        $customs_taxes->customs_perception = number_format($customs_perception_value, 2);
 
-            return null; // Si no se envía el seguro, no se hace nada
-        }
-
-        $insurance = Insurance::where('id_insurable_service', $custom->id)
-            ->where('model_insurable_service', Custom::class)
-            ->first();
-
-        if ($insurance) {
-            // Si el seguro existe, actualizarlo
-            $insurance->update([
-                'insurance_value' => $request->value_insurance,
-                'insurance_sales_value' => $request->insurance_sales_value,
-                'id_type_insurance' =>  $request->type_insurance,
-                'state' => 'Pendiente',
-            ]);
-        } else {
-            // Si no existe, crearlo
-            $insurance = Insurance::create([
-                'insurance_value' => $request->value_insurance,
-                'insurance_sales_value' => $request->insurance_sales_value,
-                'id_type_insurance' =>  $request->type_insurance,
-                'name_service' => 'Aduana',
-                'id_insurable_service' => $custom->id,
-                'model_insurable_service' => Custom::class,
-                'state' => 'Pendiente'
-            ]);
-
-            $custom->insurance()->save($insurance);
-        }
-
-
-        return $insurance;
+        return $customs_taxes;
     }
-
-
-
-    private function updateConceptInsurance($concepts, $custom, $request)
-    {
-
-        $arrayConcepts = (array) $concepts; //convertimos array los conceptos
-        $lastKey = array_key_last($arrayConcepts); // obtenemos el ultimo indice
-        $key = $lastKey + 1; // agregamos al ultimo indice par acrear el concepto de seguro
-        $concept = Concept::where('name', 'SEGURO')
-            ->where('id_type_shipment', $custom->commercial_quote->type_shipment->id)
-            ->whereHas('typeService', function ($query) {
-                $query->where('name', 'Aduanas');  // Segunda condición: Filtrar por name del tipo de servicio
-            })
-            ->first();
-
-
-        // Crear o actualizar el objeto del seguro
-        $insuranceObject = new stdClass();
-        $insuranceObject->id = $concept->id;
-        $insuranceObject->name = $concept->name;
-        $insuranceObject->value = $request->value_insurance;
-        $insuranceObject->value_sale = $request->insurance_sales_value;
-
-        // Guardar el concepto actualizado en el array
-        $concepts[$key] = $insuranceObject;
-
-        return $concepts;
-    }
-
 
     private function syncCustomsConcepts($custom, $concepts)
     {

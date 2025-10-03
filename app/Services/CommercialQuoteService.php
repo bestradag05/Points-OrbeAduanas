@@ -384,12 +384,7 @@ class CommercialQuoteService
             $services['Flete'] = $comercialQuote->freight->load('insurance');
 
             //Calculamos impuestos para la aduana si es que lo llega a usar.
-
-            $customs_taxes_value = $comercialQuote->cif_value * 0.215;
-            $customs_perception_value = ($comercialQuote->cif_value + $customs_taxes_value) * 0.035;
-
-            $customs_taxes->customs_taxes = number_format($customs_taxes_value, 2);
-            $customs_taxes->customs_perception = number_format($customs_perception_value, 2);
+            $customs_taxes = $this->customService->calculateTaxescustom($comercialQuote);
         }
 
         if ($comercialQuote->transport()->exists()) {

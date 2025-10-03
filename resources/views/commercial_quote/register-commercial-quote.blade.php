@@ -445,7 +445,7 @@
                         </div>
 
                         <div class="col-6">
-                            <label for="volumen">Volumen </label>
+                            <label for="volumen">Volumen (m³)</label>
 
                             {{-- Volumen --}}
                             <input type="text"
@@ -462,7 +462,7 @@
                         </div>
 
                         <div class="col-6">
-                            <label for="kilograms">Peso Total</label>
+                            <label for="kilograms">Peso Total (TON)</label>
 
                             <input type="text"
                                 class="form-control CurrencyInput @error('kilograms') is-invalid @enderror" id="kilograms"

@@ -22,10 +22,12 @@ class FreightService
 {
 
     protected $freightDocumentService;
+    protected $customService;
 
-    public function __construct(FreightDocumentService $freightDocumentService)
+    public function __construct(FreightDocumentService $freightDocumentService, CustomService $customService)
     {
         $this->freightDocumentService = $freightDocumentService;
+        $this->customService = $customService;
     }
 
 
@@ -179,12 +181,27 @@ class FreightService
         $commercialQuote = $freight->commercial_quote;
 
         //Actualizamos el valor CIF para la cotizacion:
+        $updateCifAndTaxes = $request->input('updateCifAndTaxes') == 1;
 
-        $cif_value = $this->calculateCifValue($commercialQuote, $freight);
+        if ($commercialQuote->custom?->exists() && $updateCifAndTaxes) {
 
+            //Actualizamos valor CIF
+            $cif_value = $this->calculateCifValue($commercialQuote, $freight);
+            $commercialQuote->update(['cif_value' => $cif_value]);
+            //Actualizamos taxes
+            $customTaxes = $this->customService->calculateTaxescustom($commercialQuote);
+            $custom = $commercialQuote->custom;
 
-        $commercialQuote->update(['cif_value' => $cif_value]);
+            $custom->customs_taxes = $this->parseDouble($customTaxes->customs_taxes);
+            $custom->customs_perception = $this->parseDouble($customTaxes->customs_perception);
 
+            $custom->save();
+        }
+
+        if (!$commercialQuote->custom?->exists()) {
+            $cif_value = $this->calculateCifValue($commercialQuote, $freight);
+            $commercialQuote->update(['cif_value' => $cif_value]);
+        }
 
         //Actualizamos la cotizacion del area interna a cerrada, una vez que se genero el flete
 
@@ -323,7 +340,7 @@ class FreightService
         $content = file_get_contents($file);
         $nameForDB = $request->name_file;
         $extension = $file->getClientOriginalExtension();
-        
+
         $this->freightDocumentService->storeFreightDocument($freight, $content, $nameForDB, $extension);
 
         return $process;
@@ -349,9 +366,28 @@ class FreightService
         $commercialQuote = $freight->commercial_quote;
 
 
-        $cif_value = $this->calculateCifValue($commercialQuote, $freight);
+        $updateCifAndTaxes = $request->input('updateCifAndTaxes') == 1;
 
-        $commercialQuote->update(['cif_value' => $cif_value]);
+        if ($commercialQuote->custom?->exists() && $updateCifAndTaxes) {
+
+            //Actualizamos valor CIF
+            $cif_value = $this->calculateCifValue($commercialQuote, $freight);
+            $commercialQuote->update(['cif_value' => $cif_value]);
+            //Actualizamos taxes
+            $customTaxes = $this->customService->calculateTaxescustom($commercialQuote);
+            $custom = $commercialQuote->custom;
+
+            $custom->customs_taxes = $this->parseDouble($customTaxes->customs_taxes);
+            $custom->customs_perception = $this->parseDouble($customTaxes->customs_perception);
+
+            $custom->save();
+        }
+
+        if (!$commercialQuote->custom?->exists()) {
+            $cif_value = $this->calculateCifValue($commercialQuote, $freight);
+            $commercialQuote->update(['cif_value' => $cif_value]);
+        }
+
 
 
         return $freight;

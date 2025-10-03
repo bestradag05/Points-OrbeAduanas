@@ -289,6 +289,7 @@
         let countConcepts = 0;
         let value_ocean_freight = 0;
         let puntosPosiblesPrevios = 0;
+        let existCustom = @json($commercial_quote->custom?->exists() ?? false);
 
 
         //PAra editar, verificamos si tiene conceptos el flete: 
@@ -609,87 +610,9 @@
 
         }
 
-/* 
-        function calculateTotal(conceptsArray) {
-            return Object.values(conceptsArray).reduce((acc, concept) => {
-                return acc + parseFloat(concept.value || 0) + parseFloat(concept.added || 0);
-            }, 0);
-        } */
-
-
         $('#insurance_points').on('input', function() {
             validateAndAdjustPointsOnInput(this);
         });
-
-        //TODO: ahora la validacion de puntos adicionales se hara desde su modulo
-        /* function validateAndAdjustPointsOnInput(element) {
-            const puntosMaximos = parseInt($('#puntosPosibles').val()) || 0;
-            let sumaActual = 0;
-
-            // Sumar puntos en conceptos
-            $('input[name="pa"]').each(function() {
-                sumaActual += parseInt($(this).val()) || 0;
-            });
-
-            // Sumar puntos en seguro
-            sumaActual += parseInt($('#insurance_points').val()) || 0;
-
-            if (sumaActual > puntosMaximos) {
-                let exceso = sumaActual - puntosMaximos;
-                let valorActual = parseInt($(element).val()) || 0;
-                let nuevoValor = valorActual - exceso;
-
-                if (nuevoValor < 0) nuevoValor = 0;
-
-                $(element).val(nuevoValor);
-
-                let index = $(element).closest('tr').index();
-                if ($(element).attr('id') !== 'insurance_points') {
-                    conceptsArray[index].pa = nuevoValor;
-                }
-
-                toastr.warning(
-                    `El máximo de puntos permitidos es ${puntosMaximos}. Ajustado automáticamente para evitar exceder este límite.`
-                );
-            } else {
-                let index = $(element).closest('tr').index();
-                if ($(element).attr('id') !== 'insurance_points') {
-                    conceptsArray[index].pa = parseInt($(element).val()) || 0;
-                }
-            }
-
-
-            // ✅ Actualiza visualización de puntos usados
-            $('#puntosUsadosTexto').text(`${Math.min(sumaActual, puntosMaximos)} / ${puntosMaximos}`);
-            $('#total_additional_points_used').val(Math.min(sumaActual, puntosMaximos));
-        } */
-
-
-        /*  function validateTotalPoints() {
-             const puntosMaximos = parseInt($('#puntosPosibles').val()) || 0;
-             let sumaActual = 0;
-
-             // Sumar puntos de conceptos
-             $('input[name="pa"]').each(function() {
-                 let val = parseInt($(this).val()) || 0;
-                 sumaActual += val;
-             });
-
-             // Sumar puntos de seguro
-             let puntosSeguro = parseInt($('#insurance_points').val()) || 0;
-             sumaActual += puntosSeguro;
-
-             if (sumaActual > puntosMaximos) {
-                 toastr.warning(
-                     `El máximo de puntos adicionales es ${puntosMaximos}. Ha ingresado ${sumaActual}. Ajuste los valores.`
-                 );
-                 return false;
-             }
-
-             return true;
-         } */
-
-        //TODO:: Fin
 
 
         function validateForm(inputs) {
@@ -776,7 +699,34 @@
             let conceptops = JSON.stringify(conceptsArray);
             form.append(`<input type="hidden" name="concepts" value='${conceptops}' />`);
 
-            form[0].submit();
+            if (existCustom) {
+                Swal.fire({
+                    title: "Ya tiene un servicio de aduana registrado, ¿Deseas modificar el valor CIF y calculo de impuestos?",
+                    text: "Esto actualizará los valores del CIF e impuestos de acuerdo ha los montos actualizados.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Si, Actualizar!",
+                    cancelButtonText: "No, mantener"
+                }).then((result) => {
+                    if (result.isConfirmed || result.dismiss === Swal.DismissReason.cancel) {
+                        if (result.isConfirmed) {
+                            form.append(`<input type="hidden" name="updateCifAndTaxes" value="1" />`);
+                        } else {
+                            form.append(`<input type="hidden" name="updateCifAndTaxes" value="0" />`);
+                        }
+
+                        form[0].submit(); // Enviar el formulario
+                    }
+
+                });
+
+            } else {
+                form[0].submit();
+            }
+
+
         });
     </script>
 @endpush
