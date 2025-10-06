@@ -93,10 +93,10 @@
                 @if ($comercialQuote->type_shipment->name === 'Aérea')
                     <div class="col-12 border-bottom border-bottom-2">
                         <div class="form-group row">
-                            <label class="col-sm-4 col-form-label">Peso KG : </label>
+                            <label class="col-sm-4 col-form-label">Peso : </label>
                             <div class="col-sm-8">
 
-                                <p class="form-control-plaintext">{{ $comercialQuote->kilograms }}</p>
+                                <p class="form-control-plaintext">{{ $comercialQuote->weight }} {{$comercialQuote->unit_of_weight}}</p>
                             </div>
 
                         </div>
@@ -106,7 +106,7 @@
                             <label class="col-sm-4 col-form-label">KGV : </label>
                             <div class="col-sm-8">
 
-                                <p class="form-control-plaintext">{{ $comercialQuote->kilogram_volumen }}</p>
+                                <p class="form-control-plaintext">{{ $comercialQuote->volumen_kgv }}</p>
                             </div>
 
                         </div>
@@ -145,7 +145,7 @@
                                 <label class="col-sm-4 col-form-label">Peso : </label>
                                 <div class="col-sm-8">
 
-                                    <p class="form-control-plaintext">{{ $comercialQuote->kilograms }}</p>
+                                    <p class="form-control-plaintext">{{ $comercialQuote->weight }} {{$comercialQuote->unit_of_weight}}</p>
                                 </div>
 
                             </div>
@@ -156,7 +156,8 @@
                             <label class="col-sm-4 col-form-label">Volumen : </label>
                             <div class="col-sm-8">
 
-                                <p class="form-control-plaintext">{{ $comercialQuote->volumen }}</p>
+                                <p class="form-control-plaintext">{{ $consolidated->volumen_kgv }}
+                                                    {{ $consolidated->unit_of_volumen_kgv }}</p>
                             </div>
 
                         </div>
@@ -334,22 +335,16 @@
                                                 <b class="d-block">{{ $consolidated->packingType->name }}</b>
                                             </p>
                                         </div>
-                                        @if ($consolidated->commercialQuote->type_shipment->name === 'Marítima')
-                                            <div class="col-6">
-                                                <p class="text-sm">Volumen :
-                                                    <b class="d-block">{{ $consolidated->volumen }} CBM</b>
-                                                </p>
-                                            </div>
-                                        @else
-                                            <div class="col-6">
-                                                <p class="text-sm">KGV :
-                                                    <b class="d-block">{{ $consolidated->kilogram_volumen }} KGV</b>
-                                                </p>
-                                            </div>
-                                        @endif
+                                        <div class="col-6">
+                                            <p class="text-sm">Volumen :
+                                                <b class="d-block">{{ $consolidated->volumen_kgv }}
+                                                    {{ $consolidated->unit_of_volumen_kgv }}</b>
+                                            </p>
+                                        </div>
                                         <div class="col-6">
                                             <p class="text-sm">Peso :
-                                                <b class="d-block">{{ $consolidated->kilograms }}</b>
+                                                <b class="d-block">{{ $consolidated->weight }}
+                                                    {{ $consolidated->unit_of_weight }}</b>
                                             </p>
                                         </div>
                                         @if ($measures)
@@ -395,10 +390,10 @@
                     @if ($comercialQuote->type_shipment->name === 'Aérea')
                         <div class="col-12 border-bottom border-bottom-2">
                             <div class="form-group row">
-                                <label class="col-sm-4 col-form-label">Peso KG : </label>
+                                <label class="col-sm-4 col-form-label">Peso: </label>
                                 <div class="col-sm-8">
 
-                                    <p class="form-control-plaintext">{{ $comercialQuote->kilograms }}</p>
+                                    <p class="form-control-plaintext">{{ $comercialQuote->weight }} {{$comercialQuote->unit_of_weight}}</p>
                                 </div>
 
                             </div>
@@ -408,7 +403,7 @@
                                 <label class="col-sm-4 col-form-label">KGV : </label>
                                 <div class="col-sm-8">
 
-                                    <p class="form-control-plaintext">{{ $comercialQuote->kilogram_volumen }}</p>
+                                    <p class="form-control-plaintext">{{ $comercialQuote->volumen_kgv }} {{$comercialQuote->unit_of_volumen_kgv}}</p>
                                 </div>
 
                             </div>
@@ -447,7 +442,8 @@
                                     <label class="col-sm-4 col-form-label">Peso : </label>
                                     <div class="col-sm-8">
 
-                                        <p class="form-control-plaintext">{{ $comercialQuote->kilograms }}</p>
+                                        <p class="form-control-plaintext">{{ $comercialQuote->weight }}
+                                            {{ $comercialQuote->unit_of_weight }}</p>
                                     </div>
 
                                 </div>
@@ -458,7 +454,8 @@
                                 <label class="col-sm-4 col-form-label">Volumen : </label>
                                 <div class="col-sm-8">
 
-                                    <p class="form-control-plaintext">{{ $comercialQuote->volumen }}</p>
+                                    <p class="form-control-plaintext">{{ $comercialQuote->volumen_kgv }}
+                                        {{ $comercialQuote->unit_of_volumen_kgv }}</p>
                                 </div>
 
                             </div>
@@ -691,11 +688,7 @@
 
 
 {{-- Modales de los servicios --}}
-
-
-@include('commercial_quote/modals/modalFreight')
 @include('commercial_quote/modals/modalCustom')
-@include('commercial_quote/modals/modalTransport')
 
 @if ($comercialQuote->freight)
     @include('commercial_quote/modals/modalGenerateRoutingOrder')
@@ -777,60 +770,20 @@
             containerResult = $(`#modal${selected}`).modal('show');
             container = containerResult[0];
             typeService = element.value;
-            $(`#${container.id}`).find('#typeService').val(typeService);
+            if (selected === 'Aduanas') {
+
+                $(`#${container.id}`).find('#typeService').val(typeService);
+            } else {
+                Swal.fire({
+                    title: "Verificamos que ya tienes una cotización registrada",
+                    text: "Para poder gestionarla tienes que ir al areá de cotizaciones internas.",
+                    icon: "question"
+                });
+            }
+
             element.value = '';
 
         }
-
-
-        /* function handleActionCommercialQuote(action, id) {
-            let textAction = (action === 'accept') ? 'aceptar' : 'rechazar';
-
-            // Validamos datos del cliente y consolidado (los traemos del backend via Blade)
-            let idCustomer = @json($comercialQuote->id_customer);
-            let nameCustomer = @json($comercialQuote->customer_company_name);
-            let isConsolidated = @json($comercialQuote->is_consolidated);
-
-            // Si es ACEPTAR
-            if (action === 'accept') {
-                if (!idCustomer || !isConsolidated) {
-                    completeCustomerInformation(nameCustomer, idCustomer, isConsolidated);
-                } else {
-                    Swal.fire({
-                        title: `¿Estas seguro que deseas ${textAction} esta cotización?`,
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#2e37a4",
-                        cancelButtonColor: "#6c757d",
-                        confirmButtonText: `Si, ${textAction}!`,
-                        cancelButtonText: 'No, cancelar',
-                        allowOutsideClick: false
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                           window.location.href = `/commercial/quote/state/accept/${id}`
-                        }
-                    });
-                }
-            }
-
-            // Si es RECHAZAR
-            else if (action === 'decline') {
-                Swal.fire({
-                    title: `¿Estas seguro que el cliente ${textAction} esta cotización?`,
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#2e37a4",
-                    cancelButtonColor: "#6c757d",
-                    confirmButtonText: `Si, ${textAction}!`,
-                    cancelButtonText: 'No, cancelar',
-                    allowOutsideClick: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                       window.location.href = `/commercial/quote/state/decline/${id}`
-                    }
-                });
-            }
-        } */
 
 
         $('#formSentClient').on('submit', (e) => {
@@ -985,10 +938,10 @@
                 </div>
                 <div class="row px-3">
                     <div class="col-md-6">
-                        <p><strong>Kilogramos:</strong> ${commercialcontainer.kilograms}</p>
+                        <p><strong>Kilogramos:</strong> ${commercialcontainer.weight} ${commercialcontainer.unit_of_weight}</p>
                     </div>
                     <div class="col-md-6">
-                        <p><strong>Volumen:</strong> ${commercialcontainer.volumen}</p>
+                        <p><strong>Volumen:</strong> ${commercialcontainer.volumen_kgv} ${commercialcontainer.unit_of_volumen_kgv}</p>
                     </div>
                 </div>
                 <div class="row mt-4">

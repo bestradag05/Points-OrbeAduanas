@@ -27,10 +27,11 @@ return new class extends Migration
             $table->string('packaging_type')->nullable();
             $table->string('load_type')->nullable();
             $table->string('container_type')->nullable();
-            $table->string('ton_kilogram')->nullable();
             $table->string('stackable')->nullable();
-            $table->string('cubage_kgv')->nullable();
-            $table->string('total_weight')->nullable();
+            $table->decimal('weight', 8, 2)->nullable();
+            $table->string('unit_of_weight')->nullable();
+            $table->decimal('volumen_kgv', 8, 2)->nullable();
+            $table->string('unit_of_volumen_kgv')->nullable();
             $table->string('packages')->nullable();
             $table->string('measures')->nullable();
             $table->string('lcl_fcl')->nullable();
@@ -48,8 +49,6 @@ return new class extends Migration
             $table->foreign('pickup_warehouse')->references('id')->on('warehouses');
             $table->foreign('delivery_warehouse')->references('id')->on('warehouses');
             $table->foreign('container_return')->references('id')->on('warehouses');
-
-
         });
     }
 

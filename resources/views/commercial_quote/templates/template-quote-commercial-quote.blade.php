@@ -52,8 +52,8 @@
                     <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Producto</th>
                     <th class="{{ $comercialQuote->type_shipment->name === 'Marítima' ? '' : 'd-none' }}">
                         LCL / FCL</th>
-                    <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Cubicaje-KGV</th>
-                    <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Tonelada-KG</th>
+                    <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Volumen</th>
+                    <th class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">Peso</th>
                     <th>N° de operacion</th>
                     <th>Fecha</th>
                     <th>Estado</th>
@@ -73,9 +73,9 @@
                             <td class="{{ $comercialQuote->type_shipment->name === 'Marítima' ? '' : 'd-none' }}">
                                 {{ $quote->commercial_quote->lcl_fcl }}</td>
                             <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
-                                {{ $quote->cubage_kgv }}</td>
+                                {{ $quote->volumen_kgv }}</td>
                             <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
-                                {{ $quote->ton_kilogram }}</td>
+                                {{ $quote->weight }}</td>
                             <td>{{ $quote->nro_quote_commercial }}</td>
                             <td>{{ \Carbon\Carbon::parse($quote->created_at)->format('d/m/Y') }}</td>
                             <td>
