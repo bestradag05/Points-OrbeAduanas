@@ -454,17 +454,16 @@
         function saveConceptToDatabase(data) {
 
             if (validateModalAddConcept()) {
-                let data = $('#formAddConcept').find('input, select'); // Obtener los datos del formulario
+                let data = $('#formAddConcept').find('input, select');
 
-                // Enviar el concepto al backend (guardar en la base de datos)
                 $.ajax({
-                    url: '/concepts/async', // Reemplaza con la ruta de tu backend
+                    url: '/concepts/async',
                     type: 'POST',
-                    data: data, // Enviar los datos del concepto
+                    data: data, 
                     success: function(response) {
 
                         const newOption = new Option(response.name, response.id, true,
-                            true); // 'true' selecciona el concepto
+                            true);
                         $('#concept_flete').append(newOption).trigger('change');
 
                         toastr.success("Concepto agregado");
@@ -475,7 +474,7 @@
                     },
                     error: function(xhr, status, error) {
                         if (xhr.status === 400) {
-                            toastr.error(xhr.responseJSON.error); // Mostrar el error retornado desde el backend
+                            toastr.error(xhr.responseJSON.error);
                         } else {
                             toastr.error("Error al guardar el concepto en la base de datos");
                         }
@@ -485,21 +484,21 @@
         }
 
         function validateModalAddConcept() {
-            let isValid = true; // Bandera para saber si todo es válido
-            const inputs = $('#formAddConcept').find('input, select'); // Obtener todos los inputs y selects
-            
+            let isValid = true;
+            const inputs = $('#formAddConcept').find('input, select');
+
             inputs.each(function() {
                 const input = $(this);
-                // Si el campo es obligatorio
+                
                 if (input.val().trim() === '' || (input.is('select') && input.val() == null)) {
-                    input.addClass('is-invalid'); // Agregar clase para marcar como inválido
-                    isValid = false; // Si algún campo no es válido, marcar como false
+                    input.addClass('is-invalid');
+                    isValid = false; 
                 } else {
-                    input.removeClass('is-invalid'); // Eliminar la clase de error si es válido
+                    input.removeClass('is-invalid');
                 }
             });
 
-            return isValid; // Si todo es válido, devuelve true; si no, false
+            return isValid;
         }
 
         function addConcept(buton) {
@@ -507,26 +506,17 @@
             let divConcepts = $('.formConcepts');
             const inputs = divConcepts.find('input:not(.points), select');
 
-            // Busca todos los campos de entrada dentro del formulario
             inputs.each(function(index, input) {
-                // Verifica si el campo de entrada está vacío
                 if ($(this).val() === '') {
-                    // Si está vacío, agrega la clase 'is-invalid'
                     $(this).addClass('is-invalid');
                 } else {
-                    // Si no está vacío, remueve la clase 'is-invalid' (en caso de que esté presente)
                     $(this).removeClass('is-invalid');
 
                 }
             });
-            // Verifica si hay algún campo con la clase 'is-invalid'
             var camposInvalidos = divConcepts.find('.is-invalid').length;
 
             if (camposInvalidos === 0) {
-                // Si no hay campos inválidos, envía el formulario
-
-                //Verificamos si el concepto ya existe en el array 
-
                 const index = conceptsArray.findIndex(item => item.id === parseInt(inputs[0].value));
 
                 if (index !== -1) {
