@@ -100,6 +100,37 @@ class ConceptsController extends Controller
         return redirect('concepts');
     }
 
+    public function storeConceptAsync(Request $request)
+    {
+        // Validar los datos del formulario
+        $this->validateForm($request, null);
+
+        $existingConcept = Concept::where('name', $request->name)
+            ->where('id_type_shipment', $request->id_type_shipment)
+            ->where('id_type_service', $request->id_type_service)
+            ->first();
+
+        if ($existingConcept) {
+            // Si el concepto ya existe, retornar un error
+            return response()->json(['error' => 'Este concepto ya existe para esta combinación de servicio y embarque.'], 400);
+        }
+
+
+        // Si no existe, guardar el concepto
+        $concept = Concept::create([
+            'name' => $request->name,
+            'id_type_shipment' => $request->id_type_shipment,
+            'id_type_service' => $request->id_type_service
+        ]);
+
+
+        // Redirigir a la lista de conceptos
+        return response()->json([
+            'id' => $concept->id,
+            'name' => $concept->name,
+        ], 201);
+    }
+
     /**
      * Display the specified resource.
      */

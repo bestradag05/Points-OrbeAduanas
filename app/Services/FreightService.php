@@ -11,6 +11,7 @@ use App\Models\Insurance;
 use App\Models\QuoteFreight;
 use App\Models\TypeInsurance;
 use App\Models\TypeService;
+use App\Models\TypeShipment;
 use App\Notifications\NotifyFreight;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -151,12 +152,14 @@ class FreightService
     {
 
         $quote = QuoteFreight::findOrFail($quoteId);
+        $typeShipments  = TypeShipment::all();
+        $typeServices   = TypeService::all();
         $acceptedResponse = $quote->responses()->where('status', 'Aceptado')->first();
         $commercial_quote = $quote->commercial_quote;
         $type_insurace = TypeInsurance::with('insuranceRate')->get();
         $concepts = Concept::all();
 
-        return compact('quote', 'type_insurace', 'concepts', 'commercial_quote', 'acceptedResponse');
+        return compact('quote', 'type_insurace', 'concepts', 'commercial_quote', 'acceptedResponse', 'typeShipments', 'typeServices');
     }
 
 

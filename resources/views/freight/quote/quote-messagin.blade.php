@@ -369,8 +369,8 @@
                     <h5 class="text-indigo text-center d-inline mx-2"> <i class="fas fa-check-square"></i> Respuestas</h5>
                     @hasrole(['Pricing', 'Super-Admin'])
                         @if (!$quote->responses->contains(fn($response) => $response->status === 'Aceptado'))
-                            <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
-                                data-target="#modalResponseQuoteFreight">
+                            <button class="btn btn-indigo btn-sm d-inline mx-2"
+                                onclick="openToModal('modalResponseQuoteFreight')">
                                 <i class="fas fa-plus"></i>
                             </button>
                         @endif
@@ -459,12 +459,6 @@
             </div>
 
         @endif
-
-
-
-
-
-
 
     </div>
 
@@ -616,7 +610,7 @@
                                                         <label for="airline_id">Aerolinea <span
                                                                 class="text-danger">*</span></label>
                                                         <x-adminlte-select2 name="airline_id" igroup-size="md"
-                                                            data-placeholder="seleccionar naviera..." style="width:100%">
+                                                            data-placeholder="seleccionar naviera..." data-required="true" style="width:100%">
                                                             <option />
                                                             @foreach ($airlines as $airline)
                                                                 <option value="{{ $airline->id }}">
@@ -632,7 +626,7 @@
                                                     <div class="form-group">
                                                         <label for="shipping_company_id">Naviera</label>
                                                         <x-adminlte-select2 name="shipping_company_id" igroup-size="md"
-                                                            data-placeholder="seleccionar naviera..." style="width:100%">
+                                                            data-placeholder="seleccionar naviera..." data-required="true" style="width:100%">
                                                             <option />
                                                             @foreach ($shipping_companies as $shipping_company)
                                                                 <option value="{{ $shipping_company->id }}">
@@ -710,7 +704,7 @@
                                                 <div class="col-2">
                                                     <label class="m-0" for="cubage_kgv">Volumen : <span
                                                             class="font-weight-normal">{{ $quote->volumen_kgv }}
-                                                            {{ $quote->volumen_kgv }}</span></label>
+                                                            {{ $quote->unit_of_volumen_kgv }}</span></label>
                                                 </div>
 
                                                 <div class="col-2">
@@ -723,8 +717,8 @@
                                             </div>
                                             <div class="col-4">
                                                 <label for="concept"> Conceptos</label>
-                                                <button class="btn btn-indigo btn-xs" type="button" data-toggle="modal"
-                                                    data-target="#modalAddConcept">
+                                                <button class="btn btn-indigo btn-xs" type="button"
+                                                    onclick="openModalConcept('modalResponseQuoteFreight', 'modalAddConcept')">
                                                     <i class="fas fa-plus"></i>
                                                 </button>
                                                 :
@@ -900,8 +894,6 @@
         </div>
     </div>
 
-
-
     <div id="modalAddConcept" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddConceptTitle"
         aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -921,13 +913,13 @@
                                 <input type="text" class="form-control @error('name') is-invalid @enderror"
                                     id="name" name="name" placeholder="Ingrese el nombre" value="">
                             </div>
-
                             <div class="col-md-6">
                                 <x-adminlte-select2 name="id_type_shipment" label="Tipo de embarque" igroup-size="md"
-                                    data-placeholder="Selecciona una opcion...">
+                                    readonly="true" data-placeholder="Selecciona una opcion...">
                                     <option />
                                     @foreach ($typeShipments as $typeShipment)
-                                        <option value="{{ $typeShipment->id }}">
+                                        <option value="{{ $typeShipment->id }}"
+                                            {{ $quote->commercial_quote->type_shipment->name === $typeShipment->name ? 'selected' : '' }}>
                                             {{ $typeShipment->name }}
                                         </option>
                                     @endforeach
@@ -936,10 +928,11 @@
                             </div>
                             <div class="col-md-6">
                                 <x-adminlte-select2 name="id_type_service" label="Tipo de servicio" igroup-size="md"
-                                    data-placeholder="Selecciona una opcion...">
+                                    readonly="true" data-placeholder="Selecciona una opcion...">
                                     <option />
                                     @foreach ($typeServices as $typeService)
-                                        <option value="{{ $typeService->id }}">
+                                        <option value="{{ $typeService->id }}"
+                                            {{ $typeService->name === 'Flete' ? 'selected' : '' }}>
                                             {{ $typeService->name }}
                                         </option>
                                     @endforeach
@@ -948,8 +941,10 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                        <button type="button" class="btn btn-primary" id="saveConceptButton">Guardar Concepto</button>
+                        <button type="button" class="btn btn-secondary"
+                            onclick="closeToModalAddConcept('modalResponseQuoteFreight', 'modalAddConcept')">Cancelar</button>
+                        <button type="button" class="btn btn-primary" onclick="saveConceptToDatabase()">Guardar
+                            Concepto</button>
                     </div>
                 </form>
             </div>
@@ -963,7 +958,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Detalle de Cotización</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                    <button type="button" class="close" onclick="closeToModal('pdfDetailResponse')">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -1235,9 +1230,9 @@
     <script>
         let conceptsResponseFreightArray = [];
         let commissionsResponseFreightArray = [];
+         var stepper = new Stepper(document.querySelector('#stepperResponseFreight'));
         //Obtenemos las comisiones para agregarlo a las respuestas
         const commissionsFromDB = @json($commissions) || [];
-
 
         $('#modalResponseQuoteFreight').on('shown.bs.modal', function() {
             // Solo cargamos las comisiones si aún no han sido insertadas
@@ -1256,10 +1251,30 @@
                 });
             }
 
-            updateTableRespnoseFreight();
+            updateTableRespnoseFreight(conceptsResponseFreightArray);
         });
 
+        function openModalConcept(firstModal, secondModal) {
+            $(`#${firstModal}`).modal('hide');
+            $(`#${firstModal}`).on('hidden.bs.modal', function() {
+                $(`#${secondModal}`).modal('show');
+            });
+        }
 
+        function closeToModalAddConcept(firstModal, secondModal) {
+            $(`#${secondModal}`).modal('hide');
+            $(`#${secondModal}`).on('hidden.bs.modal', function() {
+                $(`#${firstModal}`).modal('show');
+            });
+        }
+
+        function openToModal(modalId) {
+            $(`#${modalId}`).modal('show');
+        }
+
+        function closeToModal(modalId) {
+            $(`#${modalId}`).modal('hide');
+        }
 
         $('#sendFreightCost').on('submit', (e) => {
 
@@ -1287,7 +1302,6 @@
                 }
             });
 
-
             if (isValid) {
                 form.submit();
             }
@@ -1303,10 +1317,7 @@
             let higherCost = 0;
             let final_cost = 0;
 
-
-
             //Verificamos que el C/W este marcado
-
             if (cw.is(':checked')) {
                 higherCost = cubage_kgv > ton_kilogram ? cubage_kgv : ton_kilogram;
                 final_cost = unit_cost * higherCost;
@@ -1316,8 +1327,6 @@
 
 
             //Verificamos cual es mayor para realizar calculo del costo final
-
-
             let formattedNumber = final_cost.toLocaleString('en-US', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
@@ -1335,6 +1344,57 @@
         $('#fixed_miltiplyable_cost').on('change', function() {
             calculateFinalCost();
         });
+
+        function saveConceptToDatabase(data) {
+
+            if (validateModalAddConcept()) {
+                let data = $('#formAddConcept').find('input, select'); // Obtener los datos del formulario
+
+                // Enviar el concepto al backend (guardar en la base de datos)
+                $.ajax({
+                    url: '/concepts/async', // Reemplaza con la ruta de tu backend
+                    type: 'POST',
+                    data: data, // Enviar los datos del concepto
+                    success: function(response) {
+
+                        const newOption = new Option(response.name, response.id, true,
+                            true); // 'true' selecciona el concepto
+                        $('#concept_response_freight').append(newOption).trigger('change');
+
+                        toastr.success("Concepto agregado");
+
+                        closeToModalAddConcept('modalResponseQuoteFreight', 'modalAddConcept');
+                        $('#formAddConcept #name').val('');
+
+                    },
+                    error: function(xhr, status, error) {
+                        if (xhr.status === 400) {
+                            toastr.error(xhr.responseJSON.error); // Mostrar el error retornado desde el backend
+                        } else {
+                            toastr.error("Error al guardar el concepto en la base de datos");
+                        }
+                    }
+                });
+            }
+        }
+
+        function validateModalAddConcept() {
+            let isValid = true; // Bandera para saber si todo es válido
+            const inputs = $('#formAddConcept').find('input, select'); // Obtener todos los inputs y selects
+            inputs.each(function() {
+                const input = $(this);
+                // Si el campo es obligatorio
+                if (input.val().trim() === '' || (input.is('select') && input.val() == null)) {
+                    input.addClass('is-invalid'); // Agregar clase para marcar como inválido
+                    isValid = false; // Si algún campo no es válido, marcar como false
+                } else {
+                    input.removeClass('is-invalid'); // Eliminar la clase de error si es válido
+                }
+            });
+
+            return isValid; // Si todo es válido, devuelve true; si no, false
+        }
+
 
         function addConceptResponseFreight(buton) {
 
@@ -1785,6 +1845,7 @@
         }
 
 
+
         function handleStepValidation(stepId) {
             if (validateCurrentStep(stepId)) {
                 stepper.next();
@@ -1872,8 +1933,6 @@
     <script>
         let commercial_quote = @json($quote->nro_quote_commercial);
         let freight_quote = @json($quote->nro_quote);
-
-        var stepper = new Stepper(document.querySelector('#stepperResponseFreight'));
 
         Dropzone.options.myDropzone = {
 

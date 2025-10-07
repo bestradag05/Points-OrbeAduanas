@@ -146,6 +146,7 @@ Route::middleware('auth')->group(function () {
 
 
     Route::resource('concepts', ConceptsController::class);
+    Route::post('concepts/async', [ConceptsController::class, 'storeConceptAsync']);
     Route::get('/api/consult-ruc/{ruc}', [CustomerController::class, 'consultRuc']);
     Route::get('/customer/data/{document_number}', [CustomerController::class, 'getDataForRuc']);
     Route::resource('customer', CustomerController::class);

@@ -111,9 +111,12 @@
 
     <div id="formConceptsFlete" class="formConcepts row justify-content-center w-100">
         <div class="col-3">
-
-            <x-adminlte-select2 name="concept" id="concept_flete" label="Conceptos"
-                data-placeholder="Seleccione un concepto...">
+            <label for="concept"> Conceptos</label>
+            <button class="btn btn-indigo btn-xs" type="button" onclick="openToModal('modalAddConcept')">
+                <i class="fas fa-plus"></i>
+            </button>
+            :
+            <x-adminlte-select2 name="concept" id="concept_flete" data-placeholder="Seleccione un concepto...">
                 <option />
                 @foreach ($concepts as $concept)
                     @if ($concept->typeService->name === 'Flete' && $commercial_quote->type_shipment->id == $concept->id_type_shipment)
@@ -251,21 +254,6 @@
             </div>
         </div>
     </div>
-    {{-- <div class="row w-100 justify-content-end mt-2">
-        <div class="col-4 row align-items-center">
-            <label class="col-sm-6 col-form-label">Maximo de Adicionales:</label>
-            <div class="col-sm-6" id="puntosUsadosTexto">
-                0
-            </div>
-
-            <input type="hidden" class="form-control" id="puntosPosibles" name="total_additional_points"
-                value="0" readonly>
-            <input type="hidden" class="form-control" id="total_additional_points_used"
-                name="total_additional_points_used" value="0" readonly>
-        </div>
-    </div> --}}
-
-
 
     <div class="container text-center mt-5">
         <input class="btn btn-primary" type="submit" id="btnGuardarFreight"
@@ -273,6 +261,7 @@
     </div>
 
 </div>
+
 
 @php
     $totalAcceptedAnswer = isset($acceptedResponse) ? $acceptedResponse->total : 0;
@@ -462,6 +451,56 @@
         });
 
 
+        function saveConceptToDatabase(data) {
+
+            if (validateModalAddConcept()) {
+                let data = $('#formAddConcept').find('input, select'); // Obtener los datos del formulario
+
+                // Enviar el concepto al backend (guardar en la base de datos)
+                $.ajax({
+                    url: '/concepts/async', // Reemplaza con la ruta de tu backend
+                    type: 'POST',
+                    data: data, // Enviar los datos del concepto
+                    success: function(response) {
+
+                        const newOption = new Option(response.name, response.id, true,
+                            true); // 'true' selecciona el concepto
+                        $('#concept_flete').append(newOption).trigger('change');
+
+                        toastr.success("Concepto agregado");
+
+                        closeToModal('modalAddConcept');
+                        $('#formAddConcept #name').val('');
+
+                    },
+                    error: function(xhr, status, error) {
+                        if (xhr.status === 400) {
+                            toastr.error(xhr.responseJSON.error); // Mostrar el error retornado desde el backend
+                        } else {
+                            toastr.error("Error al guardar el concepto en la base de datos");
+                        }
+                    }
+                });
+            }
+        }
+
+        function validateModalAddConcept() {
+            let isValid = true; // Bandera para saber si todo es válido
+            const inputs = $('#formAddConcept').find('input, select'); // Obtener todos los inputs y selects
+            
+            inputs.each(function() {
+                const input = $(this);
+                // Si el campo es obligatorio
+                if (input.val().trim() === '' || (input.is('select') && input.val() == null)) {
+                    input.addClass('is-invalid'); // Agregar clase para marcar como inválido
+                    isValid = false; // Si algún campo no es válido, marcar como false
+                } else {
+                    input.removeClass('is-invalid'); // Eliminar la clase de error si es válido
+                }
+            });
+
+            return isValid; // Si todo es válido, devuelve true; si no, false
+        }
 
         function addConcept(buton) {
 
@@ -631,6 +670,13 @@
             });
         }
 
+        function openToModal(modalId) {
+            $(`#${modalId}`).modal('show');
+        }
+
+        function closeToModal(modalId) {
+            $(`#${modalId}`).modal('hide');
+        }
 
         // Mostrar mensaje de error
         function showError(input, message) {

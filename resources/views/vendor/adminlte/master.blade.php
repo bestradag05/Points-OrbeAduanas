@@ -42,7 +42,7 @@
 
     {{-- Extra Configured Plugins Stylesheets --}}
     @include('adminlte::plugins', ['type' => 'css'])
-   
+
 
     {{-- Livewire Styles --}}
     @if (config('adminlte.livewire'))
@@ -107,10 +107,9 @@
             <livewire:scripts />
         @endif
     @endif
-
     {{-- Alerta Global de notificaciones --}}
 
-{{-- Minimal with icon only --}}
+    {{-- Minimal with icon only --}}
 
 
     {{-- Custom Scripts --}}
@@ -121,10 +120,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js"></script>
     <script src="{{ asset('js/formatInputCurren.js') }}"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
     @stack('scripts')
 
- 
+
 
 
 </body>
