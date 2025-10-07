@@ -124,41 +124,26 @@
         @if ($response->quote->commercial_quote->type_shipment->name === 'Marítima')
 
             @if ($response->quote->commercial_quote->lcl_fcl === 'FCL')
-
                 <tr>
                     <td class="highlight">CONTENEDOR</td>
                     <td colspan="3">
-                        @foreach ($response->quote->commercial_quote->containersFcl as $container)
+                        @foreach ($response->quote->commercial_quote->containers as $container)
                             {{ $container->pivot->container_quantity }} x
                             {{ $container->name }} <br>
-                            @endforeach
+                        @endforeach
                     </td>
 
                 </tr>
-                <tr>
-                    <td class="highlight">PESO</td>
-                    <td>{{ $response->quote->ton_kilogram }} TON</td>
-                    <td class="highlight">VOLUMEN</td>
-                    <td>{{ $response->quote->cubage_kgv }} CBM</td>
-                </tr>
-            @else
-                <tr>
-                    <td class="highlight">PESO</td>
-                    <td>{{ $response->quote->ton_kilogram }} KG</td>
-                    <td class="highlight">VOLUMEN</td>
-                    <td>{{ $response->quote->cubage_kgv }} CBM</td>
-                </tr>
+
             @endif
-        @else
-            <tr>
-                <td class="highlight">PESO</td>
-                <td>{{ $response->quote->ton_kilogram }} KG</td>
-                <td class="highlight">VOLUMEN</td>
-                <td>{{ $response->quote->cubage_kgv }} KGV</td>
-            </tr>
-
-
         @endif
+
+        <tr>
+            <td class="highlight">PESO</td>
+            <td>{{ $response->quote->weight }} {{ $response->quote->unit_of_weight }}</td>
+            <td class="highlight">VOLUMEN</td>
+            <td>{{ $response->quote->volumen_kgv }} {{ $response->quote->unit_of_volumen_kgv }}</td>
+        </tr>
 
     </table>
 

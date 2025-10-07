@@ -36,11 +36,11 @@ return new class extends Migration
             $table->string('commodity')->nullable();
             $table->string('nro_package')->nullable();
             $table->unsignedBigInteger('id_packaging_type')->nullable();
-            $table->decimal('kilograms', 8, 2)->nullable();
-            $table->decimal('volumen', 8, 2)->nullable();
+            $table->decimal('weight', 8, 2)->nullable();
+            $table->string('unit_of_weight')->nullable();
+            $table->decimal('volumen_kgv', 8, 2)->nullable();
+            $table->string('unit_of_volumen_kgv')->nullable();
             $table->decimal('pounds', 8, 2)->nullable();
-            $table->decimal('kilogram_volumen', 8, 2)->nullable();
-            $table->decimal('tons', 8, 2)->nullable();
             $table->text('measures')->nullable();
             $table->decimal('cif_value', 8, 2)->nullable();
             $table->decimal('customs_taxes', 8, 2)->nullable();

@@ -193,8 +193,8 @@ class CommercialQuoteService
                     'container_quantity' => $request->container_quantity_consolidated,
                     'lcl_fcl' => $request->lcl_fcl,
                     'is_consolidated' => $request->is_consolidated,
-                    /*          'nro_package' => $calcContainers['total_bultos'],
-                    'volumen' => ($calcContainers['total_volumen'] > 0) ? $calcContainers['total_volumen'] : null,
+                    'nro_package' => $calcContainers['total_bultos'],
+                    /*'volumen' => ($calcContainers['total_volumen'] > 0) ? $calcContainers['total_volumen'] : null,
                     'kilogram_volumen' => $request->kilogram_volumen,
                     'kilograms' => $calcContainers['total_weight'], */
 

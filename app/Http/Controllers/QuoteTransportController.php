@@ -235,12 +235,11 @@ class QuoteTransportController extends Controller
         // 1) Carga la cotización con relaciones necesarias
         $quote = QuoteTransport::with([
             'messages.sender.personal',
-            'commercial_quote',
+            'commercial_quote.commercialQuoteContainers.packingType',
             'transportConcepts',
             'response.supplier',
             'response',
         ])->findOrFail($id);
-
 
         if (in_array($quote->state, ['Anulado', 'Rechazado'])) {
             return redirect()

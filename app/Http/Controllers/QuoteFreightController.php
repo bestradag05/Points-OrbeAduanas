@@ -11,6 +11,8 @@ use App\Models\QuoteFreight;
 use App\Models\ResponseFreightQuotes;
 use App\Models\ShippingCompany;
 use App\Models\Supplier;
+use App\Models\TypeService;
+use App\Models\TypeShipment;
 use App\Notifications\Notify;
 use App\Notifications\NotifyQuoteFreight;
 use Carbon\Carbon;
@@ -207,6 +209,8 @@ class QuoteFreightController extends Controller
         $currencies = Currency::all();
         $airlines = Airline::all();
         $shipping_companies = ShippingCompany::all();
+        $typeShipments = TypeShipment::all();
+        $typeServices = TypeService::all();
 
 
         $folderPath = "commercial_quote/{$quote->commercial_quote->nro_quote_commercial}/quote_freight/{$quote->nro_quote}";
@@ -226,7 +230,7 @@ class QuoteFreightController extends Controller
         //Obtenemos las comisiones que se consideraran
         $commissions = Commission::all();
 
-        return view('freight/quote/quote-messagin', compact('quote', 'files', 'messages', 'suppliers', 'nro_response', 'concepts', 'commissions', 'currencies', 'shipping_companies', 'airlines'));
+        return view('freight/quote/quote-messagin', compact('quote', 'files', 'messages', 'suppliers', 'nro_response', 'concepts', 'commissions', 'currencies', 'shipping_companies', 'airlines', 'typeShipments', 'typeServices'));
     }
 
 

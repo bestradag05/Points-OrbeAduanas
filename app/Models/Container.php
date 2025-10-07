@@ -47,20 +47,9 @@ class Container extends Model
         return $this->belongsTo(TypeContainer::class, 'type_container_id');
     }
 
+
     public function commercialQuotes()
     {
-        return $this->hasMany(CommercialQuote::class, 'id');
-    }
-
-    public function commercialQuoteContainers()
-    {
-        return $this->hasMany(CommercialQuoteContainer::class, 'commercial_quote_id');
-    }
-
-    public function commercialQuotesFcl()
-    {
-        return $this->belongsToMany(CommercialQuote::class, 'commercial_quote_containers', 'containers_id', 'commercial_quote_id')
-            ->withPivot('container_quantity', 'commodity', 'nro_package', 'id_packaging_type', 'kilograms', 'volumen', 'measures')
-            ->withTimestamps();
+        return $this->belongsToMany(CommercialQuote::class, 'commercial_quote_container' , 'commercial_quote_id', 'containers_id');
     }
 }

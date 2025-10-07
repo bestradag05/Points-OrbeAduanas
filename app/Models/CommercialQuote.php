@@ -133,22 +133,16 @@ class CommercialQuote extends Model
         return $this->belongsTo(Regime::class, 'id_regime', 'id');
     }
 
-    public function containers()
-    {
-        return $this->belongsTo(Container::class, 'id_containers');
-    }
-
-
-    public function containersFcl()
-    {
-        return $this->belongsToMany(Container::class, 'commercial_quote_containers', 'commercial_quote_id', 'containers_id')
-            ->withPivot('container_quantity', 'commodity', 'nro_package', 'id_packaging_type', 'kilograms', 'volumen', 'measures')
-            ->withTimestamps();
-    }
-
     public function commercialQuoteContainers()
     {
+        // Relación con la tabla pivot
         return $this->hasMany(CommercialQuoteContainer::class, 'commercial_quote_id');
+    }
+
+    public function containers()
+    {
+        return $this->belongsToMany(Container::class, 'commercial_quote_containers', 'commercial_quote_id', 'containers_id')
+            ->withPivot('container_quantity', 'commodity', 'nro_package', 'id_packaging_type', 'load_value', 'weight', 'unit_of_weight', 'volumen_kgv', 'unit_of_volumen_kgv', 'measures');
     }
 
     public function typeService()
@@ -205,6 +199,4 @@ class CommercialQuote extends Model
     {
         return $this->hasMany(QuotesSentClient::class, 'commercial_quote_id');
     }
-
-
 }

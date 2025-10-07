@@ -34,11 +34,11 @@ class QuotesSentClient extends Model
         'commodity',
         'nro_package',
         'id_packaging_type',
-        'kilograms',
-        'volumen',
         'pounds',
-        'kilogram_volumen',
-        'tons',
+        'weight',
+        'unit_of_weight',
+        'volumen_kgv',
+        'unit_of_volumen_kgv',
         'measures',
         'cif_value',
         'customs_taxes',
@@ -135,19 +135,13 @@ class QuotesSentClient extends Model
 
     public function containers()
     {
-        return $this->belongsTo(Container::class, 'id_containers');
-    }
-
-
-    public function containersFcl()
-    {
         return $this->belongsToMany(Container::class, 'commercial_quote_containers', 'commercial_quote_id', 'containers_id')
-            ->withPivot('container_quantity', 'commodity', 'nro_package', 'id_packaging_type', 'kilograms', 'volumen', 'measures')
-            ->withTimestamps();
+            ->withPivot('container_quantity', 'commodity', 'nro_package', 'id_packaging_type', 'load_value', 'weight', 'unit_of_weight', 'volumen_kgv', 'unit_of_volumen_kgv', 'measures');
     }
 
     public function commercialQuoteContainers()
     {
+        // Relación con la tabla pivot
         return $this->hasMany(CommercialQuoteContainer::class, 'commercial_quote_id');
     }
 
@@ -179,7 +173,7 @@ class QuotesSentClient extends Model
     }
 
 
-        public function processManagement()
+    public function processManagement()
     {
         return $this->hasOne(ProcessManagement::class, 'nro_quote_commercial', 'nro_quote_commercial');
     }

@@ -97,7 +97,7 @@
                                         type="button" data-toggle="collapse"
                                         data-target="#collapse{{ $consolidated->id }}" aria-expanded="true">
                                         <span class="text-indigo">Shipper {{ $loop->iteration }}</span>:
-                                        {{ $shipper->shipper_name }}
+                                        {{ $shipper->shipper_name ?? $consolidated->supplier->name_businessname }}
                                         <i class="fas fa-sort-down mx-3"></i>
                                     </button>
                                 </h2>
@@ -107,30 +107,35 @@
                                 data-parent="#accordionConsolidated">
 
                                 <div class="row text-muted px-5">
-                                    <div class="col-6  {{ $shipper->shipper_name ? '' : 'd-none' }}">
+                                    <div class="col-6">
                                         <p class="text-sm">Proovedor :
-                                            <b class="d-block">{{ $shipper->shipper_name }}</b>
+                                            <b
+                                                class="d-block">{{ $shipper->shipper_name ?? $consolidated->supplier->name_businessname }}</b>
                                         </p>
                                     </div>
 
                                     <div class="col-6">
                                         <p class="text-sm">Contacto :
-                                            <b class="d-block">{{ $shipper->shipper_contact }}</b>
+                                            <b
+                                                class="d-block">{{ $shipper->shipper_contact ?? $consolidated->supplier->contact_name }}</b>
                                         </p>
                                     </div>
                                     <div class="col-6">
                                         <p class="text-sm">Email :
-                                            <b class="d-block">{{ $shipper->shipper_contact_email }}</b>
+                                            <b
+                                                class="d-block">{{ $shipper->shipper_contact_email ?? $consolidated->supplier->contact_email }}</b>
                                         </p>
                                     </div>
                                     <div class="col-6">
                                         <p class="text-sm">Telefono :
-                                            <b class="d-block">{{ $shipper->shipper_contact_phone }}</b>
+                                            <b
+                                                class="d-block">{{ $shipper->shipper_contact_phone ?? $consolidated->supplier->contact_number }}</b>
                                         </p>
                                     </div>
                                     <div class="col-12">
                                         <p class="text-sm">Direccion :
-                                            <b class="d-block">{{ $shipper->shipper_address }}</b>
+                                            <b
+                                                class="d-block">{{ $shipper->shipper_address ?? $consolidated->supplier->address }}</b>
                                         </p>
                                     </div>
                                     <div class="col-12">
@@ -138,7 +143,7 @@
                                             <b class="d-block">{{ $consolidated->commodity }}</b>
                                         </p>
                                     </div>
-                                    <div class="col-12">
+                                    <div class="col-6">
                                         <p class="text-sm">Valor del producto :
                                             <b class="d-block">{{ $consolidated->load_value }}</b>
                                         </p>
@@ -153,23 +158,18 @@
                                             <b class="d-block">{{ $consolidated->packingType->name }}</b>
                                         </p>
                                     </div>
-                                    @if ($consolidated->commercialQuote->type_shipment->name === 'Marítima')
-                                        <div class="col-6">
-                                            <p class="text-sm">Volumen :
-                                                <b class="d-block">{{ $consolidated->volumen }} CBM</b>
-                                            </p>
-                                        </div>
-                                    @else
-                                        <div class="col-6">
-                                            <p class="text-sm">KGV :
-                                                <b class="d-block">{{ $consolidated->kilogram_volumen }} KGV</b>
-                                            </p>
-                                        </div>
-                                    @endif
+
+                                    <div class="col-6">
+                                        <p class="text-sm">Volumen :
+                                            <b class="d-block">{{ $consolidated->volumen_kgv }}
+                                                {{ $consolidated->unit_of_volumen_kgv }}</b>
+                                        </p>
+                                    </div>
 
                                     <div class="col-6">
                                         <p class="text-sm">Peso :
-                                            <b class="d-block">{{ $consolidated->kilograms }}</b>
+                                            <b class="d-block">{{ $consolidated->weight }}
+                                                {{ $consolidated->unit_of_weight }}</b>
                                         </p>
                                     </div>
                                     @if ($measures)
@@ -201,21 +201,26 @@
                 @endforeach
             @else
                 <div class="row text-muted">
+
                     <div class="col-6">
+                        <p class="text-sm">Volumen :
+                            <b class="d-block">{{ $quote->volumen_kgv }} {{ $quote->unit_of_volumen_kgv }} </b>
+                        </p>
+                    </div>
+
+                    <div class="col-6">
+                        <p class="text-sm">Peso total :
+                            <b class="d-block">{{ $quote->weight }} {{ $quote->unit_of_weight }}</b>
+                        </p>
+                    </div>
+
+                    <div class="col-12">
                         <p class="text-sm">Descripcion :
                             <b class="d-block">{{ $quote->commodity }}</b>
                         </p>
                     </div>
 
-
                     @if ($quote->commercial_quote->type_shipment->name === 'Marítima')
-
-
-                        <div class="col-6">
-                            <p class="text-sm">Volumen :
-                                <b class="d-block">{{ $quote->cubage_kgv }} CBM</b>
-                            </p>
-                        </div>
 
                         @if ($quote->commercial_quote->lcl_fcl === 'FCL')
                             <div class="col-12">
@@ -243,24 +248,7 @@
                                     <b class="d-block">{{ $quote->packaging_type }}</b>
                                 </p>
                             </div>
-                            <div class="col-6">
-                                <p class="text-sm">Peso total :
-                                    <b class="d-block">{{ $quote->ton_kilogram }} KG</b>
-                                </p>
-                            </div>
                         @endif
-                    @else
-                        <div class="col-6">
-                            <p class="text-sm">Kilogramo / KGV :
-                                <b class="d-block">{{ $quote->cubage_kgv }} KGV</b>
-                            </p>
-                        </div>
-
-                        <div class="col-6">
-                            <p class="text-sm">Peso total :
-                                <b class="d-block">{{ $quote->ton_kilogram }} KG</b>
-                            </p>
-                        </div>
 
                     @endif
 
@@ -309,7 +297,9 @@
                             <h5 class="text-indigo text-center"> <i class="fas fa-file"></i> Lista de archivos</h5>
                         </div>
                         {{-- !$quote->responses->contains(fn($response) => $response->status === 'Aceptado') --}}
-                        @if ($quote->state === 'Pendiente' && (auth()->user()->hasRole('Asesor Comercial') || auth()->user()->hasRole('Super-Admin') ))
+                        @if (
+                            $quote->state === 'Pendiente' &&
+                                (auth()->user()->hasRole('Asesor Comercial') || auth()->user()->hasRole('Super-Admin')))
                             <div class="col-6 align-items-center">
                                 <button class="btn btn-indigo btn-sm" data-toggle="modal"
                                     data-target="#modalQuoteFreightDocuments">
@@ -444,7 +434,7 @@
                                         <option>Detalle</option>
 
                                         @if (!$quote->freight)
-                                           @hasrole(['Asesor Comercial', 'Super-Admin'])
+                                            @hasrole(['Asesor Comercial', 'Super-Admin'])
                                                 <option class="{{ $response->status != 'Aceptado' ? 'd-none' : '' }}">Generar
                                                     Flete</option>
                                                 <option class="{{ $response->status === 'Aceptado' ? 'd-none' : '' }}">Aceptar
@@ -717,46 +707,29 @@
                                                     <label class="m-0">Detalle de la carga: </label>
                                                 </div>
 
-                                                @if ($quote->commercial_quote->type_shipment->name === 'Marítima')
-                                                    <div class="col-2">
-                                                        <label class="m-0" for="cubage_kgv">Volumen : <span
-                                                                class="font-weight-normal">{{ $quote->cubage_kgv }}
-                                                                CBM</span></label>
-                                                    </div>
+                                                <div class="col-2">
+                                                    <label class="m-0" for="cubage_kgv">Volumen : <span
+                                                            class="font-weight-normal">{{ $quote->volumen_kgv }}
+                                                            {{ $quote->volumen_kgv }}</span></label>
+                                                </div>
 
-                                                    @if ($quote->commercial_quote->lcl_fcl === 'FCL')
-                                                        <div class="col-2">
-                                                            <label class="m-0" for="ton_kilogram">Toneladas : <span
-                                                                    class="font-weight-normal">{{ $quote->ton_kilogram }}
-                                                                    TON</span></label>
-                                                        </div>
-                                                    @else
-                                                        <div class="col-2">
-                                                            <label class="m-0" for="ton_kilogram">Peso : <span
-                                                                    class="font-weight-normal">{{ $quote->ton_kilogram }}
-                                                                    KG</span></label>
-                                                        </div>
-                                                    @endif
-                                                @else
-                                                    <div class="col-2">
-                                                        <label class="m-0" for="cubage_kgv">KGV : <span
-                                                                class="font-weight-normal">{{ $quote->cubage_kgv }}
-                                                                KGV</span></label>
-                                                    </div>
-
-                                                    <div class="col-2">
-                                                        <label class="m-0" for="ton_kilogram">Peso : <span
-                                                                class="font-weight-normal">{{ $quote->ton_kilogram }}
-                                                                KG</span></label>
-                                                    </div>
-                                                @endif
+                                                <div class="col-2">
+                                                    <label class="m-0" for="ton_kilogram">Peso : <span
+                                                            class="font-weight-normal">{{ $quote->weight }}
+                                                            {{ $quote->unit_of_weight }}</span></label>
+                                                </div>
 
 
                                             </div>
                                             <div class="col-4">
+                                                <label for="concept"> Conceptos</label>
+                                                <button class="btn btn-indigo btn-xs" type="button" data-toggle="modal"
+                                                    data-target="#modalAddConcept">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                                :
                                                 <x-adminlte-select2 name="concept" id="concept_response_freight"
-                                                    label="Conceptos" data-placeholder="Seleccione un concepto..."
-                                                    data-required="true">
+                                                    data-placeholder="Seleccione un concepto..." data-required="true">
                                                     <option />
                                                     @foreach ($concepts as $concept)
                                                         @if ($concept->typeService->name == 'Flete' && $quote->commercial_quote->type_shipment->id == $concept->id_type_shipment)
@@ -929,6 +902,60 @@
 
 
 
+    <div id="modalAddConcept" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddConceptTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <form method="POST" id="formAddConcept">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAddConceptTitle">Agregar Concepto</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="name">Nombre del concepto</label>
+                                <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                    id="name" name="name" placeholder="Ingrese el nombre" value="">
+                            </div>
+
+                            <div class="col-md-6">
+                                <x-adminlte-select2 name="id_type_shipment" label="Tipo de embarque" igroup-size="md"
+                                    data-placeholder="Selecciona una opcion...">
+                                    <option />
+                                    @foreach ($typeShipments as $typeShipment)
+                                        <option value="{{ $typeShipment->id }}">
+                                            {{ $typeShipment->name }}
+                                        </option>
+                                    @endforeach
+                                </x-adminlte-select2>
+
+                            </div>
+                            <div class="col-md-6">
+                                <x-adminlte-select2 name="id_type_service" label="Tipo de servicio" igroup-size="md"
+                                    data-placeholder="Selecciona una opcion...">
+                                    <option />
+                                    @foreach ($typeServices as $typeService)
+                                        <option value="{{ $typeService->id }}">
+                                            {{ $typeService->name }}
+                                        </option>
+                                    @endforeach
+                                </x-adminlte-select2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-primary" id="saveConceptButton">Guardar Concepto</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal para PDF -->
     <div class="modal fade" id="pdfDetailResponse" tabindex="-1" role="dialog"
         aria-labelledby="pdfDetailResponseLabel" aria-hidden="true">
@@ -1066,21 +1093,16 @@
                                     </td>
                                 </tr>
                             @endif
-
-                            <tr>
-                                <td><strong>Volumen</strong></td>
-                                <td>{{ $consolidated->volumen }} CBM</td>
-                            </tr>
-                        @else
-                            <tr>
-                                <td><strong>KGV</strong></td>
-                                <td>{{ $consolidated->kilogram_volumen }} KGV</td>
-                            </tr>
                         @endif
 
                         <tr>
+                            <td><strong>Volumen</strong></td>
+                            <td>{{ $consolidated->volumen_kgv }} {{ $consolidated->unit_of_volumen_kgv }}</td>
+                        </tr>
+
+                        <tr>
                             <td><strong>Peso</strong></td>
-                            <td>{{ $consolidated->kilograms }} KG</td>
+                            <td>{{ $consolidated->weight }} {{ $consolidated->unit_of_weight }}</td>
                         </tr>
 
                         @php
@@ -1156,28 +1178,18 @@
                                 {{--  <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }} --}}
                                 </td>
                             </tr>
-                            <tr>
-                                <td><strong>TONELADAS</strong></td>
-                                <td>{{ $quote->ton_kilogram }} TON</td>
-                            </tr>
-                        @else
-                            <tr>
-                                <td><strong>Peso</strong></td>
-                                <td>{{ $quote->ton_kilogram }} KG</td>
-                            </tr>
                         @endif
-                    @else
-                        <tr>
-                            <td><strong>KGV</strong></td>
-                            <td>{{ $quote->cubage_kgv }} KGV</td>
-                        </tr>
 
-                        <tr>
-                            <td><strong>Peso</strong></td>
-                            <td>{{ $quote->ton_kilogram }} KG</td>
-                        </tr>
 
                     @endif
+                    <tr>
+                        <td><strong>Peso</strong></td>
+                        <td>{{ $quote->weight }} {{ $quote->unit_of_weight }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Volumen</strong></td>
+                        <td>{{ $quote->volumen_kgv }} {{ $quote->unit_of_volumen_kgv }}</td>
+                    </tr>
 
                     @php
                         $measures = json_decode($quote->measures);
@@ -1597,7 +1609,6 @@
             // Extraer el objeto contenedor de los atributos data-*
             var commercialcontainer = button.data(
                 'commercialcontainer'); // Convertimos el JSON de vuelta a un objeto
-            console.log(commercialcontainer);
             // Acceder a las propiedades del objeto contenedor y colocarlas en el modal
             var modalBody = $(this).find('.modal-body #containerDetails');
 
@@ -1642,10 +1653,10 @@
                 </div>
                 <div class="row px-3">
                     <div class="col-md-6">
-                        <p><strong>Kilogramos:</strong> ${commercialcontainer.kilograms}</p>
+                        <p><strong>Kilogramos:</strong> ${commercialcontainer.weight} ${commercialcontainer.unit_of_weight}</p>
                     </div>
                     <div class="col-md-6">
-                        <p><strong>Volumen:</strong> ${commercialcontainer.volumen}</p>
+                        <p><strong>Volumen:</strong> ${commercialcontainer.volumen_kgv} ${commercialcontainer.unit_of_volumen_kgv}</p>
                     </div>
                 </div>
                 <div class="row mt-4">
@@ -2040,6 +2051,42 @@
             }).catch(function(error) {
                 toastr.error("❌ No se pudo generar la imagen.");
             });
+        }
+
+        $('#saveConceptButton').on('click', function() {
+            const conceptName = $('#conceptName').val();
+            const conceptCost = $('#conceptCost').val();
+            const conceptObservations = $('#conceptObservations').val();
+
+            // Validar que los campos no estén vacíos
+            if (conceptName && conceptCost) {
+                // Agregar el concepto a la tabla de conceptos
+                const newRow = `
+            <tr>
+                <td>#</td>
+                <td>${conceptName}</td>
+                <td>${conceptCost}</td>
+                <td>${conceptObservations}</td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeConcept(this)">Eliminar</button>
+                </td>
+            </tr>
+        `;
+                $('#tbodyQuoteResponseFreight').append(newRow);
+
+                // Cerrar el modal de agregar concepto
+                $('#modalAddConcept').modal('hide');
+
+                // Limpiar los campos del formulario
+                $('#formAddConcept')[0].reset();
+            } else {
+                alert('Por favor complete los campos obligatorios.');
+            }
+        });
+
+        // Función para eliminar un concepto
+        function removeConcept(button) {
+            $(button).closest('tr').remove();
         }
 
         $('#form-send-pricing').on('submit', function(e) {

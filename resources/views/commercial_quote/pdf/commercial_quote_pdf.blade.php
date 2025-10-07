@@ -312,6 +312,12 @@
                             <td class="title-item-table">Tipo de carga</td>
                             <td class="text-item-table">{{ $quoteSentClient->type_load->name }}</td>
                         </tr>
+                        <tr>
+                            <td class="title-item-table">Contenedores</td>
+                            <td class="text-item-table">
+                                {{ $quoteSentClient->nro_package }}
+                            </td>
+                        </tr>
 
                         <tr>
                             <td class="title-item-table">Bultos</td>
@@ -319,22 +325,17 @@
                         </tr>
                         <tr>
                             <td class="title-item-table">Volumen</td>
-                            <td class="text-item-table">{{ $quoteSentClient->volumen }} CBM</td>
+                            <td class="text-item-table">{{ $quoteSentClient->volumen_kgv }}
+                                {{ $quoteSentClient->unit_of_volumen_kgv }}</td>
                         </tr>
 
-                        @if ($quoteSentClient->lcl_fcl === 'FCL')
-                            <tr>
-                                <td class="title-item-table">Peso total</td>
-                                <td class="text-item-table">{{ $quoteSentClient->tons }} TONS</td>
+                        <tr>
+                            <td class="title-item-table">Peso total</td>
+                            <td class="text-item-table">{{ $quoteSentClient->weight }}
+                                {{ $quoteSentClient->unit_of_weight }}</td>
 
-                            </tr>
-                        @else
-                            <tr>
-                                <td class="title-item-table">Peso total</td>
-                                <td class="text-item-table">{{ $quoteSentClient->kilograms }} KG</td>
+                        </tr>
 
-                            </tr>
-                        @endif
 
 
                     </tbody>
@@ -373,50 +374,36 @@
                             <td class="title-item-table">Tipo de carga</td>
                             <td class="text-item-table">{{ $quoteSentClient->type_load->name }}</td>
                         </tr>
-                        @if ($quoteSentClient->is_consolidated)
-
-                            <tr>
-                                <td class="title-item-table">Bultos</td>
-                                <td class="text-item-table">{{ $quoteSentClient->nro_package }}</td>
-                            </tr>
-                            <tr>
-                                <td class="title-item-table">Volumen / KGV</td>
-                                @if ($quoteSentClient->volumen)
-                                    <td class="text-item-table">{{ $quoteSentClient->volumen }} CBM</td>
-                                @else
-                                    <td class="text-item-table">{{ $quoteSentClient->kilogram_volumen }} KGV</td>
-                                @endif
-                            </tr>
-                            <tr>
-                                <td class="title-item-table">Peso total</td>
-                                <td class="text-item-table">{{ $quoteSentClient->kilograms }} KG</td>
-                            </tr>
-                        @else
-                            <tr>
-                                <td class="title-item-table">Bultos</td>
-                                <td class="text-item-table">{{ $quoteSentClient->nro_package }}</td>
-                            </tr>
-                            <tr>
-                                <td class="title-item-table">Volumen</td>
-                                <td class="text-item-table">{{ $quoteSentClient->volumen }} CBM</td>
-                            </tr>
-
+                        @if ($quoteSentClient->type_shipment->name === 'Marítima')
                             @if ($quoteSentClient->lcl_fcl === 'FCL')
                                 <tr>
-                                    <td class="title-item-table">Peso total</td>
-                                    <td class="text-item-table">{{ $quoteSentClient->tons }} TONS</td>
-
-                                </tr>
-                            @else
-                                <tr>
-                                    <td class="title-item-table">Peso total</td>
-                                    <td class="text-item-table">{{ $quoteSentClient->kilograms }} KG</td>
-
+                                    <td class="title-item-table">Contenedores</td>
+                                    <td class="text-item-table">
+                                        @foreach ($quoteSentClient->containers as $containers)
+                                            {{ $containers->pivot->container_quantity }} x {{ $containers->name }}
+                                            @if (!$loop->last)
+                                                //
+                                            @endif
+                                        @endforeach
+                                    </td>
                                 </tr>
                             @endif
-
-
                         @endif
+                        <tr>
+                            <td class="title-item-table">Bultos</td>
+                            <td class="text-item-table">{{ $quoteSentClient->nro_package }}</td>
+                        </tr>
+                        <tr>
+                            <td class="title-item-table">Volumen</td>
+                            <td class="text-item-table">{{ $quoteSentClient->volumen_kgv }}
+                                {{ $quoteSentClient->unit_of_volumen_kgv }}</td>
+
+                        </tr>
+                        <tr>
+                            <td class="title-item-table">Peso total</td>
+                            <td class="text-item-table">{{ $quoteSentClient->weight }}
+                                {{ $quoteSentClient->unit_of_weight }}</td>
+                        </tr>
                         <tr>
                             <td class="title-item-table">Valor de factura</td>
                             <td class="text-item-table">{{ $quoteSentClient->load_value }}</td>
@@ -425,13 +412,8 @@
                             <td class="title-item-table">Valor CIF</td>
                             <td class="text-item-table">{{ $quoteSentClient->cif_value }}</td>
                         </tr>
-                        {{--  <tr>
-                        <td class="title-item-table">Valor Cif</td>
-                        <td class="text-item-table">{{ $commercialQuote->type_shipment->name }}</td>
-                    </tr> --}}
                     </tbody>
                 </table>
-
             @endif
 
 
@@ -747,7 +729,7 @@
                         @endphp
 
 
-                         <tr>
+                        <tr>
                             <td colspan="2" style="text-align: right;  padding: 0; margin: 0;">
                                 <div class="total-service"
                                     style="padding: 5px; display: inline-block; min-width: 120px">
@@ -792,13 +774,13 @@
     @endif
 
     <div class="">
-                <div class="total-quote">
-                    TOTAL COTIZACION: $
-                    {{ number_format($quoteSentClient->total_quote_sent_client, 2) }}
-                    <span class="total-info">*Este precio no incluye el pago de impuestos*</span>
-                </div>
+        <div class="total-quote">
+            TOTAL COTIZACION: $
+            {{ number_format($quoteSentClient->total_quote_sent_client, 2) }}
+            <span class="total-info">*Este precio no incluye el pago de impuestos*</span>
+        </div>
 
-            </div>
+    </div>
 
 
     <div class="container-footer-quote">
@@ -829,22 +811,45 @@
                         FINAL DE LOS OPERADORES DE SERVICIO EN DESTINO PERU.
                     </li>
                     <li>
-                        5. NO SE DEBE PAGAR EN EFECTIVO O A CUENTAS AJENAS A LA EMPRESA, ESTO QUEDA BAJO RESPONSABILIDAD DEL IMPORTADOR / EXPORTADOR.
+                        5. NO SE DEBE PAGAR EN EFECTIVO O A CUENTAS AJENAS A LA EMPRESA, ESTO QUEDA BAJO RESPONSABILIDAD
+                        DEL IMPORTADOR / EXPORTADOR.
                     </li>
                 </ul>
 
             </div>
 
-            
+
 
         </div>
 
-        <div class="footer-quote">
+        <div class="footer-quote" style="text-align: center">
+            <h4>CUENTAS BANCARIAS BBVA - ORBEADUANAS</h4>
 
-            <p>Si usted tiene alguna pregunta sobre esta cotización, por favor, pónganse en contacto con nosotros</p>
-            <p>[{{ $personal->names }} {{ $personal->last_name }}, +51 {{ $personal->cellphone }},
-                {{ $personal->user->email }}]</p>
-            <p style="font-weight: bold">Gracias por hacer negocios con nosotros!</p>
+            <table
+                style="background: #081a94; width: 90%; margin: 0 5% 0 5%; text-align: center; color :white; padding: 5px; border-radius: 10px;">
+                <thead>
+                    <th>Tipo</th>
+                    <th>N° de cuenta</th>
+                    <th>Codigo de cuenta interbancario</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>DOLARES: </td>
+                        <td> 0011-0107-0100046042-06</td>
+                        <td> 011-107-0100046045-06</td>
+                    </tr>
+                    <tr>
+                        <td>SOLES: </td>
+                        <td> 0011-0107-0100046050-09</td>
+                        <td> 011-107-0100046050-09</td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+
+
+
         </div>
 
     </div>
