@@ -529,6 +529,7 @@ class FreightService
                 'concepts_id' => $concept->id, // ID del concepto relacionado
                 'id_freight' => $freight->id, // Clave foránea al modelo Freight
                 'value_concept' => $this->parseDouble($concept->value),
+                'observation' => $concept->observation,
                 'has_igv' => isset($concept->hasIgv) ? $concept->hasIgv : false
 
             ]);

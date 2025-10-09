@@ -14,6 +14,7 @@ class ConceptsTransport extends Model
         'concepts_id',
         'response_value',
         'value_concept',
+        'observation',
     ];
 
 

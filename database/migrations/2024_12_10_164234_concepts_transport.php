@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('concepts_id');
             $table->decimal('response_value', 8, 2)->nullable();
             $table->decimal('value_concept', 8, 2);
+            $table->string('observation')->nullable();
             $table->timestamps();
             // FK a transport
             $table->foreign('transport_id')->references('id')->on('transport');

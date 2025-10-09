@@ -141,6 +141,14 @@
             </div>
 
         </div>
+        <div class="col-3">
+            <div class="form-group">
+                <label for="observation">Observación</label>
+                <input type="text" class="form-control" id="observation" name="observation"
+                    placeholder="Ingrese una observación">
+            </div>
+
+        </div>
 
         <div class="col-3 form-group d-flex align-items-center justify-content-center">
             <div class="custom-control custom-switch">
@@ -164,6 +172,7 @@
                         <th style="width: 10px">#</th>
                         <th>Concepto</th>
                         <th>Valor del concepto</th>
+                        <th>Observación</th>
                         <th>x</th>
                     </tr>
                 </thead>
@@ -182,6 +191,7 @@
                         <th style="width: 10px">#</th>
                         <th>Concepto</th>
                         <th>Valor del concepto</th>
+                        <th>Observación</th>
                         <th>x</th>
                     </tr>
                 </thead>
@@ -459,7 +469,7 @@
                 $.ajax({
                     url: '/concepts/async',
                     type: 'POST',
-                    data: data, 
+                    data: data,
                     success: function(response) {
 
                         const newOption = new Option(response.name, response.id, true,
@@ -489,10 +499,10 @@
 
             inputs.each(function() {
                 const input = $(this);
-                
+
                 if (input.val().trim() === '' || (input.is('select') && input.val() == null)) {
                     input.addClass('is-invalid');
-                    isValid = false; 
+                    isValid = false;
                 } else {
                     input.removeClass('is-invalid');
                 }
@@ -504,28 +514,31 @@
         function addConcept(buton) {
 
             let divConcepts = $('.formConcepts');
-            const inputs = divConcepts.find('input:not(.points), select');
+            const inputs = divConcepts.find('input, select');
 
             inputs.each(function(index, input) {
-                if ($(this).val() === '') {
-                    $(this).addClass('is-invalid');
+                if ($(this).attr('id') !== 'observation') {
+                    if ($(this).val() === '') {
+                        $(this).addClass('is-invalid');
+                    } else {
+                        $(this).removeClass('is-invalid');
+                    }
                 } else {
                     $(this).removeClass('is-invalid');
-
                 }
             });
             var camposInvalidos = divConcepts.find('.is-invalid').length;
 
             if (camposInvalidos === 0) {
                 const index = conceptsArray.findIndex(item => item.id === parseInt(inputs[0].value));
-
                 if (index !== -1) {
 
                     conceptsArray[index] = {
                         'id': parseInt(inputs[0].value),
                         'name': inputs[0].options[inputs[0].selectedIndex].text,
                         'value': formatValue(inputs[1].value),
-                        'hasIgv': inputs[2].checked
+                        'observation': inputs[2].value,
+                        'hasIgv': inputs[3].checked
                     };
 
                 } else {
@@ -534,19 +547,19 @@
                         'id': parseInt(inputs[0].value),
                         'name': inputs[0].options[inputs[0].selectedIndex].text,
                         'value': formatValue(inputs[1].value),
-                        'hasIgv': inputs[2].checked
+                        'observation': inputs[2].value,
+                        'hasIgv': inputs[3].checked
                     });
                 }
-
-
 
                 updateTable(conceptsArray);
 
                 inputs[0].value = '';
                 $(inputs[0]).trigger('change');
                 inputs[1].value = '';
-                inputs[2].checked = false; // Desmarcar el checkbox o switch
-                $(inputs[2]).trigger('change');
+                inputs[2].value = '';
+                inputs[3].checked = false; // Desmarcar el checkbox o switch
+                $(inputs[3]).trigger('change');
             }
         };
 
@@ -574,8 +587,12 @@
             let celdaValor = fila.insertCell(2);
             celdaValor.textContent = item.value;
 
+            let celdaObservation = fila.insertCell(3);
+            celdaObservation.textContent = item.observation;
+
+
             // Insertar un botón para eliminar la fila en la cuarta celda de la fila
-            let celdaEliminar = fila.insertCell(3);
+            let celdaEliminar = fila.insertCell(4);
             let botonEliminar = document.createElement('a');
             botonEliminar.href = '#';
             botonEliminar.innerHTML = '<p class="text-danger">X</p>';
@@ -724,7 +741,6 @@
             if ($('#seguroFreight').is(':checked')) {
                 const insuranceInputs = $('#content_seguroFreight').find(
                     'input[data-required="true"], select[data-required="true"]').toArray();
-                console.log(insuranceInputs);
                 validateForm(insuranceInputs);
             }
 

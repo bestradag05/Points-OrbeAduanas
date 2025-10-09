@@ -64,7 +64,7 @@
                             <!-- Tercer campo: Impuestos de Aduanas -->
                             <div class="col-6">
                                 <div class="form-group">
-                                    <label for="customs_taxes">Impuestos de Aduanas</label>
+                                    <label for="customs_taxes">Impuestos de Aduanas - <span class="text-muted text-sm"> (ADV. % + IGV 16% + IPM 2%) * VALOR CIF</span></label>
                                     <div class="input-group">
                                         <input type="text" class="form-control CurrencyInput" name="customs_taxes"
                                             placeholder="Ingrese valor de la carga" data-type="currency"
@@ -81,12 +81,35 @@
                             <!-- Cuarto campo: Percepción Aduanas -->
                             <div class="col-6">
                                 <div class="form-group">
-                                    <label for="customs_perception">Percepción Aduanas</label>
+                                    <label for="customs_perception">Percepción Aduanas - <span class="text-muted text-sm">x% *( CIF+ IMPUESTOS DE ADUANAS)</span> </label>
                                     <div class="input-group">
                                         <input type="text" class="form-control CurrencyInput"
                                             name="customs_perception" placeholder="Ingrese valor de la carga"
                                             data-type="currency"
                                             value="{{ isset($custom->customs_perception) ? $custom->customs_perception : old('customs_perception') }}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="advalorem_percentage">Porcentaje de ADV</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control CurrencyInput"
+                                            name="advalorem_percentage" placeholder="Ingrese valor de la carga"
+                                            data-type="currency"
+                                            value="{{ isset($custom->advalorem_percentage) ? $custom->advalorem_percentage : number_format(21.5, 2) }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="perception_percentage">Porcentaje para percepción</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control CurrencyInput"
+                                            name="perception_percentage" placeholder="Ingrese valor de la carga"
+                                            data-type="currency"
+                                            value="{{ isset($custom->perception_percentage) ? $custom->perception_percentage : number_format(3.5, 2) }}">
                                     </div>
                                 </div>
                             </div>
@@ -117,8 +140,7 @@
         <div class="col-4">
 
             <label for="concept">Conceptos</label>
-            <button class="btn btn-indigo btn-xs" type="button"
-                onclick="openToModal('modalAddConcept')">
+            <button class="btn btn-indigo btn-xs" type="button" onclick="openToModal('modalAddConcept')">
                 <i class="fas fa-plus"></i>
             </button>
             :

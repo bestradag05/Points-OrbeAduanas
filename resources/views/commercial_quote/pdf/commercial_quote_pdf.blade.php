@@ -481,7 +481,6 @@
             $subtotalWithIgv = $conceptsWithIgv->sum(function ($concept) {
                 return $concept->pivot->concept_value;
             });
-
             // Calcular el total
             $total = $subtotalWithoutIgv + $subtotalWithIgv;
         @endphp
@@ -498,7 +497,7 @@
                     @foreach ($conceptsWithoutIgv as $concept)
                         <tr>
                             <td>{{ $concept->name }}</td>
-                            <td id="observation"> - </td>
+                            <td id="observation"> {{ $concept->pivot->observation }} </td>
                             <td> $ {{ number_format($concept->pivot->concept_value, 2) }}</td>
                         </tr>
                     @endforeach
@@ -522,7 +521,7 @@
                     @foreach ($conceptsWithIgv as $concept)
                         <tr>
                             <td>{{ $concept->name }}</td>
-                            <td id="observation" style="color: #234195"> Incluye IGV </td>
+                            <td id="observation" style="color: #234195"> {{ $concept->pivot->observation }} </td>
                             <td> $ {{ number_format($concept->pivot->concept_value, 2) }}</td>
                         </tr>
                     @endforeach
@@ -557,12 +556,12 @@
                 <tbody>
                     <tr>
                         <td>IMPUESTOS DE ADUANAS </td>
-                        <td>(ADV. 0% + IGV 16% + IPM 2%) X VALOR CIF</td>
+                        <td>(ADV. {{$quoteSentClient->commercialQuote->custom->advalorem_percentage}}% + IGV 16% + IPM 2%) X VALOR CIF</td>
                         <td>$ {{ $quoteSentClient->customs_taxes }}</td>
                     </tr>
                     <tr>
                         <td>PERCEPCIÓN ADUANAS </td>
-                        <td>3.5% X ( CIF+ IMPUESTOS DE ADUANAS)</td>
+                        <td>{{$quoteSentClient->commercialQuote->custom->perception_percentage}}% X ( CIF+ IMPUESTOS DE ADUANAS)</td>
                         <td>$ {{ $quoteSentClient->customs_perception }}</td>
                     </tr>
 
@@ -592,7 +591,7 @@
                         <tr>
                             <td>{{ $concept->name }}</td>
 
-                            <td id="observation"> - </td>
+                            <td id="observation"> {{ $concept->pivot->observation }} </td>
 
                             <td> $ {{ $concept->pivot->concept_value }}</td>
                         </tr>
@@ -603,7 +602,7 @@
                         @foreach ($transportConcepts as $concept)
                             <tr>
                                 <td>{{ $concept->name }}</td>
-                                <td id="observation"> - </td>
+                                <td id="observation"> {{ $concept->pivot->observation }} </td>
                                 <td> $ {{ number_format($concept->pivot->concept_value / 1.18, 2) }}</td>
                             </tr>
                         @endforeach
@@ -715,7 +714,7 @@
                         @foreach ($transportConcepts as $concept)
                             <tr>
                                 <td>{{ $concept->name }}</td>
-                                <td id="observation"> - </td>
+                                <td id="observation"> {{ $concept->pivot->observation }} </td>
                                 <td> $ {{ number_format($concept->pivot->concept_value / 1.18, 2) }}</td>
                             </tr>
                         @endforeach

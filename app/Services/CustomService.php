@@ -19,7 +19,6 @@ class CustomService
 
     public function storeCustom($request)
     {
-
         $concepts = json_decode($request->concepts);
 
         $custom = $this->createOrUpdateCustoms($request);
@@ -109,6 +108,8 @@ class CustomService
             'id_modality' => $request->modality,
             'customs_taxes' => $this->parseDouble($request->customs_taxes),
             'customs_perception' => $this->parseDouble($request->customs_perception),
+            'advalorem_percentage' => $this->parseDouble($request->advalorem_percentage),
+            'perception_percentage' => $this->parseDouble($request->perception_percentage),
             'value_utility' => $this->parseDouble($request->value_utility),
             'net_amount' => $this->parseDouble($request->custom_insurance),
             'sub_total_value_sale' => $this->parseDouble($request->sub_total_value_sale),
@@ -167,6 +168,7 @@ class CustomService
                 'id_customs' => $custom->id, // Clave foránea al modelo Freight
                 'value_concept' => $this->parseDouble($concept->value),
                 'value_sale' => $this->parseDouble($concept->value_sale),
+                'observation' => $concept->observation,
             ]);
         }
     }

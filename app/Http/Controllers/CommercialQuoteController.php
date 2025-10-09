@@ -303,7 +303,7 @@ class CommercialQuoteController extends Controller
 
                 $quoteSentClient->concepts()->attach(
                     $concept->id,  // El ID del concepto
-                    ['concept_value' => $concept->pivot->value_concept, 'service_type' => 'Flete', 'has_igv' => $concept->pivot->has_igv]
+                    ['concept_value' => $concept->pivot->value_concept, 'service_type' => 'Flete', 'observation' => $concept->pivot->observation , 'has_igv' => $concept->pivot->has_igv]
                 );
             }
 
@@ -325,7 +325,7 @@ class CommercialQuoteController extends Controller
 
                 $quoteSentClient->concepts()->attach(
                     $concept->id,  // El ID del concepto
-                    ['concept_value' => $concept->pivot->value_concept, 'service_type' => 'Transporte']
+                    ['concept_value' => $concept->pivot->value_concept, 'service_type' => 'Transporte', 'observation' => $concept->pivot->observation]
                 );
             }
 
@@ -344,7 +344,7 @@ class CommercialQuoteController extends Controller
 
                 $quoteSentClient->concepts()->attach(
                     $concept->id,  // El ID del concepto
-                    ['concept_value' => $concept->pivot->value_sale, 'service_type' => 'Aduanas']
+                    ['concept_value' => $concept->pivot->value_sale, 'service_type' => 'Aduanas', 'observation' => $concept->pivot->observation]
                 );
             }
 

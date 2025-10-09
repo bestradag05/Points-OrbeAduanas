@@ -83,8 +83,12 @@
             </div>
             <div class="col-md-3">
                 <label for="conceptValue">Valor del concepto</label>
-                <input type="text" class="form-control CurrencyInput" id="conceptValue"
+                <input type="text" class="form-control CurrencyInput" data-type="currency" id="conceptValue"
                     placeholder="Ingrese Valor de Concepto">
+            </div>
+            <div class="col-md-3">
+                <label for="observation">Observación</label>
+                <input type="text" class="form-control" id="observation" placeholder="Ingrese una observación">
             </div>
             <div class="col-md-2">
                 <button type="button" class="btn btn-success" onclick="addConceptFromDropdown()">Agregar</button>
@@ -103,6 +107,7 @@
                     <th style="width: 35%;">Concepto</th>
                     <th style="width: 30%;">Costo Neto ($)</th>
                     <th style="width: 30%;">Valor del concepto</th>
+                    <th style="width: 30%;">Observación</th>
                     <th style="width: 30%;">Acciones</th>
                 </tr>
             </thead>
@@ -192,6 +197,7 @@
                         name: c.name,
                         value: formatValue(c.pivot.value_concept),
                         pivotValue: c.pivot.response_value
+                        observation: c.pivot.observation
                     });
 
                 });
@@ -207,7 +213,8 @@
                         id: c.concepts_id,
                         name: c.concept.name,
                         value: 0,
-                        pivotValue: c.pivot.sale_price
+                        pivotValue: c.pivot.sale_price,
+                        observation: ''
                     });
                 });
 
@@ -307,7 +314,27 @@
                     celdaVal.textContent = item.value;
                 }
 
-                let celdaEliminar = fila.insertCell(4);
+                let celdaObservation = fila.insertCell(4);
+                if (isEditMode || (conceptsTransport && conceptsTransport.some(c => c.concept.name === item
+                        .name))) {
+                    // Si el concepto ya está en filteredConcepts, haz que el campo observation sea editable
+                    let inputObservation = document.createElement('input');
+                    inputObservation.type = 'text';
+                    inputObservation.value = item.observation;
+                    inputObservation.classList.add('form-control');
+                    celdaObservation.appendChild(inputObservation);
+
+                    inputObservation.addEventListener('input', (e) => {
+                        // Actualiza la observación en `conceptsArray`
+                        const idx = e.target.closest('tr').rowIndex - 1;
+                        conceptsArray[idx].observation = e.target.value;
+                    });
+                } else {
+                    // Si el concepto no está en filteredConcepts, solo muestra el texto de la observación
+                    celdaObservation.textContent = item.observation;
+                }
+
+                let celdaEliminar = fila.insertCell(5);
                 let botonEliminar = document.createElement('a');
                 botonEliminar.href = '#';
                 botonEliminar.innerHTML = '<p class="text-danger">X</p>';
@@ -335,6 +362,7 @@
         function addConceptFromDropdown() {
             const sel = document.getElementById('conceptSelect');
             const inp = document.getElementById('conceptValue');
+            const observation = document.getElementById('observation');
             const conceptId = parseInt(sel.value);
             const conceptName = sel.options[sel.selectedIndex].text;
             const value = formatValue(inp.value);
@@ -350,6 +378,7 @@
             const idx = conceptsArray.findIndex(c => c.id === conceptId);
             if (idx !== -1) {
                 conceptsArray[idx].value = value;
+                conceptsArray[idx].observation = observation.value;
                 conceptsArray[idx].isNew = true;
             } else {
                 conceptsArray.push({
@@ -357,11 +386,13 @@
                     name: conceptName,
                     value: value,
                     pivotValue: 0,
+                    observation: observation.value,
                     isNew: true
                 });
             }
             sel.value = '';
             inp.value = '';
+            observation.value = '';
             updateTable(conceptsArray);
         }
 

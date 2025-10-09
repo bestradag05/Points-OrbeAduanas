@@ -18,6 +18,7 @@ class ConceptCustoms extends Model
         'id_customs',
         'value_concept',
         'value_sale',
+        'observation',
 
     ];
 

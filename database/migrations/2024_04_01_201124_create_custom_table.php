@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('nro_bl')->nullable();
             $table->decimal('customs_taxes', 8, 2)->nullable();
             $table->decimal('customs_perception', 8, 2)->nullable();
+            $table->decimal('advalorem_percentage', 8, 2)->nullable();
+            $table->decimal('perception_percentage', 8, 2)->nullable();
             $table->decimal('value_utility', 8, 2)->nullable();
             $table->decimal('net_amount', 8, 2)->nullable();
             $table->decimal('sub_total_value_sale', 8, 2)->nullable();

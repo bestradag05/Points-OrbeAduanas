@@ -112,6 +112,32 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group">
+                                                            <label for="advalorem_percentage">Porcentaje de ADV</label>
+                                                            <div class="input-group">
+                                                                <input type="text" class="form-control CurrencyInput"
+                                                                    name="advalorem_percentage"
+                                                                    placeholder="Ingrese valor de la carga"
+                                                                    data-type="currency"
+                                                                    value="{{ isset($customs_taxes->advalorem_percentage) ? $customs_taxes->advalorem_percentage : number_format(21.5, 2) }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <div class="form-group">
+                                                            <label for="perception_percentage">Porcentaje para
+                                                                percepción</label>
+                                                            <div class="input-group">
+                                                                <input type="text"
+                                                                    class="form-control CurrencyInput"
+                                                                    name="perception_percentage"
+                                                                    placeholder="Ingrese valor de la carga"
+                                                                    data-type="currency"
+                                                                    value="{{ isset($customs_taxes->perception_percentage) ? $customs_taxes->perception_percentage : number_format(3.5, 2) }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -135,68 +161,82 @@
                             </div>
 
                             <hr>
-                            <div id="formConceptsAduanas" class="formConcepts row">
-                                <div class="col-4">
+                            <div id="formConceptsAduanas" class="formConcepts">
 
-                                    <label for="concept">Conceptos</label>
-                                    <button class="btn btn-indigo btn-xs" type="button"
-                                        onclick="openModalConcept('modalAduanas', 'modalAddConcept')">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                    :
-                                    <x-adminlte-select2 name="concept" id="concept_aduana"
-                                        data-placeholder="Seleccione un concepto...">
-                                        <option />
-                                        @foreach ($concepts as $concept)
-                                            @if ($concept->typeService->name == 'Aduanas' && $comercialQuote->type_shipment->id == $concept->id_type_shipment)
-                                                @if ($concept->name != 'AGENCIAMIENTO DE ADUANAS' && $concept->name != 'GASTOS OPERATIVOS')
-                                                    <option value="{{ $concept->id }}">{{ $concept->name }}</option>
+                                <div class="conceptsAdded row">
+                                    <div class="col-3">
+
+                                        <label for="concept">Conceptos</label>
+                                        <button class="btn btn-indigo btn-xs" type="button"
+                                            onclick="openModalConcept('modalAduanas', 'modalAddConcept')">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                        :
+                                        <x-adminlte-select2 name="concept" id="concept_aduana"
+                                            data-placeholder="Seleccione un concepto...">
+                                            <option />
+                                            @foreach ($concepts as $concept)
+                                                @if ($concept->typeService->name == 'Aduanas' && $comercialQuote->type_shipment->id == $concept->id_type_shipment)
+                                                    @if ($concept->name != 'AGENCIAMIENTO DE ADUANAS' && $concept->name != 'GASTOS OPERATIVOS')
+                                                        <option value="{{ $concept->id }}">{{ $concept->name }}
+                                                        </option>
+                                                    @endif
                                                 @endif
-                                            @endif
-                                        @endforeach
-                                    </x-adminlte-select2>
+                                            @endforeach
+                                        </x-adminlte-select2>
 
-                                </div>
-                                <div class="col-4">
-                                    <div class="form-group">
-                                        <label for="value_concept">Valor del concepto</label>
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text text-bold">
-                                                    $
-                                                </span>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            <label for="value_concept">Valor del concepto</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text text-bold">
+                                                        $
+                                                    </span>
+                                                </div>
+                                                <input type="text" class="form-control CurrencyInput "
+                                                    name="value_concept" data-type="currency"
+                                                    placeholder="Ingrese valor del concepto" value="">
                                             </div>
-                                            <input type="text" class="form-control CurrencyInput "
-                                                name="value_concept" data-type="currency"
-                                                placeholder="Ingrese valor del concepto" value="">
                                         </div>
+
+                                    </div>
+
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            <label for="value_concept">Valor venta</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text text-bold">
+                                                        $
+                                                    </span>
+                                                </div>
+                                                <input type="text" class="form-control CurrencyInput "
+                                                    name="value_sale" data-type="currency"
+                                                    placeholder="Ingrese valor venta" value="0">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            <label for="observation">Observación</label>
+                                            <input type="text" class="form-control" id="observation"
+                                                name="observation" placeholder="Ingrese una observacion">
+                                        </div>
+
+                                    </div>
+                                    <div class="col-12 d-flex justify-content-center align-items-center pt-3 mb-2">
+                                        <button class="btn btn-indigo" type="button" id="btnAddConcept"
+                                            onclick="addConceptCustom(this)">
+                                            Agregar
+                                        </button>
+
                                     </div>
 
                                 </div>
 
-                                <div class="col-4">
-                                    <div class="form-group">
-                                        <label for="value_concept">Valor venta</label>
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text text-bold">
-                                                    $
-                                                </span>
-                                            </div>
-                                            <input type="text" class="form-control CurrencyInput "
-                                                name="value_sale" data-type="currency"
-                                                placeholder="Ingrese valor venta" value="0">
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div class="col-12 d-flex justify-content-center align-items-center pt-3 mb-2">
-                                    <button class="btn btn-indigo" type="button" id="btnAddConcept"
-                                        onclick="addConceptCustom(this)">
-                                        Agregar
-                                    </button>
-
-                                </div>
 
                                 <table class="table">
                                     <thead>
@@ -205,6 +245,7 @@
                                             <th>Concepto</th>
                                             <th>Valor del concepto</th>
                                             <th>Valor venta</th>
+                                            <th>Observación</th>
                                             <th>x</th>
                                         </tr>
                                     </thead>
@@ -273,7 +314,8 @@
                             <div class="modal-footer">
                                 <button class="btn btn-indigo" id="btnGuardarCustom" type="button"
                                     onclick="submitCustomsForm(event)">Guardar</button>
-                                <button class="btn btn-secondary" onclick="closeToModal('modalAduanas')">Cerrar</button>
+                                <button class="btn btn-secondary"
+                                    onclick="closeToModal('modalAduanas')">Cerrar</button>
                             </div>
 
                         </form>
@@ -366,6 +408,7 @@
                             'name': concept.name,
                             'value': concept.value.toFixed(2),
                             'value_sale': 0,
+                            'observation': "",
                         });
 
                         totalUtilityCustom += concept.value;
@@ -494,19 +537,19 @@
 
                 function addConceptCustom(buton) {
 
-                    let divConcepts = containerResult.find('.formConcepts');
-                    const inputs = divConcepts.find('input:not(.points), select');
+                    let divConcepts = containerResult.find('.conceptsAdded');
+                    const inputs = divConcepts.find('input, select');
 
                     // Busca todos los campos de entrada dentro del formulario
                     inputs.each(function(index, input) {
-                        // Verifica si el campo de entrada está vacío
-                        if ($(this).val() === '') {
-                            // Si está vacío, agrega la clase 'is-invalid'
-                            $(this).addClass('is-invalid');
+                        if ($(this).attr('id') !== 'observation') {
+                            if ($(this).val() === '') {
+                                $(this).addClass('is-invalid');
+                            } else {
+                                $(this).removeClass('is-invalid');
+                            }
                         } else {
-                            // Si no está vacío, remueve la clase 'is-invalid' (en caso de que esté presente)
                             $(this).removeClass('is-invalid');
-
                         }
                     });
                     // Verifica si hay algún campo con la clase 'is-invalid'
@@ -524,6 +567,7 @@
                                 'name': inputs[0].options[inputs[0].selectedIndex].text,
                                 'value': formatValue(inputs[1].value),
                                 'value_sale': formatValue(inputs[2].value),
+                                'observation': inputs[3].value,
                             };
 
                         } else {
@@ -533,6 +577,7 @@
                                 'name': inputs[0].options[inputs[0].selectedIndex].text,
                                 'value': formatValue(inputs[1].value),
                                 'value_sale': formatValue(inputs[2].value),
+                                'observation': inputs[3].value,
                             });
                         }
 
@@ -541,6 +586,7 @@
                         inputs[0].value = '';
                         inputs[1].value = '';
                         inputs[2].value = '';
+                        inputs[3].value = '';
                     }
                 };
 
@@ -610,12 +656,29 @@
                                 celdaValueSale.textContent = item.value_sale;
                             }
 
+                            let celdaObservation = fila.insertCell(4);
+                            if (filteredConcepts.some(concept => concept.name === item.name)) {
+                                // Si el concepto ya está en filteredConcepts, haz que el campo observation sea editable
+                                let inputObservation = document.createElement('input');
+                                inputObservation.type = 'text';
+                                inputObservation.value = item.observation;
+                                inputObservation.classList.add('form-control');
+                                celdaObservation.appendChild(inputObservation);
+
+                                inputObservation.addEventListener('input', (e) => {
+                                    // Actualiza la observación en `conceptsCustomArray`
+                                    conceptsCustomArray[clave].observation = e.target.value;
+                                });
+                            } else {
+                                // Si el concepto no está en filteredConcepts, solo muestra el texto de la observación
+                                celdaObservation.textContent = item.observation;
+                            }
 
 
                             if (!filteredConcepts.some(concept => concept.name === item.name)) {
 
                                 // Insertar un botón para eliminar la fila en la cuarta celda de la fila
-                                let celdaEliminar = fila.insertCell(4);
+                                let celdaEliminar = fila.insertCell(5);
                                 let botonEliminar = document.createElement('a');
                                 botonEliminar.href = '#';
                                 botonEliminar.innerHTML = '<p class="text-danger">X</p>';
@@ -735,7 +798,7 @@
                         form.append(`<input type="hidden" name="concepts" value='${conceptops}' />`);
 
                         form[0].submit();
-                        
+
                     }
                 }
 

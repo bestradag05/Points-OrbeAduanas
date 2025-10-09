@@ -120,29 +120,6 @@ class TransportService
         return compact('quote', 'acceptedResponse', 'commercial_quote', 'concepts', 'conceptsTransport');
     }
 
-    /*  $quote = QuoteTransport::findOrFail($quoteId);
-        $acceptedResponse = $quote->responses()->where('status', 'Aceptado')->first();
-        $commercial_quote = $quote->commercial_quote;
-        $type_insurace = TypeInsurance::all();
-        $concepts = Concept::all();
-        $conceptsTransport = [];
-
-
-        $conceptsTransport = $concepts->map(function ($concept) use ($quote, $commercial_quote) {
-            $data = collect($concept)->only(['id', 'name']); // Atributos que deseas conservar
-
-            if ($commercial_quote->type_shipment->id === $concept->id_type_shipment && $concept->typeService->name == 'Transporte') {
-                if ($concept->name === 'TRANSPORTE') {
-                    return $data->merge(['cost' => $quote->cost_transport]);
-                }
-            }
-            return null; // Si no cumple ninguna condición, no lo incluye
-        })->filter()->values(); // Filtra los `null` y reindexa la colecció
-
-
-        return compact('quote', 'type_insurace', 'concepts', 'conceptsTransport', 'commercial_quote', 'acceptedResponse');
-    }
- */
     public function storeTransport($request)
     {
 
@@ -310,35 +287,11 @@ class TransportService
                 'transport_id' => $transport->id,
                 'response_value' => $concept->pivotValue ?? 0,
                 'value_concept' => $concept->value,
-                /* 'net_amount_response' => $net,
-                'net_amount_response' => $net,
-                'subtotal' => $subtotal,
-                'igv' => $igv,
-                'total' => $concept_total,
-                'additional_points' => $concept->pa ?? 0, */
+                'observation' => $concept->observation,
             ]);
         }
     }
 
-
-    /* public function add_aditionals_point($conceptTransport, $net_amount = null, $igv = null, $total = null)
-    {
-
-        $additional_point = AdditionalPoints::create([
-            'type_of_service' => $conceptTransport->concepts->name,
-            'amount' => $net_amount,
-            'igv' => $igv,
-            'total' => $total,
-            'points' => $conceptTransport->additional_points,
-            'id_additional_concept_service' => $conceptTransport->id,
-            'model_additional_concept_service' => $conceptTransport::class,
-            'additional_type' => ($conceptTransport::class === 'App\Models\ConceptFreight') ? 'AD-FLETE' : 'AD-ADUANA',
-            'state' => 'Pendiente'
-        ]);
-
-
-        $conceptTransport->additional_point()->save($additional_point);
-    } */
 
     public function parseDouble($num)
     {

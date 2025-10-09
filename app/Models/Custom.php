@@ -29,6 +29,8 @@ class Custom extends Model
         'customs_taxes',
         'regularization_date',
         'customs_perception',
+        'advalorem_percentage',
+        'perception_percentage',
         'state',
         'id_modality',
         'nro_quote_commercial'
@@ -76,7 +78,7 @@ class Custom extends Model
     public function concepts()
     {
         return $this->belongsToMany(Concept::class, 'concepts_customs', 'id_customs', 'concepts_id')
-            ->withPivot(['value_concept',  'value_sale']);
+            ->withPivot(['value_concept',  'value_sale', 'observation']);
     }
 
     public function routing()
