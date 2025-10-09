@@ -9,6 +9,8 @@ use App\Models\Custom;
 use App\Models\Insurance;
 use App\Models\Modality;
 use App\Models\TypeInsurance;
+use App\Models\TypeService;
+use App\Models\TypeShipment;
 use Illuminate\Http\Request;
 use stdClass;
 
@@ -33,6 +35,8 @@ class CustomService
         // Obtenemos el registro que se va editar
 
         $custom = Custom::with('concepts')->find($id);
+        $typeShipments = TypeShipment::all();
+        $typeServices = TypeService::all();
 
         $insurance = null;
 
@@ -81,7 +85,7 @@ class CustomService
         }
 
 
-        return  compact('custom', 'commercialQuote', 'modalitys', 'insurance', 'type_insurace', 'concepts', 'filteredConcepts');
+        return  compact('custom', 'commercialQuote', 'modalitys', 'insurance', 'type_insurace', 'concepts', 'filteredConcepts', 'typeShipments', 'typeServices');
     }
 
 

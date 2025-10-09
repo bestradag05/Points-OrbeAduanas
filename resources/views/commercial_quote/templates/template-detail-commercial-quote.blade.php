@@ -96,7 +96,8 @@
                             <label class="col-sm-4 col-form-label">Peso : </label>
                             <div class="col-sm-8">
 
-                                <p class="form-control-plaintext">{{ $comercialQuote->weight }} {{$comercialQuote->unit_of_weight}}</p>
+                                <p class="form-control-plaintext">{{ $comercialQuote->weight }}
+                                    {{ $comercialQuote->unit_of_weight }}</p>
                             </div>
 
                         </div>
@@ -145,7 +146,8 @@
                                 <label class="col-sm-4 col-form-label">Peso : </label>
                                 <div class="col-sm-8">
 
-                                    <p class="form-control-plaintext">{{ $comercialQuote->weight }} {{$comercialQuote->unit_of_weight}}</p>
+                                    <p class="form-control-plaintext">{{ $comercialQuote->weight }}
+                                        {{ $comercialQuote->unit_of_weight }}</p>
                                 </div>
 
                             </div>
@@ -157,7 +159,7 @@
                             <div class="col-sm-8">
 
                                 <p class="form-control-plaintext">{{ $consolidated->volumen_kgv }}
-                                                    {{ $consolidated->unit_of_volumen_kgv }}</p>
+                                    {{ $consolidated->unit_of_volumen_kgv }}</p>
                             </div>
 
                         </div>
@@ -393,7 +395,8 @@
                                 <label class="col-sm-4 col-form-label">Peso: </label>
                                 <div class="col-sm-8">
 
-                                    <p class="form-control-plaintext">{{ $comercialQuote->weight }} {{$comercialQuote->unit_of_weight}}</p>
+                                    <p class="form-control-plaintext">{{ $comercialQuote->weight }}
+                                        {{ $comercialQuote->unit_of_weight }}</p>
                                 </div>
 
                             </div>
@@ -403,7 +406,8 @@
                                 <label class="col-sm-4 col-form-label">KGV : </label>
                                 <div class="col-sm-8">
 
-                                    <p class="form-control-plaintext">{{ $comercialQuote->volumen_kgv }} {{$comercialQuote->unit_of_volumen_kgv}}</p>
+                                    <p class="form-control-plaintext">{{ $comercialQuote->volumen_kgv }}
+                                        {{ $comercialQuote->unit_of_volumen_kgv }}</p>
                                 </div>
 
                             </div>
@@ -784,6 +788,81 @@
             element.value = '';
 
         }
+
+        function openModalConcept(firstModal, secondModal) {
+            $(`#${firstModal}`).modal('hide');
+            $(`#${firstModal}`).on('hidden.bs.modal', function() {
+                $(`#${secondModal}`).modal('show');
+            });
+        }
+
+        function closeToModalAddConcept(firstModal, secondModal) {
+            $(`#${secondModal}`).modal('hide');
+            $(`#${secondModal}`).on('hidden.bs.modal', function() {
+                $(`#${firstModal}`).modal('show');
+            });
+        }
+
+
+        function openToModal(modalId) {
+            $(`#${modalId}`).modal('show');
+        }
+
+        function closeToModal(modalId) {
+            $(`#${modalId}`).modal('hide');
+        }
+
+
+        function saveConceptToDatabase(data) {
+
+            if (validateModalAddConcept()) {
+                let data = $('#formAddConcept').find('input, select'); // Obtener los datos del formulario
+
+                // Enviar el concepto al backend (guardar en la base de datos)
+                $.ajax({
+                    url: '/concepts/async', // Reemplaza con la ruta de tu backend
+                    type: 'POST',
+                    data: data, // Enviar los datos del concepto
+                    success: function(response) {
+
+                        const newOption = new Option(response.name, response.id, true,
+                            true); // 'true' selecciona el concepto
+                        $('#concept_aduana').append(newOption).trigger('change');
+
+                        toastr.success("Concepto agregado");
+
+                        closeToModalAddConcept('modalAduanas', 'modalAddConcept');
+                        $('#formAddConcept #name').val('');
+
+                    },
+                    error: function(xhr, status, error) {
+                        if (xhr.status === 400) {
+                            toastr.error(xhr.responseJSON.error); // Mostrar el error retornado desde el backend
+                        } else {
+                            toastr.error("Error al guardar el concepto en la base de datos");
+                        }
+                    }
+                });
+            }
+        }
+
+        function validateModalAddConcept() {
+            let isValid = true; // Bandera para saber si todo es válido
+            const inputs = $('#formAddConcept').find('input, select'); // Obtener todos los inputs y selects
+            inputs.each(function() {
+                const input = $(this);
+                // Si el campo es obligatorio
+                if (input.val().trim() === '' || (input.is('select') && input.val() == null)) {
+                    input.addClass('is-invalid'); // Agregar clase para marcar como inválido
+                    isValid = false; // Si algún campo no es válido, marcar como false
+                } else {
+                    input.removeClass('is-invalid'); // Eliminar la clase de error si es válido
+                }
+            });
+
+            return isValid; // Si todo es válido, devuelve true; si no, false
+        }
+
 
 
         $('#formSentClient').on('submit', (e) => {

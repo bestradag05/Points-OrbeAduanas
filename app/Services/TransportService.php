@@ -12,6 +12,7 @@ use App\Models\Supplier;
 use App\Models\Transport;
 use App\Models\TypeInsurance;
 use App\Models\TypeService;
+use App\Models\TypeShipment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -170,6 +171,8 @@ class TransportService
     {
         // 1. Traigo el transporte con sus conceptos y pivots
         $transport = Transport::with(['concepts'])->findOrFail($id);
+        $typeShipments = TypeShipment::all();
+        $typeServices  = TypeService::all();
 
         /* dd($transport->concepts); */
         $quote = $transport->quoteTransport;
@@ -184,7 +187,7 @@ class TransportService
             ->with('conceptResponseTransports.concept')
             ->first();
 
-        return compact('transport', 'acceptedResponse', 'quote', 'concepts', 'commercial_quote');
+        return compact('transport', 'acceptedResponse', 'quote', 'concepts', 'commercial_quote', 'typeShipments', 'typeServices');
     }
 
     /*    $conceptsTransport = $concepts->map(function ($concept) use ($quote, $commercial_quote) {

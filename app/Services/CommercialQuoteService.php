@@ -374,6 +374,7 @@ class CommercialQuoteService
 
         $comercialQuote = CommercialQuote::with(['commercialQuoteContainers.packingType'])->find($id);
         $type_services = TypeService::all();
+        $typeShipments = TypeShipment::all();
         $modalitys = Modality::all();
         $concepts = Concept::all()->load('typeService');
         $type_insurace = TypeInsurance::with('insuranceRate')->get();
@@ -441,6 +442,7 @@ class CommercialQuoteService
         $data = [
             'comercialQuote' => $comercialQuote,
             'type_services' => $type_services,
+            'typeShipments' => $typeShipments,
             'filteredConcepts' => $filteredConcepts,
             'services' => $services,
             'concepts' => $concepts,
@@ -465,6 +467,8 @@ class CommercialQuoteService
     {
         $comercialQuote = CommercialQuote::find($id);
         $warehouses = Warehouses::all();
+        $typeServices = TypeService::all();
+        $typeShipments = TypeShipment::all();
 
         // 1. Corregir nombre del modelo a singular
         // 2. Usar with() para eager loading de la relación
@@ -480,6 +484,8 @@ class CommercialQuoteService
         $data = [
             'comercialQuote' => $comercialQuote,
             'warehouses' => $warehouses,
+            'typeServices' => $typeServices,
+            'typeShipments' => $typeShipments,
             'concepts' => $concepts, // 4. Incluir la variable en los datos
             'tab' => $tab,
         ];

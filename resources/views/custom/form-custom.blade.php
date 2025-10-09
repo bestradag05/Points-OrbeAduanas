@@ -104,8 +104,8 @@
             data-placeholder="Seleccione un concepto...">
             <option />
             @foreach ($modalitys as $modality)
-                <option value="{{ $modality->id }}" @if($modality->id == $custom->id_modality) selected @endif
-                    >{{ $modality->name }}
+                <option value="{{ $modality->id }}" @if ($modality->id == $custom->id_modality) selected @endif>
+                    {{ $modality->name }}
                 </option>
             @endforeach
         </x-adminlte-select2>
@@ -116,8 +116,13 @@
     <div id="formConceptsAduanas" class="formConcepts row">
         <div class="col-4">
 
-            <x-adminlte-select2 name="concept" id="concept_aduana" label="Conceptos"
-                data-placeholder="Seleccione un concepto...">
+            <label for="concept">Conceptos</label>
+            <button class="btn btn-indigo btn-xs" type="button"
+                onclick="openToModal('modalAddConcept')">
+                <i class="fas fa-plus"></i>
+            </button>
+            :
+            <x-adminlte-select2 name="concept" id="concept_aduana" data-placeholder="Seleccione un concepto...">
                 <option />
                 @foreach ($concepts as $concept)
                     @if ($concept->typeService->name == 'Aduanas' && $commercialQuote->type_shipment->id == $concept->id_type_shipment)
@@ -183,32 +188,6 @@
             </tbody>
         </table>
 
-        {{-- <div class="row w-100 justify-content-end">
-
-                        <div class="col-6 row">
-                            <label for="cost_receivable" class="col-sm-6 col-form-label text-secondary">Costo ha
-                                cobrar:</label>
-                            <div class="col-sm-6">
-                                <input type="text" class="form-control form-control-sm" id="cost_receivable"
-                                    name="cost_receivable" value="0.00" @readonly(true)>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="row w-100 justify-content-end mt-2">
-
-                        <div class="col-6 row">
-                            <label for="insurance_value" id="insurance-detail-label"
-                                class="col-sm-6 col-form-label text-secondary">Seguro:</label>
-                            <div class="col-sm-6">
-                                <input type="text" class="form-control form-control-sm" name="insurance_value"
-                                    id="insurance_value" value="0.00" @readonly(true)>
-                            </div>
-                        </div>
-
-                    </div> --}}
-
         <div class="row w-100 mt-2">
 
             <div class="col-6 row justify-content-center align-items-center">
@@ -262,7 +241,8 @@
 
 
     <div class="col-12 text-center mt-5">
-        <input class="btn btn-primary" onclick="submitCustomsForm(this)"  value="{{ $formMode === 'edit' ? 'Actualizar' : 'Guardar' }}">
+        <input class="btn btn-primary" onclick="submitCustomsForm(this)"
+            value="{{ $formMode === 'edit' ? 'Actualizar' : 'Guardar' }}">
     </div>
 </div>
 
@@ -318,6 +298,82 @@
             $('.contentInsurance').addClass('d-none').removeClass('d-flex');
 
         });
+
+        function openModalConcept(firstModal, secondModal) {
+            $(`#${firstModal}`).modal('hide');
+            $(`#${firstModal}`).on('hidden.bs.modal', function() {
+                $(`#${secondModal}`).modal('show');
+            });
+        }
+
+        function closeToModalAddConcept(firstModal, secondModal) {
+            $(`#${secondModal}`).modal('hide');
+            $(`#${secondModal}`).on('hidden.bs.modal', function() {
+                $(`#${firstModal}`).modal('show');
+            });
+        }
+
+
+        function openToModal(modalId) {
+            $(`#${modalId}`).modal('show');
+        }
+
+        function closeToModal(modalId) {
+            $(`#${modalId}`).modal('hide');
+        }
+
+
+        function saveConceptToDatabase(data) {
+
+            if (validateModalAddConcept()) {
+                let data = $('#formAddConcept').find('input, select'); // Obtener los datos del formulario
+
+                // Enviar el concepto al backend (guardar en la base de datos)
+                $.ajax({
+                    url: '/concepts/async', // Reemplaza con la ruta de tu backend
+                    type: 'POST',
+                    data: data, // Enviar los datos del concepto
+                    success: function(response) {
+
+                        const newOption = new Option(response.name, response.id, true,
+                            true); // 'true' selecciona el concepto
+                        $('#concept_aduana').append(newOption).trigger('change');
+
+                        toastr.success("Concepto agregado");
+
+                        closeToModal('modalAddConcept');
+                        $('#formAddConcept #name').val('');
+
+                    },
+                    error: function(xhr, status, error) {
+                        if (xhr.status === 400) {
+                            toastr.error(xhr.responseJSON.error); // Mostrar el error retornado desde el backend
+                        } else {
+                            toastr.error("Error al guardar el concepto en la base de datos");
+                        }
+                    }
+                });
+            }
+        }
+
+        function validateModalAddConcept() {
+            let isValid = true; // Bandera para saber si todo es válido
+            const inputs = $('#formAddConcept').find('input, select'); // Obtener todos los inputs y selects
+            inputs.each(function() {
+                const input = $(this);
+                // Si el campo es obligatorio
+                if (input.val().trim() === '' || (input.is('select') && input.val() == null)) {
+                    input.addClass('is-invalid'); // Agregar clase para marcar como inválido
+                    isValid = false; // Si algún campo no es válido, marcar como false
+                } else {
+                    input.removeClass('is-invalid'); // Eliminar la clase de error si es válido
+                }
+            });
+
+            return isValid; // Si todo es válido, devuelve true; si no, false
+        }
+
+
 
 
         function addConceptCustom(buton) {
@@ -566,7 +622,5 @@
                 form[0].submit();
             }
         }
-
-
     </script>
 @endpush

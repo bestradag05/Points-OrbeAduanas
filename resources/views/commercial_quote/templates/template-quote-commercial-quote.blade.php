@@ -73,7 +73,7 @@
                             <td class="{{ $comercialQuote->type_shipment->name === 'Marítima' ? '' : 'd-none' }}">
                                 {{ $quote->commercial_quote->lcl_fcl }}</td>
                             <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
-                                {{ $quote->volumen_kgv }} {{$quote->unit_of_volumen_kgv}}</td>
+                                {{ $quote->volumen_kgv }} {{ $quote->unit_of_volumen_kgv }}</td>
                             <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
                                 {{ $quote->weight }} {{ $quote->unit_of_weight }}</td>
                             <td>{{ $quote->nro_quote_commercial }}</td>
@@ -153,10 +153,10 @@
                                 {{ $quote->commercial_quote->lcl_fcl }}
                             </td>
                             <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
-                                {{ $quote->volumen_kgv }} {{$quote->unit_of_volumen_kgv}}
+                                {{ $quote->volumen_kgv }} {{ $quote->unit_of_volumen_kgv }}
                             </td>
                             <td class="{{ $comercialQuote->is_consolidated ? 'd-none' : '' }}">
-                                {{ $quote->weight }} {{$quote->unit_of_weight}}
+                                {{ $quote->weight }} {{ $quote->unit_of_weight }}
                             </td>
                             <td>{{ $quote->nro_quote_commercial }}</td>
                             <td>{{ \Carbon\Carbon::parse($quote->created_at)->format('d/m/Y') }}</td>
@@ -337,7 +337,13 @@
                     <!-- Nuevo bloque de conceptos de transporte -->
                     <div id="formConceptsTransport" class="formConcepts row mt-4 align-items-center">
                         <div class="col-md-8">
-                            <x-adminlte-select2 name="concept" id="concept_transport" label="Conceptos de Transporte"
+                            <label for="concept">Conceptos</label>
+                            <button class="btn btn-indigo btn-xs" type="button"
+                                onclick="openModalConcept('modalTransport', 'modalAddConcept')">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            :
+                            <x-adminlte-select2 name="concept" id="concept_transport"
                                 data-placeholder="Seleccione un concepto...">
                                 <option />
                                 @foreach ($concepts as $concept)
@@ -374,6 +380,63 @@
                 <div class="modal-footer">
                     <button type="button" onclick="submitTransport(event)" class="btn btn-primary">Guardar</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="modalAddConcept" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddConceptTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <form method="POST" id="formAddConcept">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalAddConceptTitle">Agregar Concepto</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="name">Nombre del concepto</label>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                id="name" name="name" placeholder="Ingrese el nombre" value="">
+                        </div>
+                        <div class="col-md-6">
+                            <x-adminlte-select2 name="id_type_shipment" label="Tipo de embarque" igroup-size="md"
+                                readonly="true" data-placeholder="Selecciona una opcion...">
+                                <option />
+                                @foreach ($typeShipments as $typeShipment)
+                                    <option value="{{ $typeShipment->id }}"
+                                        {{ $quote->commercial_quote->type_shipment->name === $typeShipment->name ? 'selected' : '' }}>
+                                        {{ $typeShipment->name }}
+                                    </option>
+                                @endforeach
+                            </x-adminlte-select2>
+
+                        </div>
+                        <div class="col-md-6">
+                            <x-adminlte-select2 name="id_type_service" label="Tipo de servicio" igroup-size="md"
+                                readonly="true" data-placeholder="Selecciona una opcion...">
+                                <option />
+                                @foreach ($typeServices as $typeService)
+                                    <option value="{{ $typeService->id }}"
+                                        {{ $typeService->name === 'Transporte' ? 'selected' : '' }}>
+                                        {{ $typeService->name }}
+                                    </option>
+                                @endforeach
+                            </x-adminlte-select2>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary"
+                        onclick="closeToModalAddConcept('modalTransport', 'modalAddConcept')">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveConceptToDatabase()">Guardar
+                        Concepto</button>
                 </div>
             </form>
         </div>
@@ -659,6 +722,28 @@
 
         }
 
+        function openModalConcept(firstModal, secondModal) {
+            $(`#${firstModal}`).modal('hide');
+            $(`#${firstModal}`).on('hidden.bs.modal', function() {
+                $(`#${secondModal}`).modal('show');
+            });
+        }
+
+        function closeToModalAddConcept(firstModal, secondModal) {
+            $(`#${secondModal}`).modal('hide');
+            $(`#${secondModal}`).on('hidden.bs.modal', function() {
+                $(`#${firstModal}`).modal('show');
+            });
+        }
+
+        function openToModal(modalId) {
+            $(`#${modalId}`).modal('show');
+        }
+
+        function closeToModal(modalId) {
+            $(`#${modalId}`).modal('hide');
+        }
+
 
 
         function openModalTransport(quote) {
@@ -684,6 +769,56 @@
 
 
             modalTransport.modal('show');
+        }
+
+        function saveConceptToDatabase(data) {
+
+            if (validateModalAddConcept()) {
+                let data = $('#formAddConcept').find('input, select'); // Obtener los datos del formulario
+
+                // Enviar el concepto al backend (guardar en la base de datos)
+                $.ajax({
+                    url: '/concepts/async', // Reemplaza con la ruta de tu backend
+                    type: 'POST',
+                    data: data, // Enviar los datos del concepto
+                    success: function(response) {
+
+                        const newOption = new Option(response.name, response.id, true,
+                            true); // 'true' selecciona el concepto
+                        $('#concept_transport').append(newOption).trigger('change');
+
+                        toastr.success("Concepto agregado");
+
+                        closeToModalAddConcept('modalTransport', 'modalAddConcept');
+                        $('#formAddConcept #name').val('');
+
+                    },
+                    error: function(xhr, status, error) {
+                        if (xhr.status === 400) {
+                            toastr.error(xhr.responseJSON.error); // Mostrar el error retornado desde el backend
+                        } else {
+                            toastr.error("Error al guardar el concepto en la base de datos");
+                        }
+                    }
+                });
+            }
+        }
+
+        function validateModalAddConcept() {
+            let isValid = true; // Bandera para saber si todo es válido
+            const inputs = $('#formAddConcept').find('input, select'); // Obtener todos los inputs y selects
+            inputs.each(function() {
+                const input = $(this);
+                // Si el campo es obligatorio
+                if (input.val().trim() === '' || (input.is('select') && input.val() == null)) {
+                    input.addClass('is-invalid'); // Agregar clase para marcar como inválido
+                    isValid = false; // Si algún campo no es válido, marcar como false
+                } else {
+                    input.removeClass('is-invalid'); // Eliminar la clase de error si es válido
+                }
+            });
+
+            return isValid; // Si todo es válido, devuelve true; si no, false
         }
 
 

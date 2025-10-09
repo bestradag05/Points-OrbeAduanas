@@ -43,7 +43,7 @@
                 <label for="utility">Devolucion de contenedor</label>
                 <input type="text" class="form-control" id="delivery" name="container_return" @readonly(true)
                     placeholder="Ingrese la devolucion del contenedor"
-                    value="{{ isset($quote->container_return) ?  $quote->returnWarehouse->name_businessname : old('container_return') }}">
+                    value="{{ isset($quote->container_return) ? $quote->returnWarehouse->name_businessname : old('container_return') }}">
             </div>
         </div>
     @endif
@@ -63,6 +63,10 @@
         <div class="row align-items-end">
             <div class="col-md-4">
                 <label for="conceptSelect">Agregar nuevo concepto</label>
+                <button class="btn btn-indigo btn-xs" type="button" onclick="openToModal('modalAddConcept')">
+                    <i class="fas fa-plus"></i>
+                </button>
+                :
                 <select id="conceptSelect" class="form-control">
                     <option value="">Seleccione...</option>
                     @foreach ($concepts as $concept)
@@ -312,11 +316,14 @@
                     // Eliminar la fila correspondiente al hacer clic en el botón
                     let fila = this.parentNode.parentNode;
                     let indice = fila.getAttribute('data-index');
+                    console.log(fila);
+                    console.log(indice);
 
                     conceptsArray.splice(indice, 1); // Eliminar el elemento en el índice correspondiente
                     updateTable(conceptsArray);
                 });
                 celdaEliminar.appendChild(botonEliminar);
+                fila.setAttribute('data-index', contador - 1);
 
 
                 sumaLocal += parseFloat(item.value || 0);
@@ -356,6 +363,80 @@
             sel.value = '';
             inp.value = '';
             updateTable(conceptsArray);
+        }
+
+        function openModalConcept(firstModal, secondModal) {
+            $(`#${firstModal}`).modal('hide');
+            $(`#${firstModal}`).on('hidden.bs.modal', function() {
+                $(`#${secondModal}`).modal('show');
+            });
+        }
+
+        function closeToModalAddConcept(firstModal, secondModal) {
+            $(`#${secondModal}`).modal('hide');
+            $(`#${secondModal}`).on('hidden.bs.modal', function() {
+                $(`#${firstModal}`).modal('show');
+            });
+        }
+
+        function openToModal(modalId) {
+            $(`#${modalId}`).modal('show');
+        }
+
+        function closeToModal(modalId) {
+            $(`#${modalId}`).modal('hide');
+        }
+
+
+
+        function saveConceptToDatabase(data) {
+
+            if (validateModalAddConcept()) {
+                let data = $('#formAddConcept').find('input, select'); // Obtener los datos del formulario
+
+                // Enviar el concepto al backend (guardar en la base de datos)
+                $.ajax({
+                    url: '/concepts/async', // Reemplaza con la ruta de tu backend
+                    type: 'POST',
+                    data: data, // Enviar los datos del concepto
+                    success: function(response) {
+
+                        const newOption = new Option(response.name, response.id, true,
+                            true); // 'true' selecciona el concepto
+                        $('#conceptSelect').append(newOption).trigger('change');
+
+                        toastr.success("Concepto agregado");
+
+                        closeToModalAddConcept('modalTransport', 'modalAddConcept');
+                        $('#formAddConcept #name').val('');
+
+                    },
+                    error: function(xhr, status, error) {
+                        if (xhr.status === 400) {
+                            toastr.error(xhr.responseJSON.error); // Mostrar el error retornado desde el backend
+                        } else {
+                            toastr.error("Error al guardar el concepto en la base de datos");
+                        }
+                    }
+                });
+            }
+        }
+
+        function validateModalAddConcept() {
+            let isValid = true; // Bandera para saber si todo es válido
+            const inputs = $('#formAddConcept').find('input, select'); // Obtener todos los inputs y selects
+            inputs.each(function() {
+                const input = $(this);
+                // Si el campo es obligatorio
+                if (input.val().trim() === '' || (input.is('select') && input.val() == null)) {
+                    input.addClass('is-invalid'); // Agregar clase para marcar como inválido
+                    isValid = false; // Si algún campo no es válido, marcar como false
+                } else {
+                    input.removeClass('is-invalid'); // Eliminar la clase de error si es válido
+                }
+            });
+
+            return isValid; // Si todo es válido, devuelve true; si no, false
         }
 
 

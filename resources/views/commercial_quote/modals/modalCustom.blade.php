@@ -1,346 +1,347 @@
         {{-- Aduanas --}}
-        <x-adminlte-modal id="modalAduanas" class="modal" title="Aduana" size='xl' scrollable>
-            <form action="/customs" method="POST">
-                @csrf
-
-                <input type="hidden" name="nro_quote_commercial" value="{{ $comercialQuote->nro_quote_commercial }}">
-                <input type="hidden" name="typeService" id="typeService">
-                <input type="hidden" name="value_utility" id="value_utility">
-
-
-                <div class="col-12 px-0">
-                    <div class="accordion" id="accordionImpuestos">
-                        <div class="card" style="background: #dbdbe175">
-                            <div class="card-header m-0 p-1" id="headingImpuestos">
-                                <h6 class=" pb-0 mb-0  pl-2 d-flex justify-content-between align-items-center">
-                                    <span class="text-uppercase">
-                                        Detalle de impuestos
-                                    </span>
-                                    <button class="btn btn-link" type="button" data-toggle="collapse"
-                                        data-target="#collapseImpuestos" aria-expanded="true"
-                                        aria-controls="collapseImpuestos">
-                                        <i class="fas fa-chevron-down"></i>
-                                    </button>
-                                </h6>
-                            </div>
-
-                            <div id="collapseImpuestos" class="collapse show" aria-labelledby="headingImpuestos"
-                                data-parent="#accordionImpuestos">
-                                <div class="card-body">
-                                    <!-- Primer campo: Valor FOB -->
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="form-group">
-                                                <label for="load_value">Valor FOB</label>
-                                                <div class="input-group">
-                                                    <input type="text"
-                                                        class="form-control  @error('load_value') is-invalid @enderror "
-                                                        {{ isset($comercialQuote->load_value) ? 'readonly' : '' }}
-                                                        name="load_value" placeholder="Ingrese valor de la carga"
-                                                        value="{{ isset($comercialQuote->load_value) ? number_format($comercialQuote->load_value, 2) : old('load_value') }}">
-                                                </div>
-                                                @error('load_value')
-                                                    <span class="invalid-feedback d-block" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <!-- Segundo campo: Valor CIF -->
-                                        <div class="col-6">
-                                            <div class="form-group">
-                                                <label for="cif_value">Valor CIF</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control CurrencyInput"
-                                                        name="cif_value" placeholder="Ingrese valor de la carga" data-type="currency"
-                                                        value="{{ isset($comercialQuote->cif_value) ? number_format($comercialQuote->cif_value, 2) : old('cif_value') }}">
-                                                </div>
-                                                @error('cif_value')
-                                                    <span class="invalid-feedback d-block" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <!-- Tercer campo: Impuestos de Aduanas -->
-                                        <div class="col-6">
-                                            <div class="form-group">
-                                                <label for="customs_taxes">Impuestos de Aduanas</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control CurrencyInput"
-                                                        name="customs_taxes" placeholder="Ingrese valor de la carga" data-type="currency"
-                                                        value="{{ isset($customs_taxes->customs_taxes) ? $customs_taxes->customs_taxes : '' }}">
-                                                </div>
-                                                @error('customs_taxes')
-                                                    <span class="invalid-feedback d-block" role="alert">
-                                                        <strong>{{ $message }}</strong>
-                                                    </span>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <!-- Cuarto campo: Percepción Aduanas -->
-                                        <div class="col-6">
-                                            <div class="form-group">
-                                                <label for="customs_perception">Percepción Aduanas</label>
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control CurrencyInput"
-                                                        name="customs_perception"
-                                                        placeholder="Ingrese valor de la carga" data-type="currency"
-                                                        value="{{ isset($customs_taxes->customs_perception) ? $customs_taxes->customs_perception : old('customs_perception') }}">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="row">
-                    <div class="col-12">
-
-                        <x-adminlte-select2 name="modality" id="modality" label="Modalidad"
-                            data-placeholder="Seleccione un concepto...">
-                            <option />
-                            @foreach ($modalitys as $modality)
-                                <option value="{{ $modality->id }}">{{ $modality->name }}</option>
-                            @endforeach
-                        </x-adminlte-select2>
-
-                    </div>
-
-
-
-
-                </div>
-
-
-{{--                 <div class="form-group">
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" name="state_insurance" class="custom-control-input" id="seguroCustom"
-                            onchange="enableCustomsInsurance(this)">
-                        <label class="custom-control-label" for="seguroCustom">Agregar Seguro</label>
-                    </div>
-                </div>
-                <hr>
-                <div class="row d-none justify-content-center" id="content_seguroCustom">
-                    <div class="col-4">
-                        <label for="type_insurance">Tipo de seguro</label>
-                        <select name="type_insurance" onchange="selectInsurance(this)" class="d-none form-control"
-                            label="Tipo de seguro" igroup-size="md" data-placeholder="Seleccione una opcion...">
-                            <option />
-                            @foreach ($type_insurace as $type)
-                                <option value="{{ $type->id }}">{{ $type->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-4">
-                        <div class="form-group">
-                            <label for="load_value">Valor del seguro</label>
-
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text text-bold">
-                                        $
-                                    </span>
-                                </div>
-                                <input type="text"
-                                    class="form-control CurrencyInput {{ isset($insurance) ? '' : 'd-none' }} "
-                                    id="value_insurance" name="value_insurance" data-type="currency"
-                                    @readonly(true) placeholder="Ingrese valor del seguro"
-                                    value="{{ isset($insurance) ? $insurance->insurance_value : '' }}"
-                                    onchange="updateInsuranceTotal(this)" data-required="true">
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="col-4">
-                        <div class="form-group">
-                            <label for="load_value">Valor venta</label>
-
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text text-bold">
-                                        $
-                                    </span>
-                                </div>
-                                <input type="text" class="form-control CurrencyInput d-none"
-                                    id="insurance_sales_value" name="insurance_sales_value" data-type="currency"
-                                    value="0" placeholder="Ingrese valor de la carga"
-                                    onchange="updateInsuranceSalesValue(this)">
-                            </div>
-
-                        </div>
-                    </div>
-                </div> --}}
-
-                <hr>
-                <div id="formConceptsAduanas" class="formConcepts row">
-                    <div class="col-4">
-
-                        <x-adminlte-select2 name="concept" id="concept_aduana" label="Conceptos"
-                            data-placeholder="Seleccione un concepto...">
-                            <option />
-                            @foreach ($concepts as $concept)
-                                @if ($concept->typeService->name == 'Aduanas' && $comercialQuote->type_shipment->id == $concept->id_type_shipment)
-                                    @if ($concept->name != 'AGENCIAMIENTO DE ADUANAS' && $concept->name != 'GASTOS OPERATIVOS')
-                                        <option value="{{ $concept->id }}">{{ $concept->name }}</option>
-                                    @endif
-                                @endif
-                            @endforeach
-                        </x-adminlte-select2>
-
-                    </div>
-                    <div class="col-4">
-                        <div class="form-group">
-                            <label for="value_concept">Valor del concepto</label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text text-bold">
-                                        $
-                                    </span>
-                                </div>
-                                <input type="text" class="form-control CurrencyInput " name="value_concept"
-                                    data-type="currency" placeholder="Ingrese valor del concepto" value="">
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="col-4">
-                        <div class="form-group">
-                            <label for="value_concept">Valor venta</label>
-                            <div class="input-group">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text text-bold">
-                                        $
-                                    </span>
-                                </div>
-                                <input type="text" class="form-control CurrencyInput " name="value_sale"
-                                    data-type="currency" placeholder="Ingrese valor venta" value="0">
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="col-12 d-flex justify-content-center align-items-center pt-3 mb-2">
-                        <button class="btn btn-indigo" type="button" id="btnAddConcept"
-                            onclick="addConceptCustom(this)">
-                            Agregar
+        <div class="modal fade" id="modalAduanas" tabindex="-1" aria-labelledby="modalAduanasLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAduanasLabel">Aduana</h5>
+                        <button type="button" class="close" onclick="closeToModal('modalAduanas')">
+                            <span aria-hidden="true">&times;</span>
                         </button>
-
                     </div>
+                    <div class="modal-body">
+                        <form action="/customs" method="POST">
+                            @csrf
 
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th style="width: 10px">#</th>
-                                <th>Concepto</th>
-                                <th>Valor del concepto</th>
-                                <th>Valor venta</th>
-                                <th>x</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbodyAduanas">
+                            <input type="hidden" name="nro_quote_commercial"
+                                value="{{ $comercialQuote->nro_quote_commercial }}">
+                            <input type="hidden" name="typeService" id="typeService">
+                            <input type="hidden" name="value_utility" id="value_utility">
 
 
-                        </tbody>
-                    </table>
+                            <div class="col-12 px-0">
+                                <div class="accordion" id="accordionImpuestos">
+                                    <div class="card" style="background: #dbdbe175">
+                                        <div class="card-header m-0 p-1" id="headingImpuestos">
+                                            <h6
+                                                class=" pb-0 mb-0  pl-2 d-flex justify-content-between align-items-center">
+                                                <span class="text-uppercase">
+                                                    Detalle de impuestos
+                                                </span>
+                                                <button class="btn btn-link" type="button" data-toggle="collapse"
+                                                    data-target="#collapseImpuestos" aria-expanded="true"
+                                                    aria-controls="collapseImpuestos">
+                                                    <i class="fas fa-chevron-down"></i>
+                                                </button>
+                                            </h6>
+                                        </div>
 
-                    {{-- <div class="row w-100 justify-content-end">
+                                        <div id="collapseImpuestos" class="collapse show"
+                                            aria-labelledby="headingImpuestos" data-parent="#accordionImpuestos">
+                                            <div class="card-body">
+                                                <!-- Primer campo: Valor FOB -->
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <div class="form-group">
+                                                            <label for="load_value">Valor FOB</label>
+                                                            <div class="input-group">
+                                                                <input type="text"
+                                                                    class="form-control  @error('load_value') is-invalid @enderror "
+                                                                    {{ isset($comercialQuote->load_value) ? 'readonly' : '' }}
+                                                                    name="load_value"
+                                                                    placeholder="Ingrese valor de la carga"
+                                                                    value="{{ isset($comercialQuote->load_value) ? number_format($comercialQuote->load_value, 2) : old('load_value') }}">
+                                                            </div>
+                                                            @error('load_value')
+                                                                <span class="invalid-feedback d-block" role="alert">
+                                                                    <strong>{{ $message }}</strong>
+                                                                </span>
+                                                            @enderror
+                                                        </div>
+                                                    </div>
 
-                        <div class="col-6 row">
-                            <label for="cost_receivable" class="col-sm-6 col-form-label text-secondary">Costo ha
-                                cobrar:</label>
-                            <div class="col-sm-6">
-                                <input type="text" class="form-control form-control-sm" id="cost_receivable"
-                                    name="cost_receivable" value="0.00" @readonly(true)>
+                                                    <!-- Segundo campo: Valor CIF -->
+                                                    <div class="col-6">
+                                                        <div class="form-group">
+                                                            <label for="cif_value">Valor CIF</label>
+                                                            <div class="input-group">
+                                                                <input type="text" class="form-control CurrencyInput"
+                                                                    name="cif_value"
+                                                                    placeholder="Ingrese valor de la carga"
+                                                                    data-type="currency"
+                                                                    value="{{ isset($comercialQuote->cif_value) ? number_format($comercialQuote->cif_value, 2) : old('cif_value') }}">
+                                                            </div>
+                                                            @error('cif_value')
+                                                                <span class="invalid-feedback d-block" role="alert">
+                                                                    <strong>{{ $message }}</strong>
+                                                                </span>
+                                                            @enderror
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <!-- Tercer campo: Impuestos de Aduanas -->
+                                                    <div class="col-6">
+                                                        <div class="form-group">
+                                                            <label for="customs_taxes">Impuestos de Aduanas</label>
+                                                            <div class="input-group">
+                                                                <input type="text" class="form-control CurrencyInput"
+                                                                    name="customs_taxes"
+                                                                    placeholder="Ingrese valor de la carga"
+                                                                    data-type="currency"
+                                                                    value="{{ isset($customs_taxes->customs_taxes) ? $customs_taxes->customs_taxes : '' }}">
+                                                            </div>
+                                                            @error('customs_taxes')
+                                                                <span class="invalid-feedback d-block" role="alert">
+                                                                    <strong>{{ $message }}</strong>
+                                                                </span>
+                                                            @enderror
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Cuarto campo: Percepción Aduanas -->
+                                                    <div class="col-6">
+                                                        <div class="form-group">
+                                                            <label for="customs_perception">Percepción Aduanas</label>
+                                                            <div class="input-group">
+                                                                <input type="text" class="form-control CurrencyInput"
+                                                                    name="customs_perception"
+                                                                    placeholder="Ingrese valor de la carga"
+                                                                    data-type="currency"
+                                                                    value="{{ isset($customs_taxes->customs_perception) ? $customs_taxes->customs_perception : old('customs_perception') }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
-                        </div>
 
+                            <div class="row">
+                                <div class="col-12">
+
+                                    <x-adminlte-select2 name="modality" id="modality" label="Modalidad"
+                                        data-placeholder="Seleccione un concepto...">
+                                        <option />
+                                        @foreach ($modalitys as $modality)
+                                            <option value="{{ $modality->id }}">{{ $modality->name }}</option>
+                                        @endforeach
+                                    </x-adminlte-select2>
+
+                                </div>
+                            </div>
+
+                            <hr>
+                            <div id="formConceptsAduanas" class="formConcepts row">
+                                <div class="col-4">
+
+                                    <label for="concept">Conceptos</label>
+                                    <button class="btn btn-indigo btn-xs" type="button"
+                                        onclick="openModalConcept('modalAduanas', 'modalAddConcept')">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                    :
+                                    <x-adminlte-select2 name="concept" id="concept_aduana"
+                                        data-placeholder="Seleccione un concepto...">
+                                        <option />
+                                        @foreach ($concepts as $concept)
+                                            @if ($concept->typeService->name == 'Aduanas' && $comercialQuote->type_shipment->id == $concept->id_type_shipment)
+                                                @if ($concept->name != 'AGENCIAMIENTO DE ADUANAS' && $concept->name != 'GASTOS OPERATIVOS')
+                                                    <option value="{{ $concept->id }}">{{ $concept->name }}</option>
+                                                @endif
+                                            @endif
+                                        @endforeach
+                                    </x-adminlte-select2>
+
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="value_concept">Valor del concepto</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text text-bold">
+                                                    $
+                                                </span>
+                                            </div>
+                                            <input type="text" class="form-control CurrencyInput "
+                                                name="value_concept" data-type="currency"
+                                                placeholder="Ingrese valor del concepto" value="">
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label for="value_concept">Valor venta</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text text-bold">
+                                                    $
+                                                </span>
+                                            </div>
+                                            <input type="text" class="form-control CurrencyInput "
+                                                name="value_sale" data-type="currency"
+                                                placeholder="Ingrese valor venta" value="0">
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="col-12 d-flex justify-content-center align-items-center pt-3 mb-2">
+                                    <button class="btn btn-indigo" type="button" id="btnAddConcept"
+                                        onclick="addConceptCustom(this)">
+                                        Agregar
+                                    </button>
+
+                                </div>
+
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 10px">#</th>
+                                            <th>Concepto</th>
+                                            <th>Valor del concepto</th>
+                                            <th>Valor venta</th>
+                                            <th>x</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbodyAduanas">
+
+
+                                    </tbody>
+                                </table>
+
+                                <div class="row w-100 mt-2">
+
+                                    <div class="col-6 row justify-content-center align-items-center">
+
+                                        <div class="row">
+                                            <label for="profit"
+                                                class="col-sm-6 col-form-label text-success">Ganancia $$</label>
+                                            <div class="col-sm-6">
+                                                <input type="text" class="form-control form-control-sm"
+                                                    id="profit" name="profit" value="0.00" @readonly(true)>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-6 row flex-column">
+                                        <div class="row">
+                                            <label for="custom_insurance" class="col-sm-6 col-form-label ">Total a
+                                                cobrar:</label>
+                                            <div class="col-sm-6">
+                                                <input type="text" class="form-control form-control-sm"
+                                                    name="custom_insurance" id="custom_insurance" value="0.00"
+                                                    @readonly(true)>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <label for="sub_total_value_sale" class="col-sm-6 col-form-label">Total
+                                                venta / Sub Total:</label>
+                                            <div class="col-sm-6">
+                                                <input type="text" class="form-control form-control-sm"
+                                                    id="sub_total_value_sale" name="sub_total_value_sale"
+                                                    value="0.00" @readonly(true)>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <label for="igv" class="col-sm-6 col-form-label">IGV:</label>
+                                            <div class="col-sm-6">
+                                                <input type="text" class="form-control form-control-sm"
+                                                    id="igv" name="igv" value="0.00" @readonly(true)>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <label for="value_sale" class="col-sm-6 col-form-label">Total:</label>
+                                            <div class="col-sm-6">
+                                                <input type="text" class="form-control form-control-sm"
+                                                    id="value_sale" name="value_sale" value="0.00"
+                                                    @readonly(true)>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-indigo" id="btnGuardarCustom" type="button"
+                                    onclick="submitCustomsForm(event)">Guardar</button>
+                                <button class="btn btn-secondary" onclick="closeToModal('modalAduanas')">Cerrar</button>
+                            </div>
+
+                        </form>
                     </div>
-
-                    <div class="row w-100 justify-content-end mt-2">
-
-                        <div class="col-6 row">
-                            <label for="insurance_value" id="insurance-detail-label"
-                                class="col-sm-6 col-form-label text-secondary">Seguro:</label>
-                            <div class="col-sm-6">
-                                <input type="text" class="form-control form-control-sm" name="insurance_value"
-                                    id="insurance_value" value="0.00" @readonly(true)>
-                            </div>
-                        </div>
-
-                    </div> --}}
-
-                    <div class="row w-100 mt-2">
-
-                        <div class="col-6 row justify-content-center align-items-center">
-
-                            <div class="row">
-                                <label for="profit" class="col-sm-6 col-form-label text-success">Ganancia $$</label>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control form-control-sm" id="profit"
-                                        name="profit" value="0.00" @readonly(true)>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="col-6 row flex-column">
-                            <div class="row">
-                                <label for="custom_insurance" class="col-sm-6 col-form-label ">Total a cobrar:</label>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control form-control-sm"
-                                        name="custom_insurance" id="custom_insurance" value="0.00"
-                                        @readonly(true)>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <label for="sub_total_value_sale" class="col-sm-6 col-form-label">Total
-                                    venta / Sub Total:</label>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control form-control-sm"
-                                        id="sub_total_value_sale" name="sub_total_value_sale" value="0.00"
-                                        @readonly(true)>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <label for="igv" class="col-sm-6 col-form-label">IGV:</label>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control form-control-sm" id="igv"
-                                        name="igv" value="0.00" @readonly(true)>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <label for="value_sale" class="col-sm-6 col-form-label">Total:</label>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control form-control-sm" id="value_sale"
-                                        name="value_sale" value="0.00" @readonly(true)>
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </div>
-
                 </div>
+            </div>
+        </div>
 
-                <x-slot name="footerSlot">
-                    <x-adminlte-button class="btn btn-indigo" id="btnGuardarCustom" type="submit"
-                        onclick="submitCustomsForm(this)" label="Guardar" />
-                    <x-adminlte-button theme="secondary" label="Cerrar" data-dismiss="modal" />
-                </x-slot>
 
-            </form>
-        </x-adminlte-modal>
+        <div id="modalAddConcept" class="modal fade" tabindex="-1" role="dialog"
+            aria-labelledby="modalAddConceptTitle" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <form method="POST" id="formAddConcept">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalAddConceptTitle">Agregar Concepto</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="name">Nombre del concepto</label>
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                        id="name" name="name" placeholder="Ingrese el nombre"
+                                        value="">
+                                </div>
+                                <div class="col-md-6">
+                                    <x-adminlte-select2 name="id_type_shipment" label="Tipo de embarque"
+                                        igroup-size="md" readonly="true" data-placeholder="Selecciona una opcion...">
+                                        <option />
+                                        @foreach ($typeShipments as $typeShipment)
+                                            <option value="{{ $typeShipment->id }}"
+                                                {{ $comercialQuote->type_shipment->name === $typeShipment->name ? 'selected' : '' }}>
+                                                {{ $typeShipment->name }}
+                                            </option>
+                                        @endforeach
+                                    </x-adminlte-select2>
+
+                                </div>
+                                <div class="col-md-6">
+                                    <x-adminlte-select2 name="id_type_service" label="Tipo de servicio"
+                                        igroup-size="md" readonly="true" data-placeholder="Selecciona una opcion...">
+                                        <option />
+                                        @foreach ($type_services as $typeService)
+                                            <option value="{{ $typeService->id }}"
+                                                {{ $typeService->name === 'Aduanas' ? 'selected' : '' }}>
+                                                {{ $typeService->name }}
+                                            </option>
+                                        @endforeach
+                                    </x-adminlte-select2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary"
+                                onclick="closeToModalAddConcept('modalAduanas', 'modalAddConcept')">Cancelar</button>
+                            <button type="button" class="btn btn-primary" onclick="saveConceptToDatabase()">Guardar
+                                Concepto</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
 
         @push('scripts')
             <script>
@@ -624,7 +625,7 @@
                                     let fila = this.parentNode.parentNode;
                                     let indice = fila.rowIndex -
                                         1; // Restar 1 porque el índice de las filas en tbody comienza en 0
-                                     conceptsCustomArray.splice(indice, 1);
+                                    conceptsCustomArray.splice(indice, 1);
                                     updateTableCustom(conceptsCustomArray);
                                 });
                                 celdaEliminar.appendChild(botonEliminar);
@@ -700,10 +701,11 @@
                 }
 
 
-                function submitCustomsForm() {
-
+                function submitCustomsForm(e) {
+                    e.preventDefault();
                     let form = $(`#${container.id}`).find('form');
-                    const inputs = form.find('input, select').not('.formConcepts  input, .formConcepts select, input.d-none, #collapseImpuestos input');
+                    const inputs = form.find('input, select').not(
+                        '.formConcepts  input, .formConcepts select, input.d-none, #collapseImpuestos input');
 
                     inputs.each(function(index, input) {
 
@@ -731,7 +733,9 @@
                         let conceptops = JSON.stringify(conceptsCustomArray);
 
                         form.append(`<input type="hidden" name="concepts" value='${conceptops}' />`);
+
                         form[0].submit();
+                        
                     }
                 }
 
