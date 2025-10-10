@@ -103,12 +103,12 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th style="width: 5%;">#</th>
-                    <th style="width: 35%;">Concepto</th>
-                    <th style="width: 30%;">Costo Neto ($)</th>
-                    <th style="width: 30%;">Valor del concepto</th>
-                    <th style="width: 30%;">Observación</th>
-                    <th style="width: 30%;">Acciones</th>
+                    <th>#</th>
+                    <th>Concepto</th>
+                    <th>Costo Neto ($)</th>
+                    <th>Valor del concepto</th>
+                    <th>Observación</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="tbodyConcepts">
@@ -187,16 +187,15 @@
             conceptsArray = [];
 
             @if ($formMode === 'edit')
-
-                conceptsTransport = @json($transport->concepts);
+            
+            conceptsTransport = @json($transport->concepts);
                 total = 0;
-
                 conceptsTransport.forEach(c => {
                     conceptsArray.push({
                         id: c.id,
                         name: c.name,
                         value: formatValue(c.pivot.value_concept),
-                        pivotValue: c.pivot.response_value
+                        pivotValue: c.pivot.response_value,
                         observation: c.pivot.observation
                     });
 
@@ -313,7 +312,7 @@
                 } else {
                     celdaVal.textContent = item.value;
                 }
-
+                
                 let celdaObservation = fila.insertCell(4);
                 if (isEditMode || (conceptsTransport && conceptsTransport.some(c => c.concept.name === item
                         .name))) {

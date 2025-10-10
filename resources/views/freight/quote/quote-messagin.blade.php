@@ -11,16 +11,16 @@
                 <div class="col-8 col-lg-6">
                     <h5 class="text-indigo text-center"> <i class="fas fa-file-alt mx-2"></i>Detalle de carga</h5>
                 </div>
-                @role('Pricing')
-                    <div class="col-4 col-lg-6">
-                        <button onclick="copieHtmlDetailQuote()" class="btn btn-sm btn-secondary">
-                            <i class="fas fa-copy"></i>
-                        </button>
-                        <button onclick="downloadImageDetailQuote('{{ $quote->nro_quote }}')" class="btn btn-sm btn-secondary">
-                            <i class="fas fa-download"></i>
-                        </button>
-                    </div>
-                @endrole
+                {{-- @role('Pricing') --}}
+                <div class="col-4 col-lg-6">
+                    <button onclick="copieHtmlDetailQuote()" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <button onclick="downloadImageDetailQuote('{{ $quote->nro_quote }}')" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+                {{-- @endrole --}}
             </div>
 
 
@@ -610,7 +610,8 @@
                                                         <label for="airline_id">Aerolinea <span
                                                                 class="text-danger">*</span></label>
                                                         <x-adminlte-select2 name="airline_id" igroup-size="md"
-                                                            data-placeholder="seleccionar naviera..." data-required="true" style="width:100%">
+                                                            data-placeholder="seleccionar naviera..." data-required="true"
+                                                            style="width:100%">
                                                             <option />
                                                             @foreach ($airlines as $airline)
                                                                 <option value="{{ $airline->id }}">
@@ -626,7 +627,8 @@
                                                     <div class="form-group">
                                                         <label for="shipping_company_id">Naviera</label>
                                                         <x-adminlte-select2 name="shipping_company_id" igroup-size="md"
-                                                            data-placeholder="seleccionar naviera..." data-required="true" style="width:100%">
+                                                            data-placeholder="seleccionar naviera..." data-required="true"
+                                                            style="width:100%">
                                                             <option />
                                                             @foreach ($shipping_companies as $shipping_company)
                                                                 <option value="{{ $shipping_company->id }}">
@@ -1083,8 +1085,12 @@
                         @if ($quote->commercial_quote->type_shipment->name === 'Marítima')
                             @if ($quote->commercial_quote->lcl_fcl === 'FCL')
                                 <tr>
-                                    <td><strong>Tipo de contenedor</strong></td>
-                                    {{-- <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }} --}}
+                                    <td><strong>Contenedor(s)</strong></td>
+                                    <td>
+                                        @foreach ($quote->commercial_quote->commercialQuoteContainers as $commercialContainer)
+                                            {{ $commercialContainer->container_quantity }} x
+                                            {{ $commercialContainer->container->name }} <br>
+                                        @endforeach
                                     </td>
                                 </tr>
                             @endif
@@ -1162,19 +1168,17 @@
                     </tr>
                     @if ($quote->commercial_quote->type_shipment->name === 'Marítima')
 
-                        <tr>
-                            <td><strong>Volumen</strong></td>
-                            <td>{{ $quote->cubage_kgv }} CBM</td>
-                        </tr>
-
                         @if ($quote->commercial_quote->lcl_fcl === 'FCL')
                             <tr>
-                                <td><strong>Tipo de contenedor</strong></td>
-                                {{--  <td>{{ $quote->commercial_quote->container_quantity }}x{{ $quote->commercial_quote->container->name }} --}}
+                                <td><strong>Contenedor(s)</strong></td>
+                                <td>
+                                    @foreach ($quote->commercial_quote->commercialQuoteContainers as $commercialContainer)
+                                        {{ $commercialContainer->container_quantity }} x
+                                        {{ $commercialContainer->container->name }} <br>
+                                    @endforeach
                                 </td>
                             </tr>
                         @endif
-
 
                     @endif
                     <tr>
@@ -1230,7 +1234,7 @@
     <script>
         let conceptsResponseFreightArray = [];
         let commissionsResponseFreightArray = [];
-         var stepper = new Stepper(document.querySelector('#stepperResponseFreight'));
+        var stepper = new Stepper(document.querySelector('#stepperResponseFreight'));
         //Obtenemos las comisiones para agregarlo a las respuestas
         const commissionsFromDB = @json($commissions) || [];
 

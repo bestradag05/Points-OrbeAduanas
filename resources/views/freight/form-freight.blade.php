@@ -314,6 +314,7 @@
                             'id': concept.id,
                             'name': concept.name,
                             'value': formatValue(concept.pivot.value_concept),
+                            'observation': concept.pivot.observation,
                             'hasIgv': concept.pivot.has_igv
                         });
 

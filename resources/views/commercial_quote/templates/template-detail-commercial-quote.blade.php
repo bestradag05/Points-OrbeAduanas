@@ -140,26 +140,25 @@
 
                             </div>
                         </div>
-                    @else
-                        <div class="col-12 border-bottom border-bottom-2">
-                            <div class="form-group row">
-                                <label class="col-sm-4 col-form-label">Peso : </label>
-                                <div class="col-sm-8">
-
-                                    <p class="form-control-plaintext">{{ $comercialQuote->weight }}
-                                        {{ $comercialQuote->unit_of_weight }}</p>
-                                </div>
-
-                            </div>
-                        </div>
                     @endif
+                    <div class="col-12 border-bottom border-bottom-2">
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Peso : </label>
+                            <div class="col-sm-8">
+
+                                <p class="form-control-plaintext">{{ $comercialQuote->weight }}
+                                    {{ $comercialQuote->unit_of_weight }}</p>
+                            </div>
+
+                        </div>
+                    </div>
                     <div class="col-12 border-bottom border-bottom-2">
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">Volumen : </label>
                             <div class="col-sm-8">
 
-                                <p class="form-control-plaintext">{{ $consolidated->volumen_kgv }}
-                                    {{ $consolidated->unit_of_volumen_kgv }}</p>
+                                <p class="form-control-plaintext">{{ $comercialQuote->volumen_kgv }}
+                                    {{ $comercialQuote->unit_of_volumen_kgv }}</p>
                             </div>
 
                         </div>
@@ -655,23 +654,6 @@
         </div>
 
     </div>
-
-
-    {{-- @if ($comercialQuote->typeService->count() > 0)
-        @if ($comercialQuote->state === 'Pendiente')
-            <div class="col-12">
-                <div class="row justify-content-center mt-5">
-                    <button class="btn btn-indigo mx-2 text-bold"
-                        onclick="handleActionCommercialQuote('accept', '{{ $comercialQuote->id }}')">ACEPTAR <i
-                            class="fas fa-check"></i></button>
-                    <button class="btn btn-secondary mx-2 text-bold"
-                        onclick="handleActionCommercialQuote('decline', '{{ $comercialQuote->id }}')">RECHAZAR <i
-                            class="fas fa-times"></i></button>
-                </div>
-            </div>
-        @endif
-
-    @endif --}}
 
     @if ($comercialQuote->typeService->count() > 0)
         <div class="col-12">

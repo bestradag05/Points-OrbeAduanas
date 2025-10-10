@@ -411,7 +411,7 @@
                                 <option />
                                 @foreach ($typeShipments as $typeShipment)
                                     <option value="{{ $typeShipment->id }}"
-                                        {{ $quote->commercial_quote->type_shipment->name === $typeShipment->name ? 'selected' : '' }}>
+                                        {{ $comercialQuote->type_shipment->name === $typeShipment->name ? 'selected' : '' }}>
                                         {{ $typeShipment->name }}
                                     </option>
                                 @endforeach

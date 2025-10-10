@@ -64,7 +64,8 @@
                             <!-- Tercer campo: Impuestos de Aduanas -->
                             <div class="col-6">
                                 <div class="form-group">
-                                    <label for="customs_taxes">Impuestos de Aduanas - <span class="text-muted text-sm"> (ADV. % + IGV 16% + IPM 2%) * VALOR CIF</span></label>
+                                    <label for="customs_taxes">Impuestos de Aduanas - <span class="text-muted text-sm">
+                                            (ADV. % + IGV 16% + IPM 2%) * VALOR CIF</span></label>
                                     <div class="input-group">
                                         <input type="text" class="form-control CurrencyInput" name="customs_taxes"
                                             placeholder="Ingrese valor de la carga" data-type="currency"
@@ -81,7 +82,8 @@
                             <!-- Cuarto campo: Percepción Aduanas -->
                             <div class="col-6">
                                 <div class="form-group">
-                                    <label for="customs_perception">Percepción Aduanas - <span class="text-muted text-sm">x% *( CIF+ IMPUESTOS DE ADUANAS)</span> </label>
+                                    <label for="customs_perception">Percepción Aduanas - <span
+                                            class="text-muted text-sm">x% *( CIF+ IMPUESTOS DE ADUANAS)</span> </label>
                                     <div class="input-group">
                                         <input type="text" class="form-control CurrencyInput"
                                             name="customs_perception" placeholder="Ingrese valor de la carga"
@@ -137,7 +139,7 @@
 
     <hr>
     <div id="formConceptsAduanas" class="formConcepts row">
-        <div class="col-4">
+        <div class="col-3">
 
             <label for="concept">Conceptos</label>
             <button class="btn btn-indigo btn-xs" type="button" onclick="openToModal('modalAddConcept')">
@@ -156,7 +158,7 @@
             </x-adminlte-select2>
 
         </div>
-        <div class="col-4">
+        <div class="col-3">
             <div class="form-group">
                 <label for="value_concept">Valor del concepto</label>
                 <div class="input-group">
@@ -172,7 +174,7 @@
 
         </div>
 
-        <div class="col-4">
+        <div class="col-3">
             <div class="form-group">
                 <label for="value_concept">Valor venta</label>
                 <div class="input-group">
@@ -184,6 +186,15 @@
                     <input type="text" class="form-control CurrencyInput " name="value_sale" data-type="currency"
                         placeholder="Ingrese valor venta" value="0">
                 </div>
+            </div>
+
+        </div>
+
+        <div class="col-3">
+            <div class="form-group">
+                <label for="observation">Observación</label>
+                <input type="text" class="form-control" id="observation" name="observation"
+                    placeholder="Ingrese una observacion">
             </div>
 
         </div>
@@ -201,6 +212,7 @@
                     <th>Concepto</th>
                     <th>Valor del concepto</th>
                     <th>Valor venta</th>
+                    <th>Observación</th>
                     <th>x</th>
                 </tr>
             </thead>
@@ -290,6 +302,7 @@
                     'name': concept.name,
                     'value': parseFloat(concept.pivot.value_concept).toFixed(2),
                     'value_sale': parseFloat(concept.pivot.value_sale).toFixed(2),
+                    'observation': concept.pivot.observation,
                 });
 
             });
@@ -517,11 +530,29 @@
                     }
 
 
+                    let celdaObservation = fila.insertCell(4);
+                    if (filteredConcepts.some(concept => concept.name === item.name)) {
+                        // Si el concepto ya está en filteredConcepts, haz que el campo observation sea editable
+                        let inputObservation = document.createElement('input');
+                        inputObservation.type = 'text';
+                        inputObservation.value = item.observation;
+                        inputObservation.classList.add('form-control');
+                        celdaObservation.appendChild(inputObservation);
+
+                        inputObservation.addEventListener('input', (e) => {
+                            // Actualiza la observación en `conceptsCustomArray`
+                            conceptsCustomArray[clave].observation = e.target.value;
+                        });
+                    } else {
+                        // Si el concepto no está en filteredConcepts, solo muestra el texto de la observación
+                        celdaObservation.textContent = item.observation;
+                    }
+
 
                     if (!filteredConcepts.some(concept => concept.name === item.name)) {
 
                         // Insertar un botón para eliminar la fila en la cuarta celda de la fila
-                        let celdaEliminar = fila.insertCell(4);
+                        let celdaEliminar = fila.insertCell(5);
                         let botonEliminar = document.createElement('a');
                         botonEliminar.href = '#';
                         botonEliminar.innerHTML = '<p class="text-danger">X</p>';

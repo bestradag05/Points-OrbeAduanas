@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\AdditionalPoints;
+use App\Models\CommercialQuote;
 use App\Models\ConceptCustoms;
 use App\Models\Concept;
 use App\Models\Custom;
@@ -103,6 +104,19 @@ class CustomService
     private function createOrUpdateCustoms($request, $id = null)
     {
         $custom = $id ? Custom::findOrFail($id) : new Custom();
+
+        $commercial = CommercialQuote::where('nro_quote_commercial', $request->nro_quote_commercial)->first();
+
+        $typeService = TypeService::where('name', 'Aduanas')->first();
+
+        if ($commercial && $typeService) {
+            if ($id) {
+               
+                $commercial->typeService()->syncWithoutDetaching([$typeService->id]);
+            } else {
+                $commercial->typeService()->attach($typeService->id);
+            }
+        }
 
         $custom->fill([
             'id_modality' => $request->modality,
