@@ -102,7 +102,6 @@ class CommercialQuoteService
         }
 
         $shippersConsolidated = json_decode($request->shippers_consolidated);
-
         //Registramos el cliente 
         if ($request->is_customer_prospect == 'prospect') {
             // Si es prospecto, creamos un nuevo cliente
@@ -120,6 +119,7 @@ class CommercialQuoteService
             // Si es cliente, simplemente usamos el ID del cliente desde el frontend
             $customerId = $request->id_customer; // El ID del cliente viene desde el frontend
         }
+
 
 
         if ($request->is_consolidated) {
@@ -165,12 +165,18 @@ class CommercialQuoteService
             }
         } else {
 
+
             //Si es exw, verificamos datos del proveedor y la direccion de recojo
 
-            $incoterm = Incoterms::findOrFail($request->id_incoterms);
+            $incoterm = null;  // Inicializar la variable para el incoterm
             $pickupAddressAtOrigin = null;
-            if (strtolower($incoterm->code) === 'exw') {
-               $pickupAddressAtOrigin = $request->pickup_address_at_origin;
+
+            if ($request->has('id_incoterms') && $request->id_incoterms) {
+                $incoterm = Incoterms::find($request->id_incoterms); // Usamos find() para evitar la excepción
+
+                if (strtolower($incoterm->code) === 'exw') {
+                    $pickupAddressAtOrigin = $request->pickup_address_at_origin;
+                }
             }
 
             //Verificamos si es Maritimo y si es FCL o LCL
@@ -226,6 +232,7 @@ class CommercialQuoteService
                     ]);
                 }
             } else {
+
 
                 $this->validateForm($request, null);
 

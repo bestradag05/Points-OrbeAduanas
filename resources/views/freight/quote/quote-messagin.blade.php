@@ -1439,8 +1439,7 @@
 
             //Verificamos que el C/W este marcado
             if (cw.is(':checked')) {
-
-                if (unit_of_weight === 'kg') {
+                if (quoteFreight.commercial_quote.type_shipment.name === 'Marítima' && unit_of_weight === 'kg') {
                     weight = weight / 1000;
                 }
 
@@ -1613,7 +1612,7 @@
                         let weight = parseFloat(@json($quote->weight)) || 0;
                         let unit_of_weight = @json($quote->unit_of_weight);
 
-                        if (unit_of_weight === 'kg') {
+                        if (quoteFreight.commercial_quote.type_shipment.name === 'Marítima' && unit_of_weight === 'kg') {
                             weight = weight / 1000;
                         }
 
@@ -1638,7 +1637,7 @@
                         let weight = parseFloat(@json($quote->weight)) || 0;
                         let unit_of_weight = @json($quote->unit_of_weight);
 
-                        if (unit_of_weight === 'kg') {
+                        if (quoteFreight.commercial_quote.type_shipment.name === 'Marítima' && unit_of_weight === 'kg') {
                             weight = weight / 1000;
                         }
 
