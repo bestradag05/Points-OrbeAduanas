@@ -490,6 +490,17 @@
 
                         </div>
                     </div>
+                    @if(strtolower($comercialQuote->incoterm->code) === 'exw' && !empty($comercialQuote->pickup_address_at_origin))
+                    <div class="col-12 border-bottom border-bottom-2">
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Dirección de recojo : </label>
+                            <div class="col-sm-8">
+                                <p class="form-control-plaintext">{{ $comercialQuote->pickup_address_at_origin }}</p>
+                            </div>
+
+                        </div>
+                    </div>
+                    @endif
                     <div class="col-12 border-bottom border-bottom-2">
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">Tipo de carga : </label>

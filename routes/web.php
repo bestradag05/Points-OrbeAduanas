@@ -151,6 +151,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/customer/data/{document_number}', [CustomerController::class, 'getDataForRuc']);
     Route::resource('customer', CustomerController::class);
     Route::resource('prospects', CustomerController::class);
+    Route::post('suppliers/async', [SupplierController::class, 'storeSuppliertAsync']);
     Route::resource('suppliers', SupplierController::class);
     Route::resource('type_shipment', TypeShipmentController::class);
     Route::resource('customs_districts', CustomDistrictController::class);

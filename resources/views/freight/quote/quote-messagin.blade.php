@@ -220,6 +220,16 @@
                         </p>
                     </div>
 
+                    @if (strtolower($quote->commercial_quote->incoterm->code) === 'exw' &&
+                            !empty($quote->commercial_quote->pickup_address_at_origin))
+                        <div class="col-12">
+                            <p class="text-sm">Dirección de recojo :
+                                <b class="d-block">{{ $quote->commercial_quote->pickup_address_at_origin }}</b>
+                            </p>
+                        </div>
+                    @endif
+
+
                     @if ($quote->commercial_quote->type_shipment->name === 'Marítima')
 
                         @if ($quote->commercial_quote->lcl_fcl === 'FCL')
@@ -539,7 +549,7 @@
                     <div class="modal-header">
                         <h5 class="modal-title text-uppercase text-indigo text-bold">Respuesta N°: {{ $nro_response }}
                         </h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <button type="button" class="close" onclick="closeToModal('modalResponseQuoteFreight')">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -574,6 +584,10 @@
 
                                             <div class="col-md-6">
                                                 <label for="id_supplier">Agente <span class="text-danger">*</span></label>
+                                                <button class="btn btn-indigo btn-xs" type="button"
+                                                    onclick="openModalGroup('modalResponseQuoteFreight', 'modalAddSupplierPricing')">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
                                                 <x-adminlte-select2 name="id_supplier" igroup-size="md"
                                                     data-placeholder="Buscar proveedor..." style="width:100%"
                                                     data-required="true">
@@ -720,7 +734,7 @@
                                             <div class="col-4">
                                                 <label for="concept"> Conceptos</label>
                                                 <button class="btn btn-indigo btn-xs" type="button"
-                                                    onclick="openModalConcept('modalResponseQuoteFreight', 'modalAddConcept')">
+                                                    onclick="openModalGroup('modalResponseQuoteFreight', 'modalAddConcept')">
                                                     <i class="fas fa-plus"></i>
                                                 </button>
                                                 :
@@ -944,7 +958,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary"
-                            onclick="closeToModalAddConcept('modalResponseQuoteFreight', 'modalAddConcept')">Cancelar</button>
+                            onclick="closeToModalGroup('modalResponseQuoteFreight', 'modalAddConcept')">Cancelar</button>
                         <button type="button" class="btn btn-primary" onclick="saveConceptToDatabase()">Guardar
                             Concepto</button>
                     </div>
@@ -970,7 +984,6 @@
             </div>
         </div>
     </div>
-
 
     {{-- Modal de justificacion --}}
 
@@ -1162,6 +1175,13 @@
                         <td><strong>Destino</strong></td>
                         <td>{{ $quote->destination }}</td>
                     </tr>
+                    @if (strtolower($quote->commercial_quote->incoterm->code) === 'exw' &&
+                            !empty($quote->commercial_quote->pickup_address_at_origin))
+                        <tr>
+                            <td><strong>Dirección de recojo</strong></td>
+                            <td>{{ $quote->commercial_quote->pickup_address_at_origin }}</td>
+                        </tr>
+                    @endif
                     <tr>
                         <td><strong>Producto</strong></td>
                         <td>{{ $quote->commodity }}</td>
@@ -1224,6 +1244,97 @@
         @endif
     </div>
 
+    {{-- Modal para agregar proveedor - Pricing --}}
+
+    <div id="modalAddSupplierPricing" class="modal fade" tabindex="-1" role="dialog"
+        aria-labelledby="modalAddSupplierPricingTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <form method="POST" id="formAddAgent">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAddSupplierPricingTitle">Agregar agente</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="name_businessname">Razón social / Nombre</label>
+                                    <input type="text" class="form-control" id="name_businessname"
+                                        name="name_businessname" placeholder="Ingrese la razón social o nombre">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="area_type">Tipo de proveedor</label>
+                                    <select name="area_type" id="area_type" @readonly(true)
+                                        class="form-control @error('area_type') is-invalid @enderror">
+                                        <option value="">Seleccione...</option>
+                                        <option value="comercial">
+                                            Comercial
+                                        </option>
+                                        <option value="transporte">
+                                            Transporte
+                                        </option>
+                                        <option value="pricing" selected>
+                                            Agente de Carga
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="address">Dirección</label>
+                                    <input type="text" class="form-control" name="address" id="address">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="contact_name">Nombre de Contacto</label>
+                                    <input type="text" class="form-control" name="contact_name" id="contact_name">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="contact_number">Teléfono</label>
+                                    <input type="text" class="form-control" name="contact_number"
+                                        id="contact_number">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="contact_email">Correo</label>
+                                    <input type="email" class="form-control" name="contact_email" id="contact_email">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="country">País</label>
+                                    <input type="text" name="country" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label for="city">Ciudad</label>
+                                    <input type="text" name="city" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary"
+                            onclick="closeToModalGroup('modalResponseQuoteFreight', 'modalAddSupplierPricing')">Cancelar</button>
+                        <button type="button" class="btn btn-primary" onclick="saveAgentToDatabase()">Guardar
+                            Agente</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 
 
@@ -1232,6 +1343,7 @@
 
 @push('scripts')
     <script>
+        let quoteFreight = @json($quote);
         let conceptsResponseFreightArray = [];
         let commissionsResponseFreightArray = [];
         var stepper = new Stepper(document.querySelector('#stepperResponseFreight'));
@@ -1258,18 +1370,20 @@
             updateTableRespnoseFreight(conceptsResponseFreightArray);
         });
 
-        function openModalConcept(firstModal, secondModal) {
+        function openModalGroup(firstModal, secondModal) {
             $(`#${firstModal}`).modal('hide');
-            $(`#${firstModal}`).on('hidden.bs.modal', function() {
+            setTimeout(() => {
                 $(`#${secondModal}`).modal('show');
-            });
+            }, 500);
+
         }
 
-        function closeToModalAddConcept(firstModal, secondModal) {
+        function closeToModalGroup(firstModal, secondModal) {
             $(`#${secondModal}`).modal('hide');
-            $(`#${secondModal}`).on('hidden.bs.modal', function() {
+            setTimeout(() => {
                 $(`#${firstModal}`).modal('show');
-            });
+            }, 500);
+
         }
 
         function openToModal(modalId) {
@@ -1314,8 +1428,10 @@
 
 
         function calculateFinalCost() {
-            let cubage_kgv = parseFloat(@json($quote->cubage_kgv)) || 0;
-            let ton_kilogram = parseFloat(@json($quote->ton_kilogram)) || 0;
+            let volumen_kgv = parseFloat(@json($quote->volumen_kgv)) || 0;
+            let unit_volumen_kgv = @json($quote->unit_of_volumen_kgv);
+            let weight = parseFloat(@json($quote->weight)) || 0;
+            let unit_of_weight = @json($quote->unit_of_weight);
             let unit_cost = parseFloat($('#unit_cost').val().replace(/,/g, '')) || 0;
             let cw = $('#fixed_miltiplyable_cost');
             let higherCost = 0;
@@ -1323,7 +1439,12 @@
 
             //Verificamos que el C/W este marcado
             if (cw.is(':checked')) {
-                higherCost = cubage_kgv > ton_kilogram ? cubage_kgv : ton_kilogram;
+
+                if (unit_of_weight === 'kg') {
+                    weight = weight / 1000;
+                }
+
+                higherCost = volumen_kgv > weight ? volumen_kgv : weight;
                 final_cost = unit_cost * higherCost;
             } else {
                 final_cost = unit_cost;
@@ -1351,7 +1472,7 @@
 
         function saveConceptToDatabase(data) {
 
-            if (validateModalAddConcept()) {
+            if (validateModalAdd('formAddConcept')) {
                 let data = $('#formAddConcept').find('input, select'); // Obtener los datos del formulario
 
                 // Enviar el concepto al backend (guardar en la base de datos)
@@ -1367,7 +1488,7 @@
 
                         toastr.success("Concepto agregado");
 
-                        closeToModalAddConcept('modalResponseQuoteFreight', 'modalAddConcept');
+                        closeToModalGroup('modalResponseQuoteFreight', 'modalAddConcept');
                         $('#formAddConcept #name').val('');
 
                     },
@@ -1382,17 +1503,56 @@
             }
         }
 
-        function validateModalAddConcept() {
+        function saveAgentToDatabase(data) {
+
+            if (validateModalAdd('formAddAgent')) {
+                let data = $('#formAddAgent').find('input, select'); // Obtener los datos del formulario
+
+                // Enviar el concepto al backend (guardar en la base de datos)
+                $.ajax({
+                    url: '/suppliers/async', // Reemplaza con la ruta de tu backend
+                    type: 'POST',
+                    data: data, // Enviar los datos del concepto
+                    success: function(response) {
+
+                        const newOption = new Option(response.name, response.id, true,
+                            true); // 'true' selecciona el concepto
+                        $('#id_supplier').append(newOption).trigger('change');
+
+                        toastr.success("Agente agregado");
+
+                        closeToModalGroup('modalResponseQuoteFreight', 'modalAddSupplierPricing');
+                        $('#formAddAgent').find('input').val('');
+
+                    },
+                    error: function(xhr, status, error) {
+                        if (xhr.status === 400) {
+                            toastr.error(xhr.responseJSON.error); // Mostrar el error retornado desde el backend
+                        } else {
+                            toastr.error("Error al guardar el concepto en la base de datos");
+                        }
+                    }
+                });
+            }
+        }
+
+
+        function validateModalAdd(formName) {
             let isValid = true; // Bandera para saber si todo es válido
-            const inputs = $('#formAddConcept').find('input, select'); // Obtener todos los inputs y selects
+            const inputs = $(`#${formName}`).find('input, select'); // Obtener todos los inputs y selects
+
             inputs.each(function() {
                 const input = $(this);
-                // Si el campo es obligatorio
-                if (input.val().trim() === '' || (input.is('select') && input.val() == null)) {
-                    input.addClass('is-invalid'); // Agregar clase para marcar como inválido
-                    isValid = false; // Si algún campo no es válido, marcar como false
-                } else {
-                    input.removeClass('is-invalid'); // Eliminar la clase de error si es válido
+
+                // Verificar si el campo no tiene el atributo data-required="false" y validar solo esos campos
+                if (input.attr('data-required') !== 'false') {
+                    // Si el campo es obligatorio
+                    if (input.val().trim() === '' || (input.is('select') && input.val() == null)) {
+                        input.addClass('is-invalid'); // Agregar clase para marcar como inválido
+                        isValid = false; // Si algún campo no es válido, marcar como false
+                    } else {
+                        input.removeClass('is-invalid'); // Eliminar la clase de error si es válido
+                    }
                 }
             });
 
@@ -1448,10 +1608,16 @@
                     finalCost = unitCost * exchangeRate;
 
                     if (data.fixed_miltiplyable_cost === "C/W") {
-                        let cubage_kgv = parseFloat(@json($quote->cubage_kgv)) || 0;
-                        let ton_kilogram = parseFloat(@json($quote->ton_kilogram)) || 0;
+                        let volumen_kgv = parseFloat(@json($quote->volumen_kgv)) || 0;
+                        let unit_volumen_kgv = @json($quote->unit_of_volumen_kgv);
+                        let weight = parseFloat(@json($quote->weight)) || 0;
+                        let unit_of_weight = @json($quote->unit_of_weight);
 
-                        let higherCost = cubage_kgv > ton_kilogram ? cubage_kgv : ton_kilogram;
+                        if (unit_of_weight === 'kg') {
+                            weight = weight / 1000;
+                        }
+
+                        let higherCost = volumen_kgv > weight ? volumen_kgv : weight;
                         finalCost = finalCost * higherCost;
 
                     }
@@ -1467,10 +1633,16 @@
                     finalCost = unitCost;
 
                     if (data.fixed_miltiplyable_cost === "C/W") {
-                        let cubage_kgv = parseFloat(@json($quote->cubage_kgv)) || 0;
-                        let ton_kilogram = parseFloat(@json($quote->ton_kilogram)) || 0;
+                        let volumen_kgv = parseFloat(@json($quote->volumen_kgv)) || 0;
+                        let unit_volumen_kgv = @json($quote->unit_of_volumen_kgv);
+                        let weight = parseFloat(@json($quote->weight)) || 0;
+                        let unit_of_weight = @json($quote->unit_of_weight);
 
-                        let higherCost = cubage_kgv > ton_kilogram ? cubage_kgv : ton_kilogram;
+                        if (unit_of_weight === 'kg') {
+                            weight = weight / 1000;
+                        }
+
+                        let higherCost = volumen_kgv > weight ? volumen_kgv : weight;
                         finalCost = finalCost * higherCost;
 
                     }

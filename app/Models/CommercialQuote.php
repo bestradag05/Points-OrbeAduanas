@@ -16,10 +16,6 @@ class CommercialQuote extends Model
         'nro_quote_commercial',
         'origin',
         'destination',
-        /*  'customer_company_name',
-        'contact',
-        'cellphone',
-        'email', */
         'load_value',
         'id_personal',
         'id_type_shipment',
@@ -38,14 +34,11 @@ class CommercialQuote extends Model
         'unit_of_weight',
         'volumen_kgv',
         'unit_of_volumen_kgv',
-        /* 'kilograms',
-        'volumen', */
         'pounds',
-        /* 'kilogram_volumen',
-        'tons', */
         'measures',
         'cif_value',
         'valid_until',
+        'pickup_address_at_origin',
         'services_to_quote',
         'state',
     ];

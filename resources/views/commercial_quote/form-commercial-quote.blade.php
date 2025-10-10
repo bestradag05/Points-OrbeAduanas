@@ -154,93 +154,34 @@
         </div>
 
         <div id="div_supplier_data" class="col-12 row transporte-hide d-none">
-
-            <div class="col-12 row justify-content-center align-items-center mt-3">
-                <div class="form-group text-indigo text-center">
-                    <label class="col-12">Proveedor</label>
-                    <div class="form-check form-check-inline">
-                        <input type="radio" id="supplierOldExw" name="isNewSupplier" value="No"
-                            class="form-check-input" onchange="toggleSupplierNewOldtSection()" checked>
-                        <label for="supplierOldExw" class="form-check-label">Registrado</label>
-                    </div>
-                    <div class="form-check form-check-inline mt-2">
-                        <input type="radio" id="supplierNewExw" name="isNewSupplier" value="Si"
-                            class="form-check-input" onchange="toggleSupplierNewOldtSection()">
-                        <label for="supplierNewExw" class="form-check-label">Nuevo</label>
-                    </div>
-                </div>
-            </div>
-
-            <div id="divSupplierOld" class="row col-12 justify-content-center">
-
-                <div class="col-6">
-                    <div class="form-group">
-                        <label for="id_supplier">Proveedor <span class="text-danger">*</span></label>
-
-                        <x-adminlte-select2 name="id_supplier" igroup-size="md"
-                            data-placeholder="Seleccione una opcion...">
-                            <option />
-                            @foreach ($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}"
-                                    {{ (isset($commercialQuote->id_supplier) && $commercialQuote->id_supplier == $supplier->id) || old('id_supplier') == $supplier->id ? 'selected' : '' }}>
-                                    {{ $supplier->name_businessname }} //   {{ $supplier->address }}
-                                </option>
-                            @endforeach
-                        </x-adminlte-select2>
-                        @error('id_supplier')
-                            <span class="invalid-feedback d-block" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-
-                    </div>
-                </div>
-
-            </div>
-
-            <div id="divSupplierNew" class="row d-none">
-                <div class="col-6">
-                    <div class="form-group">
-                        <label for="shipper_name">Proveedor:</label>
-                        <input id="shipper_name" class="form-control required" type="text" name="shipper_name">
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="form-group">
-                        <label for="shipper_contact">Contacto:</label>
-                        <input id="shipper_contact" class="form-control" type="text" name="shipper_contact">
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="form-group">
-                        <label for="shipper_contact_email">Correo de contacto:</label>
-                        <input id="shipper_contact_email" class="form-control" type="text"
-                            name="shipper_contact_email">
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="form-group">
-                        <label for="shipper_contact_phone">Nro de contacto:</label>
-                        <input id="shipper_contact_phone" class="form-control" type="text"
-                            name="shipper_contact_phone">
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="form-group">
-                        <label for="shipper_address">Direccion:</label>
-                        <input id="shipper_address" class="form-control required" type="text"
-                            name="shipper_address">
-                    </div>
-                </div>
-            </div>
-
             <div class="col-12">
                 <hr>
             </div>
+            <div class="col-12 my-4">
+                <p class="text-muted text-center mb-0">*Dirección de recojo para realizar el pickup en origen*</p>
+                <div class="form-group">
+                    <label for="pickup_address_at_origin">Direccion de recojo</label>
+                    <input type="text"
+                        class="form-control @error('pickup_address_at_origin') is-invalid @enderror "
+                        name="pickup_address_at_origin" id="pickup_address_at_origin"
+                        placeholder="Ingrese la dirección de recojo"
+                        value="{{ isset($routing->pickup_address_at_origin) ? $routing->pickup_address_at_origin : old('pickup_address_at_origin') }}">
 
+                    @error('pickup_address_at_origin')
+                        <span class="invalid-feedback d-block" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                    @enderror
+
+                </div>
+            </div>
+            <div class="col-12">
+                <hr>
+            </div>
         </div>
 
-        <div class="col-12 row justify-content-center align-items-center mt-3">
+
+        <div class="col-12 row justify-content-center align-items-center text-center mt-3">
             <div class="form-group text-indigo">
                 <label class="col-12">¿Es cliente o prospecto?</label>
                 <div class="form-check form-check-inline mt-2">
@@ -1047,21 +988,6 @@
             }
         }
 
-
-        function toggleSupplierNewOldtSection() {
-            let isNewSupplier = document.querySelector('input[name="isNewSupplier"]:checked').value;
-            if (isNewSupplier === "Si") {
-               
-                $("#divSupplierNew").removeClass("d-none");
-                $("#divSupplierOld").addClass("d-none");
-                $("#divSupplierNew").find('input').val("");
-
-            } else {
-                $("#divSupplierOld").removeClass("d-none");
-                $("#divSupplierNew").addClass("d-none");
-                $('#divSupplierOld').val('').trigger('change');
-            }
-        }
 
         function showItemConsolidated() {
             $('#modal-consolidated').modal('show');

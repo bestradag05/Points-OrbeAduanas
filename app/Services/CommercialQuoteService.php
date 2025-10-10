@@ -96,7 +96,6 @@ class CommercialQuoteService
 
     public function storeCommercialQuote($request)
     {
-        
         $typeService = [];
         if ($request->has('type_service_checked')) {
             $typeService = json_decode($request->type_service_checked, true);
@@ -169,23 +168,9 @@ class CommercialQuoteService
             //Si es exw, verificamos datos del proveedor y la direccion de recojo
 
             $incoterm = Incoterms::findOrFail($request->id_incoterms);
-
+            $pickupAddressAtOrigin = null;
             if (strtolower($incoterm->code) === 'exw') {
-                if ($request->isNewSupplier === 'Si') {
-
-                    $supplier = Supplier::create([
-                        'name_businessname' => $request->shipper_name,
-                        'contact_name' => $request->shipper_contact,
-                        'contact_number' => $request->shipper_contact_phone,
-                        'contact_email' => $request->shipper_contact_email,
-                        'address' => $request->shipper_address,
-                        'state' => 'Activo',
-
-                    ]);
-                    $supplierId = $supplier->id;
-                } else {
-                    $supplierId = $request->id_supplier;
-                }
+               $pickupAddressAtOrigin = $request->pickup_address_at_origin;
             }
 
             //Verificamos si es Maritimo y si es FCL o LCL
@@ -208,7 +193,6 @@ class CommercialQuoteService
                     'id_incoterms' => $request->id_incoterms,
                     'id_containers' =>  $request->id_containers_consolidated,
                     'id_customer' => $request->is_customer_prospect == 'prospect' ? $customer->id : $customerId, // Usamos el ID dependiendo de si es prospecto o cliente
-                    'id_supplier' => $supplierId ?? null,
                     'container_quantity' => $request->container_quantity_consolidated,
                     'lcl_fcl' => $request->lcl_fcl,
                     'is_consolidated' => $request->is_consolidated,
@@ -220,8 +204,8 @@ class CommercialQuoteService
                     'pounds' => $this->parseDouble($request->pounds),
                     'nro_operation' => $request->nro_operation,
                     'valid_until' => now()->format('Y-m-d'),
+                    'pickup_address_at_origin' => $pickupAddressAtOrigin,
                     'services_to_quote' => $typeService,
-                    'exw_pickup_address' => $request->exw_pickup_address,
                     'id_personal' => auth()->user()->personal->id,
                 ]);
 
@@ -261,7 +245,6 @@ class CommercialQuoteService
                     'id_containers' => $request->id_containers,
                     'container_quantity' => $request->container_quantity,
                     'id_customer' => $request->is_customer_prospect == 'prospect' ? $customer->id : $customerId, // Usamos el ID dependiendo de si es prospecto o cliente
-                    'id_supplier' => $supplierId ?? null,
                     'weight' => $this->parseDouble($request->weight),
                     'unit_of_weight' => $request->unit_of_weight,
                     'volumen_kgv' => $this->parseDouble($request->volumen_kgv),
@@ -272,8 +255,8 @@ class CommercialQuoteService
                     'pounds' => $this->parseDouble($request->pounds),
                     'nro_operation' => $request->nro_operation,
                     'valid_until' => now()->format('Y-m-d'),
+                    'pickup_address_at_origin' => $pickupAddressAtOrigin,
                     'services_to_quote' => $typeService,
-                    'exw_pickup_address' => $request->exw_pickup_address,
                     'id_personal' => auth()->user()->personal->id,
                 ]);
             }

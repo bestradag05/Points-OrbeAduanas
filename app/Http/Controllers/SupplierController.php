@@ -120,6 +120,60 @@ class SupplierController extends Controller
         return redirect('suppliers')->with('success', 'Proveedor registrado exitosamente.');
     }
 
+    public function storeSuppliertAsync(Request $request)
+    {
+        // Obtener el usuario autenticado
+        $user = Auth::user();
+
+        // Determinar el área automáticamente por el rol
+        $area = null;
+        if ($user->hasRole('Transporte')) {
+            $area = 'transporte';
+        } elseif ($user->hasRole('Comercial')) {
+            $area = 'comercial';
+        } elseif ($user->hasRole('Pricing')) {
+            $area = 'pricing';
+        } elseif ($user->hasRole('Super-Admin')) {
+            // Si quieres permitirle al Super-Admin elegir manualmente
+            $area = $request->area_type ?? null;
+        }
+
+        // Validación (puedes extraerla a un método aparte si gustas)
+        $this->validateForm($request, null);
+
+        $existingSupplier = Supplier::where('name_businessname', $request->name_businessname)->first();
+
+        if ($existingSupplier) {
+            // Si el concepto ya existe, retornar un error
+            return response()->json(['error' => 'Este agente ya se encuentra registrado.'], 400);
+        }
+
+
+        // Registro del proveedor con área autoasignada
+        $supplier = Supplier::create([
+            'name_businessname' => $request->name_businessname,
+            'area_type'         => $area,
+            'provider_type'     => $request->provider_type,
+            'address'           => $request->address,
+            'contact_name'      => $request->contact_name,
+            'contact_number'    => $request->contact_number,
+            'contact_email'     => $request->contact_email,
+            'document_number'   => $request->document_number,
+            'document_type'     => $request->document_type,
+            'cargo_type'        => $request->cargo_type,
+            'unit'              => $request->unit,
+            'country'           => $request->country,
+            'city'              => $request->city,
+            'state'             => 'Activo',
+        ]);
+
+        // Redirigir a la lista de conceptos
+        return response()->json([
+            'id' => $supplier->id,
+            'name' => $supplier->name_businessname,
+        ], 201);
+    }
+
     /**
      * Display the specified resource.
      */

@@ -46,6 +46,7 @@ return new class extends Migration
             $table->text('measures')->nullable();
             $table->decimal('cif_value', 8 , 2)->nullable();
             $table->date('valid_until')->nullable();
+            $table->string('pickup_address_at_origin')->nullable();
             $table->json('services_to_quote')->nullable();
             $table->enum('state', ['Pendiente', 'Inactivo', 'Aceptado', 'Rechazado', 'Sin respuesta'])->default('Pendiente');
             $table->timestamps();
