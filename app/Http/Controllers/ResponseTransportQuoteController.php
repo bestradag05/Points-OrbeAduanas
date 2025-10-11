@@ -8,7 +8,10 @@ use App\Models\ConceptsQuoteTransport;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use App\Models\QuoteTransport;
 use App\Models\Concept;
+use App\Notifications\NotifyQuoteTransport;
+use App\Notifications\NotifyQuoteTransportResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ResponseTransportQuoteController extends Controller
 {
@@ -32,9 +35,9 @@ class ResponseTransportQuoteController extends Controller
     public function show(string $id)
     {
         $response = ResponseTransportQuote::with([
-            'supplier',                 
-            'quoteTransport',                    
-            'conceptResponseTransports.concept', 
+            'supplier',
+            'quoteTransport',
+            'conceptResponseTransports.concept',
         ])->findOrFail($id);
 
         $pdf = FacadePdf::loadView('transport.pdf.responseTransport', compact('response'));
@@ -132,9 +135,29 @@ class ResponseTransportQuoteController extends Controller
             'total_prices_usd' => $sumSalePrice,
         ]);
 
+        //Notificamos que se agrego la respuesta para el usuario
+        $emailErrorOccurred = false;
+        try {
+            $userNotify = $resp->quoteTransport->commercial_quote->personal->user;
+            $userNotify->notify(new NotifyQuoteTransportResponse($resp, "Tienes una respuesta para la cotización {$resp->quoteTransport->nro_quote}"));
+        } catch (\Exception $e) {
+            if (strpos($e->getMessage(), '550 5.1.1') !== false) {
+                // Error específico de correo no válido (550 5.1.1)
+                $emailErrorOccurred = true;
+                Log::error("Correo no válido para {$userNotify->email}: " . $e->getMessage());
+            } else {
+                // Otro tipo de error, no relacionado con correo no válido
+                Log::error("Error al enviar correo a {$userNotify->email}: " . $e->getMessage());
+            }
+        }
+
+        if ($emailErrorOccurred) {
+            return back()->with('warning', 'No se pudo notificar al usuario por correo electrónico, ya que no se encontró la dirección de correo.');
+        }
+
         // 7) Redirección de vuelta
         return redirect()
-            ->route('transport.show', $quoteId)
+            ->route('quote.transport.show', $quoteId)
             ->with('success', 'Cotización de transporte registrada.');
     }
 

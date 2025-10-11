@@ -6,11 +6,13 @@ use App\Models\Concept;
 use App\Models\QuoteFreight;
 use App\Models\ResponseFreightQuotes;
 use App\Models\TypeInsurance;
+use App\Notifications\NotifyQuoteFreightResponse;
 use App\Services\FreightService;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Barryvdh\DomPDF\PDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class ResponseFreightQuotesController extends Controller
@@ -47,10 +49,10 @@ class ResponseFreightQuotesController extends Controller
     public function store(Request $request, String $id)
     {
         $this->validateForm($request, null);
-        
+
         $concepts = json_decode($request->input('concepts'), true);
         $commissions = json_decode($request->input('commissions'), true);
-     
+
         $quoteFreight = QuoteFreight::findOrFail($id)->first();
 
         $fecha = Carbon::createFromFormat('d/m/Y', $request->valid_until)->format('Y-m-d');
@@ -79,8 +81,7 @@ class ResponseFreightQuotesController extends Controller
             $has_igv = false;
             $igv = 0;
 
-            if($item['hasIgv'] === "on")
-            {
+            if ($item['hasIgv'] === "on") {
                 $igv = $item['final_cost'] - $item['unit_cost'];
                 $has_igv = true;
             }
@@ -103,6 +104,27 @@ class ResponseFreightQuotesController extends Controller
             ]);
         }
 
+        //Notificamos que se agrego la respuesta para el usuario
+        $emailErrorOccurred = false;
+        try {
+            $userNotify = $response->quote->commercial_quote->personal->user;
+            $userNotify->notify(new NotifyQuoteFreightResponse($response, "Tienes una respuesta para la cotización {$response->quote->nro_quote}"));
+        } catch (\Exception $e) {
+            if (strpos($e->getMessage(), '550 5.1.1') !== false) {
+                // Error específico de correo no válido (550 5.1.1)
+                $emailErrorOccurred = true;
+                Log::error("Correo no válido para {$userNotify->email}: " . $e->getMessage());
+            } else {
+                // Otro tipo de error, no relacionado con correo no válido
+                Log::error("Error al enviar correo a {$userNotify->email}: " . $e->getMessage());
+            }
+        }
+
+        if ($emailErrorOccurred) {
+            return back()->with('warning', 'No se pudo notificar al usuario por correo electrónico, ya que no se encontró la dirección de correo.');
+        }
+
+
         return redirect()->route('quote.freight.show', $id)
             ->with('success', 'Respuesta registrada con éxito.');
     }
@@ -120,11 +142,11 @@ class ResponseFreightQuotesController extends Controller
         $response = ResponseFreightQuotes::with('quote.commercial_quote')->findOrFail($id);
 
 
-          //Generar el pdf de respuesta: 
+        //Generar el pdf de respuesta: 
 
         $pdf = FacadePdf::loadView('freight.pdf.responseFreight', compact('response'));
 
-         return $pdf->stream('Respuesta.pdf'); 
+        return $pdf->stream('Respuesta.pdf');
     }
 
 
@@ -136,7 +158,7 @@ class ResponseFreightQuotesController extends Controller
         $response->status = 'Aceptado';
         $response->save();
 
-         if ($justification) {
+        if ($justification) {
             $response->registerJustification($response, $response->status, $justification);
         }
 
@@ -150,7 +172,7 @@ class ResponseFreightQuotesController extends Controller
 
         //Obtener los conceptos con IGV si es que los tiene
 
-        $conceptsWithIgv = $response->concepts->filter(function($concept) {
+        $conceptsWithIgv = $response->concepts->filter(function ($concept) {
             return $concept->pivot->has_igv === 1;
         });
 

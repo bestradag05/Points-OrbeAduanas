@@ -7,19 +7,20 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NotifyQuoteFreight extends Notification
+class NotifyQuoteTransport extends Notification
 {
     use Queueable;
 
-    protected $quoteFreight;
+
+    protected $quoteTransport;
     protected $message;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($quoteFreight, $message)
+    public function __construct($quoteTransport, $message)
     {
-        $this->quoteFreight = $quoteFreight;
+        $this->quoteTransport = $quoteTransport;
         $this->message = $message;
     }
 
@@ -38,34 +39,35 @@ class NotifyQuoteFreight extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $commercialQuote = $this->quoteFreight->commercial_quote;
-        $regime = $commercialQuote->regime->description;
-        $origin = $commercialQuote->originState->country->name . '  ' . $commercialQuote->originState->name;
-        $destination =  $commercialQuote->destinationState->country->name . '  ' . $commercialQuote->destinationState->name;
-        $incoterm = $commercialQuote->incoterm->code;
+        $commercialQuote = $this->quoteTransport->commercial_quote;
+        $lcl_fcl = $commercialQuote->lcl_fcl;
+        $pickup = $this->quoteTransport->pick_up ? $this->quoteTransport->pick_up : $this->quoteTransport->pickupWarehouse->name_businessname;
+        $delivery = $this->quoteTransport->delivery ? $this->quoteTransport->delivery : $this->quoteTransport->deliveryWarehouse->name_businessname;
         $personalName = $commercialQuote->personal->names . ' ' . $commercialQuote->personal->last_name;
 
-        $subjet = 'Cotización '.$regime.' // '. $origin. ' - ' .$destination.' // '. $incoterm .' // '. $personalName;
+        $subjet = 'Cotización Transporte'. ' // '. $lcl_fcl. ' // ' . $pickup . ' - ' . $delivery . ' // ' . $personalName;
         $subjet = mb_strtoupper($subjet, 'UTF-8');
-        
+
         return (new MailMessage)
             ->subject(strtoupper($subjet)) // Asunto del correo
-            ->greeting('Hola ' . $notifiable->personal->names . ' ' . $notifiable->personal->last_name ) // Saludo
+            ->greeting('Hola ' . $notifiable->personal->names . ' ' . $notifiable->personal->last_name) // Saludo
             ->line($this->message) // Mensaje que se pasa a la notificación
-            ->action('Ver cotización', route('quote.freight.show', $this->quoteFreight->id)) // Enlace al detalle de la cotización
+            ->action('Ver cotización', route('quote.transport.show', $this->quoteTransport->id)) // Enlace al detalle de la cotización
             ->line('Gracias por utilizar nuestro sistema de cotizaciones.'); // Mensaje final
     }
+
 
     public function toDatabase(object $notifiable): array
     {
         return [
-            'quote_freight_id' => $this->quoteFreight->id,
+            'quote_transport_id' => $this->quoteTransport->id,
             'message' => $this->message,
-            'route' => route('quote.freight.show', $this->quoteFreight->id),
+            'route' => route('quote.transport.show', $this->quoteTransport->id),
             'oring_user' => auth()->user()->id,
-            'type' => 'freight'
+            'type' => 'transport'
         ];
     }
+
 
     /**
      * Get the array representation of the notification.

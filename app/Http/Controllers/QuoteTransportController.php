@@ -17,9 +17,12 @@ use App\Models\QuoteTrace;
 use App\Models\Supplier;
 use App\Models\Routing;
 use App\Models\TypeShipment;
+use App\Models\User;
+use App\Notifications\NotifyQuoteTransport;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\Mailer\Transport\Transports;
@@ -286,8 +289,47 @@ class QuoteTransportController extends Controller
     public function sendInfoAndNotifyTransport($id)
     {
         $quote = QuoteTransport::with('commercial_quote.personal.user')->findOrFail($id);
-        
+
+
+        $transporteUsers = collect(); // Usamos una colección vacía como valor predeterminado
+
+        try {
+            // Obtener los usuarios con el rol 'Transporte'
+            $transporteUsers = User::role('Transporte')->get();
+        } catch (\Exception $e) {
+            // Si ocurre un error al consultar los usuarios, registramos el error
+            Log::error("Error al obtener usuarios con el rol 'Transporte': " . $e->getMessage());
+        }
+
+        // Verificar si no se encontraron usuarios con el rol 'Transporte'
+        if ($transporteUsers->isEmpty()) {
+            return back()->with('warning', 'No se encontraron usuarios con el rol "Transporte" para enviar la cotización. Por favor, comuníquese con el administrador.');
+        }
+
         $quote->update(['state' => 'Enviado']);
+
+        $emailErrorOccurred = false;
+        foreach ($transporteUsers as $user) {
+            try {
+                // Intentar notificar al usuario
+                $user->notify(new NotifyQuoteTransport($quote, "Tienes una nueva cotización pendiente {$quote->nro_quote}"));
+            } catch (\Exception $e) {
+                if (strpos($e->getMessage(), '550 5.1.1') !== false) {
+                    // Error específico de correo no válido (550 5.1.1)
+                    $emailErrorOccurred = true;
+                    Log::error("Correo no válido para {$user->email}: " . $e->getMessage());
+                } else {
+                    // Otro tipo de error, no relacionado con correo no válido
+                    Log::error("Error al enviar correo a {$user->email}: " . $e->getMessage());
+                }
+            }
+        }
+
+        // Redirigir y mostrar el mensaje
+        if ($emailErrorOccurred) {
+            return back()->with('warning', 'No se pudo notificar al usuario por correo electrónico, ya que no se encontró la dirección de correo.');
+        }
+
 
         return back()->with('success', 'Informacion Enviada.');
     }
@@ -369,7 +411,7 @@ class QuoteTransportController extends Controller
             $quote->transportConcepts()->attach($item['id']);
         }
 
-    
+
         return redirect('/quote/transport/' . $quote->id);
     }
 
@@ -593,7 +635,7 @@ class QuoteTransportController extends Controller
         $quote->transportConcepts()->sync($ids);
 
         return redirect()
-            ->route('transport.show', $quote->id)
+            ->route('quote.transport.show', $quote->id)
             ->with([
                 'open_modal_accept_justification' => true,
                 'response_id' => $response->id,

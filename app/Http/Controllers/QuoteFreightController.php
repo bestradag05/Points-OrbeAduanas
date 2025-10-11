@@ -13,11 +13,13 @@ use App\Models\ShippingCompany;
 use App\Models\Supplier;
 use App\Models\TypeService;
 use App\Models\TypeShipment;
+use App\Models\User;
 use App\Notifications\Notify;
 use App\Notifications\NotifyQuoteFreight;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -29,8 +31,8 @@ class QuoteFreightController extends Controller
     public function index()
     {
         $quotes = QuoteFreight::with('commercial_quote')
-        ->whereNot('state', 'Pendiente')
-        ->get();
+            ->whereNot('state', 'Pendiente')
+            ->get();
 
         $heads = [
             '#',
@@ -125,41 +127,51 @@ class QuoteFreightController extends Controller
         return redirect('/quote/freight/' . $quote->id);
     }
 
-    //TODO: Eliminar, ya no se usara
-    /* public function acceptQuoteFreight(Request $request, $id)
-    {
-
-        $quote = QuoteFreight::findOrFail($id);
-
-        $ocean_freight = $this->parseDouble($request->ocean_freight);
-        $utility = $this->parseDouble($request->utility);
-        $operations_commission = $this->parseDouble($request->operations_commission);
-        $pricing_commission = $this->parseDouble($request->pricing_commission);
-        $total_ocean_freight = $ocean_freight + $utility + $operations_commission +  $pricing_commission;
-
-
-        $quote->update([
-            'ocean_freight' => $ocean_freight,
-            'utility' => $utility,
-            'operations_commission' =>   $operations_commission,
-            'pricing_commission' =>  $pricing_commission,
-            'total_ocean_freight' => $total_ocean_freight,
-            'state' => 'Aceptado'
-        ]);
-
-        return redirect('/freight/create/' . $quote->id);
-    } */
 
     public function sendInfoAndNotifyPricing($id)
     {
         //Debemos buscar al usuario que se notificara 
 
         $quote = QuoteFreight::with('commercial_quote.personal.user')->findOrFail($id);
-        $user = $quote->commercial_quote->personal->user;
 
-        $user->notify(new NotifyQuoteFreight($quote, "Tiene una nueva cotización con el codigo {$quote->nro_quote}"));
+        $pricingUsers = collect();
+
+        try {
+
+            $pricingUsers = User::role('Pricing')->get();
+        } catch (\Exception $e) {
+
+            Log::error("Error al obtener usuarios con el rol 'Pricing': " . $e->getMessage());
+        }
+
+        if ($pricingUsers->isEmpty()) {
+            return back()->with('warning', 'No se encontraron usuarios con el rol "Transporte" para enviar la cotización. Por favor, comuníquese con el administrador.');
+        }
 
         $quote->update(['state' => 'Enviado']);
+
+        $emailErrorOccurred = false;
+        foreach ($pricingUsers as $user) {
+            try {
+                // Intentar notificar al usuario
+                $user->notify(new NotifyQuoteFreight($quote, "Tienes una nueva cotización pendiente {$quote->nro_quote}"));
+            } catch (\Exception $e) {
+                if (strpos($e->getMessage(), '550 5.1.1') !== false) {
+                    // Error específico de correo no válido (550 5.1.1)
+                    $emailErrorOccurred = true;
+                    Log::error("Correo no válido para {$user->email}: " . $e->getMessage());
+                } else {
+                    // Otro tipo de error, no relacionado con correo no válido
+                    Log::error("Error al enviar correo a {$user->email}: " . $e->getMessage());
+                }
+            }
+        }
+
+        // Redirigir y mostrar el mensaje
+        if ($emailErrorOccurred) {
+            return back()->with('warning', 'No se pudo notificar al usuario por correo electrónico, ya que no se encontró la dirección de correo.');
+        }
+
 
         return back()->with('success', 'Informacion Enviada.');
     }
