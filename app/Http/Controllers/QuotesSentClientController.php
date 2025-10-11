@@ -73,7 +73,6 @@ class QuotesSentClientController extends Controller
     public function generatePDF($id)
     {
         $quoteSentClient = QuotesSentClient::findOrFail($id);
-
         $personal = $quoteSentClient->personal;
 
 

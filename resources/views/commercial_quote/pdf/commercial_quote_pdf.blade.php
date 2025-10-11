@@ -312,12 +312,21 @@
                             <td class="title-item-table">Tipo de carga</td>
                             <td class="text-item-table">{{ $quoteSentClient->type_load->name }}</td>
                         </tr>
-                        <tr>
-                            <td class="title-item-table">Contenedores</td>
-                            <td class="text-item-table">
-                                {{ $quoteSentClient->nro_package }}
-                            </td>
-                        </tr>
+                        @if ($quoteSentClient->type_shipment->name === 'Marítima')
+                            @if ($quoteSentClient->lcl_fcl === 'FCL')
+                                <tr>
+                                    <td class="title-item-table">Contenedor(es)</td>
+                                    <td class="text-item-table">
+                                        @foreach ($quoteSentClient->commercialQuote->containers as $containers)
+                                            {{ $containers->pivot->container_quantity }} x {{ $containers->name }}
+                                            @if (!$loop->last)
+                                                //
+                                            @endif
+                                        @endforeach
+                                    </td>
+                                </tr>
+                            @endif
+                        @endif
 
                         <tr>
                             <td class="title-item-table">Bultos</td>
@@ -374,12 +383,13 @@
                             <td class="title-item-table">Tipo de carga</td>
                             <td class="text-item-table">{{ $quoteSentClient->type_load->name }}</td>
                         </tr>
+
                         @if ($quoteSentClient->type_shipment->name === 'Marítima')
                             @if ($quoteSentClient->lcl_fcl === 'FCL')
                                 <tr>
-                                    <td class="title-item-table">Contenedores</td>
+                                    <td class="title-item-table">Contenedor(es)</td>
                                     <td class="text-item-table">
-                                        @foreach ($quoteSentClient->containers as $containers)
+                                        @foreach ($quoteSentClient->commercialQuote->containers as $containers)
                                             {{ $containers->pivot->container_quantity }} x {{ $containers->name }}
                                             @if (!$loop->last)
                                                 //
@@ -406,11 +416,11 @@
                         </tr>
                         <tr>
                             <td class="title-item-table">Valor de factura</td>
-                            <td class="text-item-table">{{ $quoteSentClient->load_value }}</td>
+                            <td class="text-item-table">$ {{  number_format($quoteSentClient->load_value, 2) }}</td>
                         </tr>
                         <tr>
                             <td class="title-item-table">Valor CIF</td>
-                            <td class="text-item-table">{{ $quoteSentClient->cif_value }}</td>
+                            <td class="text-item-table">$ {{ number_format($quoteSentClient->cif_value, 2) }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -556,13 +566,15 @@
                 <tbody>
                     <tr>
                         <td>IMPUESTOS DE ADUANAS </td>
-                        <td>(ADV. {{$quoteSentClient->commercialQuote->custom->advalorem_percentage}}% + IGV 16% + IPM 2%) X VALOR CIF</td>
-                        <td>$ {{ $quoteSentClient->customs_taxes }}</td>
+                        <td>(ADV. {{ $quoteSentClient->commercialQuote->custom->advalorem_percentage }}% + IGV 16% +
+                            IPM 2%) X VALOR CIF</td>
+                        <td>$ {{ number_format($quoteSentClient->customs_taxes, 2) }}</td>
                     </tr>
                     <tr>
                         <td>PERCEPCIÓN ADUANAS </td>
-                        <td>{{$quoteSentClient->commercialQuote->custom->perception_percentage}}% X ( CIF+ IMPUESTOS DE ADUANAS)</td>
-                        <td>$ {{ $quoteSentClient->customs_perception }}</td>
+                        <td>{{ $quoteSentClient->commercialQuote->custom->perception_percentage }}% X ( CIF+ IMPUESTOS
+                            DE ADUANAS)</td>
+                        <td>$ {{ number_format($quoteSentClient->customs_perception, 2) }}</td>
                     </tr>
 
                     <tr>
@@ -571,6 +583,7 @@
                                 * Total impuestos:
                             </div>
                         </td>
+                        
                         <td class="total-service" style=" padding: 0; margin: 0;"> $
                             {{ number_format($quoteSentClient->customs_taxes + $quoteSentClient->customs_perception, 2) }}
                         </td>
@@ -593,7 +606,7 @@
 
                             <td id="observation"> {{ $concept->pivot->observation }} </td>
 
-                            <td> $ {{ $concept->pivot->concept_value }}</td>
+                            <td> $ {{ number_format($concept->pivot->concept_value, 2) }}</td>
                         </tr>
                     @endforeach
 
