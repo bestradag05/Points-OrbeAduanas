@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('document_number')->unique()->nullable();
             $table->string('name_businessname')->nullable();
             $table->string('address')->nullable();
-            $table->string('contact_name');
+            $table->string('contact_name')->nullable();
             $table->string('contact_number')->nullable();
             $table->string('contact_email')->nullable();
             $table->string('state');

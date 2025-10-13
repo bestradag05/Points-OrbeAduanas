@@ -39,6 +39,7 @@ class QuoteTransportController extends Controller
             ->whereNot('state', 'Pendiente')
             ->get();
 
+        $this->authorize('viewAny', QuoteTransport::class);
 
         $heads = [
             '#',
@@ -78,7 +79,6 @@ class QuoteTransportController extends Controller
                 ->with('routing', 'customer')
                 ->get();
         }
-
 
         $heads = [
             '#',
@@ -234,7 +234,6 @@ class QuoteTransportController extends Controller
      */
     public function show(string $id)
     {
-
         // 1) Carga la cotización con relaciones necesarias
         $quote = QuoteTransport::with([
             'messages.sender.personal',
@@ -244,9 +243,11 @@ class QuoteTransportController extends Controller
             'response',
         ])->findOrFail($id);
 
+        $this->authorize('view', $quote);
+
         if (in_array($quote->state, ['Anulado', 'Rechazado'])) {
             return redirect()
-                ->route('quote.transport.personal')
+                ->back()
                 ->with('warning', "La cotización {$quote->nro_quote} está {$quote->state}. No es posible ver el detalle.");
         }
 

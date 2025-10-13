@@ -34,6 +34,9 @@ class QuoteFreightController extends Controller
             ->whereNot('state', 'Pendiente')
             ->get();
 
+
+        $this->authorize('viewAny', QuoteFreight::class);
+
         $heads = [
             '#',
             'N° cotizacion',
@@ -215,8 +218,10 @@ class QuoteFreightController extends Controller
     public function show(string $id)
     {
         $quote = QuoteFreight::with(['responses.commissions', 'commercial_quote.commercialQuoteContainers.packingType'])->findOrFail($id);
-        $suppliers = Supplier::where('area_type', 'pricing')->get();
 
+        $this->authorize('view', $quote);
+
+        $suppliers = Supplier::where('area_type', 'pricing')->get();
         $concepts = Concept::all();
         $currencies = Currency::all();
         $airlines = Airline::all();

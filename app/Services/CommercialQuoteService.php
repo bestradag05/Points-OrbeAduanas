@@ -104,12 +104,13 @@ class CommercialQuoteService
         $shippersConsolidated = json_decode($request->shippers_consolidated);
         //Registramos el cliente 
         if ($request->is_customer_prospect == 'prospect') {
+            $this->validateCustomerForm($request, null);
+
             // Si es prospecto, creamos un nuevo cliente
             $customer = Customer::create([
                 'name_businessname' => $request->customer_company_name,
-                'address' => $request->contact,
-                'contact_name' => $request->cellphone,
-                'contact_number' => $request->email,
+                'contact_name' => $request->contact,
+                'contact_number' => $request->cellphone,
                 'contact_email' => $request->email,
                 'state' => 'Activo', // o el estado que consideres para prospectos
                 'type' => 'prospecto', // Tipo prospecto
@@ -884,12 +885,6 @@ class CommercialQuoteService
                 'lcl_fcl' => 'required_if:type_shipment_name,Marítima',
                 'observation' => 'nullable',
 
-                // Validación condicional
-                'id_customer' => 'required_if:is_customer_prospect,customer',
-                'customer_company_name' => 'required_if:is_customer_prospect,prospect',
-                'contact' => 'required_if:is_customer_prospect,prospect',
-                'cellphone' => 'required_if:is_customer_prospect,prospect',
-                'email' => 'required_if:is_customer_prospect,prospect',
             ]);
         } else {
 
@@ -908,15 +903,18 @@ class CommercialQuoteService
                 'unit_of_volumen_kgv' => 'required',
                 'lcl_fcl' => 'required_if:type_shipment_name,Marítima',
                 'observation' => 'nullable',
-
-                // Validación condicional
-                'id_customer' => 'required_if:is_customer_prospect,customer',
-                'customer_company_name' => 'required_if:is_customer_prospect,prospect',
-                'contact' => 'required_if:is_customer_prospect,prospect',
-                'cellphone' => 'required_if:is_customer_prospect,prospect',
-                'email' => 'required_if:is_customer_prospect,prospect',
+                'pickup_address_at_origin' => $isExw ? 'required|string|min:5' : 'nullable',
             ]);
         }
+    }
+
+    public function validateCustomerForm($request, $id)
+    {
+        $request->validate([
+            // Validación condicional
+            'id_customer' => 'required_if:is_customer_prospect,customer',
+            'customer_company_name' => 'required_if:is_customer_prospect,prospect',
+        ]);
     }
 
 
