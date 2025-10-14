@@ -14,7 +14,6 @@ use App\Models\Incoterms;
 use App\Models\Modality;
 use App\Models\PackingType;
 use App\Models\QuoteFreight;
-use App\Models\QuoteSentClientConcept;
 use App\Models\QuotesSentClient;
 use App\Models\QuoteTransport;
 use App\Models\Regime;

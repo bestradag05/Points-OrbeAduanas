@@ -13,43 +13,9 @@
 
 
 
-    <div class="mb-5 p-4">
-        <div id="stepper" class="bs-stepper linear">
-            <div class="bs-stepper-header" role="tablist">
-                <div class="step active" data-target="#informacion">
-                    <button type="button" class="step-trigger" role="tab" id="stepperInformacion"
-                        aria-controls="informacion" aria-selected="true">
-                        <span class="bs-stepper-circle">1</span>
-                        <span class="bs-stepper-label">Informacion</span>
-                    </button>
-                </div>
-                <div class="bs-stepper-line"></div>
-                <div class="step" data-target="#detalle_producto">
-                    <button type="button" class="step-trigger" role="tab" id="stepperDetalleProducto"
-                        aria-controls="detalle_producto" aria-selected="false" disabled="disabled">
-                        <span class="bs-stepper-circle">2</span>
-                        <span class="bs-stepper-label">Detalle del Producto</span>
-                    </button>
-                </div>
 
-
-            </div>
-            <div class="bs-stepper-content">
-                <form id="formRouting" onsubmit="return false;" action="/commercial/quote" method="post"
-                    enctype="multipart/form-data">
-
-                    @csrf
-                    @include ('commercial_quote.form-commercial-quote', ['formMode' => 'create'])
-
-
-                </form>
-            </div>
-        </div>
-    </div>
-
-
-    <div id="modalSelectServices" class="modal fade" tabindex="-1" role="dialog"
-        aria-labelledby="modalSelectServices-title" aria-hidden="true">
+    <div id="modalSelectServices" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalSelectServices-title"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -117,8 +83,8 @@
                         <div class="row">
 
                             <div class="col-12">
-                                <x-adminlte-select2 name="id_incoterms" class="required" label="Incoterms"
-                                    igroup-size="md" data-placeholder="Seleccione una opcion...">
+                                <x-adminlte-select2 name="id_incoterms" class="required" label="Incoterms" igroup-size="md"
+                                    data-placeholder="Seleccione una opcion...">
                                     <option />
                                     @foreach ($incoterms as $incoter)
                                         <option value="{{ $incoter->id }}"
@@ -137,8 +103,7 @@
                             <div class="col-4">
                                 <div class="form-group">
                                     <label for="shipper_contact">Contacto:</label>
-                                    <input id="shipper_contact" class="form-control" type="text"
-                                        name="shipper_contact">
+                                    <input id="shipper_contact" class="form-control" type="text" name="shipper_contact">
                                 </div>
                             </div>
                             <div class="col-4">
@@ -591,6 +556,38 @@
         </div>
     </div>
 
+    <div class="col-md-12 mt-5">
+        <div id="stepperCommercialQuote" class="bs-stepper">
+            <div class="bs-stepper-header">
+                <div class="step" data-target="#step0">
+                    <button type="button" class="btn step-trigger">
+                        <span class="bs-stepper-circle">1</span>
+                        <span class="bs-stepper-label">Información</span>
+                    </button>
+                </div>
+                <div class="line"></div>
+                <div class="step" data-target="#step1">
+                    <button type="button" class="btn step-trigger">
+                        <span class="bs-stepper-circle">2</span>
+                        <span class="bs-stepper-label">Detalle del producto</span>
+                    </button>
+                </div>
+            </div>
+            <div class="bs-stepper-content">
+
+                <form id="formCommercialQuote" onsubmit="return false;" action="/commercial/quote" method="post"
+                    enctype="multipart/form-data">
+
+                    @csrf
+                    @include ('commercial_quote.form-commercial-quote', ['formMode' => 'create'])
+
+
+                </form>
+
+
+            </div>
+        </div>
+    </div>
 
 @stop
 
@@ -654,7 +651,7 @@
             });
         }
 
-          function searchSupplier(e) {
+        function searchSupplier(e) {
 
             let name_businessname_supplier = e.value;
             let formFillData = $('#form-consolidated');
@@ -668,7 +665,8 @@
 
                     if (response.success && response.supplier) {
                         // Si el cliente existe, llenamos los campos
-                        formFillData.find('#shipper_contact_email').val(response.supplier.address).prop('readonly',
+                        formFillData.find('#shipper_contact_email').val(response.supplier.address).prop(
+                            'readonly',
                             true);
                         formFillData.find('#shipper_contact').val(response.supplier.contact_name).prop(
                             'readonly',
@@ -697,7 +695,78 @@
             });
 
         }
+    </script>
+
+    {{-- Stepper --}}
+
+    <script>
+        var stepper1Node = document.querySelector('#stepperCommercialQuote')
+        var stepperCommercialQuote = new Stepper(document.querySelector('#stepperCommercialQuote'))
+
+        stepper1Node.addEventListener('show.bs-stepper', function(event) {
+
+            const currentStep = event.detail.from; // Paso actual
+            const nextStep = event.detail.to; // Paso al que se intenta avanzar
+            var stepFields = document.querySelectorAll(
+                `#step${currentStep} input, #step${currentStep} select, #step${currentStep} textarea`);
+
+            let valid = true;
+            stepFields.forEach(function(field) {
+                // Si el campo es obligatorio y está vacío, marcarlo como inválido
+                if (field.required && !field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    valid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+
+        });
+
+        if (!valid) {
+            // Prevenir el avance al siguiente paso
+            event.preventDefault();
+
+            // Enfocar el primer campo inválido
+            var invalidFields = document.querySelectorAll('.is-invalid');
+            if (invalidFields.length > 0) {
+                invalidFields[0].focus(); // Enfocar el primer campo inválido
+            }
+        }
 
 
+        function submitForm() {
+            var form = document.getElementById('formCommercialQuote');
+
+
+            if (form.checkValidity()) {
+                // Aquí puedes enviar el formulario si la validación pasa
+                form.submit();
+            } else {
+
+
+                var invalidInputs = form.querySelectorAll(":invalid");
+                if (form.querySelectorAll("invalid")) {
+                    // Encuentra el contenedor del paso que contiene el campo de entrada inválido
+                    var stepContainer = invalidInputs[0].closest('.content');
+
+                    // Encuentra el índice del paso correspondiente
+                    var stepIndex = Array.from(stepContainer.parentElement.children).indexOf(stepContainer);
+
+                    // Cambia el stepper al paso correspondiente
+                    stepper.to(stepIndex);
+
+                    // Enfoca el primer campo de entrada inválido
+                    invalidInputs[0].focus();
+                }
+            }
+        }
+
+
+        function validarInputNumber(input) {
+            if (input.value < 0) {
+                input.value = '';
+            }
+        }
     </script>
 @endpush

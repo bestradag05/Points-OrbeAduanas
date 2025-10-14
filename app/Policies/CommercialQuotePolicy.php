@@ -8,6 +8,11 @@ use Illuminate\Auth\Access\Response;
 
 class CommercialQuotePolicy
 {
+    public function before(User $user, $ability)
+    {
+        return $user->hasRole('Super-Admin') ? true : null;
+    }
+
     /**
      * Determine whether the user can view any models.
      */
@@ -21,7 +26,11 @@ class CommercialQuotePolicy
      */
     public function view(User $user, CommercialQuote $commercialQuote): bool
     {
-        //
+        $ownerId = optional($commercialQuote->personal?->user)->id;
+
+        $isCreator = $ownerId === $user->id;
+
+        return $isCreator;
     }
 
     /**

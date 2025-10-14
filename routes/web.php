@@ -317,9 +317,12 @@ Route::middleware('auth')->group(function () {
 
     /* Cotizaciones comerciales */
 
-    Route::get('commercial/quote/{id_quote}/detail', [CommercialQuoteController::class, 'getTemplateDetailCommercialQuote'])->name('commercial.quote.detail');
-    Route::get('commercial/quote/{id_quote}/quotes', [CommercialQuoteController::class, 'getTemplateQuoteCommercialQuote']);
-    Route::get('commercial/quote/{id_quote}/documents', [CommercialQuoteController::class, 'getTemplateDocmentCommercialQuote']);
+    Route::prefix('commercial/quote')->middleware(['checkCommercialQuoteView'])->group(function () {
+        Route::get('{id_quote}/detail', [CommercialQuoteController::class, 'getTemplateDetailCommercialQuote'])->name('commercial.quote.detail');
+        Route::get('{id_quote}/quotes', [CommercialQuoteController::class, 'getTemplateQuoteCommercialQuote']);
+        Route::get('{id_quote}/documents', [CommercialQuoteController::class, 'getTemplateDocmentCommercialQuote']);
+    });
+
     Route::post('commercial/quote/completeData', [CommercialQuoteController::class, 'completeData']);
     Route::post('commercial/quote/sent-client', [CommercialQuoteController::class, 'QuoteSentClient']);
 
@@ -344,7 +347,7 @@ Route::middleware('auth')->group(function () {
     /* Process Management */
     Route::resource('process', ProcessManagementController::class);
 
-     Route::prefix('process')->group(function () {
+    Route::prefix('process')->group(function () {
         Route::get('{process}/show', [ProcessManagementController::class, 'show'])->name('process.show');
         Route::post('{process}/accept', [ProcessManagementController::class, 'accept'])->name('process.accept');
         Route::post('{process}/reject', [ProcessManagementController::class, 'reject'])->name('process.reject');
@@ -366,7 +369,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('shipping_company', ShippingCompanyController::class);
 
-    
+
 
     /* Reportes */
 
