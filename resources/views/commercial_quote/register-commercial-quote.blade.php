@@ -701,63 +701,99 @@
 
     <script>
         var stepper1Node = document.querySelector('#stepperCommercialQuote')
-        var stepperCommercialQuote = new Stepper(document.querySelector('#stepperCommercialQuote'))
+        var stepperCommercialQuote = new Stepper(document.querySelector('#stepperCommercialQuote'));
 
-        stepper1Node.addEventListener('show.bs-stepper', function(event) {
 
-            const currentStep = event.detail.from; // Paso actual
-            const nextStep = event.detail.to; // Paso al que se intenta avanzar
-            var stepFields = document.querySelectorAll(
-                `#step${currentStep} input, #step${currentStep} select, #step${currentStep} textarea`);
 
+        function validateStep(stepSelector) {
             let valid = true;
+            const stepFields = document.querySelectorAll(
+                `${stepSelector} input, ${stepSelector} select, ${stepSelector} textarea`);
+
             stepFields.forEach(function(field) {
-                // Si el campo es obligatorio y está vacío, marcarlo como inválido
-                if (field.required && !field.value.trim()) {
-                    field.classList.add('is-invalid');
-                    valid = false;
+                if (field.hasAttribute('data-required')) {
+                    if (field.type === 'radio') {
+                        const radioGroup = document.querySelectorAll(`input[name="${field.name}"]`);
+                        const isChecked = Array.from(radioGroup).some(radio => radio.checked);
+                        if (!isChecked) {
+                            radioGroup.forEach(radio => radio.classList.add('is-invalid'));
+                            valid = false;
+                        } else {
+                            radioGroup.forEach(radio => radio.classList.remove('is-invalid'));
+                        }
+                    } else if (field.value.trim() === '') {
+                        field.classList.add('is-invalid');
+                        valid = false;
+                    } else {
+                        field.classList.remove('is-invalid');
+                    }
                 } else {
                     field.classList.remove('is-invalid');
                 }
             });
 
-        });
-
-        if (!valid) {
-            // Prevenir el avance al siguiente paso
-            event.preventDefault();
-
-            // Enfocar el primer campo inválido
-            var invalidFields = document.querySelectorAll('.is-invalid');
-            if (invalidFields.length > 0) {
-                invalidFields[0].focus(); // Enfocar el primer campo inválido
-            }
+            return valid;
         }
 
 
+        stepper1Node.addEventListener('show.bs-stepper', function(event) {
+            const currentStep = event.detail.from; // Paso actual
+            let valid = false;
+
+            // Validar el paso actual antes de permitir avanzar
+            if (currentStep === 0) {
+                valid = validateStep('#step0');
+            } else if (currentStep === 1) {
+                valid = validateStep('#step1');
+            }
+
+            // Si la validación falla, evitar el avance
+            if (!valid) {
+                event.preventDefault();
+
+                // Enfocar el primer campo inválido
+                const invalidFields = document.querySelectorAll('.is-invalid');
+                if (invalidFields.length > 0) {
+                    invalidFields[0].focus(); // Enfocar el primer campo inválido
+                }
+            }
+
+        });
+
+
+
         function submitForm() {
-            var form = document.getElementById('formCommercialQuote');
+            const form = document.getElementById('formCommercialQuote');
+            let valid = true;
+
+            if (!document.querySelectorAll('#step0 .is-invalid').length) {
+                valid &= validateStep('#step0');
+            }
+
+            if (!document.querySelectorAll('#step1 .is-invalid').length) {
+                valid &= validateStep('#step1');
+            }
 
 
-            if (form.checkValidity()) {
-                // Aquí puedes enviar el formulario si la validación pasa
+            if (valid) {
+
+                const valueMeasures = document.getElementById('value_measures').value.trim();
+                const volumen = document.getElementById('volumen_kgv').value.trim();
+                const weight = document.getElementById('weight').value.trim();
+
+            
+                if (!(volumen || weight || valueMeasures)) {
+                    toastr.error("Por favor, complete al menos uno de los siguientes: Volumen y Peso, o Medidas.");
+                    return;
+                }
+
+
+
                 form.submit();
             } else {
-
-
-                var invalidInputs = form.querySelectorAll(":invalid");
-                if (form.querySelectorAll("invalid")) {
-                    // Encuentra el contenedor del paso que contiene el campo de entrada inválido
-                    var stepContainer = invalidInputs[0].closest('.content');
-
-                    // Encuentra el índice del paso correspondiente
-                    var stepIndex = Array.from(stepContainer.parentElement.children).indexOf(stepContainer);
-
-                    // Cambia el stepper al paso correspondiente
-                    stepper.to(stepIndex);
-
-                    // Enfoca el primer campo de entrada inválido
-                    invalidInputs[0].focus();
+                const invalidFields = document.querySelectorAll('.is-invalid');
+                if (invalidFields.length > 0) {
+                    invalidFields[0].focus();
                 }
             }
         }

@@ -4,8 +4,8 @@
 
                             <label for="origin">Origen <span class="text-danger">*</span></label>
 
-                            <x-adminlte-select2 name="origin" igroup-size="md"
-                                data-placeholder="Seleccione una opcion...">
+                            <x-adminlte-select2 name="origin" igroup-size="md" data-placeholder="Seleccione una opcion..."
+                                data-required="true">
                                 <option />
                                 @foreach ($stateCountrys as $stateCountry)
                                     <option value="{{ $stateCountry->id }}">
@@ -20,7 +20,7 @@
                             <label for="destination">Destino <span class="text-danger">*</span></label>
 
                             <x-adminlte-select2 name="destination" igroup-si ze="md"
-                                data-placeholder="Seleccione una opcion...">
+                                data-placeholder="Seleccione una opcion..." data-required="true">
                                 <option />
                                 @foreach ($stateCountrys as $stateCountry)
                                     <option value="{{ $stateCountry->id }}">
@@ -37,7 +37,7 @@
                                     <label for="id_type_shipment">Tipo de embarque <span
                                             class="text-danger">*</span></label>
                                     <x-adminlte-select2 name="id_type_shipment" igroup-size="md"
-                                        data-placeholder="Seleccione una opcion...">
+                                        data-placeholder="Seleccione una opcion..." data-required="true">
                                         <option />
                                         @foreach ($type_shipments as $type_shipment)
                                             <option value="{{ $type_shipment->id }}"
@@ -73,11 +73,11 @@
                         </div>
 
                         <div class="col-6 transporte-hide">
-                            <div class="row" id="lclfcl_content">
+                            <div class="row">
                                 <div class="col-12">
                                     <label for="id_customs_district">Circunscripción - Aduana</label>
                                     <x-adminlte-select2 name="id_customs_district" igroup-size="md"
-                                        data-placeholder="Seleccione una opcion...">
+                                        data-placeholder="Seleccione una opcion..." data-required="true">
                                         <option />
                                         @foreach ($customsDistricts as $customDistrict)
                                             <option value="{{ $customDistrict->id }}"
@@ -98,7 +98,7 @@
                             <label for="id_type_load">Tipo de carga <span class="text-danger">*</span></label>
 
                             <x-adminlte-select2 name="id_type_load" igroup-size="md"
-                                data-placeholder="Seleccione una opcion...">
+                                data-placeholder="Seleccione una opcion..." data-required="true">
                                 <option />
                                 @foreach ($type_loads as $type_load)
                                     <option value="{{ $type_load->id }}"
@@ -114,7 +114,7 @@
                             <label for="id_regime">Regimen <span class="text-danger">*</span></label>
 
                             <x-adminlte-select2 name="id_regime" igroup-size="md"
-                                data-placeholder="Seleccione una opcion...">
+                                data-placeholder="Seleccione una opcion..." data-required="true">
                                 <option />
                                 @foreach ($regimes as $regime)
                                     <option value="{{ $regime->id }}"
@@ -131,7 +131,8 @@
                                 <i class="fas fa-info-circle"></i>
                             </a>
                             <x-adminlte-select2 id="incoterms" name="id_incoterms" igroup-size="md"
-                                data-placeholder="Seleccione una opcion..." onchange="toggleExwPickupAddress(this)">
+                                data-placeholder="Seleccione una opcion..." onchange="toggleExwPickupAddress(this)"
+                                data-required="true">
                                 <option />
                                 @foreach ($incoterms as $incoter)
                                     <option value="{{ $incoter->id }}" data-code="{{ $incoter->code }}"
@@ -214,7 +215,7 @@
                                         <input type="text"
                                             class="form-control @error('customer_company_name') is-invalid @enderror "
                                             name="customer_company_name" id="customer_company_name"
-                                            placeholder="Ingrese valor de la carga"
+                                            data-required="true" placeholder="Ingrese valor de la carga"
                                             value="{{ isset($routing->customer_company_name) ? $routing->customer_company_name : old('customer_company_name') }}">
                                     </div>
                                     @error('customer_company_name')
@@ -230,7 +231,7 @@
                                 <div class="form-group">
                                     <label for="contact">Contacto</label>
                                     <input type="text" class="form-control @error('contact') is-invalid @enderror"
-                                        id="contact" name="contact" placeholder="Ingrese su numero de celular"
+                                        id="contact" name="contact" placeholder="Ingrese su numero de celular" data-optional="true"
                                         value="{{ isset($customer->contact) ? $customer->contact : old('contact') }}">
                                     @error('contact')
                                         <span class="invalid-feedback d-block" role="alert">
@@ -246,7 +247,7 @@
                                     <label for="cellphone">Celular</label>
                                     <input type="text"
                                         class="form-control @error('cellphone') is-invalid @enderror" id="cellphone"
-                                        name="cellphone" placeholder="Ingrese su numero de celular"
+                                        name="cellphone" placeholder="Ingrese su numero de celular" data-optional="true"
                                         value="{{ isset($customer->cellphone) ? $customer->cellphone : old('cellphone') }}">
                                     @error('cellphone')
                                         <span class="invalid-feedback d-block" role="alert">
@@ -262,7 +263,7 @@
                                 <div class="form-group">
                                     <label for="email">Correo</label>
                                     <input type="text" class="form-control @error('email') is-invalid @enderror"
-                                        id="email" name="email" placeholder="Ingrese su numero de celular"
+                                        id="email" name="email" placeholder="Ingrese su numero de celular" data-optional="true"
                                         value="{{ isset($customer->email) ? $customer->email : old('email') }}">
                                     @error('email')
                                         <span class="invalid-feedback d-block" role="alert">
@@ -316,7 +317,7 @@
                                 <label for="commodity" class="col-sm-2 col-form-label">Producto <span
                                         class="text-danger">*</span></label>
                                 <div class="col-sm-10">
-                                    <input type="text"
+                                    <input type="text" data-required="true"
                                         class="form-control @error('commodity') is-invalid @enderror" id="commodity"
                                         name="commodity" placeholder="Ingrese el producto.."
                                         value="{{ isset($routing->commodity) ? $routing->commodity : old('commodity') }}">
@@ -342,7 +343,7 @@
                                                         $
                                                     </span>
                                                 </div>
-                                                <input type="text"
+                                                <input type="text" data-required="true"
                                                     class="form-control CurrencyInput @error('load_value') is-invalid @enderror "
                                                     name="load_value" data-type="currency"
                                                     placeholder="Ingrese valor de la carga"
@@ -363,7 +364,7 @@
                                         <label for="nro_package" class="col-sm-4 col-form-label">N° Paquetes / Bultos
                                             <span class="text-danger">*</span></label>
                                         <div class="col-sm-8">
-                                            <input type="number" min="0" step="1"
+                                            <input type="number" min="0" step="1" data-required="true"
                                                 class="form-control @error('nro_package') is-invalid @enderror"
                                                 id="nro_package" name="nro_package"
                                                 placeholder="Ingrese el nro de paquetes.."
@@ -386,7 +387,7 @@
                                             <span class="text-danger">*</span></label>
                                         <div class="col-sm-8">
                                             <x-adminlte-select2 name="id_packaging_type"
-                                                data-placeholder="Seleccione una opcion...">
+                                                data-placeholder="Seleccione una opcion..." data-required="true">
                                                 <option />
                                                 @foreach ($packingTypes as $packingType)
                                                     <option value="{{ $packingType->id }}">
@@ -868,7 +869,6 @@
 
 
                             if (typeShipmentCurrent.name === "Marítima") {
-
                                 $('#type_shipment_name').val(typeShipmentCurrent.name);
 
                                 $('#lclfcl_content').addClass('row');
@@ -877,16 +877,14 @@
                                 $('#lclfcl_content').children().last().removeClass('d-none');
 
                                 $('#contenedor_volumen').removeClass('d-none');
-                                /*                   $('#contenedor_vol_consolidated').removeClass('d-none');
-                                                  $('#contenedor_kg_vol').addClass('d-none');
-                                                  $('#contenedor_kg_vol_consolidated').addClass('d-none'); */
+
 
                                 $('#contenedor_volumen').find('input').val("");
-                                /* $('#contenedor_kg_vol').find('input').val("");
-                                $('#contenedor_kg_vol_consolidated').find('input').val(""); */
 
                                 $('#unit_of_volumen_kgv').val('m³');
 
+                                $('#radioLcl').attr('data-required', 'true');
+                                $('#radioFcl').attr('data-required', 'true');
 
                             } else {
 
@@ -898,14 +896,6 @@
                                 $('#lclfcl_content').children().last().addClass('d-none');
                                 $('input[name="lcl_fcl"]').prop('checked', false);
 
-                                /*   $('#contenedor_vol_consolidated').addClass('d-none');
-                                  $('#contenedor_kg_vol').removeClass('d-none');
-                                  $('#contenedor_kg_vol_consolidated').removeClass('d-none');
-
-                                  $('#contenedor_kg_vol').find('input').val("");
-                                  $('#contenedor_kg_vol_consolidated').find('input').val("");
-                                  $('#contenedor_volumen').find('input').val("");
-                                  $('#contenedor_vol_consolidated').find('input').val(""); */
 
                                 $('#containerTypeWrapper').find('input').val("");
                                 $('#containerTypeWrapper').addClass('d-none');
@@ -917,14 +907,13 @@
                                 $('#containerQuantityWrapperConsolidated').find('input').val("");
                                 $('#containerQuantityWrapperConsolidated').addClass('d-none');
 
-                                /*    $('#contenedor_tons').find('input').val("");
-                                   $('#contenedor_tons').addClass('d-none');
-                                   $('#contenedor_weight').removeClass('d-none'); */
-
                                 $('#unit_of_volumen_kgv').val('kgv');
 
                                 $('#lcl_container').removeClass('d-none');
                                 $('#fcl_container').addClass('d-none');
+
+                                $('#radioLcl').removeAttr('data-required');
+                                $('#radioFcl').removeAttr('data-required');
 
                             }
 
@@ -933,12 +922,19 @@
                         function toggleExwPickupAddress(selectElement) {
                             const selectedCode = selectElement.options[selectElement.selectedIndex].getAttribute('data-code')
                             let isConsolidated = document.querySelector('input[name="is_consolidated"]:checked').value;
+                            const exwPickupAddressDiv = document.querySelector('#div_supplier_data');
+                            const exwPickupAddressInput = exwPickupAddressDiv.querySelector('input');
+                            console.log(exwPickupAddressInput);
 
                             if (selectedCode === 'EXW' && isConsolidated != "1") {
-                                const exwPickupAddressDiv = document.querySelector('#div_supplier_data');
                                 exwPickupAddressDiv.classList.remove('d-none');
+                                exwPickupAddressInput.setAttribute('data-required', 'true');
                             } else {
                                 hideSupplierDataInExw();
+
+                                if (exwPickupAddressInput.hasAttribute('data-required')) {
+                                    exwPickupAddressInput.removeAttribute('data-required');
+                                }
                             }
 
                         }
@@ -1006,10 +1002,16 @@
                                 $("#contentProspect").addClass("d-none");
                                 $("#contentProspect").find('input').val("");
 
+                                $('#contentCustomer select').attr('data-required', 'true');
+                                $('#contentProspect input').removeAttr('data-required');
                             } else {
                                 $("#contentCustomer").addClass("d-none");
                                 $("#contentProspect").removeClass("d-none");
                                 $('#id_customer').val('').trigger('change');
+
+                                $('#contentProspect input').not('[data-optional="true"]').attr('data-required', 'true');
+                                $('#contentCustomer select').removeAttr('data-required');
+
                             }
                         }
 
