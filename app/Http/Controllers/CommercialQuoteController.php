@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CommercialquoteRequest;
 use App\Models\CommercialQuote;
 use App\Models\QuoteSentClientConcept;
 use App\Models\QuotesSentClient;
@@ -67,10 +68,10 @@ class CommercialQuoteController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        $commercialQuote = $this->commercialQuoteService->storeCommercialQuote($request);
-
+    public function store(CommercialquoteRequest $request)
+    {   /* dd($request->all()); */
+        $data = $request->validated();  
+        $commercialQuote = $this->commercialQuoteService->storeCommercialQuote($data, $request);
         return redirect('commercial/quote/' . $commercialQuote->id . '/detail');
     }
 

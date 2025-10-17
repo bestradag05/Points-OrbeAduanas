@@ -231,7 +231,8 @@
                                 <div class="form-group">
                                     <label for="contact">Contacto</label>
                                     <input type="text" class="form-control @error('contact') is-invalid @enderror"
-                                        id="contact" name="contact" placeholder="Ingrese su numero de celular" data-optional="true"
+                                        id="contact" name="contact" placeholder="Ingrese su numero de celular"
+                                        data-optional="true"
                                         value="{{ isset($customer->contact) ? $customer->contact : old('contact') }}">
                                     @error('contact')
                                         <span class="invalid-feedback d-block" role="alert">
@@ -247,7 +248,8 @@
                                     <label for="cellphone">Celular</label>
                                     <input type="text"
                                         class="form-control @error('cellphone') is-invalid @enderror" id="cellphone"
-                                        name="cellphone" placeholder="Ingrese su numero de celular" data-optional="true"
+                                        name="cellphone" placeholder="Ingrese su numero de celular"
+                                        data-optional="true"
                                         value="{{ isset($customer->cellphone) ? $customer->cellphone : old('cellphone') }}">
                                     @error('cellphone')
                                         <span class="invalid-feedback d-block" role="alert">
@@ -263,7 +265,8 @@
                                 <div class="form-group">
                                     <label for="email">Correo</label>
                                     <input type="text" class="form-control @error('email') is-invalid @enderror"
-                                        id="email" name="email" placeholder="Ingrese su numero de celular" data-optional="true"
+                                        id="email" name="email" placeholder="Ingrese su numero de celular"
+                                        data-optional="true"
                                         value="{{ isset($customer->email) ? $customer->email : old('email') }}">
                                     @error('email')
                                         <span class="invalid-feedback d-block" role="alert">
@@ -349,12 +352,12 @@
                                                     placeholder="Ingrese valor de la carga"
                                                     value="{{ isset($routing->load_value) ? $routing->load_value : old('load_value') }}">
                                             </div>
+                                            @error('load_value')
+                                                <span class="invalid-feedback d-block" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
                                         </div>
-                                        @error('load_value')
-                                            <span class="invalid-feedback d-block" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
 
                                     </div>
                                 </div>
@@ -451,12 +454,6 @@
                                         </thead>
                                     </table>
                                     <input id="value_measures" type="hidden" name="value_measures" />
-                                    @error('value_measures')
-                                        <span class="invalid-feedback d-block" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
-
                                 </div>
                             </div>
 
@@ -486,6 +483,7 @@
                                                 <input type="text"
                                                     class="form-control CurrencyInput @error('weight') is-invalid @enderror"
                                                     data-type="currency" id="weight" name="weight"
+                                                    onchange="calculatePounds(event)"
                                                     value="{{ isset($routing->weight) ? $routing->weight : old('weight') }}">
                                                 <div class="input-group-prepend">
                                                     <select class="form-control" name="unit_of_weight"
@@ -924,7 +922,6 @@
                             let isConsolidated = document.querySelector('input[name="is_consolidated"]:checked').value;
                             const exwPickupAddressDiv = document.querySelector('#div_supplier_data');
                             const exwPickupAddressInput = exwPickupAddressDiv.querySelector('input');
-                            console.log(exwPickupAddressInput);
 
                             if (selectedCode === 'EXW' && isConsolidated != "1") {
                                 exwPickupAddressDiv.classList.remove('d-none');
@@ -1025,13 +1022,11 @@
                         }
 
 
-
-                        $('#weight').on('change', (e) => {
-
-                            let kilogramsVal = $(e.target).val();
+                        function calculatePounds(e) {
+                            let kilogramsVal = e.target.value;
                             let kilograms = kilogramsVal.replace(/,/g, '');
                             let numberValue = parseFloat(kilograms);
-
+    
                             if (!kilogramsVal || isNaN(numberValue)) {
 
                                 $('#pounds').val(0);
@@ -1041,9 +1036,8 @@
                                 $('#pounds').val(numberValue * 2.21);
 
                             }
+                        }
 
-
-                        });
 
 
 
@@ -1160,18 +1154,18 @@
                                 const newRow = table.row.add([
 
                                     // Campo para Cantidad
-                                    `<input type="number" class="form-control"  readonly id="amount-${rowIndex}" name="amount-${rowIndex}" value="${amount_package}" placeholder="Cantidad" min="0" step="1">`,
+                                    `<input type="number" class="form-control"  readonly id="amount-${rowIndex}" value="${amount_package}" placeholder="Cantidad" min="0" step="1">`,
 
                                     // Campo para Ancho
-                                    `<input type="number" class="form-control"  readonly id="width-${rowIndex}" name="width-${rowIndex}" value="${width}" placeholder="Ancho" min="0" step="0.0001">`,
+                                    `<input type="number" class="form-control"  readonly id="width-${rowIndex}" value="${width}" placeholder="Ancho" min="0" step="0.0001">`,
 
                                     // Campo para Largo
-                                    `<input type="number" class="form-control"  readonly id="length-${rowIndex}" name="length-${rowIndex}" value="${length}" placeholder="Largo" min="0" step="0.0001">`,
+                                    `<input type="number" class="form-control"  readonly id="length-${rowIndex}" value="${length}" placeholder="Largo" min="0" step="0.0001">`,
 
                                     // Campo para Alto
-                                    `<input type="number" class="form-control"  readonly id="height-${rowIndex}" name="height-${rowIndex}" value="${height}" placeholder="Alto" min="0" step="0.0001">`,
+                                    `<input type="number" class="form-control"  readonly id="height-${rowIndex}" value="${height}" placeholder="Alto" min="0" step="0.0001">`,
                                     // Campo para unidad de medida
-                                    `<input type="text" class="form-control"  readonly id="unit-measurement-${rowIndex}" name="unit_measurement-${rowIndex}" value="${unit_measurement}">`,
+                                    `<input type="text" class="form-control"  readonly id="unit-measurement-${rowIndex}" value="${unit_measurement}">`,
 
                                     `<button type="button" class="btn btn-danger btn-sm" id="delete-${rowIndex}" onclick="deleteRow('${table.table().node().id}', 'row-${rowIndex}', ${amount_package}, ${arrayName}, '${valueMeasuresHidden.id}')"><i class="fa fa-trash"></i></button>`
                                 ]).draw().node();
@@ -1185,8 +1179,7 @@
                                     height,
                                     unit_measurement
                                 };
-
-
+   
                                 valueMeasuresHidden.value = JSON.stringify(array);
 
                                 rowIndex++

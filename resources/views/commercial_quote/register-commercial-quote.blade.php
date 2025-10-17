@@ -387,13 +387,13 @@
 
                         <div class="col-6">
                             <div class="form-group">
-                                <label for="nro_package">N° Paquetes / Bultos</label>
+                                <label for="nro_package_container">N° Paquetes / Bultos</label>
                                 <input type="number" min="0" step="1"
-                                    class="form-control @error('nro_package') is-invalid @enderror" id="nro_package"
-                                    name="nro_package" placeholder="Ingrese el nro de paquetes.."
+                                    class="form-control @error('nro_package_container') is-invalid @enderror" id="nro_package_container"
+                                    name="nro_package_container" placeholder="Ingrese el nro de paquetes.."
                                     oninput="validarInputNumber(this)"
-                                    value="{{ isset($routing) ? $routing->nro_package : '' }}">
-                                @error('nro_package')
+                                    value="{{ isset($routing) ? $routing->nro_package_container : '' }}">
+                                @error('nro_package_container')
                                     <span class="invalid-feedback d-block" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -534,8 +534,8 @@
                                     </tr>
                                 </thead>
                             </table>
-                            <input id="value_measures" type="hidden" name="value_measures" />
-                            @error('value_measures')
+                            <input id="value_measures_container" type="hidden" name="value_measures_container" />
+                            @error('value_measures_container')
                                 <span class="invalid-feedback d-block" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
@@ -766,30 +766,29 @@
             const form = document.getElementById('formCommercialQuote');
             let valid = true;
 
-            if (!document.querySelectorAll('#step0 .is-invalid').length) {
-                valid &= validateStep('#step0');
-            }
 
-            if (!document.querySelectorAll('#step1 .is-invalid').length) {
-                valid &= validateStep('#step1');
-            }
+            valid &= validateStep('#step0');
+
+
+
+            valid &= validateStep('#step1');
+
 
 
             if (valid) {
 
-                const valueMeasures = document.getElementById('value_measures').value.trim();
-                const volumen = document.getElementById('volumen_kgv').value.trim();
-                const weight = document.getElementById('weight').value.trim();
 
-            
-                if (!(volumen || weight || valueMeasures)) {
+                const valueMeasures = document.getElementById('value_measures').value.trim();
+                const volumen = $('#contenedor_volumen #volumen_kgv').val().trim();
+                const weight = $('#contenedor_weight #weight').val().trim();
+
+               if (!((volumen && weight) || valueMeasures)) {
                     toastr.error("Por favor, complete al menos uno de los siguientes: Volumen y Peso, o Medidas.");
                     return;
                 }
-
-
-
+                
                 form.submit();
+               
             } else {
                 const invalidFields = document.querySelectorAll('.is-invalid');
                 if (invalidFields.length > 0) {

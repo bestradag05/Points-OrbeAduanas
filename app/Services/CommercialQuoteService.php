@@ -26,6 +26,7 @@ use App\Models\TypeShipment;
 use App\Models\Warehouses;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use stdClass;
@@ -93,205 +94,163 @@ class CommercialQuoteService
     }
 
 
-    public function storeCommercialQuote($request)
+    public function storeCommercialQuote(array $data, Request $request)
     {
-        $typeService = [];
-        if ($request->has('type_service_checked')) {
-            $typeService = json_decode($request->type_service_checked, true);
-        }
+        /* dd($request->all()); */
+        
+        // Ya normalizados en prepareForValidation():
+        $typeService          = $data['type_service_checked'] ?? [];
+        $isConsolidated       = (bool) ($data['is_consolidated'] ?? false);
+        $shippersConsolidated = $data['shippers_consolidated'] ?? [];
+        $dataContainers       = $data['data_containers'] ?? [];
+        $typeShipmentName     = $data['type_shipment_name'] ?? null;
 
-        $shippersConsolidated = json_decode($request->shippers_consolidated);
-        //Registramos el cliente 
-        if ($request->is_customer_prospect == 'prospect') {
-            $this->validateCustomerForm($request, null);
-
-            // Si es prospecto, creamos un nuevo cliente
+        // Cliente (prospecto vs existente)
+        if (($data['is_customer_prospect'] ?? $request->is_customer_prospect) === 'prospect') {
+            $this->validateCustomerForm($request, null); // o crea otra FormRequest específica
             $customer = Customer::create([
                 'name_businessname' => $request->customer_company_name,
-                'contact_name' => $request->contact,
-                'contact_number' => $request->cellphone,
-                'contact_email' => $request->email,
-                'state' => 'Activo', // o el estado que consideres para prospectos
-                'type' => 'prospecto', // Tipo prospecto
-                'id_personal' => auth()->user()->personal->id, // Relación con el personal autenticado
+                'contact_name'      => $request->contact,
+                'contact_number'    => $request->cellphone,
+                'contact_email'     => $request->email,
+                'state'             => 'Activo',
+                'type'              => 'prospecto',
+                'id_personal'       => auth()->user()->personal->id,
             ]);
+            $customerId = $customer->id;
         } else {
-            // Si es cliente, simplemente usamos el ID del cliente desde el frontend
-            $customerId = $request->id_customer; // El ID del cliente viene desde el frontend
+            $customerId = $data['id_customer'] ?? $request->id_customer;
         }
-
-
-
-        if ($request->is_consolidated) {
-            $consolidated = [];
-
+        
+        // INCOTERM / EXW
+        $pickupAddressAtOrigin = null;
+        if (!empty($data['id_incoterms'])) {
+            $incoterm = Incoterms::find($data['id_incoterms']);
+            if ($incoterm && strtolower($incoterm->code) === 'exw') {
+                $pickupAddressAtOrigin = $data['pickup_address_at_origin'] ?? null;
+            }
+        }
+     
+        
+        if ($isConsolidated) {
+            // CONSOLIDADO
             $consolidated = $this->calculateDataConsolidated($shippersConsolidated);
 
             $commercialQuote = CommercialQuote::create([
-                'nro_quote_commercial' => $request->nro_quote_commercial,
-                'origin' => $request->origin,
-                'destination' => $request->destination,
-                'commodity' => $consolidated['commodity'],
-                /* 'customer_company_name' => $request->customer_company_name,
-                'contact' => $request->contact,
-                'cellphone' => $request->cellphone,
-                'email' => $request->email, */
-                'load_value' => $consolidated['total_load_values'],
-                'id_type_shipment' => $request->id_type_shipment,
-                'id_customs_district' => $request->id_customs_district,
-                'id_regime' => $request->id_regime,
-                'id_type_load' => $request->id_type_load,
-                'id_incoterms' => $request->id_incoterms,
-                'id_containers' =>  $request->id_containers_consolidated,
-                'id_customer' => $request->is_customer_prospect == 'prospect' ? $customer->id : $customerId, // Usamos el ID dependiendo de si es prospecto o cliente
-                'container_quantity' => $request->container_quantity_consolidated,
-                'lcl_fcl' => $request->lcl_fcl,
-                'is_consolidated' => $request->is_consolidated,
-                'nro_package' => $consolidated['total_bultos'],
-                'weight' => $this->parseDouble($consolidated['total_weight']),
-                'unit_of_weight' => $consolidated['unit_of_weight'],
-                'volumen_kgv' => $this->parseDouble($consolidated['total_volumen']),
-                'unit_of_volumen_kgv' => $consolidated['unit_of_volumen_kgv'],
-                'pounds' => $this->parseDouble($request->pounds),
-                'nro_operation' => $request->nro_operation,
-                'valid_until' => now()->format('Y-m-d'),
-                'services_to_quote' => $typeService,
-                'exw_pickup_address' => $request->exw_pickup_address,
-                'id_personal' => auth()->user()->personal->id,
+                'nro_quote_commercial'    => $data['nro_quote_commercial'] ?? null,
+                'origin'                  => $data['origin'] ?? null,
+                'destination'             => $data['destination'] ?? null,
+                'commodity'               => $consolidated['commodity'],
+                'load_value'              => $consolidated['total_load_values'],
+                'id_type_shipment'        => $data['id_type_shipment'],
+                'id_customs_district'     => $data['id_customs_district'] ?? null,
+                'id_regime'               => $data['id_regime'] ?? null,
+                'id_type_load'            => $data['id_type_load'],
+                'id_incoterms'            => $data['id_incoterms'] ?? null,
+                'id_containers'           => $data['id_containers_consolidated'] ?? $request->id_containers_consolidated,
+                'id_customer'             => $customerId,
+                'container_quantity'      => $data['container_quantity_consolidated'] ?? $request->container_quantity_consolidated,
+                'lcl_fcl'                 => $data['lcl_fcl'] ?? null,
+                'is_consolidated'         => $isConsolidated,
+                'nro_package'             => $consolidated['total_bultos'],
+                'weight'                  => $this->parseDouble($consolidated['total_weight']),
+                'unit_of_weight'          => $consolidated['unit_of_weight'],
+                'volumen_kgv'             => $this->parseDouble($consolidated['total_volumen']),
+                'unit_of_volumen_kgv'     => $consolidated['unit_of_volumen_kgv'],
+                'pounds'                  => $this->parseDouble($data['pounds'] ?? $request->pounds),
+                'nro_operation'           => $data['nro_operation'] ?? $request->nro_operation,
+                'valid_until'             => now()->format('Y-m-d'),
+                'services_to_quote'       => $typeService,
+                'exw_pickup_address'      => $pickupAddressAtOrigin,
+                'id_personal'             => auth()->user()->personal->id,
             ]);
 
             foreach ($shippersConsolidated as $shipper) {
                 $this->storeConsolidateCarga($shipper, $commercialQuote->id);
             }
+        } elseif ($typeShipmentName === 'Marítima' && ($data['lcl_fcl'] ?? null) === 'FCL') {
+            // MARÍTIMA FCL
+            $calcContainers = $this->calculateDataContainers($dataContainers);
+
+            $commercialQuote = CommercialQuote::create([
+                'nro_quote_commercial'    => $data['nro_quote_commercial'] ?? null,
+                'origin'                  => $data['origin'] ?? null,
+                'destination'             => $data['destination'] ?? null,
+                'commodity'               => $calcContainers['commodity'],
+                'load_value'              => $calcContainers['total_load_values'],
+                'id_type_shipment'        => $data['id_type_shipment'],
+                'id_customs_district'     => $data['id_customs_district'] ?? null,
+                'id_regime'               => $data['id_regime'] ?? null,
+                'id_type_load'            => $data['id_type_load'],
+                'id_incoterms'            => $data['id_incoterms'] ?? null,
+                'id_containers'           => $data['id_containers_consolidated'] ?? $request->id_containers_consolidated,
+                'id_customer'             => $customerId,
+                'container_quantity'      => $data['container_quantity_consolidated'] ?? $request->container_quantity_consolidated,
+                'lcl_fcl'                 => $data['lcl_fcl'],
+                'is_consolidated'         => $isConsolidated,
+                'nro_package'             => $calcContainers['total_bultos'],
+                'weight'                  => $this->parseDouble($calcContainers['total_weight']),
+                'unit_of_weight'          => $calcContainers['unit_of_weight'],
+                'volumen_kgv'             => $this->parseDouble($calcContainers['total_volumen']),
+                'unit_of_volumen_kgv'     => $calcContainers['unit_of_volumen_kgv'],
+                'pounds'                  => $this->parseDouble($data['pounds'] ?? $request->pounds),
+                'nro_operation'           => $data['nro_operation'] ?? $request->nro_operation,
+                'valid_until'             => now()->format('Y-m-d'),
+                'pickup_address_at_origin' => $pickupAddressAtOrigin,
+                'services_to_quote'       => $typeService,
+                'id_personal'             => auth()->user()->personal->id,
+            ]);
+
+            foreach ($dataContainers as $container) {
+                $commercialQuote->containers()->attach($container->id_container, [
+                    'container_quantity'      => $container->container_quantity,
+                    'commodity'               => $container->commodity,
+                    'nro_package'             => $container->nro_package,
+                    'id_packaging_type'       => $container->id_packaging_type,
+                    'load_value'              => $this->parseDouble($container->load_value),
+                    'weight'                  => $this->parseDouble($container->weight),
+                    'unit_of_weight'          => $container->unit_of_weight,
+                    'volumen_kgv'             => $this->parseDouble($container->volumen_kgv),
+                    'unit_of_volumen_kgv'     => $container->unit_of_volumen_kgv,
+                    'measures'                => json_encode($container->value_measures),
+                ]);
+            }
         } else {
+            // CASO GENERAL
 
-
-            //Si es exw, verificamos datos del proveedor y la direccion de recojo
-
-            $incoterm = null;  // Inicializar la variable para el incoterm
-            $pickupAddressAtOrigin = null;
-
-            if ($request->has('id_incoterms') && $request->id_incoterms) {
-                $incoterm = Incoterms::find($request->id_incoterms); // Usamos find() para evitar la excepción
-
-                if (strtolower($incoterm->code) === 'exw') {
-                    $pickupAddressAtOrigin = $request->pickup_address_at_origin;
-                }
-            }
-
-            //Verificamos si es Maritimo y si es FCL o LCL
-
-            if ($request->type_shipment_name === 'Marítima' && $request->lcl_fcl === 'FCL') {
-
-                $data_containers = json_decode($request->data_containers);
-
-                $calcContainers = $this->calculateDataContainers($data_containers);
-                $commercialQuote = CommercialQuote::create([
-                    'nro_quote_commercial' => $request->nro_quote_commercial,
-                    'origin' => $request->origin,
-                    'destination' => $request->destination,
-                    'commodity' => $calcContainers['commodity'],
-                    'load_value' => $calcContainers['total_load_values'],
-                    'id_type_shipment' => $request->id_type_shipment,
-                    'id_customs_district' => $request->id_customs_district,
-                    'id_regime' => $request->id_regime,
-                    'id_type_load' => $request->id_type_load,
-                    'id_incoterms' => $request->id_incoterms,
-                    'id_containers' =>  $request->id_containers_consolidated,
-                    'id_customer' => $request->is_customer_prospect == 'prospect' ? $customer->id : $customerId, // Usamos el ID dependiendo de si es prospecto o cliente
-                    'container_quantity' => $request->container_quantity_consolidated,
-                    'lcl_fcl' => $request->lcl_fcl,
-                    'is_consolidated' => $request->is_consolidated,
-                    'nro_package' => $calcContainers['total_bultos'],
-                    'weight' => $this->parseDouble($calcContainers['total_weight']),
-                    'unit_of_weight' => $calcContainers['unit_of_weight'],
-                    'volumen_kgv' => $this->parseDouble($calcContainers['total_volumen']),
-                    'unit_of_volumen_kgv' => $calcContainers['unit_of_volumen_kgv'],
-                    'pounds' => $this->parseDouble($request->pounds),
-                    'nro_operation' => $request->nro_operation,
-                    'valid_until' => now()->format('Y-m-d'),
-                    'pickup_address_at_origin' => $pickupAddressAtOrigin,
-                    'services_to_quote' => $typeService,
-                    'id_personal' => auth()->user()->personal->id,
-                ]);
-
-                foreach ($data_containers as  $container) {
-
-                    $commercialQuote->containers()->attach($container->id_container, [
-                        'container_quantity' => $container->container_quantity,
-                        'commodity' => $container->commodity,
-                        'nro_package' => $container->nro_package,
-                        'id_packaging_type' => $container->id_packaging_type,
-                        'load_value' =>  $this->parseDouble($container->load_value),
-                        'weight' => $this->parseDouble($container->weight),
-                        'unit_of_weight' => $container->unit_of_weight,
-                        'volumen_kgv' => $this->parseDouble($container->volumen_kgv),
-                        'unit_of_volumen_kgv' => $container->unit_of_volumen_kgv,
-                        'measures' => json_encode($container->value_measures)
-
-                    ]);
-                }
-            } else {
-
-
-                $this->validateForm($request, null);
-
-                $commercialQuote = CommercialQuote::create([
-                    'nro_quote_commercial' => $request->nro_quote_commercial,
-                    'origin' => $request->origin,
-                    'destination' => $request->destination,
-                    'load_value' => $this->parseDouble($request->load_value),
-                    'id_type_shipment' => $request->id_type_shipment,
-                    'id_customs_district' => $request->id_customs_district,
-                    'id_regime' => $request->id_regime,
-                    'id_type_load' => $request->id_type_load,
-                    'id_incoterms' => $request->id_incoterms,
-                    'commodity' => $request->commodity,
-                    'nro_package' => $request->nro_package,
-                    'id_packaging_type' => $request->id_packaging_type,
-                    'id_containers' => $request->id_containers,
-                    'container_quantity' => $request->container_quantity,
-                    'id_customer' => $request->is_customer_prospect == 'prospect' ? $customer->id : $customerId, // Usamos el ID dependiendo de si es prospecto o cliente
-                    'weight' => $this->parseDouble($request->weight),
-                    'unit_of_weight' => $request->unit_of_weight,
-                    'volumen_kgv' => $this->parseDouble($request->volumen_kgv),
-                    'unit_of_volumen_kgv' => $request->unit_of_volumen_kgv,
-                    'lcl_fcl' => $request->lcl_fcl,
-                    'is_consolidated' => $request->is_consolidated,
-                    'measures' => $request->value_measures,
-                    'pounds' => $this->parseDouble($request->pounds),
-                    'nro_operation' => $request->nro_operation,
-                    'valid_until' => now()->format('Y-m-d'),
-                    'pickup_address_at_origin' => $pickupAddressAtOrigin,
-                    'services_to_quote' => $typeService,
-                    'id_personal' => auth()->user()->personal->id,
-                ]);
-            }
+            $commercialQuote = CommercialQuote::create([
+                'origin'                  => $data['origin'],
+                'destination'             => $data['destination'],
+                'load_value'              => $this->parseDouble($data['load_value']),
+                'id_type_shipment'        => $data['id_type_shipment'],
+                'id_customs_district'     => $data['id_customs_district'] ?? null,
+                'id_regime'               => $data['id_regime'],
+                'id_type_load'            => $data['id_type_load'],
+                'id_incoterms'            => $data['id_incoterms'],
+                'commodity'               => $data['commodity'],
+                'nro_package'             => $data['nro_package'] ?? null,
+                'id_packaging_type'       => $data['id_packaging_type'] ?? null,
+                'id_customer'             => $customerId,
+                'weight'                  => $this->parseDouble($data['weight'] ?? 0),
+                'unit_of_weight'          => $data['unit_of_weight'] ?? null,
+                'volumen_kgv'             => $this->parseDouble($data['volumen_kgv'] ?? 0),
+                'unit_of_volumen_kgv'     => $data['unit_of_volumen_kgv'] ?? null,
+                'lcl_fcl'                 => $data['lcl_fcl'] ?? null,
+                'is_consolidated'         => $isConsolidated,
+                'measures'                => $data['value_measures'] ?? null,
+                'pounds'                  => $this->parseDouble($data['pounds'] ?? $request->pounds),
+                'valid_until'             => now()->format('Y-m-d'),
+                'pickup_address_at_origin' => $pickupAddressAtOrigin,
+                'services_to_quote'       => $typeService,
+                'id_personal'             => auth()->user()->personal->id,
+            ]);
         }
 
-
-        if (!empty($typeService)) {
-            foreach ($typeService as $service) {
-
-                switch ($service) {
-                    case 'Flete':
-
-                        $this->createQuoteFreight($commercialQuote);
-
-                        break;
-                    case 'Transporte':
-
-                        $this->createQuoteTransport($commercialQuote);
-
-                        break;
-
-                    default:
-                        # code...
-                        break;
-                }
-            }
+        // Servicios asociados
+        foreach ($typeService as $service) {
+            if ($service === 'Flete')      $this->createQuoteFreight($commercialQuote);
+            if ($service === 'Transporte') $this->createQuoteTransport($commercialQuote);
         }
-
 
         return $commercialQuote;
     }

@@ -50,10 +50,11 @@ class ResponseFreightQuotesController extends Controller
     {
         $this->validateForm($request, null);
 
+        
         $concepts = json_decode($request->input('concepts'), true);
         $commissions = json_decode($request->input('commissions'), true);
-
-        $quoteFreight = QuoteFreight::findOrFail($id)->first();
+        
+        $quoteFreight = QuoteFreight::findOrFail($id);
 
         $fecha = Carbon::createFromFormat('d/m/Y', $request->valid_until)->format('Y-m-d');
 
