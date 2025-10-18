@@ -96,8 +96,6 @@ class CommercialQuoteService
 
     public function storeCommercialQuote(array $data, Request $request)
     {
-        /* dd($request->all()); */
-        
         // Ya normalizados en prepareForValidation():
         $typeService          = $data['type_service_checked'] ?? [];
         $isConsolidated       = (bool) ($data['is_consolidated'] ?? false);
@@ -137,7 +135,6 @@ class CommercialQuoteService
             $consolidated = $this->calculateDataConsolidated($shippersConsolidated);
 
             $commercialQuote = CommercialQuote::create([
-                'nro_quote_commercial'    => $data['nro_quote_commercial'] ?? null,
                 'origin'                  => $data['origin'] ?? null,
                 'destination'             => $data['destination'] ?? null,
                 'commodity'               => $consolidated['commodity'],
@@ -147,9 +144,7 @@ class CommercialQuoteService
                 'id_regime'               => $data['id_regime'] ?? null,
                 'id_type_load'            => $data['id_type_load'],
                 'id_incoterms'            => $data['id_incoterms'] ?? null,
-                'id_containers'           => $data['id_containers_consolidated'] ?? $request->id_containers_consolidated,
                 'id_customer'             => $customerId,
-                'container_quantity'      => $data['container_quantity_consolidated'] ?? $request->container_quantity_consolidated,
                 'lcl_fcl'                 => $data['lcl_fcl'] ?? null,
                 'is_consolidated'         => $isConsolidated,
                 'nro_package'             => $consolidated['total_bultos'],
@@ -158,7 +153,6 @@ class CommercialQuoteService
                 'volumen_kgv'             => $this->parseDouble($consolidated['total_volumen']),
                 'unit_of_volumen_kgv'     => $consolidated['unit_of_volumen_kgv'],
                 'pounds'                  => $this->parseDouble($data['pounds'] ?? $request->pounds),
-                'nro_operation'           => $data['nro_operation'] ?? $request->nro_operation,
                 'valid_until'             => now()->format('Y-m-d'),
                 'services_to_quote'       => $typeService,
                 'exw_pickup_address'      => $pickupAddressAtOrigin,

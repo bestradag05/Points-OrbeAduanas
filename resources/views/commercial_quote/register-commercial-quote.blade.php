@@ -148,7 +148,7 @@
                                 <div class="form-group">
                                     <label for="nro_packages_consolidated">Nro de Bultos:</label>
                                     <input id="nro_packages_consolidated" type="number" min="0" step="1"
-                                        class="form-control" type="text" name="nro_packages_consolidated">
+                                        class="form-control required" type="text" name="nro_packages_consolidated">
                                 </div>
                             </div>
 
@@ -159,7 +159,8 @@
                                         type="text" name="id_packaging_type_consolidated"> --}}
 
                                     <x-adminlte-select2 id="id_packaging_type_consolidated"
-                                        name="id_packaging_type_consolidated" data-placeholder="Seleccione una opcion...">
+                                        name="id_packaging_type_consolidated" class="required"
+                                        data-placeholder="Seleccione una opcion...">
                                         <option />
                                         @foreach ($packingTypes as $packingType)
                                             <option value="{{ $packingType->id }}">
@@ -170,7 +171,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-6">
+                            <div id="contenedor_weight_consolidated" class="col-6">
                                 <div class="form-group ">
                                     <label for="weight" class="col-form-label">Peso</label>
 
@@ -196,7 +197,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-6">
+                            <div id="contenedor_volumen_consolidated" class="col-6">
                                 <div class="form-group">
                                     <label for="volumen_kgv" class="col-form-label">Volumen</label>
 
@@ -389,9 +390,9 @@
                             <div class="form-group">
                                 <label for="nro_package_container">N° Paquetes / Bultos</label>
                                 <input type="number" min="0" step="1"
-                                    class="form-control @error('nro_package_container') is-invalid @enderror" id="nro_package_container"
-                                    name="nro_package_container" placeholder="Ingrese el nro de paquetes.."
-                                    oninput="validarInputNumber(this)"
+                                    class="form-control @error('nro_package_container') is-invalid @enderror"
+                                    id="nro_package_container" name="nro_package_container"
+                                    placeholder="Ingrese el nro de paquetes.." oninput="validarInputNumber(this)"
                                     value="{{ isset($routing) ? $routing->nro_package_container : '' }}">
                                 @error('nro_package_container')
                                     <span class="invalid-feedback d-block" role="alert">
@@ -711,7 +712,7 @@
                 `${stepSelector} input, ${stepSelector} select, ${stepSelector} textarea`);
 
             stepFields.forEach(function(field) {
-                if (field.hasAttribute('data-required')) {
+                if (field.dataset.required === 'true') {
                     if (field.type === 'radio') {
                         const radioGroup = document.querySelectorAll(`input[name="${field.name}"]`);
                         const isChecked = Array.from(radioGroup).some(radio => radio.checked);
@@ -762,33 +763,58 @@
 
 
 
+        function isConsolidatedSelected() {
+            return document.querySelector('input[name="is_consolidated"]:checked')?.value === '1';
+        }
+
+
+        function hasConsolidatedItems() {
+            const hidden = document.getElementById('shippers_consolidated')?.value || '[]';
+            try {
+                const arr = JSON.parse(hidden);
+                return Array.isArray(arr) && arr.length > 0;
+            } catch {
+                return false;
+            }
+        }
+
         function submitForm() {
             const form = document.getElementById('formCommercialQuote');
             let valid = true;
 
 
-            valid &= validateStep('#step0');
+            const step1 = validateStep('#step0');
 
 
 
-            valid &= validateStep('#step1');
+            const step2 = validateStep('#step1');
+
+            valid = step1 && step2;
 
 
 
             if (valid) {
 
+                if (isConsolidatedSelected()) {
+                    if (!hasConsolidatedItems()) {
+                        toastr.error("Por favor, agregue al menos un shipper consolidado.");
+                        return;
+                    }
+                } else {
 
-                const valueMeasures = document.getElementById('value_measures').value.trim();
-                const volumen = $('#contenedor_volumen #volumen_kgv').val().trim();
-                const weight = $('#contenedor_weight #weight').val().trim();
+                    const valueMeasures = document.getElementById('value_measures').value.trim();
+                    const volumen = $('#contenedor_volumen #volumen_kgv').val().trim();
+                    const weight = $('#contenedor_weight #weight').val().trim();
 
-               if (!((volumen && weight) || valueMeasures)) {
-                    toastr.error("Por favor, complete al menos uno de los siguientes: Volumen y Peso, o Medidas.");
-                    return;
+                    if (!((volumen && weight) || valueMeasures)) {
+                        toastr.error("Por favor, complete al menos uno de los siguientes: Volumen y Peso, o Medidas.");
+                        return;
+                    }
+
                 }
-                
+
                 form.submit();
-               
+
             } else {
                 const invalidFields = document.querySelectorAll('.is-invalid');
                 if (invalidFields.length > 0) {

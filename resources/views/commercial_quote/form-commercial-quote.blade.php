@@ -939,11 +939,17 @@
 
                         function toggleConsolidatedSection() {
                             let isConsolidated = document.querySelector('input[name="is_consolidated"]:checked').value;
-
+                            const selectElement = document.getElementById('incoterms');
+                            const selectedCode = selectElement.options[selectElement.selectedIndex].getAttribute('data-code')
+                            const exwPickupAddressDiv = document.querySelector('#div_supplier_data');
+                            const exwPickupAddressInput = exwPickupAddressDiv.querySelector('input[name="pickup_address_at_origin"]');
 
                             if (isConsolidated === "1") {
                                 document.getElementById("multipleProvidersSection").classList.remove("d-none");
                                 document.getElementById("singleProviderSection").classList.add("d-none");
+
+                                setSectionRequired('#singleProviderSection', false);
+
 
                                 //Ocultamos los datos del proveedor ya que esta en la otra seccion:
                                 hideSupplierDataInExw();
@@ -965,14 +971,32 @@
                                 document.getElementById("multipleProvidersSection").classList.add("d-none");
                                 document.getElementById("singleProviderSection").classList.remove("d-none");
 
-                                const selectElement = document.getElementById('incoterms');
-                                const selectedCode = selectElement.options[selectElement.selectedIndex].getAttribute('data-code')
+
                                 if (selectedCode === 'EXW') {
-                                    const exwPickupAddressDiv = document.querySelector('#div_supplier_data');
+
                                     exwPickupAddressDiv.classList.remove('d-none');
+
+                                    //Agregaos el data-required si exw para que lo ponga como requerido
+
+                                    exwPickupAddressInput.setAttribute('data-required', 'true');
+                                } else {
+                                    exwPickupAddressInput.removeAttribute('data-required');
                                 }
 
                             }
+                        }
+
+                        function setSectionRequired(sectionSelector, turnOn) {
+                            const fields = document.querySelectorAll(
+                                `${sectionSelector} input, ${sectionSelector} select, ${sectionSelector} textarea`
+                            );
+
+                            fields.forEach(el => {
+                                // Cambiamos el valor directamente
+                                el.dataset.required = turnOn ? 'true' : 'false';
+                                // Quitamos la marca visual de error
+                                el.classList.remove('is-invalid');
+                            });
                         }
 
 
@@ -987,6 +1011,9 @@
                                 if ($(this).is(":checkbox")) {
                                     $(this).prop("checked", false); // Resetear checkbox
                                 }
+
+                                $(this).removeAttr("data-required");
+                                $(this).removeClass("is-invalid");
                             });
                         }
 
@@ -1026,7 +1053,7 @@
                             let kilogramsVal = e.target.value;
                             let kilograms = kilogramsVal.replace(/,/g, '');
                             let numberValue = parseFloat(kilograms);
-    
+
                             if (!kilogramsVal || isNaN(numberValue)) {
 
                                 $('#pounds').val(0);
@@ -1179,7 +1206,7 @@
                                     height,
                                     unit_measurement
                                 };
-   
+
                                 valueMeasuresHidden.value = JSON.stringify(array);
 
                                 rowIndex++
@@ -1412,6 +1439,15 @@
                             if (!validateInputs(elements)) {
                                 return;
                             }
+                            //Validacion para medidas o volumen y peso
+                            const valueMeasures = document.getElementById('value-measures-consolidated').value.trim();
+                            const volumen = $('#contenedor_volumen_consolidated #volumen_kgv').val().trim();
+                            const weight = $('#contenedor_weight_consolidated #weight').val().trim();
+
+                            if (!((volumen && weight) || valueMeasures)) {
+                                toastr.error("Por favor, complete al menos uno de los siguientes: Volumen y Peso, o Medidas.");
+                                return;
+                            }
 
                             let shipper = {
                                 'id_incoterms': getValueByName('id_incoterms'),
@@ -1442,22 +1478,22 @@
                             updateHiddenInput();
 
                             let newRow = `
-                    <tr data-index="${index}">
-                        <td>${shipper.shipper_name}</td>
-                        <td>${shipper.shipper_contact}</td>
-                        <td>${shipper.shipper_address}</td>
-                        <td>${shipper.commodity}</td>
-                        <td>${shipper.load_value}</td>
-                        <td>${shipper.nro_packages_consolidated}</td>
-                        <td>${shipper.name_packaging_type_consolidated}</td>
-                        <td>${shipper.weight} ${shipper.unit_of_weight}</td>
-                        <td>${shipper.volumen_kgv} ${shipper.unit_of_volumen_kgv}</td>
-                        <td>
-                            <button class="btn btn-info btn-sm btn-detail"><i class="fas fa-folder-open"></i></button>
-                            <button class="btn btn-danger btn-sm delete-row"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
+                                <tr data-index="${index}">
+                                    <td>${shipper.shipper_name}</td>
+                                    <td>${shipper.shipper_contact}</td>
+                                    <td>${shipper.shipper_address}</td>
+                                    <td>${shipper.commodity}</td>
+                                    <td>${shipper.load_value}</td>
+                                    <td>${shipper.nro_packages_consolidated}</td>
+                                    <td>${shipper.name_packaging_type_consolidated}</td>
+                                    <td>${shipper.weight} ${shipper.unit_of_weight}</td>
+                                    <td>${shipper.volumen_kgv} ${shipper.unit_of_volumen_kgv}</td>
+                                    <td>
+                                        <button class="btn btn-info btn-sm btn-detail"><i class="fas fa-folder-open"></i></button>
+                                        <button class="btn btn-danger btn-sm delete-row"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            `;
 
 
                             tableShipper.append(newRow);
