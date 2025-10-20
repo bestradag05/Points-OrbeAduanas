@@ -25,7 +25,7 @@ class CommercialquoteRequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         // Mostrar los mensajes de error en un dd()
-        /* dd('❌ Errores de validación detectados:', $validator->errors()->toArray()); */
+        dd('❌ Errores de validación detectados:', $validator->errors()->toArray());
 
         // Si ya terminas de probar, elimina el dd() y descomenta esto:
         // throw new HttpResponseException(
@@ -108,24 +108,25 @@ class CommercialquoteRequest extends FormRequest
         $base = [
             'id_type_shipment'   => ['required'],
             'id_type_load'       => ['required'],
-            'commodity'          => ['exclude_if:is_consolidated,true', 'required'],
+            'commodity'          => ['exclude_if:is_consolidated,true', 'exclude_if:lcl_fcl,FCL', 'required'],
 
             // (peso & volumen) O medidas
-            'weight'             => ['exclude_if:is_consolidated,true','nullable', 'numeric', 'gt:0', 'required_without:value_measures', 'required_with:volumen_kgv'],
+            'weight'             => ['exclude_if:is_consolidated,true', 'exclude_if:lcl_fcl,FCL','nullable', 'numeric', 'gt:0', 'required_without:value_measures', 'required_with:volumen_kgv'],
             'unit_of_weight'     => ['nullable', 'required_with:weight'],
 
-            'volumen_kgv'        => ['exclude_if:is_consolidated,true','nullable', 'numeric', 'gt:0', 'required_without:value_measures', 'required_with:weight'],
+            'volumen_kgv'        => ['exclude_if:is_consolidated,true', 'exclude_if:lcl_fcl,FCL','nullable', 'numeric', 'gt:0', 'required_without:value_measures', 'required_with:weight'],
             'unit_of_volumen_kgv' => ['nullable', 'required_with:volumen_kgv'],
+            'load_value'          => ['exclude_if:is_consolidated,true', 'exclude_if:lcl_fcl,FCL','required'],
 
-            'value_measures'     => ['exclude_if:is_consolidated,true','nullable', 'string', 'min:1', 'required_without_all:weight,volumen_kgv'],
-
+            'value_measures'     => ['exclude_if:is_consolidated,true', 'exclude_if:lcl_fcl,FCL','nullable', 'string', 'min:1', 'required_without_all:weight,volumen_kgv'],
+            'type_shipment_name' => ['required'],
             'lcl_fcl'            => ['required_if:type_shipment_name,Marítima'],
             'observation'        => ['nullable'],
-            'nro_package'       => ['exclude_if:is_consolidated,true','required', 'integer'],
-            'id_packaging_type' => ['exclude_if:is_consolidated,true','required', 'integer'],
+            'nro_package'       => ['exclude_if:is_consolidated,true', 'exclude_if:lcl_fcl,FCL','required', 'integer'],
+            'id_packaging_type' => ['exclude_if:is_consolidated,true', 'exclude_if:lcl_fcl,FCL','required', 'integer'],
             'type_service_checked'    => ['nullable', 'array'],
-            'shippers_consolidated'   => ['nullable', 'array'],
-            'data_containers'         => ['nullable', 'array'],
+            'shippers_consolidated' => ['required_if:is_consolidated,true', 'array', 'nullable'],
+            'data_containers'         => ['required_if:lcl_fcl,FCL', 'array', 'nullable'],
 
             'is_customer_prospect'    => ['required', 'in:prospect,customer'],
             'customer_company_name'   => ['required_if:is_customer_prospect,prospect', 'nullable', 'string', 'min:2'],
@@ -136,13 +137,12 @@ class CommercialquoteRequest extends FormRequest
         $full = [
             'origin'              => ['required', 'string'],
             'destination'         => ['required', 'string'],
-            'load_value'          => ['exclude_if:is_consolidated,true','required'],
             'id_regime'           => ['required'],
             'id_incoterms'        => ['required', 'integer'],
             'id_customs_district' => ['required', 'integer'],
             'is_consolidated' => ['required', 'boolean'],
             'pickup_address_at_origin' => $this->isExw()
-                ? ['exclude_if:is_consolidated,true','required', 'string', 'min:5']
+                ? ['exclude_if:is_consolidated,true', 'exclude_if:lcl_fcl,FCL', 'required', 'string', 'min:5']
                 : ['nullable'],
         ];
 

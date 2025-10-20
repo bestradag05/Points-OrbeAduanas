@@ -334,7 +334,7 @@
 
                             <div class="row my-4">
 
-                                <div class="col-4 transporte-hide">
+                                <div class="col-4">
                                     <div class="form-group row">
                                         <label for="load_value" class="col-sm-4 col-form-label">Valor de factura <span
                                                 class="text-danger">*</span></label>
@@ -993,7 +993,9 @@
 
                             fields.forEach(el => {
                                 // Cambiamos el valor directamente
-                                el.dataset.required = turnOn ? 'true' : 'false';
+                                if (el.hasAttribute('data-required')) {
+                                    el.dataset.required = turnOn ? 'true' : 'false';
+                                }
                                 // Quitamos la marca visual de error
                                 el.classList.remove('is-invalid');
                             });
@@ -1084,8 +1086,9 @@
                         function addMeasuresFCL() {
                             let formContainer = document.getElementById('formContainer');
                             let divMeasures = document.getElementById("div-measures-fcl");
-                            let nroPackage = parseInt(formContainer.querySelector("#nro_package").value); // Usar querySelector aquí también
-                            let valueMeasuresHidden = formContainer.querySelector('#value_measures');
+                            let nroPackage = parseInt(formContainer.querySelector("#nro_package_container")
+                                .value); // Usar querySelector aquí también
+                            let valueMeasuresHidden = formContainer.querySelector('#value_measures_container');
 
                             AddRowMeasures(divMeasures, nroPackage, tableMeasuresFCL, arrayMeasuresFCL, "arrayMeasuresFCL",
                                 valueMeasuresHidden);
@@ -1160,7 +1163,7 @@
                             } else {
 
                                 if (isNaN(nroPackage) || amount_package > nroPackage) {
-                                    alert(
+                                    toastr.warning(
                                         'El numero de paquetes / bultos no puede ser menor que la cantidad ingresada'
                                     );
                                     return;
@@ -1171,7 +1174,7 @@
 
 
                                 if (currentPackage > nroPackage) {
-                                    alert(
+                                    toastr.warning(
                                         'No se puede agregar otra fila, por que segun los registros ya completaste el numero de bultos'
                                     );
                                     currentPackage -= amount_package;
@@ -1252,6 +1255,18 @@
 
                             if (isValid) {
 
+
+                                //Validacion para medidas o volumen y peso
+                                const valueMeasures = document.getElementById('value_measures_container').value.trim();
+                                const volumen = $('#contenedor_volumen_fcl #volumen_kgv').val().trim();
+                                const weight = $('#contenedor_weight_fcl #weight').val().trim();
+
+                                if (!((volumen && weight) || valueMeasures)) {
+                                    toastr.error("Por favor, complete al menos uno de los siguientes: Volumen y Peso, o Medidas.");
+                                    return;
+                                }
+
+
                                 let containerName = $('#id_containers option:selected').text().trim();
                                 let packaginTypeName = $('#formContainer #id_packaging_type option:selected').text().trim();
                                 let unit_of_volumen_kgv = $('#formContainer #unit_of_volumen_kgv option:selected').text().trim();
@@ -1262,7 +1277,7 @@
                                     'containerName': containerName,
                                     'container_quantity': getValueByNameFCL('container_quantity'),
                                     'commodity': getValueByNameFCL('commodity'),
-                                    'nro_package': getValueByNameFCL('nro_package'),
+                                    'nro_package': getValueByNameFCL('nro_package_container'),
                                     'id_packaging_type': getValueByNameFCL('id_packaging_type'),
                                     'packaginTypeName': packaginTypeName,
                                     'load_value': getValueByNameFCL('load_value'),
@@ -1270,8 +1285,8 @@
                                     'unit_of_volumen_kgv': unit_of_volumen_kgv,
                                     'weight': getValueByNameFCL('weight'),
                                     'unit_of_weight': unit_of_weight,
-                                    'value_measures': getValueByNameFCL('value_measures') ? JSON.parse(getValueByNameFCL(
-                                        'value_measures')) : ''
+                                    'value_measures': getValueByNameFCL('value_measures_container') ? JSON.parse(getValueByNameFCL(
+                                        'value_measures_container')) : ''
                                 };
 
 
@@ -1652,6 +1667,8 @@
 
 
                                 if (this.value === 'FCL') {
+
+                                    setSectionRequired('#singleProviderSection', false);
                                     // Mostrar los campos FCL y ocultar los LCL
                                     fclFields.forEach(el => el.classList.remove('d-none'));
                                     lclFields.forEach(el => el.classList.add('d-none'));
@@ -1668,6 +1685,9 @@
                                         }
                                     }
                                 } else {
+
+                                    setSectionRequired('#singleProviderSection', true);
+
                                     // Mostrar los campos LCL y ocultar los FCL
                                     fclFields.forEach(el => el.classList.add('d-none'));
                                     lclFields.forEach(el => el.classList.remove('d-none'));

@@ -391,7 +391,7 @@
                                 <label for="nro_package_container">N° Paquetes / Bultos</label>
                                 <input type="number" min="0" step="1"
                                     class="form-control @error('nro_package_container') is-invalid @enderror"
-                                    id="nro_package_container" name="nro_package_container"
+                                    id="nro_package_container" name="nro_package_container" data-required="true"
                                     placeholder="Ingrese el nro de paquetes.." oninput="validarInputNumber(this)"
                                     value="{{ isset($routing) ? $routing->nro_package_container : '' }}">
                                 @error('nro_package_container')
@@ -407,7 +407,8 @@
                             <div class="form-group">
                                 <label for="id_packaging_type">Tipo de embalaje</label>
 
-                                <x-adminlte-select2 name="id_packaging_type" data-placeholder="Seleccione una opcion...">
+                                <x-adminlte-select2 name="id_packaging_type" data-placeholder="Seleccione una opcion..."
+                                    data-required="true">
                                     <option />
                                     @foreach ($packingTypes as $packingType)
                                         <option value="{{ $packingType->id }}">
@@ -431,13 +432,14 @@
                                     </div>
                                     <input type="text"
                                         class="form-control CurrencyInput @error('load_value') is-invalid @enderror "
-                                        name="load_value" data-type="currency" placeholder="Ingrese valor de la carga"
+                                        name="load_value" data-type="currency" data-required="true"
+                                        placeholder="Ingrese valor de la carga"
                                         value="{{ isset($routing->load_value) ? $routing->load_value : old('load_value') }}">
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-6">
+                        <div id="contenedor_weight_fcl" class="col-6">
                             <div class="form-group ">
                                 <label for="weight" class="col-form-label">Peso</label>
 
@@ -462,7 +464,7 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div id="contenedor_volumen_fcl" class="col-6">
                             <div class="form-group">
                                 <label for="volumen_kgv" class="col-form-label">Volumen</label>
 
@@ -620,6 +622,7 @@
         })
 
 
+
         function selectAllServices() {
             const selectAllCheckbox = document.getElementById('servicio_integral');
             const serviceCheckboxes = document.querySelectorAll('input[name="type_service[]"]');
@@ -650,6 +653,9 @@
             document.querySelectorAll('.transporte-hide').forEach(el => {
                 el.style.display = onlyTransport ? 'none' : '';
             });
+
+            //🔹 Ajustar los data-required de todos los .transporte-hide de una vez
+            setSectionRequired('.transporte-hide', !onlyTransport);
         }
 
         function searchSupplier(e) {
@@ -710,7 +716,6 @@
             let valid = true;
             const stepFields = document.querySelectorAll(
                 `${stepSelector} input, ${stepSelector} select, ${stepSelector} textarea`);
-
             stepFields.forEach(function(field) {
                 if (field.dataset.required === 'true') {
                     if (field.type === 'radio') {
@@ -778,15 +783,27 @@
             }
         }
 
+        function isFCLSelected() {
+            return document.querySelector('input[name="lcl_fcl"]:checked')?.value === 'FCL';
+        }
+
+
+        function hasFCLItems() {
+            const hidden = document.getElementById('data_containers')?.value || '[]';
+            try {
+                const arr = JSON.parse(hidden);
+                return Array.isArray(arr) && arr.length > 0;
+            } catch {
+                return false;
+            }
+        }
+
         function submitForm() {
             const form = document.getElementById('formCommercialQuote');
             let valid = true;
 
 
             const step1 = validateStep('#step0');
-
-
-
             const step2 = validateStep('#step1');
 
             valid = step1 && step2;
@@ -800,6 +817,13 @@
                         toastr.error("Por favor, agregue al menos un shipper consolidado.");
                         return;
                     }
+                }
+                if (isFCLSelected()) {
+                    if (!hasFCLItems()) {
+                        toastr.error("Por favor, agregue al menos un contenedor.");
+                        return;
+                    }
+
                 } else {
 
                     const valueMeasures = document.getElementById('value_measures').value.trim();

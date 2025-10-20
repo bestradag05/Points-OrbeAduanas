@@ -167,7 +167,6 @@ class CommercialQuoteService
             $calcContainers = $this->calculateDataContainers($dataContainers);
 
             $commercialQuote = CommercialQuote::create([
-                'nro_quote_commercial'    => $data['nro_quote_commercial'] ?? null,
                 'origin'                  => $data['origin'] ?? null,
                 'destination'             => $data['destination'] ?? null,
                 'commodity'               => $calcContainers['commodity'],
@@ -177,9 +176,7 @@ class CommercialQuoteService
                 'id_regime'               => $data['id_regime'] ?? null,
                 'id_type_load'            => $data['id_type_load'],
                 'id_incoterms'            => $data['id_incoterms'] ?? null,
-                'id_containers'           => $data['id_containers_consolidated'] ?? $request->id_containers_consolidated,
                 'id_customer'             => $customerId,
-                'container_quantity'      => $data['container_quantity_consolidated'] ?? $request->container_quantity_consolidated,
                 'lcl_fcl'                 => $data['lcl_fcl'],
                 'is_consolidated'         => $isConsolidated,
                 'nro_package'             => $calcContainers['total_bultos'],
@@ -188,7 +185,6 @@ class CommercialQuoteService
                 'volumen_kgv'             => $this->parseDouble($calcContainers['total_volumen']),
                 'unit_of_volumen_kgv'     => $calcContainers['unit_of_volumen_kgv'],
                 'pounds'                  => $this->parseDouble($data['pounds'] ?? $request->pounds),
-                'nro_operation'           => $data['nro_operation'] ?? $request->nro_operation,
                 'valid_until'             => now()->format('Y-m-d'),
                 'pickup_address_at_origin' => $pickupAddressAtOrigin,
                 'services_to_quote'       => $typeService,
@@ -196,32 +192,32 @@ class CommercialQuoteService
             ]);
 
             foreach ($dataContainers as $container) {
-                $commercialQuote->containers()->attach($container->id_container, [
-                    'container_quantity'      => $container->container_quantity,
-                    'commodity'               => $container->commodity,
-                    'nro_package'             => $container->nro_package,
-                    'id_packaging_type'       => $container->id_packaging_type,
-                    'load_value'              => $this->parseDouble($container->load_value),
-                    'weight'                  => $this->parseDouble($container->weight),
-                    'unit_of_weight'          => $container->unit_of_weight,
-                    'volumen_kgv'             => $this->parseDouble($container->volumen_kgv),
-                    'unit_of_volumen_kgv'     => $container->unit_of_volumen_kgv,
-                    'measures'                => json_encode($container->value_measures),
+                $commercialQuote->containers()->attach($container['id_container'], [
+                    'container_quantity'      => $container['container_quantity'],
+                    'commodity'               => $container['commodity'],
+                    'nro_package'             => $container['nro_package'],
+                    'id_packaging_type'       => $container['id_packaging_type'],
+                    'load_value'              => $this->parseDouble($container['load_value']),
+                    'weight'                  => $this->parseDouble($container['weight']),
+                    'unit_of_weight'          => $container['unit_of_weight'],
+                    'volumen_kgv'             => $this->parseDouble($container['volumen_kgv']),
+                    'unit_of_volumen_kgv'     => $container['unit_of_volumen_kgv'],
+                    'measures'                => json_encode($container['value_measures']),
                 ]);
             }
         } else {
             // CASO GENERAL
 
             $commercialQuote = CommercialQuote::create([
-                'origin'                  => $data['origin'],
-                'destination'             => $data['destination'],
+                'origin'                  => $data['origin'] ?? null,
+                'destination'             => $data['destination'] ?? null,
                 'load_value'              => $this->parseDouble($data['load_value']),
                 'id_type_shipment'        => $data['id_type_shipment'],
                 'id_customs_district'     => $data['id_customs_district'] ?? null,
-                'id_regime'               => $data['id_regime'],
+                'id_regime'               => $data['id_regime'] ?? null,
                 'id_type_load'            => $data['id_type_load'],
-                'id_incoterms'            => $data['id_incoterms'],
-                'commodity'               => $data['commodity'],
+                'id_incoterms'            => $data['id_incoterms'] ?? null,
+                'commodity'               => $data['commodity'] ?? null,
                 'nro_package'             => $data['nro_package'] ?? null,
                 'id_packaging_type'       => $data['id_packaging_type'] ?? null,
                 'id_customer'             => $customerId,
@@ -494,52 +490,51 @@ class CommercialQuoteService
 
     public function storeConsolidateCarga($shipper, $idCommercialQuote)
     {
-
-        $existSupplier = Supplier::where('name_businessname', $shipper->shipper_name)->first();
+        $existSupplier = Supplier::where('name_businessname', $shipper['shipper_name'])->first();
 
 
         if ($existSupplier) {
 
             ConsolidatedCargos::create([
                 'commercial_quote_id' => $idCommercialQuote,
-                'id_incoterms' => $shipper->id_incoterms,
+                'id_incoterms' => $shipper['id_incoterms'],
                 'supplier_id' => $existSupplier->id,
                 'supplier_temp' => null,
-                'commodity' => $shipper->commodity,
-                'load_value' => $this->parseDouble($shipper->load_value),
-                'nro_packages' => $shipper->nro_packages_consolidated,
-                'id_packaging_type' => $shipper->id_packaging_type_consolidated,
-                'weight' => $this->parseDouble($shipper->weight),
-                'unit_of_weight' => $shipper->unit_of_weight,
-                'volumen_kgv' => $this->parseDouble($shipper->volumen_kgv),
-                'unit_of_volumen_kgv' => $shipper->unit_of_volumen_kgv,
-                'value_measures' => ($shipper->value_measures) ? json_encode($shipper->value_measures) : null,
+                'commodity' => $shipper['commodity'],
+                'load_value' => $this->parseDouble($shipper['load_value']),
+                'nro_packages' => $shipper['nro_packages_consolidated'],
+                'id_packaging_type' => $shipper['id_packaging_type_consolidated'],
+                'weight' => $this->parseDouble($shipper['weight']),
+                'unit_of_weight' => $shipper['unit_of_weight'],
+                'volumen_kgv' => $this->parseDouble($shipper['volumen_kgv']),
+                'unit_of_volumen_kgv' => $shipper['unit_of_volumen_kgv'],
+                'value_measures' => ($shipper['value_measures']) ? json_encode($shipper['value_measures']) : null,
             ]);
         } else {
 
 
             $tempSupplier = [
-                "shipper_name" =>  $shipper->shipper_name,
-                "shipper_contact" =>  $shipper->shipper_contact,
-                "shipper_contact_email" =>  $shipper->shipper_contact_email,
-                "shipper_contact_phone" =>  $shipper->shipper_contact_phone,
-                "shipper_address" =>  $shipper->shipper_address
+                "shipper_name" =>  $shipper['shipper_name'],
+                "shipper_contact" =>  $shipper['shipper_contact'],
+                "shipper_contact_email" =>  $shipper['shipper_contact_email'],
+                "shipper_contact_phone" =>  $shipper['shipper_contact_phone'],
+                "shipper_address" =>  $shipper['shipper_address']
             ];
 
             ConsolidatedCargos::create([
                 'commercial_quote_id' => $idCommercialQuote,
-                'id_incoterms' => $shipper->id_incoterms,
+                'id_incoterms' => $shipper['id_incoterms'],
                 'supplier_id' => null,
                 'supplier_temp' => json_encode($tempSupplier),
-                'commodity' => $shipper->commodity,
-                'load_value' => $this->parseDouble($shipper->load_value),
-                'nro_packages' => $shipper->nro_packages_consolidated,
-                'id_packaging_type' => $shipper->id_packaging_type_consolidated,
-                'weight' => $this->parseDouble($shipper->weight),
-                'unit_of_weight' => $shipper->unit_of_weight,
-                'volumen_kgv' => $this->parseDouble($shipper->volumen_kgv),
-                'unit_of_volumen_kgv' => $shipper->unit_of_volumen_kgv,
-                'value_measures' => ($shipper->value_measures) ? json_encode($shipper->value_measures) : null,
+                'commodity' => $shipper['commodity'],
+                'load_value' => $this->parseDouble($shipper['load_value']),
+                'nro_packages' => $shipper['nro_packages_consolidated'],
+                'id_packaging_type' => $shipper['id_packaging_type_consolidated'],
+                'weight' => $this->parseDouble($shipper['weight']),
+                'unit_of_weight' => $shipper['unit_of_weight'],
+                'volumen_kgv' => $this->parseDouble($shipper['volumen_kgv']),
+                'unit_of_volumen_kgv' => $shipper['unit_of_volumen_kgv'],
+                'value_measures' => ($shipper['value_measures']) ? json_encode($shipper['value_measures']) : null,
             ]);
         }
     }
@@ -882,20 +877,20 @@ class CommercialQuoteService
 
         if (count($shippersConsolidated) > 0) {
             // Obtener el primer objeto del array
-            $firstContainer = $shippersConsolidated[0];
-
+            $firstShipper = $shippersConsolidated[0];
+     
             // Asignar los valores del primer objeto a las variables correspondientes
-            $unit_of_weight = $firstContainer->unit_of_weight;
-            $unit_of_volumen_kgv = $firstContainer->unit_of_volumen_kgv;
+            $unit_of_weight = $firstShipper['unit_of_weight'];
+            $unit_of_volumen_kgv = $firstShipper['unit_of_volumen_kgv'];
         }
 
 
         foreach ($shippersConsolidated as $consolidated) {
-            $commodityText[] = $consolidated->commodity;
-            $totalVolumen += $this->parseDouble($consolidated->volumen_kgv);
-            $totalWeight += $this->parseDouble($consolidated->weight);
-            $totalBultos += (int) $consolidated->nro_packages_consolidated;
-            $totalLoadValue += $this->parseDouble($consolidated->load_value);
+            $commodityText[] = $consolidated['commodity'];
+            $totalVolumen += $this->parseDouble($consolidated['volumen_kgv']);
+            $totalWeight += $this->parseDouble($consolidated['weight']);
+            $totalBultos += (int) $consolidated['nro_packages_consolidated'];
+            $totalLoadValue += $this->parseDouble($consolidated['load_value']);
         }
 
         $commodity = implode(', ', $commodityText);
@@ -927,16 +922,16 @@ class CommercialQuoteService
             $firstContainer = $containers[0];
 
             // Asignar los valores del primer objeto a las variables correspondientes
-            $unit_of_weight = $firstContainer->unit_of_weight;
-            $unit_of_volumen_kgv = $firstContainer->unit_of_volumen_kgv;
+            $unit_of_weight = $firstContainer['unit_of_weight'];
+            $unit_of_volumen_kgv = $firstContainer['unit_of_volumen_kgv'];
         }
 
         foreach ($containers as $container) {
-            $commodityText[] = $container->commodity;
-            $totalVolumen += $this->parseDouble($container->volumen_kgv);
-            $totalWeight += $this->parseDouble($container->weight);
-            $totalBultos += (int) $container->nro_package;
-            $totalLoadValue += $this->parseDouble($container->load_value);
+            $commodityText[] = $container['commodity'];
+            $totalVolumen += $this->parseDouble($container['volumen_kgv']);
+            $totalWeight += $this->parseDouble($container['weight']);
+            $totalBultos += (int) $container['nro_package'];
+            $totalLoadValue += $this->parseDouble($container['load_value']);
         }
 
 
