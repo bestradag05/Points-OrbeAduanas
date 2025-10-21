@@ -88,8 +88,12 @@ Route::get('/', function () {
 
 
 Route::get('/link', function () {
-    Artisan::call('storage:link');
+	Artisan::call('storage:link');
     Artisan::call('permission:cache-reset');
+  	Artisan::call('cache:clear');
+  	Artisan::call('config:clear');
+  	Artisan::call('view:clear');
+  	Artisan::call('route:clear');
 });
 
 /* Route::get('/alert', function () {
