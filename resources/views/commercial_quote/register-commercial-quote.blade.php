@@ -598,12 +598,34 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var myModal = new bootstrap.Modal(document.getElementById('modalSelectServices'), {
-                backdrop: 'static', // Evita cierre al hacer clic fuera
-                keyboard: false // Evita cierre con la tecla ESC
-            });
 
-            myModal.show();
+            const previousServices = document.getElementById('type_service_checked').value;
+
+
+            if (!previousServices) {
+                // Solo mostrar el modal si no hay servicios seleccionados previamente
+                var myModal = new bootstrap.Modal(document.getElementById('modalSelectServices'), {
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                myModal.show();
+            } else {
+                // Si hay servicios previos, restaurar la selección
+                try {
+                    const selectedServices = JSON.parse(previousServices);
+                    selectedServices.forEach(service => {
+                        const checkbox = document.querySelector(`input[value="${service}"]`);
+                        if (checkbox) {
+                            checkbox.checked = true;
+                        }
+                    });
+                    // Actualizar visibilidad de campos
+                    updateFormFieldsVisibility();
+                } catch (e) {
+                    console.error('Error parsing previous services:', e);
+                }
+            }
+
 
             document.getElementById('btnGenerarServicios').addEventListener('click', function() {
 
@@ -742,29 +764,29 @@
         }
 
 
-        stepper1Node.addEventListener('show.bs-stepper', function(event) {
-            const currentStep = event.detail.from; // Paso actual
-            let valid = false;
+        /*  stepper1Node.addEventListener('show.bs-stepper', function(event) {
+             const currentStep = event.detail.from; // Paso actual
+             let valid = false;
 
-            // Validar el paso actual antes de permitir avanzar
-            if (currentStep === 0) {
-                valid = validateStep('#step0');
-            } else if (currentStep === 1) {
-                valid = validateStep('#step1');
-            }
+             // Validar el paso actual antes de permitir avanzar
+             if (currentStep === 0) {
+                 valid = validateStep('#step0');
+             } else if (currentStep === 1) {
+                 valid = validateStep('#step1');
+             }
 
-            // Si la validación falla, evitar el avance
-            if (!valid) {
-                event.preventDefault();
+             // Si la validación falla, evitar el avance
+             if (!valid) {
+                 event.preventDefault();
 
-                // Enfocar el primer campo inválido
-                const invalidFields = document.querySelectorAll('.is-invalid');
-                if (invalidFields.length > 0) {
-                    invalidFields[0].focus(); // Enfocar el primer campo inválido
-                }
-            }
+                 // Enfocar el primer campo inválido
+                 const invalidFields = document.querySelectorAll('.is-invalid');
+                 if (invalidFields.length > 0) {
+                     invalidFields[0].focus(); // Enfocar el primer campo inválido
+                 }
+             }
 
-        });
+         }); */
 
 
 
@@ -803,16 +825,16 @@
             let valid = true;
 
 
-            const step1 = validateStep('#step0');
-            const step2 = validateStep('#step1');
+            /*  const step1 = validateStep('#step0');
+             const step2 = validateStep('#step1');
 
-            valid = step1 && step2;
+             valid = step1 && step2; */
 
 
 
             if (valid) {
 
-                if (isConsolidatedSelected()) {
+                /* if (isConsolidatedSelected()) {
                     if (!hasConsolidatedItems()) {
                         toastr.error("Por favor, agregue al menos un shipper consolidado.");
                         return;
@@ -835,7 +857,7 @@
                         return;
                     }
 
-                }
+                } */
 
                 form.submit();
 

@@ -8,7 +8,8 @@
                                 data-required="true">
                                 <option />
                                 @foreach ($stateCountrys as $stateCountry)
-                                    <option value="{{ $stateCountry->id }}">
+                                    <option value="{{ $stateCountry->id }}"
+                                        {{ old('origin') == $stateCountry->id ? 'selected' : '' }}>
                                         {{ $stateCountry->country->name . ' - ' . $stateCountry->name }}
                                     </option>
                                 @endforeach
@@ -19,11 +20,12 @@
 
                             <label for="destination">Destino <span class="text-danger">*</span></label>
 
-                            <x-adminlte-select2 name="destination" igroup-si ze="md"
+                            <x-adminlte-select2 name="destination" igroup-size="md"
                                 data-placeholder="Seleccione una opcion..." data-required="true">
                                 <option />
                                 @foreach ($stateCountrys as $stateCountry)
-                                    <option value="{{ $stateCountry->id }}">
+                                    <option value="{{ $stateCountry->id }}"
+                                        {{ old('destination') == $stateCountry->id ? 'selected' : '' }}>
                                         {{ $stateCountry->country->name . ' - ' . $stateCountry->name }}
                                     </option>
                                 @endforeach
@@ -33,7 +35,7 @@
 
                         <div class="col-6">
                             <div class="row" id="lclfcl_content">
-                                <div class="col-12">
+                                <div class=" {{ old('lcl_fcl') || isset($routing->lcl_fcl) ? 'col-8' : 'col-12' }}">
                                     <label for="id_type_shipment">Tipo de embarque <span
                                             class="text-danger">*</span></label>
                                     <x-adminlte-select2 name="id_type_shipment" igroup-size="md"
@@ -48,7 +50,8 @@
                                     </x-adminlte-select2>
                                 </div>
 
-                                <div id="contenedor_radio_lcl_fcl" class="col-4 row align-items-center d-none">
+                                <div id="contenedor_radio_lcl_fcl"
+                                    class="col-4 row align-items-center {{ old('lcl_fcl') || isset($routing->lcl_fcl) ? '' : 'd-none' }}">
                                     <div class="col-6 form-check text-center">
                                         <input type="radio" id="radioLcl" name="lcl_fcl" value="LCL"
                                             {{ (isset($routing->lcl_fcl) && $routing->lcl_fcl === 'LCL') || old('lcl_fcl') === 'LCL' ? 'checked' : '' }}
@@ -148,18 +151,21 @@
                                 <label>¿Es consolidado?</label>
                                 <div class="form-check form-check-inline">
                                     <input type="radio" id="consolidadoSi" name="is_consolidated" value="1"
-                                        class="form-check-input" onchange="toggleConsolidatedSection()">
+                                        class="form-check-input" onchange="toggleConsolidatedSection()"
+                                        {{ old('is_consolidated') === '1' ? 'checked' : '' }}>
                                     <label for="consolidadoSi" class="form-check-label">Sí</label>
                                 </div>
                                 <div class="form-check form-check-inline">
                                     <input type="radio" id="consolidadoNo" name="is_consolidated" value="0"
-                                        class="form-check-input" onchange="toggleConsolidatedSection()" checked>
+                                        class="form-check-input" onchange="toggleConsolidatedSection()"
+                                        {{ !old('is_consolidated') || old('is_consolidated') === '0' ? 'checked' : '' }}>
                                     <label for="consolidadoNo" class="form-check-label">No</label>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="div_supplier_data" class="col-12 row transporte-hide d-none">
+                        <div id="div_supplier_data"
+                            class="col-12 row transporte-hide {{ old('pickup_address_at_origin') || isset($routing->pickup_address_at_origin) ? '' : 'd-none' }}">
                             <div class="col-12">
                                 <hr>
                             </div>
@@ -194,19 +200,22 @@
                                 <div class="form-check form-check-inline mt-2">
                                     <input type="radio" id="customer" name="is_customer_prospect"
                                         value="customer" class="form-check-input"
-                                        onchange="toggleCustomerProspectSection()">
+                                        onchange="toggleCustomerProspectSection()"
+                                        {{ old('is_customer_prospect') === 'customer' || $errors->has('id_customer') ? 'checked' : '' }}>
                                     <label for="customer" class="form-check-label">Cliente</label>
                                 </div>
                                 <div class="form-check form-check-inline">
                                     <input type="radio" id="prospect" name="is_customer_prospect"
                                         value="prospect" class="form-check-input"
-                                        onchange="toggleCustomerProspectSection()" checked>
+                                        onchange="toggleCustomerProspectSection()"
+                                        {{ old('is_customer_prospect') === 'prospect' || (!old('is_customer_prospect') && !$errors->has('id_customer')) ? 'checked' : '' }}>
                                     <label for="prospect" class="form-check-label">Prospecto</label>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="contentProspect" class="col-12 row">
+                        <div id="contentProspect"
+                            class="col-12 row {{ old('is_customer_prospect') === 'customer' || $errors->has('id_customer') ? 'd-none' : '' }}">
                             <div class="col-6">
                                 <div class="form-group">
                                     <label for="customer_company_name">Razon social / Nombre</label>
@@ -278,7 +287,8 @@
 
                         </div>
 
-                        <div id="contentCustomer" class="col-12 row justify-content-center d-none">
+                        <div id="contentCustomer"
+                            class="col-12 row justify-content-center {{ old('is_customer_prospect') === 'customer' || $errors->has('id_customer') ? '' : 'd-none' }}">
                             <div class="col-6">
                                 <div class="form-group">
                                     <label for="id_customer">Cliente <span class="text-danger">*</span></label>
@@ -294,11 +304,6 @@
                                             </option>
                                         @endforeach
                                     </x-adminlte-select2>
-                                    @error('id_customer')
-                                        <span class="invalid-feedback d-block" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    @enderror
 
                                 </div>
                             </div>
@@ -372,7 +377,7 @@
                                                 id="nro_package" name="nro_package"
                                                 placeholder="Ingrese el nro de paquetes.."
                                                 oninput="validarInputNumber(this)"
-                                                value="{{ isset($routing) ? $routing->nro_package : '' }}">
+                                                value="{{ isset($routing) ? $routing->nro_package : old('nro_package') }}">
                                             @error('nro_package')
                                                 <span class="invalid-feedback d-block" role="alert">
                                                     <strong>{{ $message }}</strong>
@@ -393,7 +398,8 @@
                                                 data-placeholder="Seleccione una opcion..." data-required="true">
                                                 <option />
                                                 @foreach ($packingTypes as $packingType)
-                                                    <option value="{{ $packingType->id }}">
+                                                    <option value="{{ $packingType->id }}"
+                                                        {{ old('id_packaging_type') == $packingType->id ? 'selected' : '' }}>
                                                         {{ $packingType->name }}
                                                     </option>
                                                 @endforeach
@@ -453,7 +459,8 @@
                                             </tr>
                                         </thead>
                                     </table>
-                                    <input id="value_measures" type="hidden" name="value_measures" />
+                                    <input id="value_measures" type="hidden" name="value_measures"
+                                        value="{{ old('value_measures', isset($routing->value_measures) ? $routing->value_measures : '') }}" />
                                 </div>
                             </div>
 
@@ -564,7 +571,8 @@
                             </table>
 
 
-                            <input id="shippers_consolidated" type="hidden" name="shippers_consolidated" />
+                            <input id="shippers_consolidated" type="hidden" name="shippers_consolidated"
+                                value="{{ old('shippers_consolidated', isset($routing->shippers_consolidated) ? $routing->shippers_consolidated : '') }}" />
 
                             <div class="row">
                                 <hr class="w-100">
@@ -648,7 +656,8 @@
                             </tbody>
                         </table>
 
-                        <input id="data_containers" type="hidden" name="data_containers" />
+                        <input id="data_containers" type="hidden" name="data_containers"
+                            value="{{ old('data_containers', isset($routing->data_containers) ? $routing->data_containers : '') }}" />
 
 
                     </div>
@@ -656,7 +665,8 @@
 
 
                     <input type="hidden" id="type_shipment_name" name="type_shipment_name">
-                    <input type="hidden" id="type_service_checked" name="type_service_checked">
+                    <input type="hidden" id="type_service_checked" name="type_service_checked"
+                        value="{{ old('type_service_checked') }}">
 
                     <button class="btn btn-secondary mt-5"
                         onclick="stepperCommercialQuote.previous()">Anterior</button>
@@ -736,6 +746,9 @@
                                 }
                             });
 
+                            //Solo se restaurara si hay un valor en el input hidden, por errores de validacion o edicion
+                            restoreMeasuresFromHidden();
+
 
                             tableMeasuresFCL = new DataTable('#measures-fcl', {
                                 paging: false, // Desactiva la paginación
@@ -758,21 +771,37 @@
                                 }
                             });
 
+                            //Solo si hay errores del backend o edicion, para mostrar el contenido en el segundo paso.
+                            const selectedRadio = document.querySelector('input[name="lcl_fcl"]:checked');
+                            if (selectedRadio) {
+                                // Disparar el evento change para activar la lógica existente
+                                selectedRadio.dispatchEvent(new Event('change'));
+                            }
 
-                            // Obtener los valores de los campos del formulario (puedes personalizar esto para tu caso)
-                            let volumenValue = document.getElementById('volumen');
-                            let kilogramoVolumenValue = document.getElementById('kilogram_volumen');
-                            let toneladasValue = document.getElementById('tons');
-                            let totalWeight = document.getElementById('kilograms');
-                            let lcl_fcl = document.getElementsByName('lcl_fcl');
-                            let id_containers = document.getElementById('id_containers');
+                            const selectedConsolidated = document.querySelector('input[name="is_consolidated"]:checked');
+                            if (selectedConsolidated) {
+                                // Disparar el evento change para activar la lógica existente
+                                selectedConsolidated.dispatchEvent(new Event('change'));
+                            }
 
-                            let lclfclSelected = Array.from(document.getElementsByName('lcl_fcl')).find(radio => radio.checked)
-                                ?.value;
+                            //Solo se restaurara si hay un valor en el input hidden, por errores de validacion o edicion (FCL)
+                            restoreContainersFromHidden();
+                            restoreConsolidatedFromHidden();
+
+                            /*  // Obtener los valores de los campos del formulario (puedes personalizar esto para tu caso)
+                             let volumenValue = document.getElementById('volumen');
+                             let kilogramoVolumenValue = document.getElementById('kilogram_volumen');
+                             let toneladasValue = document.getElementById('tons');
+                             let totalWeight = document.getElementById('kilograms');
+                             let lcl_fcl = document.getElementsByName('lcl_fcl');
+                             let id_containers = document.getElementById('id_containers');
+
+                             let lclfclSelected = Array.from(document.getElementsByName('lcl_fcl')).find(radio => radio.checked)
+                                 ?.value; */
 
 
 
-                            // Mostrar/ocultar los campos según los valores
+                            /* // Mostrar/ocultar los campos según los valores
                             if (volumenValue.value !== '' || volumenValue.classList.contains('is-invalid')) {
                                 $('#contenedor_volumen').removeClass('d-none');
                                 $('#contenedor_kg_vol').addClass('d-none');
@@ -832,8 +861,67 @@
                                 $('#lclfcl_content').children().first().removeClass('col-12').addClass('col-8');
                                 $('#lclfcl_content').children().last().removeClass('d-none').addClass('d-flex');
                                 document.getElementById('contenedor_radio_lcl_fcl').classList.remove('d-none');
+                            } */
+                        });
+
+
+
+                        function restoreMeasuresFromHidden() {
+                            const hidden = document.getElementById('value_measures');
+                            if (!hidden || !hidden.value) return;
+                            let data;
+                            try {
+                                data = JSON.parse(hidden.value);
+                            } catch (e) {
+                                console.error('Invalid value_measures JSON', e);
+                                return;
                             }
-                        })
+
+                            // Reiniciar estado
+                            arrayMeasures = {};
+                            currentPackage = 0;
+                            rowIndex = 1;
+                            tableMeasures.clear().draw();
+
+                            // data puede ser objeto con keys numéricas o array
+                            const entries = Array.isArray(data) ? data.entries() : Object.entries(data);
+
+                            for (const [key, m] of Object.entries(data)) {
+                                const idx = parseInt(key, 10) || rowIndex;
+                                // Normalizar valores
+                                const amount = parseInt(m.amount || m.amount === 0 ? m.amount : 0, 10) || 0;
+                                const width = m.width ?? '';
+                                const length = m.length ?? '';
+                                const height = m.height ?? '';
+                                const unit = m.unit_measurement ?? (m.unit_measurement || '');
+
+                                // Guardar en tu arrayMeasures (misma estructura que AddRowMeasures)
+                                arrayMeasures[idx] = {
+                                    amount,
+                                    width,
+                                    length,
+                                    height,
+                                    unit_measurement: unit
+                                };
+                                currentPackage += amount;
+
+                                // Añadir fila a la DataTable (mismo HTML que AddRowMeasures)
+                                const node = tableMeasures.row.add([
+                                    `<input type="number" class="form-control" readonly id="amount-${idx}" value="${amount}" placeholder="Cantidad" min="0" step="1">`,
+                                    `<input type="number" class="form-control" readonly id="width-${idx}" value="${width}" placeholder="Ancho" step="0.0001">`,
+                                    `<input type="number" class="form-control" readonly id="length-${idx}" value="${length}" placeholder="Largo" step="0.0001">`,
+                                    `<input type="number" class="form-control" readonly id="height-${idx}" value="${height}" placeholder="Alto" step="0.0001">`,
+                                    `<input type="text" class="form-control" readonly id="unit-measurement-${idx}" value="${unit}">`,
+                                    `<button type="button" class="btn btn-danger btn-sm" id="delete-${idx}" onclick="deleteRow('${tableMeasures.table().node().id}', 'row-${idx}', ${amount}, arrayMeasures, 'value_measures')"><i class="fa fa-trash"></i></button>`
+                                ]).draw().node();
+
+                                node.id = `row-${idx}`;
+                                rowIndex = Math.max(rowIndex, idx + 1);
+                            }
+
+                            // Asegura que el hidden refleje la estructura interna (opcional)
+                            document.getElementById('value_measures').value = JSON.stringify(arrayMeasures);
+                        }
 
 
                         /* Buscar cliente por el ruc */
@@ -1334,6 +1422,43 @@
 
                         };
 
+                        function restoreContainersFromHidden() {
+                            const hiddenContainers = document.getElementById('data_containers');
+                            if (!hiddenContainers || !hiddenContainers.value) return;
+
+                            try {
+                                // Parsear los contenedores guardados
+                                containers = JSON.parse(hiddenContainers.value);
+
+                                // Limpiar la tabla actual
+                                $('#table-containers tbody').empty();
+
+                                // Recrear las filas
+                                containers.forEach((container, index) => {
+                                    let newRow = `
+                <tr data-index="${index}">
+                    <td>${container.containerName}</td>
+                    <td>${container.container_quantity}</td>
+                    <td>${container.commodity}</td>
+                    <td>${container.nro_package}</td>
+                    <td>${container.packaginTypeName}</td>
+                    <td>${container.load_value}</td>
+                    <td>${container.volumen_kgv} ${container.unit_of_volumen_kgv}</td>
+                    <td>${container.weight} ${container.unit_of_weight}</td>
+                    <td>
+                        <button class="btn btn-info btn-sm btn-detail"><i class="fas fa-folder-open"></i></button>
+                        <button class="btn btn-danger btn-sm delete-row"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+                                    $('#table-containers tbody').append(newRow);
+                                });
+
+                            } catch (e) {
+                                console.error('Error parsing containers data:', e);
+                            }
+                        }
+
 
 
                         $('#table-containers tbody').on('click', '.delete-row', function() {
@@ -1534,6 +1659,46 @@
                         }
 
 
+                        function restoreConsolidatedFromHidden() {
+                            const hiddenShippers = document.getElementById('shippers_consolidated');
+                           
+                            if (!hiddenShippers || !hiddenShippers.value) return;
+
+                            try {
+                                // Parsear los shippers guardados
+                                let shippersData = JSON.parse(hiddenShippers.value);
+                                console.log('hiddenShippers:', shippersData);
+
+                                // Limpiar la tabla actual
+                                $('#providersTable').empty();
+
+                                // Recrear las filas con los datos almacenados
+                                shippersData.forEach((shipper, index) => {
+                                    let newRow = `
+                <tr data-index="${index}">
+                    <td>${shipper.shipper_name}</td>
+                    <td>${shipper.shipper_contact}</td>
+                    <td>${shipper.shipper_address}</td>
+                    <td>${shipper.commodity}</td>
+                    <td>${shipper.load_value}</td>
+                    <td>${shipper.nro_packages_consolidated}</td>
+                    <td>${shipper.name_packaging_type_consolidated}</td>
+                    <td>${shipper.weight} ${shipper.unit_of_weight}</td>
+                    <td>${shipper.volumen_kgv} ${shipper.unit_of_volumen_kgv}</td>
+                    <td>
+                        <button class="btn btn-info btn-sm btn-detail"><i class="fas fa-folder-open"></i></button>
+                        <button class="btn btn-danger btn-sm delete-row"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `;
+                                    $('#providersTable').append(newRow);
+                                });
+
+                            } catch (e) {
+                                console.error('Error al parsear los datos de shippers:', e);
+                            }
+                        }
+
                         $('#providersTable').on('click', '.delete-row', function() {
                             let row = $(this).closest('tr'); // Obtener la fila
                             let index = row.data('index'); // Obtener el índice del array
@@ -1548,7 +1713,7 @@
 
 
                             // Actualizar los índices de las filas restantes
-                            $('#providersTable tbody tr').each(function(i) {
+                            $('#providersTable tr').each(function(i) {
                                 $(this).attr('data-index', i);
                             });
 
@@ -1665,10 +1830,11 @@
                                 const fclFields = document.querySelectorAll('.fcl-fields');
                                 const lclFields = document.querySelectorAll('.lcl-fields');
 
-
                                 if (this.value === 'FCL') {
 
                                     setSectionRequired('#singleProviderSection', false);
+                                    document.getElementById('consolidadoNo').checked = true;
+                                    document.getElementById('consolidadoNo').dispatchEvent(new Event('change'));
                                     // Mostrar los campos FCL y ocultar los LCL
                                     fclFields.forEach(el => el.classList.remove('d-none'));
                                     lclFields.forEach(el => el.classList.add('d-none'));
