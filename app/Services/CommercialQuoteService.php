@@ -498,6 +498,7 @@ class CommercialQuoteService
             ConsolidatedCargos::create([
                 'commercial_quote_id' => $idCommercialQuote,
                 'id_incoterms' => $shipper['id_incoterms'],
+                'pickup_address_at_origin_consolidated' => $shipper['pickup_address_at_origin_consolidated'] ?? null,
                 'supplier_id' => $existSupplier->id,
                 'supplier_temp' => null,
                 'commodity' => $shipper['commodity'],
@@ -524,6 +525,7 @@ class CommercialQuoteService
             ConsolidatedCargos::create([
                 'commercial_quote_id' => $idCommercialQuote,
                 'id_incoterms' => $shipper['id_incoterms'],
+                'pickup_address_at_origin_consolidated' => $shipper['pickup_address_at_origin_consolidated'] ?? null,
                 'supplier_id' => null,
                 'supplier_temp' => json_encode($tempSupplier),
                 'commodity' => $shipper['commodity'],

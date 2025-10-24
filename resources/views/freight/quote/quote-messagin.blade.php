@@ -132,8 +132,8 @@
                                                 class="d-block">{{ $shipper->shipper_contact_phone ?? $consolidated->supplier->contact_number }}</b>
                                         </p>
                                     </div>
-                                    <div class="col-12">
-                                        <p class="text-sm">Direccion :
+                                    <div class="col-6">
+                                        <p class="text-sm">Direccion proveedor :
                                             <b
                                                 class="d-block">{{ $shipper->shipper_address ?? $consolidated->supplier->address }}</b>
                                         </p>
@@ -141,6 +141,13 @@
                                     <div class="col-12">
                                         <p class="text-sm">Descripcion de carga :
                                             <b class="d-block">{{ $consolidated->commodity }}</b>
+                                        </p>
+                                    </div>
+                                    <div
+                                        class="col-12 {{ $consolidated->pickup_address_at_origin_consolidated ? '' : 'd-none' }}">
+                                        <p class="text-sm">Direccion de recojo :
+                                            <b
+                                                class="d-block">{{ $consolidated->pickup_address_at_origin_consolidated }}</b>
                                         </p>
                                     </div>
                                     <div class="col-6">
@@ -1051,6 +1058,14 @@
                     </thead>
                     <tbody>
                         <tr>
+                            <td><strong>Origen</strong></td>
+                            <td>{{ $quote->origin }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Destino</strong></td>
+                            <td>{{ $quote->destination }}</td>
+                        </tr>
+                        <tr>
                             <td><strong>Tipo de embarque</strong></td>
                             <td>{{ $quote->commercial_quote->type_shipment->name }}
                                 {{ $quote->commercial_quote->lcl_fcl != null ? "({$quote->commercial_quote->lcl_fcl})" : '' }}
@@ -1060,16 +1075,15 @@
                             <td><strong>Incoterm</strong></td>
                             <td>{{ $consolidated->incoterm->code }}</td>
                         </tr>
-                        <tr>
-                            <td><strong>Origen</strong></td>
-                            <td>{{ $quote->origin }}</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Destino</strong></td>
-                            <td>{{ $quote->destination }}</td>
-                        </tr>
-                        @if ($consolidated->supplier_id)
-                            //TODO:: Aqui tenemos que obtener segun la relacion si es que tiene
+                        @if (strtolower($consolidated->incoterm->code) === 'exw')
+                            <tr>
+                                <td><strong>Dirección de recojo</strong></td>
+                                <td>{{ $consolidated->pickup_address_at_origin_consolidated }}</td>
+                            </tr>
+                        @endif
+
+                        {{-- @if ($consolidated->supplier_id)
+                           
                         @else
                             @php
                                 $supplier = json_decode($consolidated->supplier_temp);
@@ -1089,7 +1103,7 @@
                                 <td>{{ $supplier->shipper_contact }} // {{ $supplier->shipper_contact_email }} //
                                     {{ $supplier->shipper_contact_phone }} </td>
                             </tr>
-                        @endif
+                        @endif --}}
 
                         <tr>
                             <td><strong>Producto</strong></td>

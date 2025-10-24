@@ -557,7 +557,8 @@
                                     <tr>
                                         <th>Proveedor</th>
                                         <th>Contacto</th>
-                                        <th>Direccion</th>
+                                        <th>Incoterm</th>
+                                        <th>Direccion de recojo</th>
                                         <th>Producto</th>
                                         <th>Valor de la carga</th>
                                         <th>Bultos</th>
@@ -731,6 +732,9 @@
                         //Tipo de embarque de la cotizacion:
                         let typeShipmentCurrent = {};
 
+                        //Incoterms
+                        let incoterms = @json($incoterms);
+
                         document.addEventListener('DOMContentLoaded', function() {
 
 
@@ -771,6 +775,12 @@
                                 }
                             });
 
+                            const typeShipmentSelect = document.querySelector('select[name="id_type_shipment"]');
+
+                            // Si tiene un valor seleccionado, disparar el evento onchange
+                            if (typeShipmentSelect && typeShipmentSelect.value) {
+                                typeShipmentSelect.dispatchEvent(new Event('change'));
+                            }
                             //Solo si hay errores del backend o edicion, para mostrar el contenido en el segundo paso.
                             const selectedRadio = document.querySelector('input[name="lcl_fcl"]:checked');
                             if (selectedRadio) {
@@ -1019,6 +1029,27 @@
 
                                 if (exwPickupAddressInput.hasAttribute('data-required')) {
                                     exwPickupAddressInput.removeAttribute('data-required');
+                                }
+                            }
+
+                        }
+
+
+                        function toggleExwPickupAddressConsolidated(selectElement) {
+
+                            const selectedCode = selectElement.options[selectElement.selectedIndex].getAttribute('data-code')
+                            const exwPickupAddressDiv = document.querySelector('#pickup_address_at_origin_consolidated_container');
+                            const exwPickupAddressInput = exwPickupAddressDiv.querySelector('input');
+
+                            if (selectedCode === 'EXW') {
+                                exwPickupAddressDiv.classList.remove('d-none');
+                                exwPickupAddressInput.classList.add('required');
+                            } else {
+
+                                exwPickupAddressDiv.classList.add('d-none');
+                                exwPickupAddressInput.value = '';
+                                if (exwPickupAddressInput.classList.contains('required')) {
+                                    exwPickupAddressInput.classList.remove('required');
                                 }
                             }
 
@@ -1589,13 +1620,19 @@
                                 return;
                             }
 
+                            //Obtener el nombre de los incoterms.
+
+                            let incotermSelected = incoterms.find(incoterm => incoterm.id === parseInt(getValueByName('id_incoterms')));
+
                             let shipper = {
                                 'id_incoterms': getValueByName('id_incoterms'),
+                                'name_incoterm': incotermSelected.code,
                                 'shipper_name': getValueByName('shipper_name'),
                                 'shipper_contact': getValueByName('shipper_contact'),
                                 'shipper_contact_email': getValueByName('shipper_contact_email'),
                                 'shipper_contact_phone': getValueByName('shipper_contact_phone'),
                                 'shipper_address': getValueByName('shipper_address'),
+                                'pickup_address_at_origin_consolidated': getValueByName('pickup_address_at_origin_consolidated'),
                                 'commodity': getValueByName('commodity'),
                                 'load_value': getValueByName('load_value'),
                                 'nro_packages_consolidated': getValueByName('nro_packages_consolidated'),
@@ -1621,7 +1658,8 @@
                                 <tr data-index="${index}">
                                     <td>${shipper.shipper_name}</td>
                                     <td>${shipper.shipper_contact}</td>
-                                    <td>${shipper.shipper_address}</td>
+                                    <td>${shipper.name_incoterm}</td>
+                                    <td>${shipper.pickup_address_at_origin_consolidated}</td>
                                     <td>${shipper.commodity}</td>
                                     <td>${shipper.load_value}</td>
                                     <td>${shipper.nro_packages_consolidated}</td>
@@ -1661,30 +1699,30 @@
 
                         function restoreConsolidatedFromHidden() {
                             const hiddenShippers = document.getElementById('shippers_consolidated');
-                           
+
                             if (!hiddenShippers || !hiddenShippers.value) return;
 
                             try {
                                 // Parsear los shippers guardados
-                                let shippersData = JSON.parse(hiddenShippers.value);
-                                console.log('hiddenShippers:', shippersData);
+                                shippers = JSON.parse(hiddenShippers.value);
 
                                 // Limpiar la tabla actual
                                 $('#providersTable').empty();
 
                                 // Recrear las filas con los datos almacenados
-                                shippersData.forEach((shipper, index) => {
+                                shippers.forEach((shipper, index) => {
                                     let newRow = `
                 <tr data-index="${index}">
-                    <td>${shipper.shipper_name}</td>
-                    <td>${shipper.shipper_contact}</td>
-                    <td>${shipper.shipper_address}</td>
-                    <td>${shipper.commodity}</td>
-                    <td>${shipper.load_value}</td>
-                    <td>${shipper.nro_packages_consolidated}</td>
-                    <td>${shipper.name_packaging_type_consolidated}</td>
-                    <td>${shipper.weight} ${shipper.unit_of_weight}</td>
-                    <td>${shipper.volumen_kgv} ${shipper.unit_of_volumen_kgv}</td>
+                     <td>${shipper.shipper_name}</td>
+                                    <td>${shipper.shipper_contact}</td>
+                                    <td>${shipper.name_incoterm}</td>
+                                    <td>${shipper.pickup_address_at_origin_consolidated}</td>
+                                    <td>${shipper.commodity}</td>
+                                    <td>${shipper.load_value}</td>
+                                    <td>${shipper.nro_packages_consolidated}</td>
+                                    <td>${shipper.name_packaging_type_consolidated}</td>
+                                    <td>${shipper.weight} ${shipper.unit_of_weight}</td>
+                                    <td>${shipper.volumen_kgv} ${shipper.unit_of_volumen_kgv}</td>
                     <td>
                         <button class="btn btn-info btn-sm btn-detail"><i class="fas fa-folder-open"></i></button>
                         <button class="btn btn-danger btn-sm delete-row"><i class="fas fa-trash"></i></button>
@@ -1733,6 +1771,8 @@
                 <tr><th>Teléfono</th><td>${shipper.shipper_contact_phone}</td></tr>
                 <tr><th>Dirección</th><td>${shipper.shipper_address}</td></tr>
                 <tr><th>Commodity</th><td>${shipper.commodity}</td></tr>
+                <tr><th>Incoterm</th><td>${shipper.name_incoterm}</td></tr>
+                <tr><th>Dirección de recojo</th><td>${shipper.pickup_address_at_origin_consolidated}</td></tr>
                 <tr><th>Valor de Carga</th><td>${shipper.load_value}</td></tr>
                 <tr><th>Nro. Paquetes</th><td>${shipper.nro_packages_consolidated}</td></tr>
                 <tr><th>Tipo de Empaque</th><td>${shipper.name_packaging_type_consolidated}</td></tr>

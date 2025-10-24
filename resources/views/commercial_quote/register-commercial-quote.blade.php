@@ -84,14 +84,35 @@
 
                             <div class="col-12">
                                 <x-adminlte-select2 name="id_incoterms" class="required" label="Incoterms" igroup-size="md"
-                                    data-placeholder="Seleccione una opcion...">
+                                    data-placeholder="Seleccione una opcion..."
+                                    onchange="toggleExwPickupAddressConsolidated(this)">
                                     <option />
                                     @foreach ($incoterms as $incoter)
-                                        <option value="{{ $incoter->id }}"
+                                        <option value="{{ $incoter->id }}" data-code="{{ $incoter->code }}"
                                             {{ (isset($routing->id_incoterms) && $routing->id_incoterms == $incoter->id) || old('id_incoterms') == $incoter->id ? 'selected' : '' }}>
                                             {{ $incoter->code }}</option>
                                     @endforeach
                                 </x-adminlte-select2>
+                            </div>
+                            <div id="pickup_address_at_origin_consolidated_container" class="col-12 my-4 d-none">
+                                <p class="text-muted text-center mb-0">*Dirección de recojo para realizar el pickup en
+                                    origen*</p>
+                                <div class="form-group">
+                                    <label for="pickup_address_at_origin_consolidated">Direccion de recojo</label>
+                                    <input type="text"
+                                        class="form-control @error('pickup_address_at_origin_consolidated') is-invalid @enderror "
+                                        name="pickup_address_at_origin_consolidated"
+                                        id="pickup_address_at_origin_consolidated"
+                                        placeholder="Ingrese la dirección de recojo"
+                                        value="{{ isset($routing->pickup_address_at_origin_consolidated) ? $routing->pickup_address_at_origin_consolidated : old('pickup_address_at_origin_consolidated') }}">
+
+                                    @error('pickup_address_at_origin_consolidated')
+                                        <span class="invalid-feedback d-block" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+
+                                </div>
                             </div>
                             <div class="col-4">
                                 <div class="form-group">
@@ -103,7 +124,8 @@
                             <div class="col-4">
                                 <div class="form-group">
                                     <label for="shipper_contact">Contacto:</label>
-                                    <input id="shipper_contact" class="form-control" type="text" name="shipper_contact">
+                                    <input id="shipper_contact" class="form-control" type="text"
+                                        name="shipper_contact">
                                 </div>
                             </div>
                             <div class="col-4">
@@ -123,7 +145,7 @@
                             <div class="col-4">
                                 <div class="form-group">
                                     <label for="shipper_address">Direccion:</label>
-                                    <input id="shipper_address" class="form-control required" type="text"
+                                    <input id="shipper_address" class="form-control" type="text"
                                         name="shipper_address">
                                 </div>
                             </div>
@@ -705,7 +727,9 @@
                                 'readonly', true);
                         formFillData.find('#shipper_contact_email').val(response.supplier.contact_email).prop(
                             'readonly', true);
-                        formFillData.find('#shipper_address').val(response.supplier.address);
+                        formFillData.find('#shipper_address').val(response.supplier.address)
+                            .prop(
+                                'readonly', true);;
                     } else {
                         // Si el cliente no existe, limpiar los campos
                         formFillData.find('#shipper_contact_email').val('').prop('readonly', false);

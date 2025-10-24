@@ -15,6 +15,7 @@ class ConsolidatedCargos extends Model
     [
         'commercial_quote_id',
         'id_incoterms',
+        'pickup_address_at_origin_consolidated',
         'supplier_id',
         'supplier_temp',
         'commodity',

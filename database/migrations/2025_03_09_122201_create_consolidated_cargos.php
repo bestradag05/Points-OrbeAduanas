@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('nro_packages');
             $table->unsignedBigInteger('id_packaging_type');
             $table->unsignedBigInteger('id_incoterms');
+            $table->string('pickup_address_at_origin_consolidated')->nullable();
             $table->decimal('weight', 8, 2)->nullable();
             $table->string('unit_of_weight')->nullable();
             $table->decimal('volumen_kgv', 8, 2)->nullable();

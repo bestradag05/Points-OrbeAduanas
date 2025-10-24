@@ -285,7 +285,7 @@
                                     data-parent="#accordionConsolidated">
 
                                     <div class="row text-muted px-5">
-                                        <div class="col-12  {{ isset($shipperTemp->shipper_name) ? '' : 'd-none' }}">
+                                        <div class="col-12">
                                             <p class="text-sm">Proovedor :
                                                 <b
                                                     class="d-block">{{ isset($shipperTemp->shipper_name) ? $shipperTemp->shipper_name : $shipper->name_businessname }}</b>
@@ -310,8 +310,8 @@
                                                     class="d-block">{{ isset($shipperTemp->shipper_contact_phone) ? $shipperTemp->shipper_contact_phone : $shipper->contact_number }}</b>
                                             </p>
                                         </div>
-                                        <div class="col-12">
-                                            <p class="text-sm">Direccion :
+                                        <div class="col-6">
+                                            <p class="text-sm">Direccion proveedor :
                                                 <b
                                                     class="d-block">{{ isset($shipperTemp->shipper_address) ? $shipperTemp->shipper_address : $shipper->address }}</b>
                                             </p>
@@ -321,7 +321,17 @@
                                                 <b class="d-block">{{ $consolidated->commodity }}</b>
                                             </p>
                                         </div>
-                                        <div class="col-12">
+                                        <div class="col-12 {{ $consolidated->pickup_address_at_origin_consolidated ? '' : 'd-none'}}">
+                                            <p class="text-sm">Direccion de recojo :
+                                                <b class="d-block">{{ $consolidated->pickup_address_at_origin_consolidated }}</b>
+                                            </p>
+                                        </div>
+                                        <div class="col-6">
+                                            <p class="text-sm">Incoterm :
+                                                <b class="d-block">{{ $consolidated->incoterm->code }}</b>
+                                            </p>
+                                        </div>
+                                        <div class="col-6">
                                             <p class="text-sm">Valor del producto :
                                                 <b class="d-block">{{ $consolidated->load_value }}</b>
                                             </p>
