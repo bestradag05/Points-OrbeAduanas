@@ -33,7 +33,7 @@ return new class extends Migration
             $table->decimal('volumen_kgv', 8, 2)->nullable();
             $table->string('unit_of_volumen_kgv')->nullable();
             $table->string('packages')->nullable();
-            $table->string('measures')->nullable();
+            $table->text('measures')->nullable();
             $table->string('lcl_fcl')->nullable();
             $table->unsignedBigInteger('id_type_shipment')->nullable();
             $table->text('observations')->nullable();
