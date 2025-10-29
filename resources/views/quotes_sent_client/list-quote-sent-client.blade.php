@@ -60,7 +60,9 @@
                             onchange="changeStatus(this.value, {{ $quoteSentClient->id }})">
                             <option value="" disabled selected>Seleccione una acción...</option>
 
-
+                            <option value="sendOutlook">
+                                Enviar por correo
+                            </option>
                             <option value="cancel" class="{{ $quoteSentClient->status === 'Anulado' ? 'd-none' : '' }}">
                                 Anular
                             </option>
@@ -71,6 +73,7 @@
                             <option value="decline" class="{{ $quoteSentClient->status === 'Rechazada' ? 'd-none' : '' }}">
                                 Rechazar
                             </option>
+
 
 
 
@@ -87,22 +90,37 @@
     @include('components.modalJustification')
     @include('commercial_quote/modals/modalCommercialFillData')
 
+
 @stop
 
 
 
 @push('scripts')
-
     <script>
+        let allQuotes = @json($quotesSentClient);
+
         function changeStatus(action, quoteSentClient) {
             if (!action) return;
 
             switch (action) {
+
+                case 'sendOutlook':
+
+                    let quoteSent = allQuotes.find(quote => quote.id === quoteSentClient);
+
+                    const subject = `COTIZACIÓN ${quoteSent.nro_quote_commercial}`; // Puedes personalizar el asunto
+
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = `{{ url('sent-client/generatePdf/' . $quoteSentClient->id) }}`;
+                    downloadLink.download = `${quoteSent.nro_quote_commercial}.pdf`; // El nombre del archivo PDF
+                    downloadLink.click();
+
+                    window.location.href =
+                        `mailto:?subject=${encodeURIComponent(subject)}`;
+
+                    break;
                 case 'accept':
-
-                    let allQuotes = @json($quotesSentClient);
                     let quote = allQuotes.find(q => q.id === quoteSentClient);
-
                     let servicesToQuote = quote.commercial_quote.services_to_quote;
 
 

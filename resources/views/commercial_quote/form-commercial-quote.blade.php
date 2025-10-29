@@ -146,7 +146,7 @@
                             </x-adminlte-select2>
                         </div>
 
-                        <div class="col-6 transporte-hide row align-items-center justify-content-center lcl-fields">
+                        <div class="col-6 transporte-hide row align-items-center justify-content-center">
                             <div class="form-group mb-0">
                                 <label>¿Es consolidado?</label>
                                 <div class="form-check form-check-inline">
@@ -575,91 +575,158 @@
                             <input id="shippers_consolidated" type="hidden" name="shippers_consolidated"
                                 value="{{ old('shippers_consolidated', isset($routing->shippers_consolidated) ? $routing->shippers_consolidated : '') }}" />
 
-                            <div class="row">
-                                <hr class="w-100">
-                                <div class="col-6 mt-4 d-none fcl-fields" id="containerTypeWrapperConsolidated">
-                                    <div class="form-group row">
-                                        <label for="id_containers_consolidated" class="col-sm-4 col-form-label">Tipo
-                                            de
-                                            contenedor <span class="text-danger">*</span></label>
-                                        <div class="col-sm-8">
-                                            <select
-                                                class="form-control @error('id_containers_consolidated') is-invalid @enderror"
-                                                id="id_containers_consolidated" name="id_containers_consolidated">
-                                                <option value="">Seleccione un tipo</option>
-                                                @foreach ($containers as $container)
-                                                    <option value="{{ $container->id }}"
-                                                        {{ old('id_containers_consolidated') == $container->id ? 'selected' : '' }}>
-                                                        {{ $container->typeContainer->name }} - {{ $container->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            @error('id_containers_consolidated')
-                                                <span class="invalid-feedback d-block" role="alert">
-                                                    <strong>{{ $message }}</strong>
-                                                </span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-6 mt-4 d-none fcl-fields" id="containerQuantityWrapperConsolidated">
-                                    <div class="form-group row">
-                                        <label for="container_quantity_consolidated"
-                                            class="col-sm-4 col-form-label">Nº
-                                            Contenedor <span class="text-danger">*</span></label>
-                                        <div class="col-sm-8">
-                                            <input type="number" min="0" step="1"
-                                                class="form-control @error('container_quantity_consolidated') is-invalid @enderror"
-                                                id="container_quantity_consolidated"
-                                                name="container_quantity_consolidated"
-                                                placeholder="Ingrese el nro de contenedores.."
-                                                oninput="validarInputNumber(this)"
-                                                value="{{ isset($routing) ? $routing->container_quantity_consolidated : '' }}">
-                                            @error('container_quantity_consolidated')
-                                                <span class="invalid-feedback d-block" role="alert">
-                                                    <strong>{{ $message }}</strong>
-                                                </span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-
                         </div>
 
                     </div>
 
                     <div id="fcl_container" class="fcl-fields d-none">
-                        <div class="text-center mb-4">
-                            <h5 class="text-indigo text-center d-inline mx-2"> Agregar contenedores</h5>
-                            <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
-                                data-target="#modalAddedContainer">
-                                <i class="fas fa-plus"></i>
-                            </button>
+
+                        <div id="singleProviderFCLSection">
+
+                            <div class="text-center mb-4">
+                                <h5 class="text-indigo text-center d-inline mx-2"> Agregar contenedores</h5>
+                                <button class="btn btn-indigo btn-sm d-inline mx-2" data-toggle="modal"
+                                    data-target="#modalAddedContainer">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <table class="table text-sm" id="table-containers">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th scope="col">Contenedor</th>
+                                        <th scope="col">N° contenedor</th>
+                                        <th scope="col">Producto</th>
+                                        <th scope="col">N° Bultos</th>
+                                        <th scope="col">Tipo de Embalaje</th>
+                                        <th scope="col">Valor de factura</th>
+                                        <th scope="col">Volumen</th>
+                                        <th scope="col">Peso</th>
+                                        <th scope="col">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+
+                            <input id="data_containers" type="hidden" name="data_containers"
+                                value="{{ old('data_containers', isset($routing->data_containers) ? $routing->data_containers : '') }}" />
+
                         </div>
-                        <table class="table text-sm" id="table-containers">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th scope="col">Contenedor</th>
-                                    <th scope="col">N° contenedor</th>
-                                    <th scope="col">Producto</th>
-                                    <th scope="col">N° Bultos</th>
-                                    <th scope="col">Tipo de Embalaje</th>
-                                    <th scope="col">Valor de factura</th>
-                                    <th scope="col">Volumen</th>
-                                    <th scope="col">Peso</th>
-                                    <th scope="col">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
 
-                            </tbody>
-                        </table>
+                        <div id="multipleProviderFCLSection" class="d-none">
 
-                        <input id="data_containers" type="hidden" name="data_containers"
-                            value="{{ old('data_containers', isset($routing->data_containers) ? $routing->data_containers : '') }}" />
+                            <div class="row justify-content-between px-5 mb-3">
+                                <button type="button" class="btn btn-indigo" onclick="showItemConsolidated()"><i
+                                        class="fas fa-plus"></i></button>
+                            </div>
 
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Proveedor</th>
+                                        <th>Contacto</th>
+                                        <th>Incoterm</th>
+                                        <th>Direccion de recojo</th>
+                                        <th>Producto</th>
+                                        <th>Valor de la carga</th>
+                                        <th>Bultos</th>
+                                        <th>Embalaje</th>
+                                        <th>Peso</th>
+                                        <th>Volumen</th>
+                                        <th>Accion</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="providersTable"></tbody>
+                            </table>
+
+
+                            <div id="containerDetailFCLConsolidated" class="row mt-3">
+
+                                <div class="col-12">
+                                    <h5 class="text-indigo text-center">Agrega la cantidad de contenedores</h5>
+                                </div>
+                                <div class="col-4 mt-4 ">
+
+                                    <div class="form-group">
+                                        <label for="id_containers_consolidated">Tipo
+                                            de
+                                            contenedor <span class="text-danger">*</span></label>
+
+                                        <select
+                                            class="form-control @error('id_containers_consolidated') is-invalid @enderror"
+                                            id="id_containers_consolidated" name="id_containers_consolidated">
+                                            <option value="">Seleccione un tipo</option>
+                                            @foreach ($containers as $container)
+                                                <option value="{{ $container->id }}"
+                                                    {{ old('id_containers_consolidated') == $container->id ? 'selected' : '' }}>
+                                                    {{ $container->typeContainer->name }} - {{ $container->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('id_containers_consolidated')
+                                            <span class="invalid-feedback d-block" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+
+                                    </div>
+
+
+                                </div>
+                                <div class="col-4 mt-4">
+                                    <div class="form-group">
+                                        <label for="container_quantity_consolidated">Nº
+                                            Contenedor <span class="text-danger">*</span></label>
+
+                                        <input type="number" min="0" step="1"
+                                            class="form-control @error('container_quantity_consolidated') is-invalid @enderror"
+                                            id="container_quantity_consolidated"
+                                            name="container_quantity_consolidated"
+                                            placeholder="Ingrese el nro de contenedores.."
+                                            oninput="validarInputNumber(this)"
+                                            value="{{ isset($routing) ? $routing->container_quantity_consolidated : '' }}">
+                                        @error('container_quantity_consolidated')
+                                            <span class="invalid-feedback d-block" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+
+                                </div>
+
+                                <div class="col-4 d-flex align-items-end mb-3">
+                                    <button class="btn btn-indigo" type="button" id="btnaddContainerFCLConsolidated"
+                                        onclick="addContainerFCLConsolidated(this)">
+                                        Agregar
+                                    </button>
+
+                                </div>
+
+
+                                <div class="col-12 my-3">
+                                    <table id="tableContainerFCLConsolidated" class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Contenedor</th>
+                                                <th>Cantidad</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+
+                                        </tbody>
+                                    </table>
+
+
+                                </div>
+
+
+                            </div>
+
+
+                        </div>
 
                     </div>
 
@@ -798,80 +865,6 @@
                             restoreContainersFromHidden();
                             restoreConsolidatedFromHidden();
 
-                            /*  // Obtener los valores de los campos del formulario (puedes personalizar esto para tu caso)
-                             let volumenValue = document.getElementById('volumen');
-                             let kilogramoVolumenValue = document.getElementById('kilogram_volumen');
-                             let toneladasValue = document.getElementById('tons');
-                             let totalWeight = document.getElementById('kilograms');
-                             let lcl_fcl = document.getElementsByName('lcl_fcl');
-                             let id_containers = document.getElementById('id_containers');
-
-                             let lclfclSelected = Array.from(document.getElementsByName('lcl_fcl')).find(radio => radio.checked)
-                                 ?.value; */
-
-
-
-                            /* // Mostrar/ocultar los campos según los valores
-                            if (volumenValue.value !== '' || volumenValue.classList.contains('is-invalid')) {
-                                $('#contenedor_volumen').removeClass('d-none');
-                                $('#contenedor_kg_vol').addClass('d-none');
-
-                            }
-
-                            if (kilogramoVolumenValue.value !== '' || kilogramoVolumenValue.classList.contains('is-invalid')) {
-                                $('#contenedor_kg_vol').removeClass('d-none');
-                                $('#contenedor_volumen').addClass('d-none');
-                            }
-
-                            if (totalWeight.value !== '' || totalWeight.classList.contains('is-invalid')) {
-                                $('#contenedor_weight').removeClass('d-none');
-                                $('#contenedor_tons').addClass('d-none');
-
-                            }
-
-                            if (toneladasValue.value !== '' || toneladasValue.classList.contains('is-invalid')) {
-                                $('#contenedor_tons').removeClass('d-none');
-                                $('#contenedor_weight').addClass('d-none');
-
-
-                            }
-
-                            if (id_containers.value !== '' || id_containers.classList.contains('is-invalid')) {
-                                $('#containerTypeWrapper').removeClass('d-none');
-
-                                const parentElement = document.getElementById('containerTypeWrapper').closest('.row');
-
-                                if (parentElement) {
-                                    const firstChild = parentElement.children[0]; // Primer hijo
-                                    const secondChild = parentElement.children[1]; // Segundo hijo
-
-
-                                    // Añade la clase 'col-6' a los dos primeros hijos
-                                    if (firstChild) {
-                                        firstChild.classList.add('col-4');
-                                        firstChild.classList.remove('col-6');
-
-                                    }
-                                    if (secondChild) {
-
-                                        secondChild.classList.add('col-4');
-                                        secondChild.classList.remove('col-6')
-
-                                    }
-
-                                }
-
-                            }
-
-                            let isChecked = Array.from(lcl_fcl).some(radio => radio.checked);
-                            let hasInvalidClass = Array.from(lcl_fcl).some(radio => radio.classList.contains('is-invalid'));
-
-
-                            if (isChecked || hasInvalidClass) {
-                                $('#lclfcl_content').children().first().removeClass('col-12').addClass('col-8');
-                                $('#lclfcl_content').children().last().removeClass('d-none').addClass('d-flex');
-                                document.getElementById('contenedor_radio_lcl_fcl').classList.remove('d-none');
-                            } */
                         });
 
 
@@ -1062,10 +1055,14 @@
                             const selectedCode = selectElement.options[selectElement.selectedIndex].getAttribute('data-code')
                             const exwPickupAddressDiv = document.querySelector('#div_supplier_data');
                             const exwPickupAddressInput = exwPickupAddressDiv.querySelector('input[name="pickup_address_at_origin"]');
+                            const idTypeShipmentSelect = document.querySelector('select[name="id_type_shipment"]');
+                            //Verificamos que typeShipment tiene
+                            var data = @json($type_shipments);
+                            var typeShipmentCurrent = data.find(typeShipment => typeShipment.id === parseInt(idTypeShipmentSelect
+                                .value));
+
 
                             if (isConsolidated === "1") {
-                                document.getElementById("multipleProvidersSection").classList.remove("d-none");
-                                document.getElementById("singleProviderSection").classList.add("d-none");
 
                                 setSectionRequired('#singleProviderSection', false);
 
@@ -1073,22 +1070,33 @@
                                 //Ocultamos los datos del proveedor ya que esta en la otra seccion:
                                 hideSupplierDataInExw();
 
-                                let lcl_fcl = document.querySelector('input[name="lcl_fcl"]:checked');
-                                if (lcl_fcl) {
-                                    const containerTypeWrapper = document.getElementById('containerTypeWrapperConsolidated');
+                                if (typeShipmentCurrent.name === "Marítima") {
+                                    let lcl_fcl = document.querySelector('input[name="lcl_fcl"]:checked');
+                                    if (lcl_fcl) {
 
-                                    if (lcl_fcl.value === 'FCL') {
-                                        containerTypeWrapper.classList.remove('d-none');
-                                    } else {
-                                        containerTypeWrapper.classList.add('d-none');
+                                        if (lcl_fcl.value === 'FCL') {
+
+                                            //Se oculta
+                                            $('#singleProviderFCLSection').addClass('d-none');
+
+                                            // Se muestra
+                                            $('#multipleProviderFCLSection').removeClass('d-none');
+                                        } else {
+                                            // Se oculta
+                                            $('#singleProviderSection').addClass('d-none');
+
+                                            //Se muestra
+                                            $('#multipleProvidersSection').removeClass('d-none');
+                                        }
+
                                     }
 
                                 }
 
-
                             } else {
                                 document.getElementById("multipleProvidersSection").classList.add("d-none");
                                 document.getElementById("singleProviderSection").classList.remove("d-none");
+
 
 
                                 if (selectedCode === 'EXW') {
@@ -1101,6 +1109,30 @@
                                 } else {
                                     exwPickupAddressInput.removeAttribute('data-required');
                                 }
+
+                                if (typeShipmentCurrent.name === "Marítima") {
+                                    let lcl_fcl = document.querySelector('input[name="lcl_fcl"]:checked');
+                                    if (lcl_fcl) {
+
+                                        if (lcl_fcl.value === 'FCL') {
+
+                                            //Se oculta
+                                            $('#multipleProviderFCLSection').addClass('d-none');
+
+                                            // Se muestra
+                                            $('#singleProviderFCLSection').removeClass('d-none');
+                                        } else {
+                                            // Se oculta
+                                            $('#multipleProvidersSection').addClass('d-none');
+
+                                            //Se muestra
+                                            $('#singleProviderSection').removeClass('d-none');
+                                        }
+
+                                    }
+
+                                }
+
 
                             }
                         }
@@ -1185,6 +1217,8 @@
 
                             }
                         }
+
+
 
 
 
@@ -1386,7 +1420,7 @@
                                 }
 
 
-                                let containerName = $('#id_containers option:selected').text().trim();
+                                let containerName = $('#formContainer #id_containers option:selected').text().trim();
                                 let packaginTypeName = $('#formContainer #id_packaging_type option:selected').text().trim();
                                 let unit_of_volumen_kgv = $('#formContainer #unit_of_volumen_kgv option:selected').text().trim();
                                 let unit_of_weight = $('#formContainer #unit_of_weight option:selected').text().trim();
@@ -1600,11 +1634,96 @@
                             return data;
                         }
 
+
+
+                        function addContainerFCLConsolidated(buton) {
+
+                            let divConcepts = $('#containerDetailFCLConsolidated');
+                            const inputs = divConcepts.find('input, select');
+
+                            inputs.each(function(index, input) {
+
+                                if ($(this).attr('type') !== 'hidden' && $(this).val() === '') {
+                                    $(this).addClass('is-invalid'); // Agregar la clase si está vacío y no es hidden
+                                } else {
+                                    $(this).removeClass('is-invalid'); // Eliminar la clase si tiene valor o es hidden
+                                }
+
+                            });
+                            var camposInvalidos = divConcepts.find('.is-invalid').length;
+
+                            if (camposInvalidos === 0) {
+
+
+                                let idContainer = $('#containerDetailFCLConsolidated #id_containers_consolidated option:selected').val();
+                                let containerName = $('#containerDetailFCLConsolidated #id_containers_consolidated option:selected').text()
+                                    .trim();
+                                let containerQuantity = $('#containerDetailFCLConsolidated #container_quantity_consolidated').val();
+
+
+                                let container = {
+                                    'id_container': idContainer,
+                                    'containerName': containerName,
+                                    'container_quantity': containerQuantity,
+                                };
+
+                                let index = containers.length;
+                                containers.push(container)
+                                // Actualizar el input hidden con la nueva lista en JSON
+                                $('#data_containers').val(JSON.stringify(containers));
+
+
+                                let newRow = `
+                                    <tr data-index="${index}">
+                                        <td>${container.containerName}</td>
+                                        <td>${container.container_quantity}</td>
+                                        <td>
+                                            <button class="btn btn-info btn-sm btn-detail"><i class="fas fa-folder-open"></i></button>
+                                            <button class="btn btn-danger btn-sm delete-row"><i class="fas fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                `;
+
+                                $('#tableContainerFCLConsolidated tbody').append(newRow);
+
+                                clearData(inputs);
+
+
+
+                            }
+                        };
+
+
+
+
+
                         /* Agregar un item del consolidado  */
 
                         function saveConsolidated(e) {
 
-                            let tableShipper = $('#providersTable');
+                            const idTypeShipmentSelect = document.querySelector('select[name="id_type_shipment"]');
+                            let tableShipper = $('#lcl_container #providersTable');
+
+                            var data = @json($type_shipments);
+                            var typeShipmentCurrent = data.find(typeShipment => typeShipment.id === parseInt(idTypeShipmentSelect
+                                .value));
+
+                            if (typeShipmentCurrent.name === "Marítima") {
+
+                                let lcl_fcl = document.querySelector('input[name="lcl_fcl"]:checked');
+                                if (lcl_fcl) {
+
+                                    if (lcl_fcl.value === 'FCL') {
+
+                                        tableShipper = $('#fcl_container #providersTable');
+
+                                    }
+
+                                }
+
+                            }
+
+
                             let elements = $('#form-consolidated').find('input.required, select.required').toArray();
 
                             if (!validateInputs(elements)) {
@@ -1867,17 +1986,36 @@
                         document.querySelectorAll('input[name="lcl_fcl"]').forEach(radio => {
                             radio.addEventListener('change', function() {
 
+                                let isConsolidated = document.querySelector('input[name="is_consolidated"]:checked').value;
+
                                 const fclFields = document.querySelectorAll('.fcl-fields');
                                 const lclFields = document.querySelectorAll('.lcl-fields');
 
                                 if (this.value === 'FCL') {
 
                                     setSectionRequired('#singleProviderSection', false);
-                                    document.getElementById('consolidadoNo').checked = true;
-                                    document.getElementById('consolidadoNo').dispatchEvent(new Event('change'));
+
                                     // Mostrar los campos FCL y ocultar los LCL
                                     fclFields.forEach(el => el.classList.remove('d-none'));
                                     lclFields.forEach(el => el.classList.add('d-none'));
+
+                                    if (isConsolidated === '1') {
+
+                                        //Se oculta
+                                        $('#singleProviderFCLSection').addClass('d-none');
+
+                                        // Se muestra
+                                        $('#multipleProviderFCLSection').removeClass('d-none');
+
+                                    } else {
+
+                                        //Se oculta
+                                        $('#multipleProviderFCLSection').addClass('d-none');
+
+                                        // Se muestra
+                                        $('#singleProviderFCLSection').removeClass('d-none');
+
+                                    }
 
                                     // Ajustar columnas de Bootstrap
                                     const parentElement = document.querySelector('.row');
@@ -1897,6 +2035,26 @@
                                     // Mostrar los campos LCL y ocultar los FCL
                                     fclFields.forEach(el => el.classList.add('d-none'));
                                     lclFields.forEach(el => el.classList.remove('d-none'));
+
+
+                                    if (isConsolidated === '1') {
+
+                                        //Se oculta
+                                        $('#singleProviderSection').addClass('d-none');
+
+                                        // Se muestra
+                                        $('#multipleProvidersSection').removeClass('d-none');
+
+                                    } else {
+
+                                        //Se oculta
+                                        $('#multipleProvidersSection').addClass('d-none');
+
+                                        // Se muestra
+                                        $('#singleProviderSection').removeClass('d-none');
+
+                                    }
+
 
                                     // Limpiar inputs dentro de los elementos ocultos
                                     document.querySelectorAll('.fcl-fields input').forEach(input => input.value = '');

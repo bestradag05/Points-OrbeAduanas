@@ -23,7 +23,8 @@ class CommercialQuoteContainer extends Model
         'unit_of_weight',
         'volumen_kgv',
         'unit_of_volumen_kgv',
-        'measures'
+        'measures',
+        'is_consolidated'
     ];
 
     public function commercialQuote()

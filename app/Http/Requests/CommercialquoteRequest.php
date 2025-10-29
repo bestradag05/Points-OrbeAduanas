@@ -104,7 +104,7 @@ class CommercialquoteRequest extends FormRequest
 
     public function rules(): array
     {
-        /* dd($this->all()); */
+        dd($this->all());
         // Reglas base (aplican para ambos casos)
         $base = [
             'id_type_shipment'   => ['required'],
@@ -117,7 +117,6 @@ class CommercialquoteRequest extends FormRequest
                 'exclude_if:lcl_fcl,FCL',
                 'nullable',
                 'numeric',
-                'gt:0',
                 'required_without:value_measures',
                 Rule::when(fn($input) => empty($input['value_measures']), ['required_with:volumen_kgv'])
             ],
@@ -128,7 +127,6 @@ class CommercialquoteRequest extends FormRequest
                 'exclude_if:lcl_fcl,FCL',
                 'nullable',
                 'numeric',
-                'gt:0',
                 'required_without:value_measures',
                 Rule::when(fn($input) => empty($input['value_measures']), ['required_with:weight'])
             ],

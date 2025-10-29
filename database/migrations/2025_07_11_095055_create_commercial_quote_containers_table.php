@@ -25,6 +25,7 @@ return new class extends Migration
             $table->decimal('volumen_kgv', 8, 2)->nullable();
             $table->string('unit_of_volumen_kgv')->nullable();
             $table->text('measures')->nullable();
+            $table->boolean('is_consolidated')->nullable()->default(false);
             $table->timestamps();
 
             $table->foreign('commercial_quote_id')->references('id')->on('commercial_quote');
