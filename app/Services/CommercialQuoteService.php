@@ -100,7 +100,9 @@ class CommercialQuoteService
         $typeService          = $data['type_service_checked'] ?? [];
         $isConsolidated       = (bool) ($data['is_consolidated'] ?? false);
         $shippersConsolidated = $data['shippers_consolidated'] ?? [];
+        $shippersFCLConsolidated = $data['shippers_fcl_consolidated'] ?? [];
         $dataContainers       = $data['data_containers'] ?? [];
+        $dataContainersConsolidated       = $data['data_containers_consolidated'] ?? [];
         $typeShipmentName     = $data['type_shipment_name'] ?? null;
 
         // Cliente (prospecto vs existente)
@@ -119,7 +121,7 @@ class CommercialQuoteService
         } else {
             $customerId = $data['id_customer'] ?? $request->id_customer;
         }
-        
+
         // INCOTERM / EXW
         $pickupAddressAtOrigin = null;
         if (!empty($data['id_incoterms'])) {
@@ -128,39 +130,83 @@ class CommercialQuoteService
                 $pickupAddressAtOrigin = $data['pickup_address_at_origin'] ?? null;
             }
         }
-     
-        
+
+
         if ($isConsolidated) {
-            // CONSOLIDADO
-            $consolidated = $this->calculateDataConsolidated($shippersConsolidated);
 
-            $commercialQuote = CommercialQuote::create([
-                'origin'                  => $data['origin'] ?? null,
-                'destination'             => $data['destination'] ?? null,
-                'commodity'               => $consolidated['commodity'],
-                'load_value'              => $consolidated['total_load_values'],
-                'id_type_shipment'        => $data['id_type_shipment'],
-                'id_customs_district'     => $data['id_customs_district'] ?? null,
-                'id_regime'               => $data['id_regime'] ?? null,
-                'id_type_load'            => $data['id_type_load'],
-                'id_incoterms'            => $data['id_incoterms'] ?? null,
-                'id_customer'             => $customerId,
-                'lcl_fcl'                 => $data['lcl_fcl'] ?? null,
-                'is_consolidated'         => $isConsolidated,
-                'nro_package'             => $consolidated['total_bultos'],
-                'weight'                  => $this->parseDouble($consolidated['total_weight']),
-                'unit_of_weight'          => $consolidated['unit_of_weight'],
-                'volumen_kgv'             => $this->parseDouble($consolidated['total_volumen']),
-                'unit_of_volumen_kgv'     => $consolidated['unit_of_volumen_kgv'],
-                'pounds'                  => $this->parseDouble($data['pounds'] ?? $request->pounds),
-                'valid_until'             => now()->format('Y-m-d'),
-                'services_to_quote'       => $typeService,
-                'exw_pickup_address'      => $pickupAddressAtOrigin,
-                'id_personal'             => auth()->user()->personal->id,
-            ]);
+            if (($data['lcl_fcl'] ?? null) === 'FCL') {
 
-            foreach ($shippersConsolidated as $shipper) {
-                $this->storeConsolidateCarga($shipper, $commercialQuote->id);
+                $consolidated = $this->calculateDataConsolidated($shippersFCLConsolidated);
+
+                $commercialQuote = CommercialQuote::create([
+                    'origin'                  => $data['origin'] ?? null,
+                    'destination'             => $data['destination'] ?? null,
+                    'commodity'               => $consolidated['commodity'],
+                    'load_value'              => $consolidated['total_load_values'],
+                    'id_type_shipment'        => $data['id_type_shipment'],
+                    'id_customs_district'     => $data['id_customs_district'] ?? null,
+                    'id_regime'               => $data['id_regime'] ?? null,
+                    'id_type_load'            => $data['id_type_load'],
+                    'id_incoterms'            => $data['id_incoterms'] ?? null,
+                    'id_customer'             => $customerId,
+                    'lcl_fcl'                 => $data['lcl_fcl'] ?? null,
+                    'is_consolidated'         => $isConsolidated,
+                    'nro_package'             => $consolidated['total_bultos'],
+                    'weight'                  => $this->parseDouble($consolidated['total_weight']),
+                    'unit_of_weight'          => $consolidated['unit_of_weight'],
+                    'volumen_kgv'             => $this->parseDouble($consolidated['total_volumen']),
+                    'unit_of_volumen_kgv'     => $consolidated['unit_of_volumen_kgv'],
+                    'pounds'                  => $this->parseDouble($data['pounds'] ?? $request->pounds),
+                    'valid_until'             => now()->format('Y-m-d'),
+                    'services_to_quote'       => $typeService,
+                    'exw_pickup_address'      => $pickupAddressAtOrigin,
+                    'id_personal'             => auth()->user()->personal->id,
+                ]);
+
+                foreach ($shippersFCLConsolidated as $shipper) {
+                    $this->storeConsolidateCarga($shipper, $commercialQuote->id);
+                }
+
+                foreach ($dataContainersConsolidated as $container) {
+                    $commercialQuote->containers()->attach($container['id_container'], [
+                        'container_quantity'      => $container['container_quantity'],
+                        'is_consolidated' => true
+                    ]);
+                }
+
+            } else {
+
+                // CONSOLIDADO
+                $consolidated = $this->calculateDataConsolidated($shippersConsolidated);
+
+                $commercialQuote = CommercialQuote::create([
+                    'origin'                  => $data['origin'] ?? null,
+                    'destination'             => $data['destination'] ?? null,
+                    'commodity'               => $consolidated['commodity'],
+                    'load_value'              => $consolidated['total_load_values'],
+                    'id_type_shipment'        => $data['id_type_shipment'],
+                    'id_customs_district'     => $data['id_customs_district'] ?? null,
+                    'id_regime'               => $data['id_regime'] ?? null,
+                    'id_type_load'            => $data['id_type_load'],
+                    'id_incoterms'            => $data['id_incoterms'] ?? null,
+                    'id_customer'             => $customerId,
+                    'lcl_fcl'                 => $data['lcl_fcl'] ?? null,
+                    'is_consolidated'         => $isConsolidated,
+                    'nro_package'             => $consolidated['total_bultos'],
+                    'weight'                  => $this->parseDouble($consolidated['total_weight']),
+                    'unit_of_weight'          => $consolidated['unit_of_weight'],
+                    'volumen_kgv'             => $this->parseDouble($consolidated['total_volumen']),
+                    'unit_of_volumen_kgv'     => $consolidated['unit_of_volumen_kgv'],
+                    'pounds'                  => $this->parseDouble($data['pounds'] ?? $request->pounds),
+                    'valid_until'             => now()->format('Y-m-d'),
+                    'services_to_quote'       => $typeService,
+                    'exw_pickup_address'      => $pickupAddressAtOrigin,
+                    'id_personal'             => auth()->user()->personal->id,
+                ]);
+
+                foreach ($shippersConsolidated as $shipper) {
+                    $this->storeConsolidateCarga($shipper, $commercialQuote->id);
+                }
             }
         } elseif ($typeShipmentName === 'Marítima' && ($data['lcl_fcl'] ?? null) === 'FCL') {
             // MARÍTIMA FCL
@@ -206,7 +252,7 @@ class CommercialQuoteService
                 ]);
             }
         } else {
-            // CASO GENERAL
+            // CASO GENERAL LCL o Aereo
 
             $commercialQuote = CommercialQuote::create([
                 'origin'                  => $data['origin'] ?? null,
@@ -880,7 +926,7 @@ class CommercialQuoteService
         if (count($shippersConsolidated) > 0) {
             // Obtener el primer objeto del array
             $firstShipper = $shippersConsolidated[0];
-     
+
             // Asignar los valores del primer objeto a las variables correspondientes
             $unit_of_weight = $firstShipper['unit_of_weight'];
             $unit_of_volumen_kgv = $firstShipper['unit_of_volumen_kgv'];

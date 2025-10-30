@@ -62,6 +62,27 @@
                         </p>
                     </div>
 
+                     @if ($quote->commercial_quote->type_shipment->name === 'Marítima')
+
+                        @if ($quote->commercial_quote->lcl_fcl === 'FCL')
+                            <div class="col-6">
+                                <p class="text-sm">Contenedor(s) :
+                                <div class="d-flex flex-wrap">
+                                    @foreach ($quote->commercial_quote->commercialQuoteContainers as $commercialContainer)
+                                        <ul class="list-group list-group-flush text-bold d-inline-block mr-3">
+                                            <li class="list-group-item pl-0 pt-2">
+                                                {{ $commercialContainer->container_quantity }} x
+                                                {{ $commercialContainer->container->name }}
+
+                                            </li>
+                                        </ul>
+                                    @endforeach
+                                </div>
+                                </p>
+                            </div>
+                        @endif
+
+                    @endif
                 </div>
 
                 <h5 class="text-center text-indigo" style="text-decoration: underline;  text-underline-offset: 4px;">Detalle

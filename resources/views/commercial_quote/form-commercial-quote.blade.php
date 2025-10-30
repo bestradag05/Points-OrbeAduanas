@@ -640,6 +640,8 @@
                                 <tbody id="providersTable"></tbody>
                             </table>
 
+                            <input id="shippers_fcl_consolidated" type="hidden" name="shippers_fcl_consolidated"
+                                value="{{ old('shippers_fcl_consolidated', isset($routing->shippers_fcl_consolidated) ? $routing->shippers_fcl_consolidated : '') }}" />
 
                             <div id="containerDetailFCLConsolidated" class="row mt-3">
 
@@ -725,6 +727,10 @@
 
                             </div>
 
+                            <input id="data_containers_consolidated" type="hidden"
+                                name="data_containers_consolidated"
+                                value="{{ old('data_containers_consolidated', isset($routing->data_containers_consolidated) ? $routing->data_containers_consolidated : '') }}" />
+
 
                         </div>
 
@@ -786,8 +792,11 @@
                         let tableMeasuresFCL = null;
                         let tableMeasuresConsolidated = null;
                         let counter = 1;
+
                         let shippers = [];
                         let containers = [];
+                        let shippersFCLConsolidated = [];
+                        let containersFCLConsolidated = [];
 
                         // Función para agregar una fila editable
                         let rowIndex = 1; //
@@ -1091,6 +1100,12 @@
 
                                     }
 
+                                } else {
+                                    // Se oculta
+                                    $('#singleProviderSection').addClass('d-none');
+
+                                    //Se muestra
+                                    $('#multipleProvidersSection').removeClass('d-none');
                                 }
 
                             } else {
@@ -1130,6 +1145,14 @@
                                         }
 
                                     }
+
+                                } else {
+
+                                    // Se oculta
+                                    $('#multipleProvidersSection').addClass('d-none');
+
+                                    //Se muestra
+                                    $('#singleProviderSection').removeClass('d-none');
 
                                 }
 
@@ -1217,10 +1240,6 @@
 
                             }
                         }
-
-
-
-
 
 
                         //Funcion para agregar las medidas: 
@@ -1667,10 +1686,10 @@
                                     'container_quantity': containerQuantity,
                                 };
 
-                                let index = containers.length;
-                                containers.push(container)
+                                let index = containersFCLConsolidated.length;
+                                containersFCLConsolidated.push(container)
                                 // Actualizar el input hidden con la nueva lista en JSON
-                                $('#data_containers').val(JSON.stringify(containers));
+                                $('#data_containers_consolidated').val(JSON.stringify(containersFCLConsolidated));
 
 
                                 let newRow = `
@@ -1678,7 +1697,6 @@
                                         <td>${container.containerName}</td>
                                         <td>${container.container_quantity}</td>
                                         <td>
-                                            <button class="btn btn-info btn-sm btn-detail"><i class="fas fa-folder-open"></i></button>
                                             <button class="btn btn-danger btn-sm delete-row"><i class="fas fa-trash"></i></button>
                                         </td>
                                     </tr>
@@ -1766,12 +1784,41 @@
                                     'value-measures-consolidated')) : ''
                             };
 
-                            // Agregar shipper al array y obtener su índice
-                            let index = shippers.length;
-                            shippers.push(shipper);
+                            let index = null;
 
-                            // Actualizar el input hidden con la nueva lista en JSON
-                            updateHiddenInput();
+                            if (typeShipmentCurrent.name === "Marítima") {
+
+                                let lcl_fcl = document.querySelector('input[name="lcl_fcl"]:checked');
+                                if (lcl_fcl) {
+
+                                    if (lcl_fcl.value === 'FCL') {
+
+                                        index = shippersFCLConsolidated.length;
+                                        shippersFCLConsolidated.push(shipper);
+
+                                        $('#shippers_fcl_consolidated').val(JSON.stringify(shippersFCLConsolidated));
+
+                                    } else {
+                                        index = shippers.length;
+                                        shippers.push(shipper);
+
+                                        $('#shippers_consolidated').val(JSON.stringify(shippers));
+                                    }
+
+                                } else {
+                                    toastr.error('Porfavor selecione antes si el tipo de embarque es LCL o FCL');
+                                }
+
+                            } else {
+
+
+                                // Agregar shipper al array y obtener su índice
+                                index = shippers.length;
+                                shippers.push(shipper);
+
+                                $('#shippers_consolidated').val(JSON.stringify(shippers));
+                            }
+
 
                             let newRow = `
                                 <tr data-index="${index}">
@@ -1805,15 +1852,9 @@
                             tableMeasuresConsolidated.clear().draw();
                             currentPackage = 0;
                             rowIndex = 1;
-
-
-
                         }
 
-                        // Función para actualizar el input hidden con el array `shippers`
-                        function updateHiddenInput() {
-                            $('#shippers_consolidated').val(JSON.stringify(shippers));
-                        }
+
 
 
                         function restoreConsolidatedFromHidden() {
@@ -1856,7 +1897,7 @@
                             }
                         }
 
-                        $('#providersTable').on('click', '.delete-row', function() {
+                        $('#lcl_container #providersTable').on('click', '.delete-row', function() {
                             let row = $(this).closest('tr'); // Obtener la fila
                             let index = row.data('index'); // Obtener el índice del array
 
@@ -1875,61 +1916,140 @@
                             });
 
                             // Actualizar el input hidden con la nueva lista
-                            updateHiddenInput();
+                            $('#shippers_consolidated').val(JSON.stringify(shippers));
                         });
 
-                        $('#providersTable').on('click', '.btn-detail', function() {
+                        $('#fcl_container #providersTable').on('click', '.delete-row', function() {
+                            let row = $(this).closest('tr'); // Obtener la fila
+                            let index = row.data('index'); // Obtener el índice del array
+
+                            // Eliminar del array si el índice es válido
+                            if (index !== undefined && index < shippersFCLConsolidated.length) {
+                                shippersFCLConsolidated.splice(index, 1);
+                            }
+
+
+                            row.remove(); // Eliminar la fila del DOM
+
+
+                            // Actualizar los índices de las filas restantes
+                            $('#providersTable tr').each(function(i) {
+                                $(this).attr('data-index', i);
+                            });
+
+                            // Actualizar el input hidden con la nueva lista
+                            $('#shippers_fcl_consolidated').val(JSON.stringify(shippersFCLConsolidated));
+                        });
+
+                        $('#lcl_container #providersTable').on('click', '.btn-detail', function() {
 
                             let row = $(this).closest('tr');
                             let index = row.data('index');
                             let shipper = shippers[index];
                             let detailsHtml = `
-                <tr><th>Nombre</th><td>${shipper.shipper_name}</td></tr>
-                <tr><th>Contacto</th><td>${shipper.shipper_contact}</td></tr>
-                <tr><th>Email</th><td>${shipper.shipper_contact_email}</td></tr>
-                <tr><th>Teléfono</th><td>${shipper.shipper_contact_phone}</td></tr>
-                <tr><th>Dirección</th><td>${shipper.shipper_address}</td></tr>
-                <tr><th>Commodity</th><td>${shipper.commodity}</td></tr>
-                <tr><th>Incoterm</th><td>${shipper.name_incoterm}</td></tr>
-                <tr><th>Dirección de recojo</th><td>${shipper.pickup_address_at_origin_consolidated}</td></tr>
-                <tr><th>Valor de Carga</th><td>${shipper.load_value}</td></tr>
-                <tr><th>Nro. Paquetes</th><td>${shipper.nro_packages_consolidated}</td></tr>
-                <tr><th>Tipo de Empaque</th><td>${shipper.name_packaging_type_consolidated}</td></tr>
-                <tr><th>Peso</th><td>${shipper.weight} ${shipper.unit_of_weight}</td></tr>
-                <tr><th>Volumen</th><td>${shipper.volumen_kgv} ${shipper.unit_of_volumen_kgv}</td></tr>
-                <tr><th>Medidas</th><td>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Ítem</th>
-                                <th>Largo</th>
-                                <th>Ancho</th>
-                                <th>Alto</th>
-                                <th>Medida</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
+                                <tr><th>Nombre</th><td>${shipper.shipper_name}</td></tr>
+                                <tr><th>Contacto</th><td>${shipper.shipper_contact}</td></tr>
+                                <tr><th>Email</th><td>${shipper.shipper_contact_email}</td></tr>
+                                <tr><th>Teléfono</th><td>${shipper.shipper_contact_phone}</td></tr>
+                                <tr><th>Dirección</th><td>${shipper.shipper_address}</td></tr>
+                                <tr><th>Commodity</th><td>${shipper.commodity}</td></tr>
+                                <tr><th>Incoterm</th><td>${shipper.name_incoterm}</td></tr>
+                                <tr><th>Dirección de recojo</th><td>${shipper.pickup_address_at_origin_consolidated}</td></tr>
+                                <tr><th>Valor de Carga</th><td>${shipper.load_value}</td></tr>
+                                <tr><th>Nro. Paquetes</th><td>${shipper.nro_packages_consolidated}</td></tr>
+                                <tr><th>Tipo de Empaque</th><td>${shipper.name_packaging_type_consolidated}</td></tr>
+                                <tr><th>Peso</th><td>${shipper.weight} ${shipper.unit_of_weight}</td></tr>
+                                <tr><th>Volumen</th><td>${shipper.volumen_kgv} ${shipper.unit_of_volumen_kgv}</td></tr>
+                                <tr><th>Medidas</th><td>
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Ítem</th>
+                                                <th>Largo</th>
+                                                <th>Ancho</th>
+                                                <th>Alto</th>
+                                                <th>Medida</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                            `;
 
                             // Convertimos el objeto en un array de pares clave-valor y lo recorremos
                             Object.entries(shipper.value_measures).forEach(([key, measure]) => {
                                 detailsHtml += `
-                    <tr>
-                        <td>${measure.amount}</td>
-                        <td>${measure.length}</td>
-                        <td>${measure.width}</td>
-                        <td>${measure.height}</td>
-                        <td>${measure.unit_measurement}</td>
-                    </tr>
-                `;
+                                    <tr>
+                                        <td>${measure.amount}</td>
+                                        <td>${measure.length}</td>
+                                        <td>${measure.width}</td>
+                                        <td>${measure.height}</td>
+                                        <td>${measure.unit_measurement}</td>
+                                    </tr>
+                                `;
                             });
 
 
                             detailsHtml += `
-                        </tbody>
-                    </table>
-                </td></tr>
-            `;
+                                        </tbody>
+                                    </table>
+                                </td></tr>
+                            `;
+
+                            $('#shipper-details').html(detailsHtml);
+                            $('#modal-detail').modal('show');
+                        });
+
+                        $('#fcl_container #providersTable').on('click', '.btn-detail', function() {
+
+                            let row = $(this).closest('tr');
+                            let index = row.data('index');
+                            let shipper = shippersFCLConsolidated[index];
+                            let detailsHtml = `
+                                <tr><th>Nombre</th><td>${shipper.shipper_name}</td></tr>
+                                <tr><th>Contacto</th><td>${shipper.shipper_contact}</td></tr>
+                                <tr><th>Email</th><td>${shipper.shipper_contact_email}</td></tr>
+                                <tr><th>Teléfono</th><td>${shipper.shipper_contact_phone}</td></tr>
+                                <tr><th>Dirección</th><td>${shipper.shipper_address}</td></tr>
+                                <tr><th>Commodity</th><td>${shipper.commodity}</td></tr>
+                                <tr><th>Incoterm</th><td>${shipper.name_incoterm}</td></tr>
+                                <tr><th>Dirección de recojo</th><td>${shipper.pickup_address_at_origin_consolidated}</td></tr>
+                                <tr><th>Valor de Carga</th><td>${shipper.load_value}</td></tr>
+                                <tr><th>Nro. Paquetes</th><td>${shipper.nro_packages_consolidated}</td></tr>
+                                <tr><th>Tipo de Empaque</th><td>${shipper.name_packaging_type_consolidated}</td></tr>
+                                <tr><th>Peso</th><td>${shipper.weight} ${shipper.unit_of_weight}</td></tr>
+                                <tr><th>Volumen</th><td>${shipper.volumen_kgv} ${shipper.unit_of_volumen_kgv}</td></tr>
+                                <tr><th>Medidas</th><td>
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Ítem</th>
+                                                <th>Largo</th>
+                                                <th>Ancho</th>
+                                                <th>Alto</th>
+                                                <th>Medida</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                            `;
+
+                            // Convertimos el objeto en un array de pares clave-valor y lo recorremos
+                            Object.entries(shipper.value_measures).forEach(([key, measure]) => {
+                                detailsHtml += `
+                                    <tr>
+                                        <td>${measure.amount}</td>
+                                        <td>${measure.length}</td>
+                                        <td>${measure.width}</td>
+                                        <td>${measure.height}</td>
+                                        <td>${measure.unit_measurement}</td>
+                                    </tr>
+                                `;
+                            });
+
+
+                            detailsHtml += `
+                                        </tbody>
+                                    </table>
+                                </td></tr>
+                            `;
 
                             $('#shipper-details').html(detailsHtml);
                             $('#modal-detail').modal('show');

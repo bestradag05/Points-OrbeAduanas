@@ -115,26 +115,29 @@ class QuotesSentClientController extends Controller
 
                         $supplerdata = json_decode($loads->supplier_temp);
 
-                        $supplier = Supplier::where('name_businessname', $supplerdata->shipper_name)->first();
+                        if ($supplerdata) {
 
-                        if (!$supplier) {
-                            $supplier = Supplier::create([
-                                'name_businessname' => $supplerdata->shipper_name,
-                                'address' => $supplerdata->shipper_address,
-                                'contact_name' => $supplerdata->shipper_contact,
-                                'contact_number' => $supplerdata->shipper_contact_phone,
-                                'contact_email' => $supplerdata->shipper_contact_email,
-                                'state' => 'Activo',
+                            $supplier = Supplier::where('name_businessname', $supplerdata->shipper_name)->first();
+
+                            if (!$supplier) {
+                                $supplier = Supplier::create([
+                                    'name_businessname' => $supplerdata->shipper_name,
+                                    'address' => $supplerdata->shipper_address,
+                                    'contact_name' => $supplerdata->shipper_contact,
+                                    'contact_number' => $supplerdata->shipper_contact_phone,
+                                    'contact_email' => $supplerdata->shipper_contact_email,
+                                    'state' => 'Activo',
+                                ]);
+                            }
+
+                            // Una vez que se acepta, se cambia el supplier temporal por el supplier registrado.
+                            $loads->update([
+                                'supplier_temp' => null,
+                                'supplier_id' => $supplier->id
                             ]);
                         }
-                        // Una vez que se acepta, se cambia el supplier temporal por el supplier registrado.
-                        $loads->update([
-                            'supplier_temp' => null,
-                            'supplier_id' => $supplier->id
-                        ]);
 
                         //Obtenemos el supplier que tenga mayor valor de factura, para actualizarlo en la cotizacion
-
                         $maxLoadCargo = $commercialQuote->consolidatedCargos->sortByDesc('load_value')->first();
                         $supplierId = $maxLoadCargo->supplier_id;
                         $updateData['id_supplier'] = $supplierId;

@@ -26,7 +26,7 @@ class CommercialquoteRequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         // Mostrar los mensajes de error en un dd()
-        /* dd('❌ Errores de validación detectados:', $validator->errors()->toArray()); */
+        dd('❌ Errores de validación detectados:', $validator->errors()->toArray());
 
         // Si ya terminas de probar, elimina el dd() y descomenta esto:
         // throw new HttpResponseException(
@@ -46,7 +46,9 @@ class CommercialquoteRequest extends FormRequest
             // Arrays que a veces llegan como JSON string
             'type_service_checked'   => $jsonOrArray($this->type_service_checked),
             'shippers_consolidated'  => $jsonOrArray($this->shippers_consolidated),
+            'shippers_fcl_consolidated'  => $jsonOrArray($this->shippers_fcl_consolidated),
             'data_containers'        => $jsonOrArray($this->data_containers),
+            'data_containers_consolidated'        => $jsonOrArray($this->data_containers_consolidated),
 
             // Flags que llegan como "0"/"1"/"true"/"false"
             'is_consolidated'        => filter_var($this->is_consolidated, FILTER_VALIDATE_BOOLEAN),
@@ -104,7 +106,7 @@ class CommercialquoteRequest extends FormRequest
 
     public function rules(): array
     {
-        dd($this->all());
+        /* dd($this->all()); */
         // Reglas base (aplican para ambos casos)
         $base = [
             'id_type_shipment'   => ['required'],
@@ -140,8 +142,28 @@ class CommercialquoteRequest extends FormRequest
             'nro_package'       => ['exclude_if:is_consolidated,true', 'exclude_if:lcl_fcl,FCL', 'required', 'integer'],
             'id_packaging_type' => ['exclude_if:is_consolidated,true', 'exclude_if:lcl_fcl,FCL', 'required', 'integer'],
             'type_service_checked'    => ['nullable', 'array'],
-            'shippers_consolidated' => ['required_if:is_consolidated,true', 'array', 'nullable'],
-            'data_containers'         => ['required_if:lcl_fcl,FCL', 'array', 'nullable'],
+
+            'shippers_consolidated' => ['nullable', 'array', function ($attribute, $value, $fail) {
+                if ($this->is_consolidated === true && $this->lcl_fcl === 'LCL' && empty($value)) {
+                    $fail($attribute . ' es requerido cuando ambos valores son true.');
+                }
+            }],
+            'data_containers'         => ['array', 'nullable', function ($attribute, $value, $fail) {
+                if ($this->is_consolidated === false && $this->lcl_fcl === 'FCL' && empty($value)) {
+                    $fail($attribute . ' es requerido cuando ambos valores son true.');
+                }
+            }],
+
+            'shippers_fcl_consolidated' => ['array', 'nullable', function ($attribute, $value, $fail) {
+                if ($this->is_consolidated === true && $this->lcl_fcl === 'FCL' && empty($value)) {
+                    $fail($attribute . ' es requerido cuando ambos valores son true.');
+                }
+            }],
+            'data_containers_consolidated'         => ['array', 'nullable', function ($attribute, $value, $fail) {
+                if ($this->is_consolidated === true && $this->lcl_fcl === 'FCL' && empty($value)) {
+                    $fail($attribute . ' es requerido cuando ambos valores son true.');
+                }
+            }],
 
             'is_customer_prospect'    => ['required', 'in:prospect,customer'],
             'customer_company_name'   => ['required_if:is_customer_prospect,prospect', 'nullable', 'string', 'min:2'],

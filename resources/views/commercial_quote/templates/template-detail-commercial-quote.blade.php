@@ -244,10 +244,15 @@
                                 <div class="form-group row">
                                     <label class="col-sm-4 col-form-label">Contenedor : </label>
                                     <div class="col-sm-8">
+                                        @foreach ($comercialQuote->commercialQuoteContainers as $commercialContainer)
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item pl-0 pt-2">
+                                                    {{ $commercialContainer->container_quantity }} x
+                                                    {{ $commercialContainer->container->name }}
+                                                </li>
 
-                                        <p class="form-control-plaintext">
-                                            {{-- {{ $comercialQuote->container_quantity }}x{{ $comercialQuote->container->name }} --}}
-                                        </p>
+                                            </ul>
+                                        @endforeach
                                     </div>
 
                                 </div>
@@ -321,9 +326,11 @@
                                                 <b class="d-block">{{ $consolidated->commodity }}</b>
                                             </p>
                                         </div>
-                                        <div class="col-12 {{ $consolidated->pickup_address_at_origin_consolidated ? '' : 'd-none'}}">
+                                        <div
+                                            class="col-12 {{ $consolidated->pickup_address_at_origin_consolidated ? '' : 'd-none' }}">
                                             <p class="text-sm">Direccion de recojo :
-                                                <b class="d-block">{{ $consolidated->pickup_address_at_origin_consolidated }}</b>
+                                                <b
+                                                    class="d-block">{{ $consolidated->pickup_address_at_origin_consolidated }}</b>
                                             </p>
                                         </div>
                                         <div class="col-6">
@@ -500,16 +507,17 @@
 
                         </div>
                     </div>
-                    @if(strtolower($comercialQuote->incoterm->code) === 'exw' && !empty($comercialQuote->pickup_address_at_origin))
-                    <div class="col-12 border-bottom border-bottom-2">
-                        <div class="form-group row">
-                            <label class="col-sm-4 col-form-label">Dirección de recojo : </label>
-                            <div class="col-sm-8">
-                                <p class="form-control-plaintext">{{ $comercialQuote->pickup_address_at_origin }}</p>
-                            </div>
+                    @if (strtolower($comercialQuote->incoterm->code) === 'exw' && !empty($comercialQuote->pickup_address_at_origin))
+                        <div class="col-12 border-bottom border-bottom-2">
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Dirección de recojo : </label>
+                                <div class="col-sm-8">
+                                    <p class="form-control-plaintext">{{ $comercialQuote->pickup_address_at_origin }}
+                                    </p>
+                                </div>
 
+                            </div>
                         </div>
-                    </div>
                     @endif
                     <div class="col-12 border-bottom border-bottom-2">
                         <div class="form-group row">
