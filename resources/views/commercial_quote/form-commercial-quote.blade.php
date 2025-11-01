@@ -872,7 +872,10 @@
 
                             //Solo se restaurara si hay un valor en el input hidden, por errores de validacion o edicion (FCL)
                             restoreContainersFromHidden();
+                            restoreContainersFCLFromHidden()
+
                             restoreConsolidatedFromHidden();
+                            restoreConsolidatedFCLFromHidden()
 
                         });
 
@@ -1520,21 +1523,21 @@
                                 // Recrear las filas
                                 containers.forEach((container, index) => {
                                     let newRow = `
-                <tr data-index="${index}">
-                    <td>${container.containerName}</td>
-                    <td>${container.container_quantity}</td>
-                    <td>${container.commodity}</td>
-                    <td>${container.nro_package}</td>
-                    <td>${container.packaginTypeName}</td>
-                    <td>${container.load_value}</td>
-                    <td>${container.volumen_kgv} ${container.unit_of_volumen_kgv}</td>
-                    <td>${container.weight} ${container.unit_of_weight}</td>
-                    <td>
-                        <button class="btn btn-info btn-sm btn-detail"><i class="fas fa-folder-open"></i></button>
-                        <button class="btn btn-danger btn-sm delete-row"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-            `;
+                                    <tr data-index="${index}">
+                                        <td>${container.containerName}</td>
+                                        <td>${container.container_quantity}</td>
+                                        <td>${container.commodity}</td>
+                                        <td>${container.nro_package}</td>
+                                        <td>${container.packaginTypeName}</td>
+                                        <td>${container.load_value}</td>
+                                        <td>${container.volumen_kgv} ${container.unit_of_volumen_kgv}</td>
+                                        <td>${container.weight} ${container.unit_of_weight}</td>
+                                        <td>
+                                            <button class="btn btn-info btn-sm btn-detail"><i class="fas fa-folder-open"></i></button>
+                                            <button class="btn btn-danger btn-sm delete-row"><i class="fas fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                `;
                                     $('#table-containers tbody').append(newRow);
                                 });
 
@@ -1565,6 +1568,28 @@
 
                             // Actualizar el input hidden con la nueva lista
                             $('#data_containers').val(JSON.stringify(containers));
+                        });
+
+                        $('#tableContainerFCLConsolidated tbody').on('click', '.delete-row', function() {
+                            let row = $(this).closest('tr'); // Obtener la fila
+                            let index = row.data('index'); // Obtener el índice del array
+
+                            // Eliminar del array si el índice es válido
+                            if (index !== undefined && index < containersFCLConsolidated.length) {
+                                containersFCLConsolidated.splice(index, 1);
+                            }
+
+
+                            row.remove(); // Eliminar la fila del DOM
+
+
+                            // Actualizar los índices de las filas restantes
+                            $('#tableContainerFCLConsolidated tbody tr').each(function(i) {
+                                $(this).attr('data-index', i);
+                            });
+
+                            // Actualizar el input hidden con la nueva lista
+                            $('#data_containers_consolidated').val(JSON.stringify(containersFCLConsolidated));
                         });
 
 
@@ -1705,13 +1730,39 @@
                                 $('#tableContainerFCLConsolidated tbody').append(newRow);
 
                                 clearData(inputs);
-
-
-
                             }
                         };
 
 
+                        function restoreContainersFCLFromHidden() {
+                            const hiddenContainersFCL = document.getElementById('data_containers_consolidated');
+                            if (!hiddenContainersFCL || !hiddenContainersFCL.value) return;
+
+                            try {
+                                // Parsear los contenedores guardados
+                                containersFCL = JSON.parse(hiddenContainersFCL.value);
+
+                                // Limpiar la tabla actual
+                                $('#tableContainerFCLConsolidated tbody').empty();
+
+                                // Recrear las filas
+                                containersFCL.forEach((container, index) => {
+                                    let newRow = `
+                                    <tr data-index="${index}">
+                                        <td>${container.containerName}</td>
+                                        <td>${container.container_quantity}</td>
+                                        <td>
+                                            <button class="btn btn-danger btn-sm delete-row"><i class="fas fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                `;
+                                    $('#tableContainerFCLConsolidated tbody').append(newRow);
+                                });
+
+                            } catch (e) {
+                                console.error('Error parsing containers data:', e);
+                            }
+                        }
 
 
 
@@ -1867,29 +1918,70 @@
                                 shippers = JSON.parse(hiddenShippers.value);
 
                                 // Limpiar la tabla actual
-                                $('#providersTable').empty();
+                                $('#lcl_container #providersTable').empty();
 
                                 // Recrear las filas con los datos almacenados
                                 shippers.forEach((shipper, index) => {
                                     let newRow = `
-                <tr data-index="${index}">
-                     <td>${shipper.shipper_name}</td>
-                                    <td>${shipper.shipper_contact}</td>
-                                    <td>${shipper.name_incoterm}</td>
-                                    <td>${shipper.pickup_address_at_origin_consolidated}</td>
-                                    <td>${shipper.commodity}</td>
-                                    <td>${shipper.load_value}</td>
-                                    <td>${shipper.nro_packages_consolidated}</td>
-                                    <td>${shipper.name_packaging_type_consolidated}</td>
-                                    <td>${shipper.weight} ${shipper.unit_of_weight}</td>
-                                    <td>${shipper.volumen_kgv} ${shipper.unit_of_volumen_kgv}</td>
-                    <td>
-                        <button class="btn btn-info btn-sm btn-detail"><i class="fas fa-folder-open"></i></button>
-                        <button class="btn btn-danger btn-sm delete-row"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-            `;
+                                        <tr data-index="${index}">
+                                            <td>${shipper.shipper_name}</td>
+                                                            <td>${shipper.shipper_contact}</td>
+                                                            <td>${shipper.name_incoterm}</td>
+                                                            <td>${shipper.pickup_address_at_origin_consolidated}</td>
+                                                            <td>${shipper.commodity}</td>
+                                                            <td>${shipper.load_value}</td>
+                                                            <td>${shipper.nro_packages_consolidated}</td>
+                                                            <td>${shipper.name_packaging_type_consolidated}</td>
+                                                            <td>${shipper.weight} ${shipper.unit_of_weight}</td>
+                                                            <td>${shipper.volumen_kgv} ${shipper.unit_of_volumen_kgv}</td>
+                                            <td>
+                                                <button class="btn btn-info btn-sm btn-detail"><i class="fas fa-folder-open"></i></button>
+                                                <button class="btn btn-danger btn-sm delete-row"><i class="fas fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    `;
                                     $('#providersTable').append(newRow);
+                                });
+
+                            } catch (e) {
+                                console.error('Error al parsear los datos de shippers:', e);
+                            }
+                        }
+
+                        function restoreConsolidatedFCLFromHidden() {
+                            const hiddenShippersFCL = document.getElementById('shippers_fcl_consolidated');
+
+                            if (!hiddenShippersFCL || !hiddenShippersFCL.value) return;
+
+                            try {
+                                // Parsear los shippers guardados
+                                
+                                shippersFCLConsolidated = JSON.parse(hiddenShippersFCL.value);
+
+                                // Limpiar la tabla actual
+                                $('#fcl_container #providersTable').empty();
+
+                                // Recrear las filas con los datos almacenados
+                                shippersFCLConsolidated.forEach((shipper, index) => {
+                                    let newRow = `
+                                        <tr data-index="${index}">
+                                            <td>${shipper.shipper_name}</td>
+                                                            <td>${shipper.shipper_contact}</td>
+                                                            <td>${shipper.name_incoterm}</td>
+                                                            <td>${shipper.pickup_address_at_origin_consolidated}</td>
+                                                            <td>${shipper.commodity}</td>
+                                                            <td>${shipper.load_value}</td>
+                                                            <td>${shipper.nro_packages_consolidated}</td>
+                                                            <td>${shipper.name_packaging_type_consolidated}</td>
+                                                            <td>${shipper.weight} ${shipper.unit_of_weight}</td>
+                                                            <td>${shipper.volumen_kgv} ${shipper.unit_of_volumen_kgv}</td>
+                                            <td>
+                                                <button class="btn btn-info btn-sm btn-detail"><i class="fas fa-folder-open"></i></button>
+                                                <button class="btn btn-danger btn-sm delete-row"><i class="fas fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    `;
+                                    $('#fcl_container #providersTable').append(newRow);
                                 });
 
                             } catch (e) {

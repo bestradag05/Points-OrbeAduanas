@@ -142,32 +142,7 @@ class CommercialquoteRequest extends FormRequest
             'nro_package'       => ['exclude_if:is_consolidated,true', 'exclude_if:lcl_fcl,FCL', 'required', 'integer'],
             'id_packaging_type' => ['exclude_if:is_consolidated,true', 'exclude_if:lcl_fcl,FCL', 'required', 'integer'],
             'type_service_checked'    => ['nullable', 'array'],
-
-            'shippers_consolidated' => ['nullable', 'array', function ($attribute, $value, $fail) {
-                if ($this->is_consolidated === true && $this->lcl_fcl === 'LCL' && empty($value)) {
-                    $fail($attribute . ' es requerido cuando ambos valores son true.');
-                }
-            }],
-            'data_containers'         => ['array', 'nullable', function ($attribute, $value, $fail) {
-                if ($this->is_consolidated === false && $this->lcl_fcl === 'FCL' && empty($value)) {
-                    $fail($attribute . ' es requerido cuando ambos valores son true.');
-                }
-            }],
-
-            'shippers_fcl_consolidated' => ['array', 'nullable', function ($attribute, $value, $fail) {
-                if ($this->is_consolidated === true && $this->lcl_fcl === 'FCL' && empty($value)) {
-                    $fail($attribute . ' es requerido cuando ambos valores son true.');
-                }
-            }],
-            'data_containers_consolidated'         => ['array', 'nullable', function ($attribute, $value, $fail) {
-                if ($this->is_consolidated === true && $this->lcl_fcl === 'FCL' && empty($value)) {
-                    $fail($attribute . ' es requerido cuando ambos valores son true.');
-                }
-            }],
-
-            'is_customer_prospect'    => ['required', 'in:prospect,customer'],
-            'customer_company_name'   => ['required_if:is_customer_prospect,prospect', 'nullable', 'string', 'min:2'],
-            'id_customer'             => ['required_if:is_customer_prospect,customer', 'nullable', 'integer'],
+            
         ];
 
         // Extra si NO es solo transporte
@@ -181,6 +156,32 @@ class CommercialquoteRequest extends FormRequest
             'pickup_address_at_origin' => $this->isExw()
                 ? ['exclude_if:is_consolidated,true', 'exclude_if:lcl_fcl,FCL', 'required', 'string', 'min:5']
                 : ['nullable'],
+            
+            'is_customer_prospect'    => ['required', 'in:prospect,customer'],
+            'customer_company_name'   => ['required_if:is_customer_prospect,prospect', 'nullable', 'string', 'min:2'],
+            'id_customer'             => ['required_if:is_customer_prospect,customer', 'nullable', 'integer'],
+            
+            'shippers_consolidated' => [function ($attribute, $value, $fail) {
+                if ($this->is_consolidated === true && $this->lcl_fcl === 'LCL' && empty($value)) {
+                    $fail($attribute . ' es requerido cuando ambos valores son true.');
+                }
+            }],
+            'data_containers'         => [function ($attribute, $value, $fail) {
+                if ($this->is_consolidated === false && $this->lcl_fcl === 'FCL' && empty($value)) {
+                    $fail($attribute . ' es requerido cuando ambos valores son true.');
+                }
+            }],
+
+            'shippers_fcl_consolidated' => [function ($attribute, $value, $fail) {
+                if ($this->is_consolidated === true && $this->lcl_fcl === 'FCL' && empty($value)) {
+                    $fail($attribute . ' es requerido.');
+                }
+            }],
+            'data_containers_consolidated'         => [function ($attribute, $value, $fail) {
+                if ($this->is_consolidated === true && $this->lcl_fcl === 'FCL' && empty($value)) {
+                    $fail($attribute . ' es requerido.');
+                }
+            }],
         ];
 
         return $this->onlyTransport()

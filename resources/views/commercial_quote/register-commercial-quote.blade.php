@@ -788,29 +788,29 @@
         }
 
 
-        /*  stepper1Node.addEventListener('show.bs-stepper', function(event) {
-             const currentStep = event.detail.from; // Paso actual
-             let valid = false;
+        stepper1Node.addEventListener('show.bs-stepper', function(event) {
+            const currentStep = event.detail.from; // Paso actual
+            let valid = false;
 
-             // Validar el paso actual antes de permitir avanzar
-             if (currentStep === 0) {
-                 valid = validateStep('#step0');
-             } else if (currentStep === 1) {
-                 valid = validateStep('#step1');
-             }
+            // Validar el paso actual antes de permitir avanzar
+            if (currentStep === 0) {
+                valid = validateStep('#step0');
+            } else if (currentStep === 1) {
+                valid = validateStep('#step1');
+            }
 
-             // Si la validación falla, evitar el avance
-             if (!valid) {
-                 event.preventDefault();
+            // Si la validación falla, evitar el avance
+            if (!valid) {
+                event.preventDefault();
 
-                 // Enfocar el primer campo inválido
-                 const invalidFields = document.querySelectorAll('.is-invalid');
-                 if (invalidFields.length > 0) {
-                     invalidFields[0].focus(); // Enfocar el primer campo inválido
-                 }
-             }
+                // Enfocar el primer campo inválido
+                const invalidFields = document.querySelectorAll('.is-invalid');
+                if (invalidFields.length > 0) {
+                    invalidFields[0].focus(); // Enfocar el primer campo inválido
+                }
+            }
 
-         }); */
+        });
 
 
 
@@ -829,6 +829,26 @@
             }
         }
 
+        function hasConsolidatedItemsFCL() {
+            const hidden = document.getElementById('shippers_fcl_consolidated')?.value || '[]';
+            try {
+                const arr = JSON.parse(hidden);
+                return Array.isArray(arr) && arr.length > 0;
+            } catch {
+                return false;
+            }
+        }
+
+        function isMaritima() {
+            const idTypeShipmentSelect = document.querySelector('select[name="id_type_shipment"]');
+            var typeShipments = @json($type_shipments);
+            var typeShipmentCurrent = typeShipments.find(typeShipment => typeShipment.id === parseInt(idTypeShipmentSelect
+                .value));
+
+
+            return typeShipmentCurrent.name === "Marítima"
+        }
+
         function isFCLSelected() {
             return document.querySelector('input[name="lcl_fcl"]:checked')?.value === 'FCL';
         }
@@ -844,44 +864,72 @@
             }
         }
 
+        function hasFCLItemsConsolidated() {
+            const hidden = document.getElementById('data_containers_consolidated')?.value || '[]';
+            try {
+                const arr = JSON.parse(hidden);
+                return Array.isArray(arr) && arr.length > 0;
+            } catch {
+                return false;
+            }
+        }
+
         function submitForm() {
             const form = document.getElementById('formCommercialQuote');
             let valid = true;
 
 
-            /*  const step1 = validateStep('#step0');
-             const step2 = validateStep('#step1');
+            const step1 = validateStep('#step0');
+            const step2 = validateStep('#step1');
 
-             valid = step1 && step2; */
+            valid = step1 && step2;
 
 
 
             if (valid) {
 
-                /* if (isConsolidatedSelected()) {
-                    if (!hasConsolidatedItems()) {
-                        toastr.error("Por favor, agregue al menos un shipper consolidado.");
-                        return;
-                    }
-                }
-                if (isFCLSelected()) {
-                    if (!hasFCLItems()) {
-                        toastr.error("Por favor, agregue al menos un contenedor.");
-                        return;
+                if (isConsolidatedSelected()) {
+
+                    if (isMaritima() && isFCLSelected()) {
+
+                        if (!hasConsolidatedItemsFCL()) {
+                            toastr.error("Por favor, agregue al menos un shipper consolidado.");
+                            return;
+                        }
+
+                        if (!hasFCLItemsConsolidated()) {
+                            toastr.error("Por favor, agregue al menos un contenedor.");
+                            return;
+                        }
+
+                    } else {
+
+                        if (!hasConsolidatedItems()) {
+                            toastr.error("Por favor, agregue al menos un shipper consolidado.");
+                            return;
+                        }
                     }
 
                 } else {
+                    if (isFCLSelected()) {
+                        if (!hasFCLItems()) {
+                            toastr.error("Por favor, agregue al menos un contenedor.");
+                            return;
+                        }
 
-                    const valueMeasures = document.getElementById('value_measures').value.trim();
-                    const volumen = $('#contenedor_volumen #volumen_kgv').val().trim();
-                    const weight = $('#contenedor_weight #weight').val().trim();
+                    } else {
 
-                    if (!((volumen && weight) || valueMeasures)) {
-                        toastr.error("Por favor, complete al menos uno de los siguientes: Volumen y Peso, o Medidas.");
-                        return;
+                        const valueMeasures = document.getElementById('value_measures').value.trim();
+                        const volumen = $('#contenedor_volumen #volumen_kgv').val().trim();
+                        const weight = $('#contenedor_weight #weight').val().trim();
+
+                        if (!((volumen && weight) || valueMeasures)) {
+                            toastr.error("Por favor, complete al menos uno de los siguientes: Volumen y Peso, o Medidas.");
+                            return;
+                        }
+
                     }
-
-                } */
+                }
 
                 form.submit();
 
