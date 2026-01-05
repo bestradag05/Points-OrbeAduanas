@@ -56,7 +56,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $userPricing = User::create([
-            'email' => 'victor.gomez@orbeaduanas.com',
+            'email' => 'victor.gomeztest@orbeaduanas.com',
             'password' => bcrypt('Orbe2025'),
             'state' => 'Activo'
         ]);

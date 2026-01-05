@@ -47,7 +47,7 @@ class ProcessManagementController extends Controller
      */
     public function show(ProcessManagement $process)
     {
-        $commercialQuote = $process->QuotesSentClient->commercialQuote;
+        $commercialQuote = $process->commercialQuote;
 
         $services = [];
 

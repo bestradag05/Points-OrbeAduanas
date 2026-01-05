@@ -229,7 +229,7 @@ class QuotesSentClientController extends Controller
             //Creamos el registro para agrupar las comisiones de el vendedor
 
             $processManagement = ProcessManagement::create([
-                'nro_quote_commercial' => $quotesSentClient->nro_quote_commercial,
+                'nro_quote_commercial' => $commercialQuote->nro_quote_commercial,
                 'freight_status' => $commercialQuote->freight->state ?? null,
                 'customs_status' => $commercialQuote->custom->state ?? null,
                 'transport_status' => $commercialQuote->transport->state ?? null,

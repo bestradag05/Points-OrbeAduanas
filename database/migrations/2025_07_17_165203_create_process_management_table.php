@@ -21,7 +21,7 @@ return new class extends Migration
             $table->boolean('process_completed')->default(false);
             $table->timestamps();
 
-             $table->foreign('nro_quote_commercial')->references('nro_quote_commercial')->on('quotes_sent_clients')->onDelete('cascade');
+            $table->foreign('nro_quote_commercial')->references('nro_quote_commercial')->on('commercial_quote')->onDelete('cascade');
 
         });
     }

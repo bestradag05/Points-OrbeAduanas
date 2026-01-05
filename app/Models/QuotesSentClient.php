@@ -172,9 +172,4 @@ class QuotesSentClient extends Model
             ->withPivot(['concept_value', 'service_type', 'observation', 'has_igv']);
     }
 
-
-    public function processManagement()
-    {
-        return $this->hasOne(ProcessManagement::class, 'nro_quote_commercial', 'nro_quote_commercial');
-    }
 }

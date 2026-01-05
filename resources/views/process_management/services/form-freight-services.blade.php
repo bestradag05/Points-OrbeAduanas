@@ -396,108 +396,82 @@
 
         </div>
 
-        <div class="col-6 px-5">
+        <div class="col-6 row px-5">
 
-            <div class="row justify-content-center py-3">
-                <h5 class="text-indigo m-0">
-                    Documentos
-                </h5>
-                @if ($freight->state === 'Pendiente' || $freight->state === 'Notificado')
-                    <button type="button" class="btn btn-indigo btn-sm mx-2 "
-                        onclick="showModalUpdateDocumentFreight()"><i class="fas fa-plus"></i></button>
-                @endif
+            <div class="col-12">
 
-            </div>
+                <div class="row justify-content-center py-3">
+                    <h5 class="text-indigo m-0">
+                        Documentos requeridos
+                    </h5>
+                    @if ($freight->state === 'Pendiente' || $freight->state === 'Notificado')
+                        <button type="button" class="btn btn-indigo btn-sm mx-2 "
+                            onclick="showModalUpdateDocumentFreight()"><i class="fas fa-plus"></i></button>
+                    @endif
 
-            @php
-                $requiredDocuments = ['Routing Order', 'Factura Comercial', 'BL Draf'];
+                </div>
 
-                if ($freight->state != 'Enviado' && $freight->state != 'Pendiente') {
-                    $requiredDocuments[] = 'BL Final';
-                }
+                @php
+                    $requiredDocuments = ['Routing Order', 'Factura Comercial', 'BL Draf'];
 
-                $uploadedDocuments = $freight->documents->keyBy(fn($doc) => strtolower(trim($doc->name)));
-                $blFinalUploaded = $uploadedDocuments->has('bl final');
-                $allRequiredUploaded = collect($requiredDocuments)->every(function ($doc) use ($uploadedDocuments) {
-                    return $uploadedDocuments->has(strtolower(trim($doc)));
-                });
-            @endphp
+                    if ($freight->state != 'Enviado' && $freight->state != 'Pendiente') {
+                        $requiredDocuments[] = 'BL Final';
+                    }
 
-            <table class="table mt-2">
-                <thead>
-                    <tr>
-                        <th class="text-indigo text-bold">Nombre</th>
-                        <th class="text-indigo text-bold ">Documento</th>
-                        <th class="text-indigo text-bold">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{-- Documentos obligatorios --}}
-                    @foreach ($requiredDocuments as $required)
-                        @php
-                            $docKey = strtolower(trim($required));
-                            $document = $uploadedDocuments[$docKey] ?? null;
-                        @endphp
+                    $uploadedDocuments = $freight->documents->keyBy(fn($doc) => strtolower(trim($doc->name)));
+                    $blFinalUploaded = $uploadedDocuments->has('bl final');
+                    $allRequiredUploaded = collect($requiredDocuments)->every(function ($doc) use ($uploadedDocuments) {
+                        return $uploadedDocuments->has(strtolower(trim($doc)));
+                    });
+                @endphp
+
+                <table class="table mt-2">
+                    <thead>
                         <tr>
-                            <td class="text-indigo text-uppercase text-bold">{{ $required }} <span
-                                    class="text-danger">*</span>
-                            </td>
-                            <td class="text-center">
-                                @if ($document)
-                                    <a href="{{ asset($document->path) }}" target="_blank" class="btn text-danger">
-
-                                        <x-file-icon :path="$document->path" />
-                                    </a>
-                                @elseif($required === 'Routing Order')
-                                    {{-- No mostrar botón de subida para Routing Order --}}
-                                    <span class="text-muted">Aún no generado</span>
-                                @else
-                                    <form action="{{ url('/freight/upload_file/' . $freight->id) }}" method="POST"
-                                        enctype="multipart/form-data" class="d-inline">
-                                        @csrf
-                                        <input type="hidden" name="name_file" value="{{ $required }}">
-                                        <input type="file" name="file" required onchange="this.form.submit()"
-                                            style="display: none;" id="fileInput_{{ $loop->index }}">
-                                        <button type="button" class="btn btn-sm text-primary" title="Subir archivo"
-                                            onclick="uploadRequiredFile({{ $loop->index }})">
-                                            <i class="fas fa-upload"></i>
-                                        </button>
-                                    </form>
-                                @endif
-                            </td>
-
-                            @if ($document && ($freight->state === 'En Proceso' || $freight->state === 'Notificado'))
-                                <td>
-                                    <form action="{{ url('/freight/delete_file/' . $document->id) }}" method="POST"
-                                        class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn text-danger">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </form>
-                                </td>
-                            @else
-                                <td></td>
-                            @endif
-
+                            <th class="text-indigo text-bold">Nombre</th>
+                            <th class="text-indigo text-bold ">Documento</th>
+                            <th class="text-indigo text-bold">Acciones</th>
                         </tr>
-                    @endforeach
-
-                    {{-- Documentos no obligatorios --}}
-                    @foreach ($freight->documents as $document)
-                        @php
-                            $docName = strtolower(trim($document->name));
-                        @endphp
-                        @if (!in_array($docName, collect($requiredDocuments)->map(fn($d) => strtolower($d))->toArray()))
+                    </thead>
+                    <tbody>
+                        {{-- Documentos obligatorios --}}
+                        @foreach ($requiredDocuments as $required)
+                            @php
+                                $docKey = strtolower(trim($required));
+                                $document = $uploadedDocuments[$docKey] ?? null;
+                            @endphp
                             <tr>
-                                <td class="text-indigo text-uppercase">{{ $document->name }}</td>
-                                <td class="text-center">
-                                    <a href="{{ asset($document->path) }}" target="_blank" class="btn text-danger">
-                                        <x-file-icon :path="$document->path" />
-                                    </a>
+                                <td class="text-indigo text-uppercase text-bold">{{ $required }} <span
+                                        class="text-danger">*</span>
                                 </td>
-                                @if ($freight->state === 'Pendiente' || $freight->state === 'Notificado')
+                                <td class="text-center">
+                                    @if ($document)
+                                        <a href="{{ asset($document->path) }}" target="_blank"
+                                            class="btn text-danger">
+
+                                            <x-file-icon :path="$document->path" />
+                                        </a>
+                                    @elseif($required === 'Routing Order')
+                                        {{-- No mostrar botón de subida para Routing Order --}}
+                                        <span class="text-muted">Aún no generado</span>
+                                    @else
+                                        <form action="{{ url('/freight/upload_file/' . $freight->id) }}"
+                                            method="POST" enctype="multipart/form-data" class="d-inline">
+                                            @csrf
+                                            <input type="hidden" name="name_file" value="{{ $required }}">
+                                            <input type="file" name="file" required
+                                                onchange="this.form.submit()" style="display: none;"
+                                                id="fileInput_{{ $loop->index }}">
+                                            <button type="button" class="btn btn-sm text-primary"
+                                                title="Subir archivo"
+                                                onclick="uploadRequiredFile({{ $loop->index }})">
+                                                <i class="fas fa-upload"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                </td>
+
+                                @if ($document && ($freight->state === 'En Proceso' || $freight->state === 'Notificado'))
                                     <td>
                                         <form action="{{ url('/freight/delete_file/' . $document->id) }}"
                                             method="POST" class="d-inline">
@@ -508,67 +482,126 @@
                                             </button>
                                         </form>
                                     </td>
+                                @else
+                                    <td></td>
                                 @endif
+
                             </tr>
-                        @endif
-                    @endforeach
-                </tbody>
-            </table>
+                        @endforeach
+
+                        {{-- Documentos no obligatorios --}}
+                        @foreach ($freight->documents as $document)
+                            @php
+                                $docName = strtolower(trim($document->name));
+                            @endphp
+                            @if (!in_array($docName, collect($requiredDocuments)->map(fn($d) => strtolower($d))->toArray()))
+                                <tr>
+                                    <td class="text-indigo text-uppercase">{{ $document->name }}</td>
+                                    <td class="text-center">
+                                        <a href="{{ asset($document->path) }}" target="_blank"
+                                            class="btn text-danger">
+                                            <x-file-icon :path="$document->path" />
+                                        </a>
+                                    </td>
+                                    @if ($freight->state === 'Pendiente' || $freight->state === 'Notificado')
+                                        <td>
+                                            <form action="{{ url('/freight/delete_file/' . $document->id) }}"
+                                                method="POST" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn text-danger">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    @endif
+                                </tr>
+                            @endif
+                        @endforeach
+                    </tbody>
+                </table>
 
 
-            <div class="row justify-content-center mt-4">
+                <div class="row justify-content-center mt-4">
 
-                <div class="col-12 mb-3 text-center">
-                    <h6 class="custom-badge status-{{ Str::slug($freight->state) }}"> <i class="fas fa-circle"></i>
-                        {{ $freight->state }}</h6>
+                    @if ($lastNotification)
+                        <div class="alert alert-danger text-sm">
+                            <strong>Motivo:</strong> {{ $lastNotification->data['message'] }} <br>
+                            <small class="text-warning">{{ $lastNotification->created_at->diffForHumans() }}</small>
+                        </div>
+                    @endif
+
+
+                    @if (!$freight->documents->contains('name', 'Routing Order'))
+                        <div class="col-6 col-xl-6">
+                            <button class="btn btn-secondary btn-sm w-100" onclick="openModalgenerateRoutingOrder()">
+                                Generar Routing
+                            </button>
+                        </div>
+                    @endif
+
+
+                    @if ($freight->state === 'Pendiente' || $freight->state === 'Notificado')
+                        <div class="col-6 col-xl-6">
+                            <form action="{{ url('/freight/send-operation/' . $freight->id) }}" method="POST"
+                                class="d-inline">
+                                @csrf
+                                @method('PUT') <!-- O POST, según tu ruta -->
+                                <button class="btn btn-indigo btn-sm w-100">
+                                    Enviar
+                                </button>
+                            </form>
+                        </div>
+                    @endif
+
+                    @if ($freight->state === 'Notificado')
+                        <div class="col-6 col-xl-6">
+
+                            <button class="btn btn-warning btn-sm w-100" onclick="openModalUpdateCosts()">
+                                <i class="fas fa-info mr-2"></i>
+                                Actualización de precios
+                            </button>
+
+                        </div>
+                    @endif
+
+
+
                 </div>
 
 
-                @if ($lastNotification)
-                    <div class="alert alert-danger text-sm">
-                        <strong>Motivo:</strong> {{ $lastNotification->data['message'] }} <br>
-                        <small class="text-warning">{{ $lastNotification->created_at->diffForHumans() }}</small>
-                    </div>
-                @endif
+            </div>
+            {{-- <div class="col-12">
+
+                <div class="row justify-content-center py-3">
+
+                    <h5 class="text-indigo m-0">
+                        Status de la carga
+                    </h5>
+
+                    <table class="table mt-2">
+                        <thead>
+                            <tr>
+                                <th class="text-indigo text-bold">Nombre</th>
+                                <th class="text-indigo text-bold ">Documento</th>
+                                <th class="text-indigo text-bold">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
 
 
-                @if (!$freight->documents->contains('name', 'Routing Order'))
-                    <div class="col-6 col-xl-6">
-                        <button class="btn btn-secondary btn-sm w-100" onclick="openModalgenerateRoutingOrder()">
-                            Generar Routing
-                        </button>
-                    </div>
-                @endif
+                </div>
+            </div> --}}
 
+            <div class="col-12 mb-3 text-center">
 
-                @if ($freight->state === 'Pendiente' || $freight->state === 'Notificado')
-                    <div class="col-6 col-xl-6">
-                        <form action="{{ url('/freight/send-operation/' . $freight->id) }}" method="POST"
-                            class="d-inline">
-                            @csrf
-                            @method('PUT') <!-- O POST, según tu ruta -->
-                            <button class="btn btn-indigo btn-sm w-100">
-                                Enviar
-                            </button>
-                        </form>
-                    </div>
-                @endif
-
-                @if ($freight->state === 'Notificado')
-                    <div class="col-6 col-xl-6">
-
-                        <button class="btn btn-warning btn-sm w-100" onclick="openModalUpdateCosts()">
-                            <i class="fas fa-info mr-2"></i>
-                            Actualización de precios
-                        </button>
-
-                    </div>
-                @endif
-
-
+                <h6 class="custom-badge status-{{ Str::slug($freight->state) }}"> <i class="fas fa-circle"></i>
+                    {{ $freight->state }}</h6>
 
             </div>
-
 
 
         </div>
@@ -623,6 +656,22 @@
 
             <div class="row">
 
+                <div class="col-6 ">
+                    <div class="form-group">
+                        <label for="wr_loading">Zarpe / ETD</label>
+                        <input type="date" class="form-control" id="etd" name="etd" placeholder="Ingrese la fecha de zarpe" />
+                    </div>
+
+                </div>
+
+                <div class="col-6 ">
+                    <div class="form-group">
+                        <label for="wr_loading">Arribo / ETA</label>
+                        <input type="date" class="form-control" id="eta" name="eta" placeholder="Ingrese la fecha de arriba" />
+                    </div>
+
+                </div>
+
                 <div class="col-12 ">
                     <div class="form-group">
                         <label for="wr_loading">WR Loading</label>
@@ -676,9 +725,10 @@
             @csrf
 
             <div class="col-12">
-                    <p class="text-sm text-danger text-center">*Al solicitar una actualización de cotos, tendras que actualizar
-                        los costos ventas del flete internacional y volver a generar un RO con los datos actualizados
-                        para que concuerde con el BL final*</p>
+                <p class="text-sm text-danger text-center">*Al solicitar una actualización de cotos, tendras que
+                    actualizar
+                    los costos ventas del flete internacional y volver a generar un RO con los datos actualizados
+                    para que concuerde con el BL final*</p>
             </div>
 
             @if ($commercialQuote->type_shipment->name === 'Marítima')

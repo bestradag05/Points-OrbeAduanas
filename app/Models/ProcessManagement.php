@@ -21,9 +21,9 @@ class ProcessManagement extends Model
     ];
 
 
-    public function quotesSentClient()
+    public function commercialQuote()
     {
-        return $this->belongsTo(QuotesSentClient::class, 'nro_quote_commercial', 'nro_quote_commercial');
+        return $this->belongsTo(CommercialQuote::class, 'nro_quote_commercial', 'nro_quote_commercial');
     }
 
     public function commissionGroup()

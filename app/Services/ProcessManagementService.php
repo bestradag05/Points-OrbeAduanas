@@ -25,8 +25,8 @@ class ProcessManagementService
 
     public function index()
     {
-       $processes = ProcessManagement::with('quotesSentClient')
-        ->whereHas('quotesSentClient', function ($query) {
+       $processes = ProcessManagement::with(['commercialQuote.quotesSentClients'])  // Cargar la relación comercial y luego quotesSentClients
+        ->whereHas('commercialQuote.quotesSentClients', function ($query) {
             $query->where('status', '!=', 'Anulado');  // Excluir aquellos con estado 'Anulado'
         })
         ->get();
