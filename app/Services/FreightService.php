@@ -267,11 +267,26 @@ class FreightService
         $process = $commercialQuote->processManagement;
         $concepts = $freight->concepts;
 
-        $freight->update(['wr_loading' => $request->wr_loading]);
+        $freight->update([
+            'etd' => $request->etd,
+            'eta' => $request->eta,
+            'buque' => $request->buque,
+            'wr_loading' => $request->wr_loading,
+            'state' => 'En Proceso'
+        ]);
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $filename = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $fileContent = file_get_contents($file->getRealPath());
+            $this->freightDocumentService->storeFreightDocument($freight, $fileContent, $filename, $extension, true);
+        }
+
         $pdf = Pdf::loadView('freight.pdf.routingOrder', compact('commercialQuote', 'concepts', 'freight'));
         $filename = 'Routing Order.pdf';
 
-        $this->freightDocumentService->storeFreightDocument($freight, $pdf->output(), $filename);
+        $this->freightDocumentService->storeFreightDocument($freight, $pdf->output(), $filename, null, true);
 
         return $process;
     }
@@ -329,7 +344,7 @@ class FreightService
     }
 
 
-    public function uploadFreightFiles($request, $id)
+    public function uploadFreightFiles($request, $id, $requeired = false)
     {
         $freight = Freight::findOrFail($id);
         $process = $freight->commercial_quote->processManagement;
@@ -344,7 +359,7 @@ class FreightService
         $nameForDB = $request->name_file;
         $extension = $file->getClientOriginalExtension();
 
-        $this->freightDocumentService->storeFreightDocument($freight, $content, $nameForDB, $extension);
+        $this->freightDocumentService->storeFreightDocument($freight, $content, $nameForDB, $extension, $requeired);
 
         return $process;
     }

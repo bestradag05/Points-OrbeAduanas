@@ -88,12 +88,12 @@ Route::get('/', function () {
 
 
 Route::get('/link', function () {
-	Artisan::call('storage:link');
+    Artisan::call('storage:link');
     Artisan::call('permission:cache-reset');
-  	Artisan::call('cache:clear');
-  	Artisan::call('config:clear');
-  	Artisan::call('view:clear');
-  	Artisan::call('route:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('view:clear');
+    Artisan::call('route:clear');
 });
 
 /* Route::get('/alert', function () {
@@ -213,6 +213,7 @@ Route::middleware('auth')->group(function () {
     Route::get('freight/create/{quoteId}', [FreightController::class, 'createFreight']);
     Route::post('freight/routing/', [FreightController::class, 'generateRouting']);
     Route::post('freight/upload_file/{id}', [FreightController::class, 'uploadFreightFiles']);
+    Route::post('freight/upload_file/requeired/{id}', [FreightController::class, 'uploadFreightFilesRequeired']);
     Route::delete('freight/delete_file/{id}', [FreightController::class, 'deleteFreightFiles']);
     Route::put('freight/send-operation/{id}', [FreightController::class, 'sendToOperation']);
     Route::post('freight/notify', [FreightController::class, 'notifyCommercial']);

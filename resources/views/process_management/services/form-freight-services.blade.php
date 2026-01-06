@@ -1,6 +1,12 @@
 <div class="row">
     <div class="row mt-3 px-3">
 
+        @if ($freight->etd && $freight->eta)
+            <div class="col-12">
+                lina de tiempo
+            </div>
+        @endif
+
         <div class="col-6">
 
             <h5 class="text-indigo mb-2 text-center py-3">
@@ -400,30 +406,34 @@
 
             <div class="col-12">
 
+                @php
+                    $requiredDocuments = ['Routing Order', 'Factura Comercial'];
+                    $uploadedDocuments = $freight->documents->keyBy(fn($doc) => strtolower(trim($doc->name)));
+                    $allRequiredUploaded = collect($requiredDocuments)->every(function ($doc) use ($uploadedDocuments) {
+                        return $uploadedDocuments->has(strtolower(trim($doc)));
+                    });
+                @endphp
+
+
+                @if ($freight->state === 'Pendiente')
+                    <div class="row justify-content-center py-3 mb-2">
+                        <button class="btn btn-indigo btn-sm" onclick="openModalgenerateRoutingOrder()">
+                            <i class="fa fa-check"></i>
+                            Confirmar recepción de carga en origen
+                        </button>
+                    </div>
+                @endif
+
                 <div class="row justify-content-center py-3">
                     <h5 class="text-indigo m-0">
-                        Documentos requeridos
+                        Documentos
                     </h5>
-                    @if ($freight->state === 'Pendiente' || $freight->state === 'Notificado')
+                    @if ($allRequiredUploaded)
                         <button type="button" class="btn btn-indigo btn-sm mx-2 "
                             onclick="showModalUpdateDocumentFreight()"><i class="fas fa-plus"></i></button>
                     @endif
 
                 </div>
-
-                @php
-                    $requiredDocuments = ['Routing Order', 'Factura Comercial', 'BL Draf'];
-
-                    if ($freight->state != 'Enviado' && $freight->state != 'Pendiente') {
-                        $requiredDocuments[] = 'BL Final';
-                    }
-
-                    $uploadedDocuments = $freight->documents->keyBy(fn($doc) => strtolower(trim($doc->name)));
-                    $blFinalUploaded = $uploadedDocuments->has('bl final');
-                    $allRequiredUploaded = collect($requiredDocuments)->every(function ($doc) use ($uploadedDocuments) {
-                        return $uploadedDocuments->has(strtolower(trim($doc)));
-                    });
-                @endphp
 
                 <table class="table mt-2">
                     <thead>
@@ -455,7 +465,7 @@
                                         {{-- No mostrar botón de subida para Routing Order --}}
                                         <span class="text-muted">Aún no generado</span>
                                     @else
-                                        <form action="{{ url('/freight/upload_file/' . $freight->id) }}"
+                                        <form action="{{ url('/freight/upload_file/requeired/' . $freight->id) }}"
                                             method="POST" enctype="multipart/form-data" class="d-inline">
                                             @csrf
                                             <input type="hidden" name="name_file" value="{{ $required }}">
@@ -471,7 +481,7 @@
                                     @endif
                                 </td>
 
-                                @if ($document && ($freight->state === 'En Proceso' || $freight->state === 'Notificado'))
+                                @if ($document && ($freight->state === 'Pendiente' || $freight->state === 'Notificado'))
                                     <td>
                                         <form action="{{ url('/freight/delete_file/' . $document->id) }}"
                                             method="POST" class="d-inline">
@@ -483,7 +493,9 @@
                                         </form>
                                     </td>
                                 @else
-                                    <td></td>
+                                    <td>
+
+                                    </td>
                                 @endif
 
                             </tr>
@@ -503,7 +515,7 @@
                                             <x-file-icon :path="$document->path" />
                                         </a>
                                     </td>
-                                    @if ($freight->state === 'Pendiente' || $freight->state === 'Notificado')
+                                    @if ($freight->state === 'En Proceso' || $freight->state === 'Notificado')
                                         <td>
                                             <form action="{{ url('/freight/delete_file/' . $document->id) }}"
                                                 method="POST" class="d-inline">
@@ -514,6 +526,8 @@
                                                 </button>
                                             </form>
                                         </td>
+                                    @else
+                                        <td></td>
                                     @endif
                                 </tr>
                             @endif
@@ -532,29 +546,31 @@
                     @endif
 
 
-                    @if (!$freight->documents->contains('name', 'Routing Order'))
-                        <div class="col-6 col-xl-6">
-                            <button class="btn btn-secondary btn-sm w-100" onclick="openModalgenerateRoutingOrder()">
-                                Generar Routing
-                            </button>
-                        </div>
-                    @endif
-
-
-                    @if ($freight->state === 'Pendiente' || $freight->state === 'Notificado')
+                    @if ($freight->state === 'En Proceso' && $allRequiredUploaded)
                         <div class="col-6 col-xl-6">
                             <form action="{{ url('/freight/send-operation/' . $freight->id) }}" method="POST"
                                 class="d-inline">
                                 @csrf
                                 @method('PUT') <!-- O POST, según tu ruta -->
                                 <button class="btn btn-indigo btn-sm w-100">
-                                    Enviar
+                                    Subir el BL Orbe Aduanas
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="col-6 col-xl-6">
+                            <form action="{{ url('/freight/send-operation/' . $freight->id) }}" method="POST"
+                                class="d-inline">
+                                @csrf
+                                @method('PUT') <!-- O POST, según tu ruta -->
+                                <button class="btn btn-danger btn-sm w-100">
+                                    Notificar
                                 </button>
                             </form>
                         </div>
                     @endif
 
-                    @if ($freight->state === 'Notificado')
+                    {{--  @if ($freight->state === 'Notificado')
                         <div class="col-6 col-xl-6">
 
                             <button class="btn btn-warning btn-sm w-100" onclick="openModalUpdateCosts()">
@@ -563,7 +579,7 @@
                             </button>
 
                         </div>
-                    @endif
+                    @endif --}}
 
 
 
@@ -571,30 +587,6 @@
 
 
             </div>
-            {{-- <div class="col-12">
-
-                <div class="row justify-content-center py-3">
-
-                    <h5 class="text-indigo m-0">
-                        Status de la carga
-                    </h5>
-
-                    <table class="table mt-2">
-                        <thead>
-                            <tr>
-                                <th class="text-indigo text-bold">Nombre</th>
-                                <th class="text-indigo text-bold ">Documento</th>
-                                <th class="text-indigo text-bold">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
-                    </table>
-
-
-                </div>
-            </div> --}}
 
             <div class="col-12 mb-3 text-center">
 
@@ -605,6 +597,7 @@
 
 
         </div>
+
 
     </div>
 
@@ -648,8 +641,8 @@
 
     {{-- Commercial Fill Data --}}
     <x-adminlte-modal id="generateRoutingOrder" class="modal"
-        title="Complete la informacion para generar el routing" size='lg' scrollable>
-        <form action="/freight/routing" method="POST" id="formgenerateRoutingOrder">
+        title="Complete la informacion para confirmar almacenamiento o reserva" size='lg' scrollable>
+        <form action="/freight/routing" method="POST" id="formgenerateRoutingOrder" enctype="multipart/form-data">
             @csrf
 
             <input type="hidden" name="id_freight" value="{{ $freight->id }}">
@@ -659,7 +652,8 @@
                 <div class="col-6 ">
                     <div class="form-group">
                         <label for="wr_loading">Zarpe / ETD</label>
-                        <input type="date" class="form-control" id="etd" name="etd" placeholder="Ingrese la fecha de zarpe" />
+                        <input type="date" class="form-control" id="etd" name="etd"
+                            placeholder="Ingrese la fecha de zarpe" />
                     </div>
 
                 </div>
@@ -667,9 +661,29 @@
                 <div class="col-6 ">
                     <div class="form-group">
                         <label for="wr_loading">Arribo / ETA</label>
-                        <input type="date" class="form-control" id="eta" name="eta" placeholder="Ingrese la fecha de arriba" />
+                        <input type="date" class="form-control" id="eta" name="eta"
+                            placeholder="Ingrese la fecha de arriba" />
                     </div>
 
+                </div>
+
+                <div class="col-6 ">
+                    <div class="form-group">
+                        <label for="buque">Buque</label>
+                        <input type="text" class="form-control" id="buque" name="buque"
+                            placeholder="Ingrese el numero de buque" />
+                    </div>
+
+                </div>
+
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="customs_perception">Archivo: </label>
+                        <div class="input-group">
+                            <input type="file" class="form-control" name="file"
+                                placeholder="Ingrese el archivo" value="">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col-12 ">
@@ -681,6 +695,19 @@
                     </div>
 
                 </div>
+                <div class="col-12">
+                    <hr>
+                </div>
+                {{--  <div class="col-6">
+                    <label for="id_incoterms">Documento de confirmación <span class="text-danger">*</span></label>
+                    <x-adminlte-select2 id="document_name" name="document_name" igroup-size="md"
+                        data-placeholder="Seleccione una opcion..." data-required="true">
+                        <option />
+                        <option>WAREHOUSE</option>
+                        <option>BOOKING</option>
+                    </x-adminlte-select2>
+                </div> --}}
+
 
             </div>
 
@@ -858,7 +885,7 @@
 
     function submitGenerateRoutingOrder() {
         let formGenerateRoutingOrder = $('#formgenerateRoutingOrder');
-        let inputs = formGenerateRoutingOrder.find('textarea');
+        let inputs = formGenerateRoutingOrder.find('textarea, input');
 
         let isValid = true;
 

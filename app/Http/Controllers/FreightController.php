@@ -124,6 +124,18 @@ class FreightController extends Controller
 
     }
 
+    public function uploadFreightFilesRequeired(Request $request, $id)
+    {
+        $process = $this->freightService->uploadFreightFiles($request, $id, true);
+
+        if(Auth::user()->role === 'Operaciones'){
+            return redirect()->route('freight.show', $process->freight->id)->with('success', 'Archivo subido correctamente.');
+        }else{
+            return redirect()->route('process.show', $process->id)->with('success', 'Archivo subido correctamente.');
+        }
+
+    }
+
 
     public function deleteFreightFiles($id)
     {

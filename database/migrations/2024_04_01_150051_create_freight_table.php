@@ -19,8 +19,9 @@ return new class extends Migration
             $table->string('hawb_hbl')->nullable();
             $table->string('bl_work')->nullable();
             $table->date('date_register')->nullable();
-            $table->date('edt')->nullable();
+            $table->date('etd')->nullable();
             $table->date('eta')->nullable();
+            $table->string('buque')->nullable();
             $table->decimal('value_utility', 8, 2);
             $table->decimal('accepted_answer_value', 8, 2);
             $table->decimal('total_answer_utility', 8, 2);

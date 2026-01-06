@@ -13,6 +13,7 @@ class FreightDocuments extends Model
     [
         'name',
         'path',
+        'requeired',
         'id_freight',
     ];
 

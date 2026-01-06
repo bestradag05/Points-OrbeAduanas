@@ -11,7 +11,7 @@ class FreightDocumentService
 {
 
 
-    public function storeFreightDocument(Freight $freight, string $fileContent, string $filename, ?string $extension = null): FreightDocuments
+    public function storeFreightDocument(Freight $freight, string $fileContent, string $filename, ?string $extension = null, bool $requeired): FreightDocuments
     {
         $folder = 'commercial_quote/' . $freight->commercial_quote->nro_quote_commercial . '/freight';
 
@@ -27,6 +27,7 @@ class FreightDocumentService
         return FreightDocuments::create([
             'name' => pathinfo($filename, PATHINFO_FILENAME), // muestra sin extensión
             'path' => Storage::url($path),
+            'requeired' => $requeired,
             'id_freight' => $freight->id
         ]);
     }

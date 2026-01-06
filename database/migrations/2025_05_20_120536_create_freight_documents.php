@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('path');
+            $table->boolean('requeired');
             $table->unsignedBigInteger('id_freight');
             $table->timestamps();
 
