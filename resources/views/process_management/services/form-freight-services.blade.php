@@ -2,8 +2,47 @@
     <div class="row mt-3 px-3">
 
         @if ($freight->etd && $freight->eta)
-            <div class="col-12">
-                lina de tiempo
+            @php
+                // Calcula las fechas como objetos Carbon
+                $etd = \Carbon\Carbon::parse($freight->etd); // Fecha de salida estimada
+                $eta = \Carbon\Carbon::parse($freight->eta); // Fecha de llegada estimada
+                $now = \Carbon\Carbon::now(); // Fecha actual
+
+                // Verifica si la fecha actual está dentro del rango de las fechas de ETD y ETA
+                if ($now < $etd) {
+                    $progress = 0; // Si la fecha actual está antes del ETD
+                } elseif ($now > $eta) {
+                    $progress = 100; // Si la fecha actual está después del ETA
+                } else {
+                    // Si la fecha actual está dentro del rango, calcula el progreso
+                    $totalDuration = $etd->diffInSeconds($eta); // Duración total en segundos
+                    $elapsedTime = $etd->diffInSeconds($now); // Tiempo transcurrido desde el ETD
+                    $progress = ($elapsedTime / $totalDuration) * 100; // Cálculo del progreso
+                }
+            @endphp
+
+            <div class="col-12 row">
+                <div class="col-12">
+
+                    <h5 class="text-indigo text-center text-bold">Transito de carga</h5>
+                </div>
+
+                <div class="col-12 row justify-content-between">
+
+                    <p><strong>Fecha de Zarpe (ETD):</strong> {{ $etd->format('d/m/Y H:i') }}</p>
+                    <p><strong>Fecha de Embarque (ETA):</strong> {{ $eta->format('d/m/Y H:i') }}</p>
+                </div>
+
+                <!-- Fechas de zarpe y embarque -->
+
+                <!-- Barra de progreso -->
+                <div class="col-12 progress">
+                    <div class="progress-bar" role="progressbar" style="width: {{ $progress }}%"
+                        aria-valuenow="{{ $progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+
+                <!-- Porcentaje de progreso -->
+                <small>{{ $progress }}% completado</small>
             </div>
         @endif
 
