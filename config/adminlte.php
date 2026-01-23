@@ -658,6 +658,18 @@ return [
 
         ],
         [
+            'text' => 'Parámetros',
+            'icon' => 'fas fa-cog',
+            'submenu' => [
+                [
+                    'text' => 'Documentos Requeridos',
+                    'url'  => 'required-documents',
+                    'icon' => 'fas fa-file-check',
+                    'active' => ['required-documents', 'required-documents*'],
+                ],
+            ]
+        ],
+        [
             'text' => 'Comisiones',
             'icon' => 'fas fa-funnel-dollar',
             'can' => 'commissions.module',

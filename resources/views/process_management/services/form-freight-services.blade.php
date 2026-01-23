@@ -29,8 +29,8 @@
 
                 <div class="col-12 row justify-content-between">
 
-                    <p><strong>Fecha de Zarpe (ETD):</strong> {{ $etd->format('d/m/Y H:i') }}</p>
-                    <p><strong>Fecha de Embarque (ETA):</strong> {{ $eta->format('d/m/Y H:i') }}</p>
+                    <p>Fecha de Zarpe (ETD): <strong>{{ $etd->format('d/m/Y') }}</strong></p>
+                    <p>Fecha de Embarque (ETA): <strong>{{ $eta->format('d/m/Y') }}</strong></p>
                 </div>
 
                 <!-- Fechas de zarpe y embarque -->
@@ -42,7 +42,7 @@
                 </div>
 
                 <!-- Porcentaje de progreso -->
-                <small>{{ $progress }}% completado</small>
+                <small class="text-indigo text-bold mt-1">{{ intval($progress) }}% completado</small>
             </div>
         @endif
 
@@ -446,9 +446,11 @@
             <div class="col-12">
 
                 @php
-                    $requiredDocuments = ['Routing Order', 'Factura Comercial'];
+                    // Obtener nombres de documentos requeridos como array
+                    $requiredDocumentNames = $requiredDocuments->pluck('document_name')->toArray();
+                    dump($requiredDocumentNames);
                     $uploadedDocuments = $freight->documents->keyBy(fn($doc) => strtolower(trim($doc->name)));
-                    $allRequiredUploaded = collect($requiredDocuments)->every(function ($doc) use ($uploadedDocuments) {
+                    $allRequiredUploaded = collect($requiredDocumentNames)->every(function ($doc) use ($uploadedDocuments) {
                         return $uploadedDocuments->has(strtolower(trim($doc)));
                     });
                 @endphp
@@ -484,13 +486,13 @@
                     </thead>
                     <tbody>
                         {{-- Documentos obligatorios --}}
-                        @foreach ($requiredDocuments as $required)
+                        @foreach ($requiredDocuments as $requiredDoc)
                             @php
-                                $docKey = strtolower(trim($required));
+                                $docKey = strtolower(trim($requiredDoc->document_name));
                                 $document = $uploadedDocuments[$docKey] ?? null;
                             @endphp
                             <tr>
-                                <td class="text-indigo text-uppercase text-bold">{{ $required }} <span
+                                <td class="text-indigo text-uppercase text-bold">{{ $requiredDoc->document_name }} <span
                                         class="text-danger">*</span>
                                 </td>
                                 <td class="text-center">
@@ -500,14 +502,14 @@
 
                                             <x-file-icon :path="$document->path" />
                                         </a>
-                                    @elseif($required === 'Routing Order')
-                                        {{-- No mostrar botón de subida para Routing Order --}}
+                                    @elseif($requiredDoc->is_auto_generated)
+                                        {{-- No mostrar botón de subida para documentos auto-generados --}}
                                         <span class="text-muted">Aún no generado</span>
                                     @else
                                         <form action="{{ url('/freight/upload_file/requeired/' . $freight->id) }}"
                                             method="POST" enctype="multipart/form-data" class="d-inline">
                                             @csrf
-                                            <input type="hidden" name="name_file" value="{{ $required }}">
+                                            <input type="hidden" name="name_file" value="{{ $requiredDoc->document_name }}">
                                             <input type="file" name="file" required
                                                 onchange="this.form.submit()" style="display: none;"
                                                 id="fileInput_{{ $loop->index }}">
@@ -544,8 +546,10 @@
                         @foreach ($freight->documents as $document)
                             @php
                                 $docName = strtolower(trim($document->name));
+                                // Verificar si está en los documentos requeridos
+                                $isRequired = $requiredDocuments->contains(fn($doc) => strtolower(trim($doc->document_name)) === $docName);
                             @endphp
-                            @if (!in_array($docName, collect($requiredDocuments)->map(fn($d) => strtolower($d))->toArray()))
+                            @if (!$isRequired)
                                 <tr>
                                     <td class="text-indigo text-uppercase">{{ $document->name }}</td>
                                     <td class="text-center">

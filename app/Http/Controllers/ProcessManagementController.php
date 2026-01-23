@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Custom;
 use App\Models\Freight;
 use App\Models\ProcessManagement;
+use App\Models\RequiredDocumentConfig;
 use App\Models\Transport;
 use App\Services\ProcessManagementService;
 use Illuminate\Http\Request;
@@ -107,7 +108,11 @@ class ProcessManagementController extends Controller
                 if (!$freight) {
                     abort(404);  // Si no se encuentra, abortar
                 }
-                return view('process_management.services.form-freight-services', compact('freight', 'commercialQuote', 'lastNotification'));
+
+                // Obtener documentos requeridos dinámicamente
+                $requiredDocuments = RequiredDocumentConfig::getRequiredByService('freight');
+                
+                return view('process_management.services.form-freight-services', compact('freight', 'commercialQuote', 'lastNotification', 'requiredDocuments'));
 
             case 'custom':
                 // Obtener el servicio 'custom' con el ID

@@ -48,6 +48,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PackingTypeController;
 use App\Http\Controllers\ProcessManagementController;
 use App\Http\Controllers\QuotesSentClientController;
+use App\Http\Controllers\RequiredDocumentConfigController;
 use App\Http\Controllers\ResponseFreightQuotesController;
 use App\Http\Controllers\SellerCommissionController;
 use App\Http\Controllers\ShippingCompanyController;
@@ -162,6 +163,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('type_load', TypeLoadController::class);
     Route::resource('type_insurance', TypeInsuranceController::class);
     Route::resource('insurance_rates', InsuranceRatesController::class);
+    Route::resource('required-documents', RequiredDocumentConfigController::class);
     Route::resource('incoterms', IncotermsController::class);
     Route::resource('warehouses', WarehousesController::class);
     Route::resource('modality', ModalityController::class);

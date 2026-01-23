@@ -329,5 +329,6 @@ class DatabaseSeeder extends Seeder
         $this->call(CountrySeeder::class);
         $this->call(StatesCountrySeeder::class);
         $this->call(AddConcepts::class);
+        $this->call(RequiredDocumentConfigSeeder::class);
     }
 }
