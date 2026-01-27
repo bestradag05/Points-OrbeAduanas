@@ -23,6 +23,12 @@ class Freight extends Model
         'etd',
         'eta',
         'buque',
+        'id_warehouse',
+        'vb_gremios',
+        'condition_freight',
+        'port_terminal',
+        'container_number',
+        'seals',
         'value_utility',
         'accepted_answer_value',
         'total_answer_utility',
@@ -55,7 +61,7 @@ class Freight extends Model
         $lastCode = self::latest('id')->first();
         $year = date('y');
         $prefix = 'FLETE-';
-        
+
         // Si no hay registros, empieza desde 1
         if (!$lastCode) {
             return $prefix . $year . '1';

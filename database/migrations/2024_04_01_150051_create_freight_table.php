@@ -22,6 +22,12 @@ return new class extends Migration
             $table->date('etd')->nullable();
             $table->date('eta')->nullable();
             $table->string('buque')->nullable();
+            $table->unsignedBigInteger('id_warehouse')->nullable();
+            $table->string('vb_gremios')->nullable();   
+            $table->string('condition_freight')->nullable();
+            $table->string('port_terminal')->nullable();
+            $table->string('container_number')->nullable();
+            $table->string('seals')->nullable();
             $table->decimal('value_utility', 8, 2);
             $table->decimal('accepted_answer_value', 8, 2);
             $table->decimal('total_answer_utility', 8, 2);
@@ -39,6 +45,7 @@ return new class extends Migration
             $table->foreign('nro_operation')->references('nro_operation')->on('routing');
             $table->foreign('nro_quote_commercial')->references('nro_quote_commercial')->on('commercial_quote');
             $table->foreign('id_quote_freight')->references('id')->on('quote_freight');
+            $table->foreign('id_warehouse')->references('id')->on('warehouses');
             /* $table->foreign('id_insurance')->references('id')->on('insurance'); */
         });
     }

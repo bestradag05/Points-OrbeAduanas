@@ -83,6 +83,17 @@ Route::get('/routingpdf/{id}', function ($id) {
     return $pdf->stream('Routing Order.pdf');
 });
 
+Route::get('/bl/{id}', function ($id) {
+
+    $commercialQuote = CommercialQuote::findOrFail($id);
+    $freight = $commercialQuote->freight;
+    $concepts = $freight->concepts;
+
+    $pdf = Pdf::loadView('freight.pdf.blOrbeAduanas', compact('commercialQuote', 'concepts', 'freight'));
+
+    return $pdf->stream('BL Orbe Aduanas.pdf');
+});
+
 Route::get('/', function () {
     return redirect('/home');
 });
@@ -219,6 +230,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('freight/delete_file/{id}', [FreightController::class, 'deleteFreightFiles']);
     Route::put('freight/send-operation/{id}', [FreightController::class, 'sendToOperation']);
     Route::post('freight/notify', [FreightController::class, 'notifyCommercial']);
+    Route::put('freight/generate/bl/{freight}', [FreightController::class, 'generateBL']);
 
 
 

@@ -90,6 +90,7 @@
                 stepper.to(stepIndex + 1); // Avanzamos automáticamente al siguiente paso
                 return; // Si el contenido ya está cargado, no hacemos nada
             }
+            
 
             const serviceId = services[step].id;
             // Hacer la solicitud para cargar el contenido

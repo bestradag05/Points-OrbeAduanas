@@ -315,33 +315,24 @@
                         @if ($commercialQuote->lcl_fcl === 'FCL')
                             <div class="col-12 border-bottom border-bottom-2">
                                 <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label">Contenedor : </label>
+                                    <label class="col-sm-4 col-form-label">Contenedor(s) : </label>
                                     <div class="col-sm-8">
 
-                                        <p class="form-control-plaintext">
-                                            {{ $commercialQuote->container_quantity }}x{{ $commercialQuote->container->name }}
-                                        </p>
-                                    </div>
+                                        {{-- {{dd($comercialQuote->commercialQuoteContainers)}} --}}
+                                        @foreach ($commercialQuote->commercialQuoteContainers as $commercialContainer)
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item pl-0 pt-2">
+                                                    {{ $commercialContainer->container_quantity }} x
+                                                    {{ $commercialContainer->container->name }}
+                                                    <button class="btn text-primary" data-toggle="modal"
+                                                        data-target="#detailContainer"
+                                                        data-commercialcontainer="{{ json_encode($commercialContainer) }}"><i
+                                                            class="fas fa-info-circle"></i></button>
+                                                </li>
 
-                                </div>
-                            </div>
-                            <div class="col-12 border-bottom border-bottom-2">
-                                <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label">Toneladas : </label>
-                                    <div class="col-sm-8">
+                                            </ul>
+                                        @endforeach
 
-                                        <p class="form-control-plaintext">{{ $commercialQuote->tons }}</p>
-                                    </div>
-
-                                </div>
-                            </div>
-                        @else
-                            <div class="col-12 border-bottom border-bottom-2">
-                                <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label">Peso : </label>
-                                    <div class="col-sm-8">
-
-                                        <p class="form-control-plaintext">{{ $commercialQuote->kilograms }} KG</p>
                                     </div>
 
                                 </div>
@@ -349,10 +340,22 @@
                         @endif
                         <div class="col-12 border-bottom border-bottom-2">
                             <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Peso : </label>
+                                <div class="col-sm-8">
+
+                                    <p class="form-control-plaintext">{{ $commercialQuote->weight }}
+                                        {{ $commercialQuote->unit_of_weight }}</p>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-12 border-bottom border-bottom-2">
+                            <div class="form-group row">
                                 <label class="col-sm-4 col-form-label">Volumen : </label>
                                 <div class="col-sm-8">
 
-                                    <p class="form-control-plaintext">{{ $commercialQuote->volumen }} M3</p>
+                                    <p class="form-control-plaintext">{{ $commercialQuote->volumen_kgv }}
+                                        {{ $commercialQuote->unit_of_volumen_kgv }}</p>
                                 </div>
 
                             </div>
@@ -448,9 +451,10 @@
                 @php
                     // Obtener nombres de documentos requeridos como array
                     $requiredDocumentNames = $requiredDocuments->pluck('document_name')->toArray();
-                    dump($requiredDocumentNames);
                     $uploadedDocuments = $freight->documents->keyBy(fn($doc) => strtolower(trim($doc->name)));
-                    $allRequiredUploaded = collect($requiredDocumentNames)->every(function ($doc) use ($uploadedDocuments) {
+                    $allRequiredUploaded = collect($requiredDocumentNames)->every(function ($doc) use (
+                        $uploadedDocuments,
+                    ) {
                         return $uploadedDocuments->has(strtolower(trim($doc)));
                     });
                 @endphp
@@ -492,8 +496,8 @@
                                 $document = $uploadedDocuments[$docKey] ?? null;
                             @endphp
                             <tr>
-                                <td class="text-indigo text-uppercase text-bold">{{ $requiredDoc->document_name }} <span
-                                        class="text-danger">*</span>
+                                <td class="text-indigo text-uppercase text-bold">{{ $requiredDoc->document_name }}
+                                    <span class="text-danger">*</span>
                                 </td>
                                 <td class="text-center">
                                     @if ($document)
@@ -509,7 +513,8 @@
                                         <form action="{{ url('/freight/upload_file/requeired/' . $freight->id) }}"
                                             method="POST" enctype="multipart/form-data" class="d-inline">
                                             @csrf
-                                            <input type="hidden" name="name_file" value="{{ $requiredDoc->document_name }}">
+                                            <input type="hidden" name="name_file"
+                                                value="{{ $requiredDoc->document_name }}">
                                             <input type="file" name="file" required
                                                 onchange="this.form.submit()" style="display: none;"
                                                 id="fileInput_{{ $loop->index }}">
@@ -547,7 +552,9 @@
                             @php
                                 $docName = strtolower(trim($document->name));
                                 // Verificar si está en los documentos requeridos
-                                $isRequired = $requiredDocuments->contains(fn($doc) => strtolower(trim($doc->document_name)) === $docName);
+                                $isRequired = $requiredDocuments->contains(
+                                    fn($doc) => strtolower(trim($doc->document_name)) === $docName,
+                                );
                             @endphp
                             @if (!$isRequired)
                                 <tr>
@@ -591,14 +598,9 @@
 
                     @if ($freight->state === 'En Proceso' && $allRequiredUploaded)
                         <div class="col-6 col-xl-6">
-                            <form action="{{ url('/freight/send-operation/' . $freight->id) }}" method="POST"
-                                class="d-inline">
-                                @csrf
-                                @method('PUT') <!-- O POST, según tu ruta -->
-                                <button class="btn btn-indigo btn-sm w-100">
-                                    Subir el BL Orbe Aduanas
-                                </button>
-                            </form>
+                            <button onclick="showModaluploadBL()" class="btn btn-indigo btn-sm w-100">
+                                Subir BL - Orbe Aduanas
+                            </button>
                         </div>
 
                         <div class="col-6 col-xl-6">
@@ -631,16 +633,51 @@
 
             </div>
 
-            <div class="col-12 mb-3 text-center">
+            <div class="col-12 mb-3 py-5 text-center">
 
                 <h6 class="custom-badge status-{{ Str::slug($freight->state) }}"> <i class="fas fa-circle"></i>
                     {{ $freight->state }}</h6>
 
             </div>
 
+            <div class="col-12">
+
+                <h5 class="text-indigo mb-2 text-center py-3">
+                    Avisos de salida y llegada
+                </h5>
+
+                <table class="table">
+                    <thead class="">
+                        <tr>
+                            <th class="text-indigo text-bold">#</th>
+                            <th class="text-indigo text-bold">Nombre</th>
+                            <th class="text-indigo text-bold">Archivo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Pre Aviso de Salida</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Aviso de Salida</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Pre Aviso de llegada</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Aviso de llegada</td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+
 
         </div>
-
 
     </div>
 
@@ -675,6 +712,105 @@
             <x-slot name="footerSlot">
                 <x-adminlte-button class="btn btn-indigo" id="btnSubmit" type="submit"
                     onclick="submitUploadFile(this)" label="Guardar Archivo" />
+                <x-adminlte-button theme="secondary" label="Cerrar" data-dismiss="modal" />
+            </x-slot>
+
+        </form>
+    </x-adminlte-modal>
+
+    <x-adminlte-modal id="modalUploadBL" class="modal" title="Complete la información del BL - Orbe Aduanas"
+        size='lg' scrollable>
+        <form action="{{ url('/freight/generate/bl/' . $freight->id) }}" id="formUploadBL" method="POST"
+            enctype="multipart/form-data">
+            @method('PUT')
+            @csrf
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="hawb_hbl">Nro BL</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="hawb_hbl"
+                                placeholder="Ingrese el numero de HAWB / HBL" value="">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="warehouse_id">Almacen: </label>
+                        <div class="input-group">
+                            <select class="form-control" name="warehouse_id">
+                                <option value="">Seleccione una opción</option>
+                                @foreach ($warehouses as $warehouse)
+                                    <option value="{{ $warehouse->id }}">{{ $warehouse->name_businessname }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="vb_gremios">VB° - Gremios</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="vb_gremios"
+                                placeholder="Ingrese el VB° - Gremios" value="">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="condition_freight">Condicion de flete</label>
+                        <div class="input-group">
+                            <select name="condition_freight" id="condition_freight" class="form-control">
+                                <option value="">Seleccione una opción</option>
+                                <option value="PRE-PAID">PRE-PAID</option>
+                                <option value="COLLET">COLLET</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="port_terminal">Terminarl Portuario</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="port_terminal"
+                                placeholder="Ingrese el terminal portuario" value="">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="container_number">N° de Contenedor</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="container_number"
+                                placeholder="Ingrese el número de contenedor" value="">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="seals">Precinto(s)</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="seals"
+                                placeholder="Ingrese los precintos divididos por una coma" value="">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="customs_perception"><span class="text-indigo">Adjuntar BL:</span> </label>
+                        <div class="input-group">
+                            <input type="file" class="form-control" name="file"
+                                placeholder="Ingrese el archivo" value="">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <x-slot name="footerSlot">
+                <x-adminlte-button class="btn btn-indigo" id="btnSubmit" type="submit"
+                    onclick="submituploadBl(this)" label="Generar Archivo" />
                 <x-adminlte-button theme="secondary" label="Cerrar" data-dismiss="modal" />
             </x-slot>
 
@@ -879,6 +1015,10 @@
         $('#modalUploadDocumentFreight').modal('show');
     }
 
+    function showModaluploadBL() {
+        $('#modalUploadBL').modal('show');
+    }
+
     function submitUploadFile() {
 
         let formUploadFile = $('#formUploadFile');
@@ -902,6 +1042,31 @@
 
         if (isValid) {
             formUploadFile.submit();
+        }
+    }
+
+    function submituploadBl() {
+        let formUploadBL = $('#formUploadBL');
+        let inputs = formUploadBL.find('input, select');
+
+        let isValid = true;
+
+        inputs.each(function() {
+            let $input = $(this); // Convertir a objeto jQuery
+            let value = $input.val();
+
+            if (value.trim() === '') {
+                $input.addClass('is-invalid');
+                isValid = false;
+                showError(this, 'Debe completar este campo');
+            } else {
+                $input.removeClass('is-invalid');
+                hideError(this);
+            }
+        });
+
+        if (isValid) {
+            formUploadBL.submit();
         }
     }
 

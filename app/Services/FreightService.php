@@ -525,6 +525,31 @@ class FreightService
         return $concepts;
     }
 
+    public function generateBL($request, Freight $freight)
+    {
+
+        $freight->update([
+            'hawb_hbl' => $request->hawb_hbl,
+            'id_warehouse' => $request->warehouse_id,
+            'vb_gremios' => $request->vb_gremios,
+            'condition_freight' => $request->condition_freight,
+            'port_terminal' => $request->port_terminal,
+            'container_number' => $request->container_number,
+            'seals' => $request->seals,
+        ]);
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $filename = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $fileContent = file_get_contents($file->getRealPath());
+            $this->freightDocumentService->storeFreightDocument($freight, $fileContent, $filename, $extension, true);
+        }
+
+        return $freight;    
+
+    }
+
 
     public function syncFreightConcepts($freight, $concepts)
     {

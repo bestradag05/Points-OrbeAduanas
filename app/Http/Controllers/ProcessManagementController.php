@@ -7,6 +7,7 @@ use App\Models\Freight;
 use App\Models\ProcessManagement;
 use App\Models\RequiredDocumentConfig;
 use App\Models\Transport;
+use App\Models\Warehouses;
 use App\Services\ProcessManagementService;
 use Illuminate\Http\Request;
 
@@ -92,9 +93,14 @@ class ProcessManagementController extends Controller
         // Dependiendo del servicio, carga el contenido correspondiente
         switch ($step) {
             case 'freight':
+                
+                
                 // Obtener el servicio 'freight' con el ID
                 $freight = Freight::with('documents')->findOrFail($serviceId); // Buscar el servicio 'freight' por ID
                 $commercialQuote = $freight->commercial_quote;
+
+                //Almacenes: 
+                $warehouses = Warehouses::where('warehouses_type', $commercialQuote->type_shipment->name)->get();
 
                 $lastNotification = null;
 
@@ -110,9 +116,9 @@ class ProcessManagementController extends Controller
                 }
 
                 // Obtener documentos requeridos dinámicamente
-                $requiredDocuments = RequiredDocumentConfig::getRequiredByService('freight');
-                
-                return view('process_management.services.form-freight-services', compact('freight', 'commercialQuote', 'lastNotification', 'requiredDocuments'));
+                $requiredDocuments = RequiredDocumentConfig::getRequiredByService('Flete');
+
+                return view('process_management.services.form-freight-services', compact('freight', 'commercialQuote', 'lastNotification', 'requiredDocuments', 'warehouses'));
 
             case 'custom':
                 // Obtener el servicio 'custom' con el ID

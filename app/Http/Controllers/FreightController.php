@@ -212,6 +212,14 @@ class FreightController extends Controller
     }
 
 
+    public function generateBL(Request $request, Freight $freight)
+    {
+        $freight = $this->freightService->generateBL($request, $freight);
+
+        return back()->with('success', 'BL - ' . $freight->hawb_hbl .' generado correctamente.');
+    }
+
+
 
     /**
      * Remove the specified resource from storage.
