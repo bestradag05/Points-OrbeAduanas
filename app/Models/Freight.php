@@ -121,4 +121,9 @@ class Freight extends Model
     {
         return $this->hasMany(FreightDocuments::class, 'id_freight');
     }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouses::class, 'id_warehouse');
+    }
 }

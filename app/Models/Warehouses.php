@@ -28,4 +28,9 @@ class Warehouses extends Model
     {
         return $this->hasMany(QuoteTransport::class, 'delivery_warehouse');
     }
+
+    public function freights()
+    {
+        return $this->hasMany(Freight::class, 'id_warehouse');
+    }
 }

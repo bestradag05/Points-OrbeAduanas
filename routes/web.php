@@ -83,15 +83,15 @@ Route::get('/routingpdf/{id}', function ($id) {
     return $pdf->stream('Routing Order.pdf');
 });
 
-Route::get('/bl/{id}', function ($id) {
+Route::get('/aviso/{id}', function ($id) {
 
     $commercialQuote = CommercialQuote::findOrFail($id);
     $freight = $commercialQuote->freight;
     $concepts = $freight->concepts;
 
-    $pdf = Pdf::loadView('freight.pdf.blOrbeAduanas', compact('commercialQuote', 'concepts', 'freight'));
+    $pdf = Pdf::loadView('freight.pdf.status', compact('commercialQuote', 'concepts', 'freight'));
 
-    return $pdf->stream('BL Orbe Aduanas.pdf');
+    return $pdf->stream('Sttus.pdf');
 });
 
 Route::get('/', function () {
