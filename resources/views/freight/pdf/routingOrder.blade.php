@@ -23,6 +23,7 @@
         .table-detail {
             padding: 15px 5px;
             width: 100%;
+            text-transform: uppercase;
         }
 
         .table-detail span {
@@ -91,10 +92,12 @@
                 <span>Fecha: </span> {{ $commercialQuote->freight->created_at->format('d/m/Y') }}
             </td>
             <td>
-                <span>Origen: </span> {{ $commercialQuote->origin }}
+                <span>Origen: </span> {{ $commercialQuote->originState->country->name }} -
+                {{ $commercialQuote->originState->name }}
             </td>
             <td>
-                <span>Destino: </span> {{ $commercialQuote->destination }}
+                <span>Destino: </span> {{ $commercialQuote->destinationState->country->name }} -
+                {{ $commercialQuote->destinationState->name }}
             </td>
             <td>
                 <span>Vendedor: </span> {{ $commercialQuote->personal->names }}
@@ -318,7 +321,7 @@
 
     <div style="width: 100%; text-align: right;">
         <p style="padding-right: 75px"> <span style="font-weight: bold">TOTAL A PAGAR :</span> $
-            {{ $freight->value_freight }}</p>
+            {{ $freight->value_sale }}</p>
     </div>
 
 

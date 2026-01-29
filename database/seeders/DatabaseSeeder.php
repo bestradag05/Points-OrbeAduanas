@@ -5,14 +5,13 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Airline;
-use App\Models\CommercialQuote;
 use App\Models\Commission;
-use App\Models\Concept;
 use App\Models\Container;
 use App\Models\Currency;
 use App\Models\CustomDistrict;
 use App\Models\Customer;
 use App\Models\CustomerSupplierDocument;
+use App\Models\ShipmentState;
 use App\Models\Incoterms;
 use App\Models\InsuranceRates;
 use App\Models\Modality;
@@ -20,8 +19,6 @@ use App\Models\PackingType;
 use App\Models\Personal;
 use App\Models\PersonalDocument;
 use App\Models\Regime;
-use App\Models\Routing;
-use App\Models\Shipper;
 use App\Models\ShippingCompany;
 use App\Models\Supplier;
 use App\Models\TypeContainer;
@@ -325,6 +322,10 @@ class DatabaseSeeder extends Seeder
         Warehouses::create(['ruc' => '20507646051', 'name_businessname' => 'TERMINALES PORTUARIOS PERUANOS SAC', 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
         Warehouses::create(['ruc' => '20507646051', 'name_businessname' => 'CONTRANS S.A.C. ', 'contact_name' => '', 'contact_number' => '', 'contact_email' => '', 'warehouses_type' => 'Marítima']);
 
+        ShipmentState::create(['state' => 'pre aviso de salida', 'description' => 'Documento generado antes de que embarquen la carga']);
+        ShipmentState::create(['state' => 'aviso de salida', 'description' => 'Documento generado cuando  va embarquen la carga']);
+        ShipmentState::create(['state' => 'pre aviso de llegada', 'description' => 'Documento generado antes de que llegue la carga']);
+        ShipmentState::create(['state' => 'aviso de llegada', 'description' => 'Documento generado cuando va llegar la carga']);
 
         $this->call(CountrySeeder::class);
         $this->call(StatesCountrySeeder::class);

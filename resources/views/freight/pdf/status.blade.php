@@ -12,7 +12,8 @@
             font-size: 12px;
             overflow: hidden;
             position: relative;
-            font-family: Arial, Helvetica, sans-serif
+            font-family: Arial, Helvetica, sans-serif;
+
         }
 
         .table-head {
@@ -104,14 +105,14 @@
         </tr>
     </table>
 
-    <div>
+    <div style="margin-top: -12px; padding-left: 5px">
         <p style="font-weight: bold">Estimados Señores</p>
         <p>Orbeaduanas, tiene el agrado de informar que el estado de su mercancia segun el siguiente detalle: </p>
     </div>
 
 
-    <div style="padding: 0 5px;">
-        <h2 style="color: orange; text-transform: uppercase">Datos de embarque</h2>
+    <div style="padding: 0 5px; margin-top: -20px">
+        <h3 style="color: orange; text-transform: uppercase">Datos de embarque</h3>
 
         <table class="table-shipment">
             <tr>
@@ -163,7 +164,7 @@
 
 
     <div style="padding: 0 5px;">
-        <h2 style="color: orange; text-transform: uppercase">Datos de la carga</h2>
+        <h3 style="color: orange; text-transform: uppercase">Datos de la carga</h3>
 
         <table class="table-load">
             <tr>
@@ -200,22 +201,101 @@
     </div>
 
     <div style="padding: 0 5px;">
-        <h2 style="color: orange">Pagos a efectuar</h2>
+        <h3 style="color: orange; text-transform: uppercase">Pagos a efectuar</h3>
 
         <table class="table-payment">
-
+            @php
+                $total_sin_igv = 0;
+            @endphp
             @foreach ($concepts as $concept)
-                <tr>
-                    <td class="title" style="width: 70%">{{ $concept->name }}</td>
-                    <td style="width: 30%;">
-                        <span style="float: left;">$</span>
-                        <span style="float: right;">{{ $concept->pivot->value_concept }}</span>
-                    </td>
-                </tr>
+                @if ($concept->pivot->has_igv === 0)
+                    <tr>
+                        <td class="title" style="width: 70%">{{ $concept->name }}</td>
+                        <td style="width: 30%;">
+                            <span style="float: left;">$</span>
+                            <span style="float: right;">{{ $concept->pivot->value_concept }}</span>
+                        </td>
+                    </tr>
+                    @php
+                        $total_sin_igv += $concept->pivot->value_concept;
+                    @endphp
+                @endif
             @endforeach
+            <tr>
+                <td class="title" style="width: 70%; font-weight: bold; text-transform: uppercase">Total sin IGV</td>
+                <td style="width: 30%; border-top: 1px solid #000">
+                    <span style="float: left;">$</span>
+                    <span style="float: right;">{{ number_format($total_sin_igv, 2) }}</span>
+                </td>
+            </tr>
 
+            <!-- Total con IGV -->
 
+            <br>
+
+            @php
+                $total_con_igv = 0;
+            @endphp
+            @foreach ($concepts as $concept)
+                @if ($concept->pivot->has_igv === 1)
+                    <tr>
+                        <td class="title" style="width: 70%">{{ $concept->name }}</td>
+                        <td style="width: 30%;">
+                            <span style="float: left;">$</span>
+                            <span style="float: right;">{{ $concept->pivot->value_concept }}</span>
+                        </td>
+                    </tr>
+                    @php
+                        $total_con_igv += $concept->pivot->value_concept;
+                    @endphp
+                @endif
+            @endforeach
+            <tr>
+                <td class="title" style="width: 70%; font-weight: bold; text-transform: uppercase">Total con IGV</td>
+                <td style="width: 30%; border-top: 1px solid #000">
+                    <span style="float: left;">$</span>
+                    <span style="float: right;">{{ number_format($total_con_igv, 2) }}</span>
+                </td>
+            </tr>
+
+            <br>
+            <!-- Total Final -->
+            @php
+                $total_final = $total_sin_igv + $total_con_igv;
+            @endphp
+            <tr style="background: yellow">
+                <td class="title" style="width: 70%; font-weight: bold; text-transform: uppercase">Total a agar</td>
+                <td style="width: 30%; border-top: 1px solid #000">
+                    <span style="float: left;">$</span>
+                    <span style="float: right;">{{ number_format($total_final, 2) }}</span>
+                </td>
+            </tr>
         </table>
+
+        <div style="font-size: 11px">
+            <p style="font-weight: bold">Observaciones: </p>
+            <p style="text-align: justify">Despues de 96 horas de ser recibida la presente informacion será aceptada por
+                el cliente bajo su
+                responsabilidad. <br>
+                Agradecimos coordinar sus pagos con: Srt Irina Rodriguez - email: irina.rodriguez@orbeaduanas.com <br>
+            </p>
+
+            <p style="color: #234195; font-weight: bold; text-transform: uppercase;">Importante: </p>
+
+            <p style="text-align: justify">Las solicitudes de rectificación de consignatario, descripcion de bultos y
+                otros, se deben solicitar
+                hasta 12 horas del ETa de su carga correo operaciones@orbeaduanas.com, caso
+                contrario la rectificaciónse podra realizar previo pago de la sanción determinada por la Ley General de
+                Auanas, D.L. Nro 1053, Reglamento y la Tabla de Sanciones Aplicables a las infracciones de Lay.
+            </p>
+
+        </div>
+
+        <div>
+            <img src="{{ public_path('assets/img/cuentas_bancarias.jpg') }}"
+                alt="Cuentas bancarias de Orbe Aduanas S.A.C" style="height: 100%; width: 100%">
+        </div>
+
 
     </div>
 
