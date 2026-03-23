@@ -13,20 +13,7 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $perPage = (int) $request->input('per_page', 15);
-        $page = (int) $request->input('page', 1);
-
-        if ($perPage < 1) {
-            $perPage = 15;
-        }
-
-        if ($perPage > 100) {
-            $perPage = 100;
-        }
-
-        if ($page < 1) {
-            $page = 1;
-        }
+        $hasPagination = $request->has('per_page') || $request->has('page');
 
         $query = Customer::query()
             ->with([
@@ -38,7 +25,7 @@ class CustomerController extends Controller
                 'document_number',
                 'id_document',
                 'name_businessname',
-                'address',  
+                'address',
                 'contact_name',
                 'contact_number',
                 'contact_email',
@@ -46,62 +33,112 @@ class CustomerController extends Controller
                 'type',
                 'id_personal',
             ])
-            ->orderByDesc('id');
+            ->orderByDesc('id')
+            ->where('type', 'cliente');
 
-        $query->where('type', 'cliente');
+
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+
+            $query->where(function ($q) use ($search) {
+                $q->where('name_businessname', 'like', "%{$search}%")
+                    ->orWhere('document_number', 'like', "%{$search}%");
+            });
+        }
+
 
         if ($request->has('state')) {
             $state = strtolower(trim((string) $request->state));
-
             if (in_array($state, ['activo', 'inactivo'], true)) {
                 $query->where('state', $state);
             }
         }
 
-        $customersPaginated = $query->paginate($perPage, ['*'], 'page', $page);
+        if ($hasPagination) {
+            $perPage = (int) $request->input('per_page', 15);
+            $page = (int) $request->input('page', 1);
+            $perPage = max(1, min($perPage, 100));
+            $page = max(1, $page);
 
-        $customers = $customersPaginated->getCollection()->map(function ($customer) {
-            $personal = $customer->personal;
-            $document = $customer->document;
-            $fullName = trim(implode(' ', array_filter([
-                optional($personal)->names,
-                optional($personal)->last_name,
-                optional($personal)->mother_last_name,
-            ])));
+            $customersPaginated = $query->paginate($perPage, ['*'], 'page', $page);
+            $customers = $customersPaginated->getCollection()->map(function ($customer) {
+                $personal = $customer->personal;
+                $document = $customer->document;
+                $fullName = trim(implode(' ', array_filter([
+                    optional($personal)->names,
+                    optional($personal)->last_name,
+                    optional($personal)->mother_last_name,
+                ])));
 
-            return [
-                'id' => $customer->id,
-                'document_number' => $customer->document_number,
-                'name_businessname' => $customer->name_businessname,
-                'address' => $customer->address,
-                'contact_name' => $customer->contact_name,
-                'contact_number' => $customer->contact_number,
-                'contact_email' => $customer->contact_email,
-                'state' => $customer->state,
-                'type' => $customer->type,
-                'document' => $document ? [
-                    'id' => $customer->id_document,
-                    'name' => $document->name,
-                ] : null,
-                'personal' => $personal ? [
-                    'id' => $customer->id_personal,
-                    'full_name' => $fullName,
-                ] : null,
-            ];
-        });
+                return [
+                    'id' => $customer->id,
+                    'document_number' => $customer->document_number,
+                    'name_businessname' => $customer->name_businessname,
+                    'address' => $customer->address,
+                    'contact_name' => $customer->contact_name,
+                    'contact_number' => $customer->contact_number,
+                    'contact_email' => $customer->contact_email,
+                    'state' => $customer->state,
+                    'type' => $customer->type,
+                    'document' => $document ? [
+                        'id' => $customer->id_document,
+                        'name' => $document->name,
+                    ] : null,
+                    'personal' => $personal ? [
+                        'id' => $customer->id_personal,
+                        'full_name' => $fullName,
+                    ] : null,
+                ];
+            });
+            $customersPaginated->setCollection($customers);
 
-        $customersPaginated->setCollection($customers);
+            return response()->json([
+                'customers' => $customersPaginated->items(),
+                'pagination' => [
+                    'current_page' => $customersPaginated->currentPage(),
+                    'per_page' => $customersPaginated->perPage(),
+                    'total' => $customersPaginated->total(),
+                    'last_page' => $customersPaginated->lastPage(),
+                    'from' => $customersPaginated->firstItem(),
+                    'to' => $customersPaginated->lastItem(),
+                ],
+            ]);
+        } else {
+            $customers = $query->get()->map(function ($customer) {
+                $personal = $customer->personal;
+                $document = $customer->document;
+                $fullName = trim(implode(' ', array_filter([
+                    optional($personal)->names,
+                    optional($personal)->last_name,
+                    optional($personal)->mother_last_name,
+                ])));
 
-        return response()->json([
-            'customers' => $customersPaginated->items(),
-            'pagination' => [
-                'current_page' => $customersPaginated->currentPage(),
-                'per_page' => $customersPaginated->perPage(),
-                'total' => $customersPaginated->total(),
-                'last_page' => $customersPaginated->lastPage(),
-                'from' => $customersPaginated->firstItem(),
-                'to' => $customersPaginated->lastItem(),
-            ],
-        ]);
+                return [
+                    'id' => $customer->id,
+                    'document_number' => $customer->document_number,
+                    'name_businessname' => $customer->name_businessname,
+                    'address' => $customer->address,
+                    'contact_name' => $customer->contact_name,
+                    'contact_number' => $customer->contact_number,
+                    'contact_email' => $customer->contact_email,
+                    'state' => $customer->state,
+                    'type' => $customer->type,
+                    'document' => $document ? [
+                        'id' => $customer->id_document,
+                        'name' => $document->name,
+                    ] : null,
+                    'personal' => $personal ? [
+                        'id' => $customer->id_personal,
+                        'full_name' => $fullName,
+                    ] : null,
+                ];
+            });
+
+            return response()->json([
+                'customers' => $customers,
+                'count' => $customers->count(),
+                'pagination' => null,
+            ]);
+        }
     }
 }
